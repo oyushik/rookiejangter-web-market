@@ -12,7 +12,7 @@
 
 | 역할 | 이름 | 담당 업무 | GitHub |
 |------|------|-----------|--------|
-| **PM** | - | 프로젝트 관리, 일정 조율, 요구사항 정의 | [J-millar99](https://github.com/J-millar99) |
+| **PM** | 지재현 | 프로젝트 관리, 일정 조율, 요구사항 정의 | [J-millar99](https://github.com/J-millar99) |
 | **Backend** | - | API 개발, 데이터베이스 설계, 서버 구축 | [username] |
 | **Backend** | - | 인증/보안, 비즈니스 로직, 테스트 | [username] |
 | **Frontend** | - | React 컴포넌트, UI/UX 구현 | [username] |
