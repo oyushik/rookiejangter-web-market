@@ -15,8 +15,9 @@ const areaHierarchy = {
 
 const SearchArea = () => {
   const [input, setInput] = useState('');
-  const [selectedArea, setSelectedArea] = useState(null); // 초기 null
-  const [filteredAreas, setFilteredAreas] = useState({});
+  const [selectedArea, setSelectedArea] = useState(null);
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(false);
   const [mapLoaded, setMapLoaded] = useState(false);
   const mapRef = useRef(null);
 
@@ -48,13 +49,13 @@ const SearchArea = () => {
 
           geocoder.coord2RegionCode(longitude, latitude, (result, status) => {
             if (status === window.kakao.maps.services.Status.OK) {
-              // 'H' 또는 'B' 타입인 동/읍/리 명 가져오기
+              // 동/읍/리 명 가져오기
               const region = result.find(
                 (r) => r.region_type === 'H' || r.region_type === 'B'
               );
               if (region) {
-                setSelectedArea(region.region_3depth_name); // 예: 봉담읍
-                setInput(''); // 검색창 초기화
+                setSelectedArea(region.region_3depth_name);
+                setInput('');
               }
             }
           });
@@ -66,31 +67,60 @@ const SearchArea = () => {
     }
   }, [mapLoaded]);
 
-  const handleSearch = () => {
+  const fetchProducts = async () => {
     const area = input.trim() || selectedArea;
     if (!area) return;
 
+    setLoading(true);
     setSelectedArea(area);
 
-    let result = {};
+    // 더미 데이터 기반 필터링
+    let result = [];
 
     // 1. 상위 지역 키워드 ("서울" 등) 매칭
     if (areaHierarchy[area]) {
       areaHierarchy[area].forEach((subArea) => {
         if (exampleItemsByArea[subArea]) {
-          result[subArea] = exampleItemsByArea[subArea];
+          exampleItemsByArea[subArea].forEach((item) => {
+            result.push({ area: subArea, name: item });
+          });
         }
       });
     } else {
       // 2. 입력된 주소에서 하위 동네명 추출 후 매칭
       Object.entries(exampleItemsByArea).forEach(([areaName, items]) => {
         if (area.includes(areaName) || areaName.includes(area)) {
-          result[areaName] = items;
+          items.forEach((item) => {
+            result.push({ area: areaName, name: item });
+          });
         }
       });
     }
 
-    setFilteredAreas(result);
+    // 실제 API 호출 예시
+    /*
+    const query = new URLSearchParams({
+      page: 0,
+      size: 10,
+      area: area,
+      keyword: input,
+    });
+
+    try {
+      const res = await fetch(`/api/products?${query.toString()}`);
+      const data = await res.json();
+      setProducts(data.content);
+    } catch (err) {
+      console.error('API 요청 실패:', err);
+    }
+    */
+
+    setProducts(result);
+    setLoading(false);
+  };
+
+  const handleSearch = () => {
+    fetchProducts();
   };
 
   const handleKeyPress = (e) => {
@@ -126,9 +156,15 @@ const SearchArea = () => {
       }
     });
 
-    // 자동 검색 실행
-    handleSearch();
+    fetchProducts();
   }, [mapLoaded, selectedArea]);
+
+  // products 배열을 지역별로 그룹핑
+  const groupedProducts = products.reduce((acc, cur) => {
+    if (!acc[cur.area]) acc[cur.area] = [];
+    acc[cur.area].push(cur.name);
+    return acc;
+  }, {});
 
   return (
     <div style={{ maxWidth: 600, margin: 'auto' }}>
@@ -149,29 +185,32 @@ const SearchArea = () => {
         </button>
       </div>
 
-      {/* 지역별 품목 */}
-      {selectedArea && (
-        <div style={{ marginBottom: 16 }}>
-          <h3>📦 "{selectedArea}" 지역 관련 품목</h3>
-          {Object.keys(filteredAreas).length > 0 ? (
-            Object.entries(filteredAreas).map(([area, items]) => (
-              <div key={area} style={{ marginBottom: 12 }}>
-                <strong style={{ fontSize: '18px' }}>{area}</strong>
-                {items.length > 0 ? (
-                  <ul style={{ marginTop: 4, paddingLeft: 0}}>
-                    {items.map((item, idx) => (
-                      <li  key={idx}>{item}</li>
-                    ))}
-                  </ul>
-                ) : (
-                  <div style={{ color: 'gray', marginTop: 4 }}>등록된 품목이 없습니다!</div>
-                )}
-              </div>
-            ))
-          ) : (
-            <div style={{ color: 'gray' }}>등록된 품목이 없습니다!</div>
-          )}
-        </div>
+      {loading ? (
+        <div>🔄 로딩 중...</div>
+      ) : (
+        selectedArea && (
+          <div style={{ marginBottom: 16 }}>
+            <h3>📦 "{selectedArea}" 지역 관련 품목</h3>
+            {Object.keys(groupedProducts).length > 0 ? (
+              Object.entries(groupedProducts).map(([area, items]) => (
+                <div key={area} style={{ marginBottom: 12 }}>
+                  <strong style={{ fontSize: '18px' }}>{area}</strong>
+                  {items.length > 0 ? (
+                    <ul style={{ marginTop: 4, paddingLeft: 0 }}>
+                      {items.map((item, idx) => (
+                        <li key={idx}>{item}</li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <div style={{ color: 'gray', marginTop: 4 }}>등록된 품목이 없습니다!</div>
+                  )}
+                </div>
+              ))
+            ) : (
+              <div style={{ color: 'gray' }}>등록된 품목이 없습니다!</div>
+            )}
+          </div>
+        )
       )}
 
       {/* 지도 */}
