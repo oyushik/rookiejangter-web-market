@@ -2,16 +2,15 @@ import { useEffect, useRef, useState } from 'react';
 
 // 예제 품목 데이터
 const exampleItemsByArea = {
-  '봉담읍': ['중고 가전제품', '중고 의류', '가구'],
   '서초동': ['중고 책', '전자기기', '자전거'],
   '삼성동': ['스마트폰', '노트북', '카메라'],
   '잠실동': ['운동기구', '의자', '책상'],
   '역삼동': ['프린터', 'PC 부품'],
+  '노원구': [],
 };
 
 const areaHierarchy = {
-  '서울': ['서초동', '삼성동', '잠실동', '역삼동'],
-  '경기': ['봉담읍'],
+  '서울': ['서초동', '삼성동', '잠실동', '역삼동', '노원구'],
 };
 
 const SearchArea = () => {
@@ -68,7 +67,6 @@ const SearchArea = () => {
   }, [mapLoaded]);
 
   const handleSearch = () => {
-    // 검색창이 비어있으면 selectedArea 기준으로 검색
     const area = input.trim() || selectedArea;
     if (!area) return;
 
@@ -76,6 +74,7 @@ const SearchArea = () => {
 
     let result = {};
 
+    // 1. 상위 지역 키워드 ("서울" 등) 매칭
     if (areaHierarchy[area]) {
       areaHierarchy[area].forEach((subArea) => {
         if (exampleItemsByArea[subArea]) {
@@ -83,8 +82,9 @@ const SearchArea = () => {
         }
       });
     } else {
+      // 2. 입력된 주소에서 하위 동네명 추출 후 매칭
       Object.entries(exampleItemsByArea).forEach(([areaName, items]) => {
-        if (areaName.includes(area)) {
+        if (area.includes(areaName) || areaName.includes(area)) {
           result[areaName] = items;
         }
       });
@@ -150,19 +150,27 @@ const SearchArea = () => {
       </div>
 
       {/* 지역별 품목 */}
-      {Object.keys(filteredAreas).length > 0 && (
+      {selectedArea && (
         <div style={{ marginBottom: 16 }}>
           <h3>📦 "{selectedArea}" 지역 관련 품목</h3>
-          {Object.entries(filteredAreas).map(([area, items]) => (
-            <div key={area} style={{ marginBottom: 12 }}>
-              <strong style={{ fontSize: '18px' }}>{area}</strong>
-              <ul style={{ marginTop: 4 }}>
-                {items.map((item, idx) => (
-                  <li key={idx}>{item}</li>
-                ))}
-              </ul>
-            </div>
-          ))}
+          {Object.keys(filteredAreas).length > 0 ? (
+            Object.entries(filteredAreas).map(([area, items]) => (
+              <div key={area} style={{ marginBottom: 12 }}>
+                <strong style={{ fontSize: '18px' }}>{area}</strong>
+                {items.length > 0 ? (
+                  <ul style={{ marginTop: 4, paddingLeft: 0}}>
+                    {items.map((item, idx) => (
+                      <li  key={idx}>{item}</li>
+                    ))}
+                  </ul>
+                ) : (
+                  <div style={{ color: 'gray', marginTop: 4 }}>등록된 품목이 없습니다!</div>
+                )}
+              </div>
+            ))
+          ) : (
+            <div style={{ color: 'gray' }}>등록된 품목이 없습니다!</div>
+          )}
         </div>
       )}
 
