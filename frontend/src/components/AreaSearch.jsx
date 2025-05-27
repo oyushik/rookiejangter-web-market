@@ -23,7 +23,8 @@ const SearchArea = () => {
 
   // Kakao SDK 로드
   useEffect(() => {
-    const kakaoKey = import.meta.env.VITE_KAKAO_API_KEY;
+    // const kakaoKey = import.meta.env.VITE_KAKAO_API_KEY;
+    const kakaoKey = '9a0c68a2fbfe4fe4417cb9e271e21d5b';
 
     if (!window.kakao) {
       const script = document.createElement('script');
