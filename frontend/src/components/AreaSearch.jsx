@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 // 예제 품목 데이터
 const exampleItemsByArea = {
@@ -68,7 +68,7 @@ const SearchArea = () => {
     }
   }, [mapLoaded]);
 
-  const fetchProducts = async () => {
+  const fetchProducts = useCallback(async () => {
     const area = input.trim() || selectedArea;
     if (!area) return;
 
@@ -118,7 +118,7 @@ const SearchArea = () => {
 
     setProducts(result);
     setLoading(false);
-  };
+  }, [selectedArea, input]);
 
   const handleSearch = () => {
     fetchProducts();
@@ -158,7 +158,7 @@ const SearchArea = () => {
     });
 
     fetchProducts();
-  }, [mapLoaded, selectedArea]);
+  }, [mapLoaded, selectedArea, fetchProducts]);
 
   // products 배열을 지역별로 그룹핑
   const groupedProducts = products.reduce((acc, cur) => {
