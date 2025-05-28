@@ -10,3 +10,9 @@ export const verifySmsCode = ({ phoneNumber, code }) =>
 
 export const registerUser = (formData) =>
     axios.post(`${BASE_URL}/signup`, formData);
+
+export const fetchVerificationResult = (identityVerificationId) =>
+    axios.post(`${BASE_URL}/identity-verifications`, { identityVerificationId });
+
+export const signup = (userData) =>
+    axios.post(`${BASE_URL}/auth/signup`, userData);
