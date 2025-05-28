@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button, Container, Typography } from '@mui/material';
+import ProductSearch from '../components/ProductSearch';
 
 const HomePage = () => {
   const navigate = useNavigate();
@@ -11,6 +12,7 @@ const HomePage = () => {
       <Button variant="contained" onClick={() => navigate('/register')}>
         회원가입
       </Button>
+      <ProductSearch />
     </Container>
   );
 };
