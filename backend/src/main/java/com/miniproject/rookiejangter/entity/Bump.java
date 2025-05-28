@@ -20,7 +20,7 @@ public class Bump {
     private Long bumpId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "post_id", nullable = false)
+    @JoinColumn(name = "post_id")
     private Post post;
 
     @Column(name = "bumped_at")

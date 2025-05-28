@@ -19,11 +19,11 @@ public class Ban extends BaseEntity {
     private Long banId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "user_id")
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "report_id", nullable = false)
+    @JoinColumn(name = "report_id")
     private Report report;
 
     @Size(max = 50, message = "제재 사유는 최대 50자까지 가능합니다.")

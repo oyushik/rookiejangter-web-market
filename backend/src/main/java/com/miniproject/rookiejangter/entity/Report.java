@@ -21,11 +21,11 @@ public class Report extends BaseEntity {
     private Long reportId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "report_reason_id", nullable = false)
+    @JoinColumn(name = "report_reason_id")
     private ReportReason reportReason;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "user_id")
     private User user;
 
     @Column(name = "target_id")

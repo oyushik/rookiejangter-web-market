@@ -20,7 +20,7 @@ public class Image {
     private Long imageId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "post_id", nullable = false)
+    @JoinColumn(name = "post_id")
     private Post post;
 
     @NotBlank(message = "이미지 URL은 필수입니다.")

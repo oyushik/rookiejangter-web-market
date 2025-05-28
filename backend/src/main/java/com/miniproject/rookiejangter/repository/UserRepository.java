@@ -2,11 +2,13 @@ package com.miniproject.rookiejangter.repository;
 
 import com.miniproject.rookiejangter.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
 
-public interface UserRepository extends JpaRepository<User, Integer> {
+@Repository
+public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByUserName(String userName);
     Optional<User> findByLoginId(String loginId);
     boolean existsByLoginId(String loginId);

@@ -4,8 +4,9 @@ import com.miniproject.rookiejangter.entity.ReportReason;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 public interface ReportReasonRepository extends JpaRepository<ReportReason, Integer> {
-    ReportReason findByReportReasonId(Integer reportReasonId);
-    ReportReason findByReportReasonType(String reportReasonType);
+    Optional<ReportReason> findByReportReasonId(Integer reportReasonId);
 }
