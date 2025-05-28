@@ -8,9 +8,12 @@ const HomePage = () => {
 
   return (
     <Container>
-      <Typography variant="h4" gutterBottom>환영합니다!</Typography>
+      <Typography variant="h4" gutterBottom>루키장터 </Typography>
       <Button variant="contained" onClick={() => navigate('/register')}>
-        회원가입
+        회원가입1
+      </Button>
+      <Button variant="contained" onClick={() => navigate('/signup')}>
+        회원가입2
       </Button>
       <ProductSearch />
     </Container>
