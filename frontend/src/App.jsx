@@ -4,6 +4,8 @@ import HomePage from './pages/HomePage';
 import RegisterPage from './pages/RegisterPage';
 import ProductsPage from './pages/ProductsPage';
 import SignupPage from "./pages/SignupPage";
+import './App.css'
+import AreaSearch from './components/AreaSearch'
 
 
 function App() {
@@ -15,9 +17,9 @@ function App() {
         <Route path="/products" element={<ProductsPage />} />
         <Route path="/signup" element={<SignupPage />} />
       </Routes>
+      <AreaSearch />
     </BrowserRouter>
   );
 }
 
-export default App;
-
+export default App
