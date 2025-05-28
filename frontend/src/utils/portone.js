@@ -1,0 +1,1 @@
+export const PORTONE_STORE_ID = "store"
