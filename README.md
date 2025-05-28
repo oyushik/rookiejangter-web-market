@@ -1,4 +1,4 @@
-# 🛒 SecondHand Market - 중고거래 플랫폼
+# 🛒 SecondHand Market - 중고거래 플랫폼 (루키 장터)
 
 > 당근마켓, 번개장터를 벤치마킹한 중고거래 웹 서비스
 
@@ -33,7 +33,7 @@
 ## 🛠 기술 스택
 
 ### Backend
-- **Framework**: Spring Boot 3.2+
+- **Framework**: Spring Boot 3.4.6
 - **Language**: Java 17
 - **Database**: MySQL 8.0
 - **ORM**: JPA/Hibernate
