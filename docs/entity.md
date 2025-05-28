@@ -128,27 +128,26 @@ public class EntityName extends BaseEntity {
 ```
 
 ### 3.3 ID 생성 전략
-
 | Entity | 전략 | 이유 | 예시 |
 |--------|------|------|------|
-| User | IDENTITY (Auto Increment, unique 식별) | 사용자는 고유해야 하며, 성능상 자동 증가가 적합 | user_id: 1, 2, 3... |
-| Post | IDENTITY (Auto Increment, 순차 증가) | 게시글 순서 관리 및 성능 최적화 | post_id: 1001, 1002, 1003... |
-| Reservation | IDENTITY (Auto Increment, 순차 증가) | 예약 순서 관리 및 빠른 조회 | reservation_id: 2001, 2002... |
-| Chat | IDENTITY (Auto Increment, 순차 증가) | 채팅방 생성 순서 관리 | chat_id: 3001, 3002... |
-| Message | IDENTITY (Auto Increment, 메시지 순서) | 메시지 전송 순서 보장 필요 | message_id: 10001, 10002... |
-| Dibs | IDENTITY (Auto Increment, 순차 증가) | 찜하기 순서 관리 | dibs_id: 4001, 4002... |
-| Complete | IDENTITY (Auto Increment, 순차 증가) | 완료 거래 순서 관리 | complete_id: 5001, 5002... |
-| Review | IDENTITY (Auto Increment, 순차 증가) | 리뷰 작성 순서 관리 | review_id: 6001, 6002... |
-| Bump | IDENTITY (Auto Increment, 순차 증가) | 게시글 끌어올리기 순서 관리 | bump_id: 7001, 7002... |
-| Notification | IDENTITY (Auto Increment, 알림 순서) | 알림 발생 순서 보장 | notification_id: 8001, 8002... |
-| Report | IDENTITY (Auto Increment, 신고 순서, unique 식별) | 신고 접수 순서 및 고유성 보장 | report_id: 9001, 9002... |
-| Ban | IDENTITY (Auto Increment, unique 식별) | 제재 이력 고유성 및 순서 관리 | ban_id: 11001, 11002... |
-| Goods | IDENTITY (Post의 ID를 PK 겸 FK로 사용) | 게시글과 1:1 관계, 참조 무결성 보장 | goods_id = post_id |
-| Cancellation | IDENTITY (Reservation의 ID를 PK 겸 FK로 사용) | 예약과 1:1 관계, 참조 무결성 보장 | cancellation_id = reservation_id |
-| Category | IDENTITY (범주 별로 고정된 id 부여, unique 식별) | 카테고리는 미리 정의된 고정값 사용 | category_id: 1(전자기기), 2(의류)... |
-| Area | IDENTITY (지역 별로 고정된 id 부여, unique 식별) | 지역정보는 행정구역 기준 고정값 | area_id: 1(서울), 2(부산)... |
-| ReportReason | IDENTITY (사유 별로 고정된 id 부여) | 신고사유는 미리 정의된 고정 코드값 | reason_id: 1(스팸), 2(욕설)... |
-| CancelReason | IDENTITY (사유 별로 고정된 id 부여) | 취소사유는 미리 정의된 고정 코드값 | reason_id: 1(단순변심), 2(상품결함)... |
+| **User** | IDENTITY (Auto Increment, unique 식별) | 사용자는 고유해야 하며, 성능상 자동 증가가 적합 | user_id: 1, 2, 3... |
+| **Post** | IDENTITY (Auto Increment, 순차 증가) | 게시글 순서 관리 및 성능 최적화 | post_id: 1001, 1002, 1003... |
+| **Reservation** | IDENTITY (Auto Increment, 순차 증가) | 예약 순서 관리 및 빠른 조회 | reservation_id: 2001, 2002... |
+| **Chat** | IDENTITY (Auto Increment, 순차 증가) | 채팅방 생성 순서 관리 | chat_id: 3001, 3002... |
+| **Message** | IDENTITY (Auto Increment, 메시지 순서) | 메시지 전송 순서 보장 필요 | message_id: 10001, 10002... |
+| **Dibs** | IDENTITY (Auto Increment, 순차 증가) | 찜하기 순서 관리 | dibs_id: 4001, 4002... |
+| **Complete** | IDENTITY (Auto Increment, 순차 증가) | 완료 거래 순서 관리 | complete_id: 5001, 5002... |
+| **Review** | IDENTITY (Auto Increment, 순차 증가) | 리뷰 작성 순서 관리 | review_id: 6001, 6002... |
+| **Bump** | IDENTITY (Auto Increment, 순차 증가) | 게시글 끌어올리기 순서 관리 | bump_id: 7001, 7002... |
+| **Notification** | IDENTITY (Auto Increment, 알림 순서) | 알림 발생 순서 보장 | notification_id: 8001, 8002... |
+| **Report** | IDENTITY (Auto Increment, 신고 순서, unique 식별) | 신고 접수 순서 및 고유성 보장 | report_id: 9001, 9002... |
+| **Ban** | IDENTITY (Auto Increment, unique 식별) | 제재 이력 고유성 및 순서 관리 | ban_id: 11001, 11002... |
+| **Goods** | IDENTITY (Post의 ID를 PK 겸 FK로 사용) | 게시글과 1:1 관계, 참조 무결성 보장 | goods_id = post_id |
+| **Cancellation** | IDENTITY (Reservation의 ID를 PK 겸 FK로 사용) | 예약과 1:1 관계, 참조 무결성 보장 | cancellation_id = reservation_id |
+| **Category** | IDENTITY (범주 별로 고정된 id 부여, unique 식별) | 카테고리는 미리 정의된 고정값 사용 | category_id: 1(전자기기), 2(의류)... |
+| **Area** | IDENTITY (지역 별로 고정된 id 부여, unique 식별) | 지역정보는 행정구역 기준 고정값 | area_id: 1(서울), 2(부산)... |
+| **ReportReason** | IDENTITY (사유 별로 고정된 id 부여) | 신고사유는 미리 정의된 고정 코드값 | reason_id: 1(스팸), 2(욕설)... |
+| **CancelReason** | IDENTITY (사유 별로 고정된 id 부여) | 취소사유는 미리 정의된 고정 코드값 | reason_id: 1(단순변심), 2(상품결함)... |
 ---
 
 ## 4. 상세 Entity 설계
@@ -156,6 +155,7 @@ public class EntityName extends BaseEntity {
 ### 4.1 Notification Entity
 
 #### 4.1.1 기본 정보
+
 #### 4.1.2 필드 상세 명세
 | 필드명 | 데이터 타입 | 컬럼명 | 제약조건 | 설명 | 비즈니스 규칙 |
 |--------|-------------|--------|----------|------|---------------|
@@ -168,9 +168,13 @@ public class EntityName extends BaseEntity {
 | **isRead** | Boolean | is_read | NULL 허용 | 읽음 여부 | 기본값은 false (미읽음) |
 
 #### 4.1.3 검증 어노테이션
+
 #### 4.1.4 연관관계 매핑
+
 #### 4.1.5 비즈니스 메서드
+
 #### 4.1.6 생성자 및 팩토리 메서드
+
 
 ### 4.2 Category Entity
 #### 4.2.1 기본 정보
@@ -433,64 +437,6 @@ public class EntityName extends BaseEntity {
 
 
 ## 5. Enum 타입 정의
-
-### 5.1 MemberStatus
-```java
-public enum MemberStatus {
-    ACTIVE("활성", "정상적으로 서비스 이용 가능"),
-    SUSPENDED("정지", "일시적으로 서비스 이용 정지"),
-    WITHDRAWN("탈퇴", "서비스 탈퇴 완료");
-
-    private final String displayName;
-    private final String description;
-
-    MemberStatus(String displayName, String description) {
-        this.displayName = displayName;
-        this.description = description;
-    }
-
-    public String getDisplayName() {
-        return displayName;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public boolean isActive() {
-        return this == ACTIVE;
-    }
-}
-```
-
-### 5.2 LoanStatus
-```java
-public enum LoanStatus {
-    REQUESTED("신청", "대출 신청 상태"),
-    APPROVED("승인", "관리자가 승인한 상태"),
-    BORROWED("대출중", "실제 대출이 진행 중인 상태"),
-    RETURNED("반납완료", "정상 반납 완료"),
-    OVERDUE("연체", "반납일을 초과한 상태"),
-    CANCELLED("취소", "대출 신청이 취소된 상태");
-
-    private final String displayName;
-    private final String description;
-
-    LoanStatus(String displayName, String description) {
-        this.displayName = displayName;
-        this.description = description;
-    }
-
-    public boolean isActiveStatus() {
-        return this == BORROWED || this == OVERDUE;
-    }
-
-    public boolean isCompletedStatus() {
-        return this == RETURNED || this == CANCELLED;
-    }
-}
-```
-
 ---
 
 ## 6. 연관관계 매핑 전략
