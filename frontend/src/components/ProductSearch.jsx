@@ -24,7 +24,6 @@ const ProductSearch = () => {
         setCategory(params.get('category') || '');
         setMinPrice(params.get('minPrice') || '');
         setMaxPrice(params.get('maxPrice') || '');
-        // selected(지역)는 area 파라미터로 동기화하려면 추가 로직 필요
     }, [location.search]);
 
     // 검색 버튼 클릭 시 쿼리 파라미터로 이동

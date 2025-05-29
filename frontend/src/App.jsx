@@ -4,8 +4,8 @@ import HomePage from './pages/HomePage';
 import RegisterPage from './pages/RegisterPage';
 import ProductsPage from './pages/ProductsPage';
 import SignupPage from "./pages/SignupPage";
+import ProductDetailPage from "./pages/ProductDetailPage";
 import './App.css'
-import AreaSearch from './components/AreaSearch'
 
 
 function App() {
@@ -16,8 +16,8 @@ function App() {
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/products" element={<ProductsPage />} />
         <Route path="/signup" element={<SignupPage />} />
+        <Route path="/products/:product_id" element={<ProductDetailPage />} />
       </Routes>
-      <AreaSearch />
     </BrowserRouter>
   );
 }
