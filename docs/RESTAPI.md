@@ -86,84 +86,52 @@ User-Agent: LibraryApp/1.0.0
 #### 성공 응답 (단일 객체)
 ```json
 {
-  "status": 200,
-  "message": "요청이 성공적으로 처리되었습니다.",
-  "data": {
-    "postId": 101,
-    "title": "아이폰 13 미개봉 팝니다",
-    "content": "미개봉 새제품이고 정품입니다.",
-    "price": 850000,
-    "category": "전자기기",
-    "viewCount": 123,
-    "isReserved": false,
-    "isCompleted": false,
-    "createdAt": "2025-05-28T13:42:15",
-    "images": [
-      "http://localhost:8080/img/post/101_1.jpg",
-      "http://localhost:8080/img/post/101_2.jpg"
-    ],
-    "seller": {
-      "userId": 5,
-      "userName": "김철수",
-      "area": "서울특별시"
-    }
-  }
+  "success": boolean,        // 요청 성공 여부 (true: 성공, false: 실패)
+  "data": object|null,       // 성공 시 반환할 실제 데이터 (없으면 null)
+  "error": {
+    "code": string,          // 에러 코드 (예: VALIDATION_ERROR, UNAUTHORIZED 등)
+    "message": string,       // 사용자에게 보여줄 에러 메시지
+    "details": object|null   // 추가 에러 정보 (선택 사항)
+  }|null,
+  "message": string|null,    // 요청 처리 결과에 대한 간단한 설명 (선택 사항)
+  "timestamp": string,       // 응답 생성 시점 (UTC ISO 8601, ex: 2025-05-29T14:35:00Z)
+  "requestId": string        // 클라이언트 추적용 고유 요청 ID
 }
 ```
 
 #### 성공 응답 (목록/페이지네이션)
 ```json
 {
-  "status": 200,
-  "message": "요청이 성공적으로 처리되었습니다.",
+  "success": true,
   "data": {
-    "totalElements": 125,
-    "totalPages": 13,
-    "currentPage": 1,
-    "pageSize": 10,
-    "content": [
-      {
-        "postId": 101,
-        "title": "아이폰 13 미개봉 팝니다",
-        "price": 850000,
-        "isReserved": false,
-        "isCompleted": false,
-        "thumbnailUrl": "http://localhost:8080/img/post/101_thumb.jpg",
-        "createdAt": "2025-05-28T13:42:15"
-      },
-      {
-        "postId": 100,
-        "title": "삼성 냉장고 팝니다",
-        "price": 300000,
-        "isReserved": true,
-        "isCompleted": false,
-        "thumbnailUrl": "http://localhost:8080/img/post/100_thumb.jpg",
-        "createdAt": "2025-05-28T12:30:00"
-      }
-    ]
-  }
+    "accessToken": "eyJhbGci...",
+    "refreshToken": "dGhpcyBpcyBhIHJlZnJlc2ggdG9rZW4...",
+    "user": {
+      "userId": 123,
+      "username": "rookieUser",
+      "roles": ["USER"]
+    }
+  },
+  "error": null,
+  "message": "로그인에 성공했습니다.",
+  "timestamp": "2025-05-29T14:35:00Z",
+  "requestId": "c0a8012b-7e6b-11eb-9439-0242ac130002"
 }
 ```
 
 #### 에러 응답
 ```json
 {
-  "status": 400,
-  "message": "요청이 잘못되었습니다.",
-  "errorCode": "VALIDATION_ERROR",
-  "errors": [
-    {
-      "field": "loginId",
-      "rejectedValue": "",
-      "reason": "아이디는 필수 입력 항목입니다."
-    },
-    {
-      "field": "password",
-      "rejectedValue": "123",
-      "reason": "비밀번호는 8자 이상이어야 합니다."
-    }
-  ],
-  "timestamp": "2025-05-28T14:01:22"
+  "success": false,
+  "data": null,
+  "error": {
+    "code": "INVALID_CREDENTIALS",
+    "message": "아이디 또는 비밀번호가 올바르지 않습니다.",
+    "details": null
+  },
+  "message": null,
+  "timestamp": "2025-05-29T14:36:10Z",
+  "requestId": "c0a8012b-7e6b-11eb-9439-0242ac130002"
 }
 ```
 
@@ -274,7 +242,7 @@ User-Agent: LibraryApp/1.0.0
 
 #### 3.1.3 로그아웃 API
 ```yaml
-/api/auth//logout:
+/api/auth/logout:
   post:
     summary: 로그아웃
     description: 액세스 및 리프레시 토큰을 무효화하고 로그아웃합니다.
@@ -317,16 +285,16 @@ User-Agent: LibraryApp/1.0.0
 
 #### 4.1.1 회원 목록 조회
 ```yaml
-GET /api/admin/users?page=0&size=10
+GET /api/admin/users?page=0%size=10
 Authorization: Bearer {JWT_TOKEN}
-Required Role: ADMIN, SUPER_ADMIN
+Required Role: ADMIN
 
 Query Parameters:
 - page: integer (default: 0) - 페이지 번호 (0부터 시작)
 - size: integer (default: 10, max: 100) - 페이지 크기
 - sort: string (default: "createdAt,desc") - 정렬 기준
 - search: string - 검색어 (이름, 이메일, 회원번호)
-- created_at: date - 가입일 시작일 (YYYY-MM-DD)
+- createdAt: date - 가입일 시작일 (YYYY-MM-DD)
 
 Response (200 OK):
 {
@@ -335,42 +303,53 @@ Response (200 OK):
     "content": [
       {
         "id": 1,
-        "area_id": 001,
+        "area": {
+          "area_id": 1,
+          "area_name": "서울"
+        },
         "login_id": "kim1",
-        "password": "@kim1",
         "user_name": "김철수",
         "phone": "010-1234-5678",
-        "email": "kim1@naver.com",
         "createdAt": "2025-05-01T10:00:00Z",
         "is_banned": false,
         "is_admin": false
       }
     ],
-    "page": {
-      "number": 0,
+    "pagination": {
+      "page": 0,
       "size": 10,
       "totalElements": 150,
-      "totalPages": 8,
+      "totalPages": 15,
       "first": true,
       "last": false
     }
-  }
+  },
+  "error": null,
+  "message": null,
+  "timestamp": "2025-05-29T14:35:00Z",
+  "requestId": "c0a8012b-7e6b-11eb-9439-0242ac130002"
 }
 
 Response (403 Forbidden):
 {
   "success": false,
+  "data": null,
   "error": {
     "code": "FORBIDDEN",
-    "message": "해당 리소스에 접근할 권한이 없습니다"}
+    "message": "해당 리소스에 접근할 권한이 없습니다.",
+    "details": null
+  },
+  "message": null,
+  "timestamp": "2025-05-29T14:35:00Z",
+  "requestId": "c0a8012b-7e6b-11eb-9439-0242ac130002"
 }
 ```
 
 #### 4.1.2 회원 상세 조회
 ```yaml
-GET /api/users/{user_id}/profile
+GET /api/v1/users/{user_id}/profile
 Authorization: Bearer {JWT_TOKEN}
-Required Role: USER (본인만), ADMIN, SUPER_ADMIN
+Required Role: USER (본인만), ADMIN
 
 Path Parameters:
 - user_id: integer (required) - 회원 ID
@@ -381,34 +360,38 @@ Response (200 OK):
   "data": {
     "id": 1,
     "area": {
-	    "area_id": 001,
-	    "area_name": "서울"
-	  },
+      "area_id": 1,
+      "area_name": "서울"
+    },
     "login_id": "kim1",
-    "password": "@kim1",
     "user_name": "김철수",
     "phone": "010-1234-5678",
-    "email": "kim1@naver.com",
     "createdAt": "2025-05-01T10:00:00Z",
     "is_banned": false,
     "is_admin": false
-  }
+  },
+  "error": null,
+  "message": null,
+  "timestamp": "2025-05-29T14:35:00Z",
+  "requestId": "c0a8012b-7e6b-11eb-9439-0242ac130002"
 }
 
 Response (404 Not Found):
 {
   "success": false,
+  "data": null,
   "error": {
     "code": "NOT_FOUND",
-    "message": "리소스를 찾을 수 없습니다",
-    "details": [
-      {
-        "field": "user_id",
-        "message": "존재하지 않는 회원 ID입니다",
-        "rejectedValue": 999
-      }
-    ]
-  }
+    "message": "존재하지 않는 회원입니다.",
+    "details": {
+      "field": "user_id",
+      "message": "존재하지 않는 회원 ID입니다",
+      "rejectedValue": 999
+    }
+  },
+  "message": null,
+  "timestamp": "2025-05-29T14:35:00Z",
+  "requestId": "c0a8012b-7e6b-11eb-9439-0242ac130002"
 }
 ```
 
@@ -416,27 +399,23 @@ Response (404 Not Found):
 ```yaml
 POST /api/auth/signup
 Content-Type: application/json
-Authorization: Bearer {JWT_TOKEN}
-Required Role: USER, ADMIN, SUPER_ADMIN
+Authorization: 불필요 (공개 API)
 
 Request Body:
-
 {
-	"login_id": "kimid1",
-  "password": "password123",
+  "login_id": "kimid1",
+  "password": "password123!",
   "user_name": "김철수",
-	"email": "kim@example.com",
   "phone": "010-1234-5678",
-  "area_id": 001
+  "area_id": 1
 }
 
 Validation Rules:
-- login_id: 필수, 2~20자, 영문/숫자, 중복 불가
-- username: 필수, 1~4자, 한글만
-- email: 필수, 이메일 형식, 중복 불가
+- login_id: 필수, 4~20자, 영문/숫자, 중복 불가
+- user_name: 필수, 2~10자, 한글/영문
 - password: 필수, 8-20자, 영문+숫자+특수문자 조합
 - phone: 필수, 010-XXXX-XXXX 형식
-- area_id: 필수, 박스 선택 형식
+- area_id: 필수, 유효한 지역 ID
 
 Response (201 Created):
 {
@@ -444,24 +423,28 @@ Response (201 Created):
   "data": {
     "id": 156,
     "area": {
-	    "area_id": 001,
-	    "area_name": "서울"
-	  },
+      "area_id": 1,
+      "area_name": "서울"
+    },
+    "login_id": "kimid1",
     "user_name": "김철수",
-    "email": "kim@example.com",
     "phone": "010-1234-5678",
-    "memberType": "USER",
+    "is_admin": false,
     "createdAt": "2025-05-26T10:30:00Z"
   },
-  "message": "회원 등록이 완료되었습니다"
+  "error": null,
+  "message": "회원 등록이 완료되었습니다.",
+  "timestamp": "2025-05-29T14:35:00Z",
+  "requestId": "c0a8012b-7e6b-11eb-9439-0242ac130002"
 }
 
 Response (400 Bad Request):
 {
   "success": false,
+  "data": null,
   "error": {
     "code": "VALIDATION_ERROR",
-    "message": "입력값이 올바르지 않습니다",
+    "message": "입력값이 올바르지 않습니다.",
     "details": [
       {
         "field": "login_id",
@@ -472,19 +455,12 @@ Response (400 Bad Request):
         "field": "password",
         "message": "비밀번호는 8-20자의 영문, 숫자, 특수문자 조합이어야 합니다",
         "rejectedValue": "password123"
-      },
-      {
-        "field": "email",
-        "message": "이미 사용 중인 이메일입니다",
-        "rejectedValue": "kim@example.com"
-      },
-      {
-        "field": "phone",
-        "message": "전화번호는 010-XXXX-XXXX 형식이어야 합니다",
-        "rejectedValue": "01012345678"
       }
     ]
-  }
+  },
+  "message": null,
+  "timestamp": "2025-05-29T14:35:00Z",
+  "requestId": "c0a8012b-7e6b-11eb-9439-0242ac130002"
 }
 ```
 
@@ -493,7 +469,7 @@ Response (400 Bad Request):
 PUT /api/users/{user_id}/profile
 Content-Type: application/json
 Authorization: Bearer {JWT_TOKEN}
-Required Role: USER (본인만), ADMIN, SUPER_ADMIN
+Required Role: USER (본인만), ADMIN
 
 Path Parameters:
 - user_id: integer (required) - 회원 ID
@@ -501,9 +477,8 @@ Path Parameters:
 Request Body:
 {
   "user_name": "이영희",
-	"email": "kim@example.com",
   "phone": "010-5678-1234",
-  "area_id": 001
+  "area_id": 2
 }
 
 Response (200 OK):
@@ -512,47 +487,43 @@ Response (200 OK):
   "data": {
     "id": 156,
     "area": {
-	    "area_id": 001,
-	    "area_name": "서울"
-	  },
+      "area_id": 2,
+      "area_name": "부산"
+    },
+    "login_id": "kimid1",
     "user_name": "이영희",
-    "email": "kim@example.com",
     "phone": "010-5678-1234",
-    "memberType": "USER",
+    "is_admin": false,
     "createdAt": "2025-05-26T10:30:00Z",
-    "updatedAT": "2025-05-26T18:27:00Z"
+    "updatedAt": "2025-05-26T18:27:00Z"
   },
-  "message": "회원 정보가 수정되었습니다"
+  "error": null,
+  "message": "회원 정보가 수정되었습니다.",
+  "timestamp": "2025-05-29T14:35:00Z",
+  "requestId": "c0a8012b-7e6b-11eb-9439-0242ac130002"
 }
 
-Response (400 Bad Request):
+Response (403 Forbidden):
 {
   "success": false,
+  "data": null,
   "error": {
-    "code": "VALIDATION_ERROR",
-    "message": "입력값이 올바르지 않습니다",
-    "details": [
-      {
-        "field": "email",
-        "message": "이미 사용 중인 이메일입니다",
-        "rejectedValue": "kim@example.com"
-      },
-      {
-        "field": "phone",
-        "message": "전화번호는 010-XXXX-XXXX 형식이어야 합니다",
-        "rejectedValue": "01012345678"
-      }
-    ]
-  }
+    "code": "FORBIDDEN",
+    "message": "본인의 정보만 수정할 수 있습니다.",
+    "details": null
+  },
+  "message": null,
+  "timestamp": "2025-05-29T14:35:00Z",
+  "requestId": "c0a8012b-7e6b-11eb-9439-0242ac130002"
 }
 ```
 
 #### 4.1.5 회원 상태 변경
 ```yaml
-PATCH /api/users/{user_id}/status
+PATCH /api/admin/users/{user_id}/status
 Content-Type: application/json
 Authorization: Bearer {JWT_TOKEN}
-Required Role: ADMIN, SUPER_ADMIN
+Required Role: ADMIN
 
 Path Parameters:
 - user_id: integer (required) - 회원 ID
@@ -560,7 +531,6 @@ Path Parameters:
 Request Body:
 {
   "is_banned": true,
-  "report_id": 12358,
   "ban_reason": "신고로 인한 일시 정지"
 }
 
@@ -568,13 +538,15 @@ Response (200 OK):
 {
   "success": true,
   "data": {
-  "id": 1,
-  "is_banned": true,
-  "report_id": 12358,
-  "ban_reason": "신고로 인한 일시 정지",
-  "banned_at": "2025-05-26T18:27:00Z"
-},
-  "message": "회원 상태가 변경되었습니다"
+    "id": 1,
+    "is_banned": true,
+    "ban_reason": "신고로 인한 일시 정지",
+    "banned_at": "2025-05-26T18:27:00Z"
+  },
+  "error": null,
+  "message": "회원 상태가 변경되었습니다.",
+  "timestamp": "2025-05-29T14:35:00Z",
+  "requestId": "c0a8012b-7e6b-11eb-9439-0242ac130002"
 }
 ```
 
@@ -583,15 +555,16 @@ Response (200 OK):
 #### 4.2.1 상품 목록 조회
 ```yaml
 GET /api/products?page=0&size=10
+Authorization: 불필요 (공개 API)
 
 Query Parameters:
 - page: integer (default: 0) - 페이지 번호
 - size: integer (default: 10, max: 100) - 페이지 크기
 - sort: string (default: "createdAt,desc") - 정렬 기준
 - category: string - 카테고리 필터
-- area: string - 지역
-- minPrice: integer - 최소 가격
-- maxPrice: integer - 최대 가격
+- area_id: integer - 지역 ID
+- min_price: integer - 최소 가격
+- max_price: integer - 최대 가격
 - keyword: string - 검색 키워드
 
 Business Rules:
@@ -599,7 +572,7 @@ Business Rules:
 - 거래 완료 상품은 검색 결과에서 제외
 - 위치를 기반으로 허용 범위 밖의 상품은 노출 금지
 
-Response (200):
+Response (200 OK):
 {
   "success": true,
   "data": {
@@ -616,38 +589,42 @@ Response (200):
         ],
         "seller": {
           "id": 1,
-          "nickname": "판매자닉네임"
+          "user_name": "김철수",
+          "area": {
+            "area_id": 1,
+            "area_name": "서울"
+          }
         },
-        "createdAt": "2025-05-24T10:30:00",
-        "viewCount": 15,
-        "likeCount": 3
+        "createdAt": "2025-05-24T10:30:00Z",
+        "view_count": 15,
+        "like_count": 3
       }
     ],
-    "totalPages": 5,
-    "totalElements": 45,
-    "size": 10,
-    "number": 0
-  }
-}
-
-Response (404):
-{
-  "success": false,
-  "error": {
-    "code": "NOT_FOUND",
-    "message": "리소스를 찾을 수 없습니다"
-  }
+    "pagination": {
+      "page": 0,
+      "size": 10,
+      "totalElements": 45,
+      "totalPages": 5,
+      "first": true,
+      "last": false
+    }
+  },
+  "error": null,
+  "message": null,
+  "timestamp": "2025-05-29T14:35:00Z",
+  "requestId": "c0a8012b-7e6b-11eb-9439-0242ac130002"
 }
 ```
 
 #### 4.2.2 상품 상세 조회
 ```yaml
-GET /api/products/{productId}
+GET /api/products/{product_id}
+Authorization: 불필요 (공개 API, 단 찜하기 상태는 로그인 시에만)
 
 Path Parameters:
-- productId: integer (required) - 상품 ID
+- product_id: integer (required) - 상품 ID
 
-Response (200):
+Response (200 OK):
 {
   "success": true,
   "data": {
@@ -663,45 +640,55 @@ Response (200):
     ],
     "seller": {
       "id": 1,
-      "nickname": "판매자닉네임",
-      "profileImage": "https://example.com/seller-profile.jpg"
+      "user_name": "김철수",
+      "area": {
+        "area_id": 1,
+        "area_name": "서울"
+      }
     },
-    "createdAt": "2025-05-24T10:30:00",
-    "updatedAt": "2025-05-24T10:30:00",
-    "viewCount": 16,
-    "likeCount": 3,
-    "isLiked": false
-  }
+    "createdAt": "2025-05-24T10:30:00Z",
+    "updatedAt": "2025-05-24T10:30:00Z",
+    "view_count": 16,
+    "like_count": 3,
+    "is_liked": false
+  },
+  "error": null,
+  "message": null,
+  "timestamp": "2025-05-29T14:35:00Z",
+  "requestId": "c0a8012b-7e6b-11eb-9439-0242ac130002"
 }
 
-Response(404):
+Response (404 Not Found):
 {
   "success": false,
+  "data": null,
   "error": {
     "code": "NOT_FOUND",
-    "message": "리소스를 찾을 수 없습니다",
-    "details": [
-      {
-        "field": "productId",
-        "message": "존재하지 않는 상품 ID입니다",
-        "rejectedValue": 999
-      }
-    ]
+    "message": "존재하지 않는 상품입니다.",
+    "details": {
+      "field": "product_id",
+      "message": "존재하지 않는 상품 ID입니다",
+      "rejectedValue": 999
     }
+  },
+  "message": null,
+  "timestamp": "2025-05-29T14:35:00Z",
+  "requestId": "c0a8012b-7e6b-11eb-9439-0242ac130002"
 }
 ```
 
 #### 4.2.3 상품 등록
 ```yaml
 POST /api/products
-
+Content-Type: application/json
 Authorization: Bearer {JWT_TOKEN}
+Required Role: USER
 
 Business Rules:
-- 상품 게시글은 최대: 5
-- 등록 가능한 상품 카테고리 또는 금지 품목 리스트는 정지
-- 사진 개수 제한
+- 사용자당 등록 가능한 상품 최대 5개
+- 금지 품목 등록 불가
 - 계정이 정지된 회원은 이용 불가
+- 이미지는 최대 10장까지
 
 Request Body:
 {
@@ -715,109 +702,144 @@ Request Body:
   ]
 }
 
-Response (201):
+Response (201 Created):
 {
   "success": true,
-  "message": "상품이 등록되었습니다",
   "data": {
-    "id": 1,
+    "id": 156,
     "title": "아이폰 14 판매합니다",
+    "description": "깔끔하게 사용했습니다",
     "price": 800000,
+    "category": "전자제품",
     "status": "SALE",
-    "createdAt": "2025-05-24T10:30:00"
-  }
+    "images": [
+      "https://example.com/image1.jpg",
+      "https://example.com/image2.jpg"
+    ],
+    "createdAt": "2025-05-24T10:30:00Z"
+  },
+  "error": null,
+  "message": "상품이 등록되었습니다.",
+  "timestamp": "2025-05-29T14:35:00Z",
+  "requestId": "c0a8012b-7e6b-11eb-9439-0242ac130002"
 }
 
-Response(422):
+Response (422 Unprocessable Entity):
 {
   "success": false,
+  "data": null,
   "error": {
-    "code": "Unprocessable Entity",
-    "message": "규칙에 의하여 상품이 등록되지 않았습니다"
+    "code": "BUSINESS_RULE_VIOLATION",
+    "message": "등록 가능한 상품 개수를 초과했습니다. (최대 5개)",
+    "details": {
+      "currentCount": 5,
+      "maxCount": 5
     }
+  },
+  "message": null,
+  "timestamp": "2025-05-29T14:35:00Z",
+  "requestId": "c0a8012b-7e6b-11eb-9439-0242ac130002"
 }
 ```
 
 #### 4.2.4 상품 수정
 ```yaml
-PUT /api/products/{productId}
-
+PUT /api/products/{product_id}
+Content-Type: application/json
 Authorization: Bearer {JWT_TOKEN}
-Required Role: MEMBER (본인만), ADMIN, SUPER ADMIN
+Required Role: USER (본인만), ADMIN
 
 Path Parameters:
-- productId: integer (required) - 상품 ID
+- product_id: integer (required) - 상품 ID
 
 Business Rules:
-- 예약 중 게시글은 수정, 삭제 할 수 없음
-- 거래 완료 게시글은 수정 할 수 없음
+- 예약 중이거나 거래 완료된 상품은 수정 불가
 
-Response (403):
+Request Body:
 {
-  "success": false,
-  "error": {
-    "code": "FORBIDDEN",
-    "message": "해당 리소스를 수정할 권한이 없습니다"}
+  "title": "아이폰 14 Pro 판매합니다",
+  "description": "상태 매우 좋습니다",
+  "price": 850000,
+  "category": "전자제품",
+  "images": [
+    "https://example.com/image1.jpg"
+  ]
 }
 
-Response(404):
+Response (200 OK):
+{
+  "success": true,
+  "data": {
+    "id": 1,
+    "title": "아이폰 14 Pro 판매합니다",
+    "description": "상태 매우 좋습니다",
+    "price": 850000,
+    "category": "전자제품",
+    "status": "SALE",
+    "images": [
+      "https://example.com/image1.jpg"
+    ],
+    "updatedAt": "2025-05-26T18:27:00Z"
+  },
+  "error": null,
+  "message": "상품이 수정되었습니다.",
+  "timestamp": "2025-05-29T14:35:00Z",
+  "requestId": "c0a8012b-7e6b-11eb-9439-0242ac130002"
+}
+
+Response (422 Unprocessable Entity):
 {
   "success": false,
+  "data": null,
   "error": {
-    "code": "NOT_FOUND",
-    "message": "리소스를 찾을 수 없습니다",
-    "details": [
-      {
-        "field": "productId",
-        "message": "존재하지 않는 상품 ID입니다",
-        "rejectedValue": 999
-      }
-    ]
-  }
+    "code": "BUSINESS_RULE_VIOLATION",
+    "message": "예약 중이거나 거래 완료된 상품은 수정할 수 없습니다.",
+    "details": {
+      "currentStatus": "RESERVED"
+    }
+  },
+  "message": null,
+  "timestamp": "2025-05-29T14:35:00Z",
+  "requestId": "c0a8012b-7e6b-11eb-9439-0242ac130002"
 }
 ```
 
 #### 4.2.5 상품 삭제
 ```yaml
-DELETE /api/products/{productId}
-
+DELETE /api/products/{product_id}
 Authorization: Bearer {JWT_TOKEN}
-Required Role: MEMBER (본인만), ADMIN, SUPER ADMIN
+Required Role: USER (본인만), ADMIN
 
 Path Parameters:
-- productId: integer (required) - 상품 ID
+- product_id: integer (required) - 상품 ID
 
 Business Rules:
-- 예약 중 게시글은 수정, 삭제 할 수 없음
+- 예약 중인 상품은 삭제 불가
 
-Response (200):
+Response (200 OK):
 {
   "success": true,
-  "message": "상품이 삭제되었습니다"
+  "data": null,
+  "error": null,
+  "message": "상품이 삭제되었습니다.",
+  "timestamp": "2025-05-29T14:35:00Z",
+  "requestId": "c0a8012b-7e6b-11eb-9439-0242ac130002"
 }
 
-Response (403):
+Response (422 Unprocessable Entity):
 {
   "success": false,
+  "data": null,
   "error": {
-    "code": "FORBIDDEN",
-    "message": "해당 리소스를 삭제할 권한이 없습니다"}
-}
-
-Response(404):
-{
-  "success": false,
-  "error": {
-    "code": "NOT_FOUND",
-    "message": "리소스를 찾을 수 없습니다",
-    "details": [
-      {
-        "field": "productId",
-        "message": "존재하지 않는 상품 ID입니다",
-        "rejectedValue": 999
-      }
-    ]
-  }
+    "code": "BUSINESS_RULE_VIOLATION",
+    "message": "예약 중인 상품은 삭제할 수 없습니다.",
+    "details": {
+      "currentStatus": "RESERVED"
+    }
+  },
+  "message": null,
+  "timestamp": "2025-05-29T14:35:00Z",
+  "requestId": "c0a8012b-7e6b-11eb-9439-0242ac130002"
 }
 ```
 
@@ -825,158 +847,240 @@ Response(404):
 
 #### 4.3.1 찜하기 추가/제거
 ```yaml
-POST /api/products/{productId}/like
-
+PUT /api/wishlist/{product_id}
 Authorization: Bearer {JWT_TOKEN}
+Required Role: USER
 
 Path Parameters:
-- productId: integer (required) - 상품 ID
+  - product_id: integer (required)  # 찜할 상품 ID
 
-Business Rules:
-- 중복 찜하기 불가
+Responses:
 
-Response (200):
-{
-  "success": true,
-  "message": "찜하기가 추가되었습니다",
-  "data": {
-    "isLiked": true,
-    "likeCount": 4
-  }
-}
+  200 OK
+  └─ 성공 응답
+     {
+       "success": true,
+       "data": { "productId": 123, "isLiked": true },
+       "error": null,
+       "message": "찜 목록에 추가되었습니다.",
+       "timestamp": "2025-05-29T14:00:00Z",
+       "requestId": "..."
+     }
+
+  200 OK
+  └─ 제거 성공
+     {
+       "success": true,
+       "data": { "productId": 123, "isLiked": false },
+       "error": null,
+       "message": "찜 목록에서 제거되었습니다.",
+       "timestamp": "...",
+       "requestId": "..."
+     }
+
+  404 Not Found
+  └─ 상품 없음
+     {
+       "success": false,
+       "data": null,
+       "error": {
+         "code": "RESOURCE_NOT_FOUND",
+         "message": "존재하지 않는 상품입니다.",
+         "details": null
+       },
+       "message": null,
+       "timestamp": "...",
+       "requestId": "..."
+     }
+
 ```
 
 #### 4.3.2 찜한 상품 목록
 ```yaml
-GET /api/users/likes?page=0&size=10
-
+GET /api/wishlist
 Authorization: Bearer {JWT_TOKEN}
+Required Role: USER
 
 Query Parameters:
-- page: integer (default: 0) - 페이지 번호
-- size: integer (default: 10) - 페이지 크기
+  - page: integer (default: 0)
+  - size: integer (default: 20, max: 100)
 
-Business Rules:
-- 찜한 상품이 삭제/판매완료 시 자동 제거
+Responses:
 
-Response (200):
-{
-	"success": true,
-  "data": {
-    "content": [
-      {
-        "id": 1,
-        "title": "아이폰 14 판매합니다",
-        "description": "깔끔하게 사용했습니다",
-        "price": 800000,
-        "category": "전자제품",
-        "status": "SALE",
-        "images": [
-          "https://example.com/image1.jpg"
-        ],
-        "seller": {
-          "id": 1,
-          "nickname": "판매자닉네임"
-        },
-        "createdAt": "2025-05-24T10:30:00",
-        "viewCount": 15,
-        "likeCount": 3
-      }
-    ],
-    "totalPages": 5,
-    "totalElements": 45,
-    "size": 10,
-    "number": 0
-  }
-}
+  200 OK
+  └─ 성공 응답 (페이지네이션)
+     {
+       "success": true,
+       "data": {
+         "content": [
+           {
+             "productId": 123,
+             "title": "아이폰 14 판매합니다",
+             "price": 800000,
+             "thumbnail": "https://…",
+             "likedAt": "2025-05-28T15:20:00Z"
+           },
+           …
+         ],
+         "pagination": {
+           "page": 0, "size": 20,
+           "totalElements": 5, "totalPages": 1,
+           "first": true, "last": true
+         }
+       },
+       "error": null,
+       "message": null,
+       "timestamp": "...",
+       "requestId": "..."
+     }
 
-Response(404):
-{
-  "success": false,
-  "error": {
-    "code": "NOT_FOUND",
-    "message": "리소스를 찾을 수 없습니다"
-  }
-}
 ```
 
 #### 4.3.3 거래 신청
 ```yaml
 POST /api/trades
-
 Authorization: Bearer {JWT_TOKEN}
+Required Role: USER
 
 Request Body:
-{
-  "productId": 1,
-  "offerPrice": 750000,
-  "message": "깎아주시면 바로 거래하겠습니다"
-}
+  {
+    "productId": 123,       # 거래 신청할 상품 ID
+    "offerMessage": "가격 조정 가능할까요?"
+  }
+
+Responses:
+
+  201 Created
+  └─ 성공 응답
+     {
+       "success": true,
+       "data": {
+         "tradeId": 456,
+         "productId": 123,
+         "buyerId": 10,
+         "status": "REQUESTED",
+         "requestedAt": "2025-05-29T14:05:00Z"
+       },
+       "error": null,
+       "message": "거래 신청이 완료되었습니다.",
+       "timestamp": "...",
+       "requestId": "..."
+     }
+
+  422 Unprocessable Entity
+  └─ 비즈니스 규칙 위반 (이미 신청됨 등)
+     {
+       "success": false,
+       "data": null,
+       "error": {
+         "code": "BUSINESS_RULE_VIOLATION",
+         "message": "이미 거래가 요청된 상품입니다.",
+         "details": { "currentStatus": "REQUESTED" }
+       },
+       "message": null,
+       "timestamp": "...",
+       "requestId": "..."
+     }
+
 ```
 
 #### 4.3.4 거래 상태 변경
 ```yaml
-PUT /api/trades/{tradeId}/status
-
+PATCH /api/trades/{trade_id}/status
 Authorization: Bearer {JWT_TOKEN}
-Required Role: Member(판매자)
+Required Role: USER (판매자), ADMIN
 
 Path Parameters:
-- tradeId: integer (required) - 거래 ID
+  - trade_id: integer (required)
 
 Request Body:
-{
-  "status": "COMPLETED"
-}
-
-Response(404):
-{
-  "success": false,
-  "error": {
-    "code": "NOT_FOUND",
-    "message": "리소스를 찾을 수 없습니다",
-    "details": [
-      {
-        "field": "tradeId",
-        "message": "존재하지 않는 거래 ID입니다",
-        "rejectedValue": 999
-      }
-    ]
+  {
+    "status": "ACCEPTED"  # ["ACCEPTED","DECLINED","CANCELLED","COMPLETED"]
   }
-}
+
+Responses:
+
+  200 OK
+  └─ 성공 응답
+     {
+       "success": true,
+       "data": {
+         "tradeId": 456,
+         "status": "ACCEPTED",
+         "updatedAt": "2025-05-29T15:00:00Z"
+       },
+       "error": null,
+       "message": "거래 상태가 ACCEPTED(수락)으로 변경되었습니다.",
+       "timestamp": "...",
+       "requestId": "..."
+     }
+
+  403 Forbidden
+  └─ 권한 없음
+     {
+       "success": false,
+       "data": null,
+       "error": {
+         "code": "ACCESS_DENIED",
+         "message": "해당 거래를 처리할 권한이 없습니다.",
+         "details": null
+       },
+       "message": null,
+       "timestamp": "...",
+       "requestId": "..."
+     }
+
 ```
 
 #### 4.3.5 거래 후기 작성
 ```yaml
-POST /api/trades/{tradeId}/review
-
+POST /api/trades/{trade_id}/review
 Authorization: Bearer {JWT_TOKEN}
-Required Role: Member(구매자)
+Required Role: USER (거래 참여자)
 
 Path Parameters:
-- tradeId: integer (required) - 거래 ID
+  - trade_id: integer (required)
 
 Request Body:
-{
-  "rating": 5,
-  "comment": "친절하고 좋은 거래였습니다!"
-}
-
-Response(404):
-{
-  "success": false,
-  "error": {
-    "code": "NOT_FOUND",
-    "message": "리소스를 찾을 수 없습니다",
-    "details": [
-      {
-        "field": "tradeId",
-        "message": "존재하지 않는 거래 ID입니다",
-        "rejectedValue": 999
-      }
-    ]
+  {
+    "rating": 5,            # 평점 (1~5)
+    "comment": "친절한 거래 감사합니다!"
   }
-}
+
+Responses:
+
+  201 Created
+  └─ 성공 응답
+     {
+       "success": true,
+       "data": {
+         "reviewId": 789,
+         "tradeId": 456,
+         "rating": 5,
+         "comment": "친절한 거래 감사합니다!",
+         "createdAt": "2025-05-29T16:00:00Z"
+       },
+       "error": null,
+       "message": "거래 후기가 등록되었습니다.",
+       "timestamp": "...",
+       "requestId": "..."
+     }
+
+  409 Conflict
+  └─ 중복 리뷰
+     {
+       "success": false,
+       "data": null,
+       "error": {
+         "code": "DUPLICATE_RESOURCE",
+         "message": "이미 후기를 작성하였습니다.",
+         "details": null
+       },
+       "message": null,
+       "timestamp": "...",
+       "requestId": "..."
+     }
+
 ```
 
 ### 4.4 채팅 API
@@ -984,146 +1088,144 @@ Response(404):
 #### 4.4.1 채팅방 생성
 ```yaml
 POST /api/chats
-
 Authorization: Bearer {JWT_TOKEN}
-
-Business Rules:
-- 거래 완료 & 예약 상태 상품은 채팅 불가능
-- 차단 및 신고 후 자동으로 채팅 닫힘
-- 자신의 게시물에는 채팅 불가능 (본인 게시글)
+Required Role: USER
 
 Request Body:
-{
-  "productId": 1
-}
+  {
+    "productId": 123,      # 채팅 대상 상품
+    "participantId": 10    # 상대방 사용자 ID
+  }
 
-Response(422):
-{
-  "success": false,
-  "error": {
-    "code": "Unprocessable Entity",
-    "message": "규칙에 의하여 채팅방이 생성되지 않았습니다"
-    }
-}
+Responses:
+
+  201 Created
+  └─ 성공 응답
+     {
+       "success": true,
+       "data": {
+         "chatRoomId": 321,
+         "productId": 123,
+         "participants": [1,10],
+         "createdAt": "2025-05-29T14:10:00Z"
+       },
+       "error": null,
+       "message": "채팅방이 생성되었습니다.",
+       "timestamp": "...",
+       "requestId": "..."
+     }
+
 ```
 
 #### 4.4.2 채팅방 목록
 ```yaml
 GET /api/chats
-
 Authorization: Bearer {JWT_TOKEN}
+Required Role: USER
 
-Response (200):
-{
-  "success": true,
-  "data": [
-    {
-      "id": 1,
-      "product": {
-        "id": 1,
-        "title": "아이폰 14 판매합니다",
-        "price": 800000,
-        "image": "https://example.com/image1.jpg"
-      },
-      "otherUser": {
-        "id": 2,
-        "nickname": "구매자닉네임"
-      },
-      "lastMessage": {
-        "content": "언제 거래 가능하신가요?",
-        "createdAt": "2025-05-24T14:30:00"
-      },
-      "unreadCount": 2
-    }
-  ]
-}
+Query Parameters:
+  - page: integer (default: 0)
+  - size: integer (default: 20)
 
-Response(404):
-{
-  "success": false,
-  "error": {
-    "code": "NOT_FOUND",
-    "message": "리소스를 찾을 수 없습니다"
-  }
-}
+Responses:
+
+  200 OK
+  └─ 성공 응답 (페이지네이션)
+     {
+       "success": true,
+       "data": {
+         "content": [
+           {
+             "chatRoomId": 321,
+             "productId": 123,
+             "lastMessage": "안녕하세요!",
+             "unreadCount": 2,
+             "updatedAt": "2025-05-29T15:30:00Z"
+           },
+           …
+         ],
+         "pagination": { … }
+       },
+       "error": null,
+       "message": null,
+       "timestamp": "...",
+       "requestId": "..."
+     }
+
 ```
 
 #### 4.4.3 채팅 메시지 조회
 ```yaml
-GET /api/chats/{chatId}/messages?page=0&size=20
-
+GET /api/chats/{chatRoomId}/messages
 Authorization: Bearer {JWT_TOKEN}
+Required Role: USER
 
 Path Parameters:
-- chatId: integer (required) - 채팅방 ID
+  - chatRoomId: integer (required)
 
 Query Parameters:
-- page: integer (default: 0) - 페이지 번호
-- size: integer (default: 20) - 페이지 크기
+  - page: integer (default: 0)
+  - size: integer (default: 50)
 
-Response (200):
-{
-  "success": true,
-  "data": {
-    "content": [
-		    {
-		      "senderId": 10,
-		      "senderName": "user123",
-		      "message": "안녕하세요! 거래 가능하신가요?",
-		      "sentAt": "2025-05-26T14:05:00Z"
-		    },
-		    {
-		      "senderId": 27,
-		      "senderName": "seller777",
-		      "message": "네 가능합니다. 어느 시간대가 괜찮으세요?",
-		      "sentAt": "2025-05-26T14:06:15Z"
-		    }
-	  ],
-		"chatId": 123,
-		"size": 20,
-	  "totalPages": 5,
-    "totalElements": 45
-  }
-}
+Responses:
 
-Response(404):
-{
-  "success": false,
-  "error": {
-    "code": "NOT_FOUND",
-    "message": "리소스를 찾을 수 없습니다"
-  }
-}
+  200 OK
+  └─ 성공 응답 (페이지네이션)
+     {
+       "success": true,
+       "data": {
+         "content": [
+           {
+             "messageId": 1001,
+             "senderId": 1,
+             "message": "안녕하세요!",
+             "sentAt": "2025-05-29T14:15:00Z"
+           },
+           …
+         ],
+         "pagination": { … }
+       },
+       "error": null,
+       "message": null,
+       "timestamp": "...",
+       "requestId": "..."
+     }
+
 ```
 
 #### 4.4.4 메시지 전송
 ```yaml
-POST /api/chats/{chatId}/messages
-
+POST /api/chats/{chatRoomId}/messages
 Authorization: Bearer {JWT_TOKEN}
+Required Role: USER
 
 Path Parameters:
-- chatId: integer (required) - 채팅방 ID
-
-Business Rules:
-- 거래 완료 & 예약 상태 상품은 채팅 불가능
-- 차단 및 신고 후 자동으로 채팅 닫힘
-- 자신의 게시물에는 채팅 불가능 (본인 게시글)
+  - chatRoomId: integer (required)
 
 Request Body:
-{
-  "content": "안녕하세요, 거래 가능한가요?",
-  "type": "TEXT"
-}
+  {
+    "message": "안녕하세요, 거래 문의드립니다."
+  }
 
-Response(422):
-{
-  "success": false,
-  "error": {
-    "code": "Unprocessable Entity",
-    "message": "규칙에 의하여 메시지가 전송되지 않았습니다"
-    }
-}
+Responses:
+
+  201 Created
+  └─ 성공 응답
+     {
+       "success": true,
+       "data": {
+         "messageId": 1002,
+         "chatRoomId": 321,
+         "senderId": 1,
+         "message": "안녕하세요, 거래 문의드립니다.",
+         "sentAt": "2025-05-29T14:20:00Z"
+       },
+       "error": null,
+       "message": "메시지가 전송되었습니다.",
+       "timestamp": "...",
+       "requestId": "..."
+     }
+
 ```
 
 ### 4.5 관리자 API
@@ -1131,63 +1233,71 @@ Response(422):
 
 #### 4.5.1 신고 처리 
 ```yaml
-GET /api/admin/reports?page=0&size=10
-PUT /api/admin/reports/{reportId}/process
-
+PATCH /api/admin/reports/{reportId}
 Authorization: Bearer {JWT_TOKEN}
-Required Role: ADMIN, SUPER ADMIN
+Required Role: ADMIN
 
-Query Parameters:
-- page: integer (default: 0) - 페이지 번호
-- size: integer (default: 10, max: 100) - 페이지 크기
+Path Parameters:
+  - reportId: integer (required)
 
-Path Parameter:
-- reportId: integer (required) - 신고 ID
-
-Response(200):
-{
-  "success": true,
-  "data": {
-	  "content": [
-	    "reportId": 11,
-	    "reportedUserId": 55,
-	    "reason": "부적절한 언어 사용",
-	    "description": "거래 중 욕설을 사용하였습니다.",
-	    "reportedAt": "2025-05-25T15:12:00Z",
-	    "reporter": {
-	      "userId": 12,
-	      "nickname": "신고자닉네임"
-	    },
-	    "target": {
-	      "userId": 34,
-	      "nickname": "피신고자닉네임"
-	    }],
-    "totalPages": 5,
-    "totalElements": 23,
-    "size": 10,
-    "status": "Unprocessed"
-	  }
-}
-
-Response(404):
-{
-  "success": false,
-  "error": {
-    "code": "NOT_FOUND",
-    "message": "리소스를 찾을 수 없습니다"
+Request Body:
+  {
+    "action": "RESOLVE",       # ["RESOLVE","REJECT"]
+    "comment": "신고 사유가 부합하여 조치 완료."
   }
-}
 
-Response (403 Forbidden):
-{
-  "success": false,
-  "error": {
-    "code": "FORBIDDEN",
-    "message": "해당 리소스에 접근할 권한이 없습니다"}
-}
+Responses:
+
+  200 OK
+  └─ 성공 응답
+     {
+       "success": true,
+       "data": {
+         "reportId": 55,
+         "status": "RESOLVED",
+         "processedAt": "2025-05-29T16:30:00Z"
+       },
+       "error": null,
+       "message": "신고 처리가 완료되었습니다.",
+       "timestamp": "...",
+       "requestId": "..."
+     }
+
 ```
 
+#### 4.5.2 부적합 게시물 차단
+```yaml
+PATCH /api/admin/posts/{postType}/{postId}/ban
+Authorization: Bearer {JWT_TOKEN}
+Required Role: ADMIN
 
+Path Parameters:
+  - postType: string (required)  # ["products","reviews","chats"]
+  - postId: integer (required)
+
+Request Body:
+  {
+    "reason": "금지 품목 거래 시도"
+  }
+
+Responses:
+
+  200 OK
+  └─ 성공 응답
+     {
+       "success": true,
+       "data": {
+         "postType": "products",
+         "postId": 123,
+         "bannedAt": "2025-05-29T16:45:00Z"
+       },
+       "error": null,
+       "message": "해당 게시물이 차단되었습니다.",
+       "timestamp": "...",
+       "requestId": "..."
+     }
+
+```
 ---
 
 ## 5. 에러 코드 및 처리
