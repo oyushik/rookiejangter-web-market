@@ -25,3 +25,6 @@ spring:
       ddl-auto: update
     show-sql: true
     database-platform: org.hibernate.dialect.MariaDBDialect
+    properties:
+      hibernate:
+        default_schema: rookiejangter_db # 데이터베이스 이름을 스키마로 사용

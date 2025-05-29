@@ -21,14 +21,14 @@ public class Notification {
     private Long notificationId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "user_id")
     private User user;
 
     @Column(name = "entity_id")
     private Long entityId;
 
-    @Size(max = 10, message = "엔티티 타입은 최대 10자까지 가능합니다.")
-    @Column(name = "entity_type", length = 10)
+    @Size(max = 20, message = "엔티티 타입은 최대 20자까지 가능합니다.")
+    @Column(name = "entity_type", length = 20)
     private String entityType;
 
     @Size(max = 255, message = "메시지는 최대 255자까지 가능합니다.")

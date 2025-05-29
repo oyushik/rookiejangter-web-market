@@ -7,11 +7,12 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface BanRepository extends JpaRepository<Ban, Long> {
-    Ban findByBanId(Long banId);
+    Optional<Ban> findByBanId(Long banId);
     List<Ban> findByUser_UserId(Long userUserId);
-    Ban findByReport_ReportId(Long reportReportId);
+    Optional<Ban> findByReport_ReportId(Long reportReportId);
     List<Ban> findByBanReason(String banReason);
 }

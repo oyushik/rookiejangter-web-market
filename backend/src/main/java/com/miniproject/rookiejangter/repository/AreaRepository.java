@@ -4,8 +4,9 @@ import com.miniproject.rookiejangter.entity.Area;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 public interface AreaRepository extends JpaRepository<Area, Integer> {
-    Area findByAreaId(Integer areaId);
-    Area findByAreaName(String areaName);
+    Optional<Area> findByAreaId(Integer areaId);
 }
