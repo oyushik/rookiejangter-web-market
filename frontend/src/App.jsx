@@ -9,6 +9,7 @@ import MyPage from "./pages/MyPage";
 import './App.css';
 import Header from './components/Header';
 import { Box } from '@mui/material';
+import ProductDetailPage from "./pages/ProductDetailPage";
 
 function App() {
   return (
@@ -29,6 +30,7 @@ function App() {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignupPage />} />
           <Route path="/mypage" element={<MyPage />} />
+          <Route path="/products/:product_id" element={<ProductDetailPage />} />
         </Routes>
       </Box>
     </Box>

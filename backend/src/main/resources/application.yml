@@ -1,0 +1,10 @@
+spring:
+  application:
+    name: Rookiejangter
+  profiles:
+    active: test
+
+# log file
+logging:
+  file:
+    path: logs
