@@ -28,12 +28,9 @@ public class Review extends BaseEntity {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @Min(value = 1, message = "평점은 1점 이상이어야 합니다.")
-    @Max(value = 5, message = "평점은 5점 이하여야 합니다.")
     @Column(name = "rating", nullable = false)
     private Integer rating;
 
-    @Size(max = 255, message = "리뷰 내용은 최대 255자까지 가능합니다.")
     @Column(name = "content", length = 255)
     private String content;
 

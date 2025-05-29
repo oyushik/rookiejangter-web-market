@@ -41,7 +41,7 @@ public class UserRepositoryTest {
                 .loginId("testId")
                 .password("testPassword")
                 .userName("Test User")
-                .phone("01012345678")
+                .phone("010-1234-5678")
                 .isBanned(false)
                 .isAdmin(false)
                 .build();
@@ -61,7 +61,7 @@ public class UserRepositoryTest {
                 .loginId("testId")
                 .password("testPassword")
                 .userName("Test User")
-                .phone("01012345678")
+                .phone("010-1234-5678")
                 .isBanned(false)
                 .isAdmin(false)
                 .build();
@@ -84,7 +84,7 @@ public class UserRepositoryTest {
                 .loginId("testId")
                 .password("testPassword")
                 .userName("Test User")
-                .phone("01012345678")
+                .phone("010-1234-5678")
                 .isBanned(false)
                 .isAdmin(false)
                 .build();
@@ -106,7 +106,7 @@ public class UserRepositoryTest {
                 .loginId("testId")
                 .password("testPassword")
                 .userName("Test User")
-                .phone("01012345678")
+                .phone("010-1234-5678")
                 .isBanned(false)
                 .isAdmin(false)
                 .build();
@@ -130,7 +130,7 @@ public class UserRepositoryTest {
                 .loginId("testId")
                 .password("testPassword")
                 .userName("Test User")
-                .phone("01012345678")
+                .phone("010-1234-5678")
                 .isBanned(false)
                 .isAdmin(false)
                 .build();

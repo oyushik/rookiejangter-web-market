@@ -1,8 +1,6 @@
 package com.miniproject.rookiejangter.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
 import lombok.*;
 
 import java.util.ArrayList;
@@ -26,24 +24,16 @@ public class User extends BaseEntity {
     @JoinColumn(name = "area_id")
     private Area area;
 
-    @NotBlank(message = "로그인 ID는 필수입니다.")
-    @Size(min = 4, max = 20, message = "로그인 ID는 4자 이상 20자 이하로 입력해야 합니다.")
     @Column(name = "login_id", length = 20, nullable = false, unique = true)
     private String loginId;
 
-    @NotBlank(message = "비밀번호는 필수입니다.")
-    @Size(min = 4, max = 20, message = "비밀번호는 4자 이상 20자 이하로 입력해야 합니다.")
     @Column(name = "password", length = 20, nullable = false)
     private String password;
 
-    @NotBlank(message = "이름은 필수입니다.")
-    @Size(max = 12, message = "이름은 최대 12자까지 가능합니다.")
     @Column(name = "user_name", length = 12, nullable = false)
     private String userName;
 
-    @NotBlank(message = "전화번호는 필수입니다.")
-    @Size(max = 12, message = "전화번호는 최대 12자까지 가능합니다.")
-    @Column(name = "phone", length = 12, nullable = false, unique = true)
+    @Column(name = "phone", length = 20, nullable = false, unique = true)
     private String phone;
 
     @Column(name = "is_banned")

@@ -36,7 +36,7 @@ public class MessageRepositoryTest {
                 .userName("구매자1")
                 .loginId("buyer1")
                 .password("password")
-                .phone("01012341234")
+                .phone("010-1234-1234")
                 .build();
         entityManager.persist(buyer1);
 
@@ -44,7 +44,7 @@ public class MessageRepositoryTest {
                 .userName("판매자1")
                 .loginId("seller1")
                 .password("password")
-                .phone("01056785678")
+                .phone("010-5678-5678")
                 .build();
 
         entityManager.persist(seller1);
@@ -58,6 +58,7 @@ public class MessageRepositoryTest {
 
         message1 = Message.builder()
                 .chat(chat1)
+                .user(buyer1)
                 .content("안녕하세요!")
                 .sentAt(LocalDateTime.now())
                 .isRead(false)
@@ -66,6 +67,7 @@ public class MessageRepositoryTest {
 
         message2 = Message.builder()
                 .chat(chat1)
+                .user(seller1)
                 .content("물건 상태는 어떤가요?")
                 .sentAt(LocalDateTime.now().plusMinutes(2))
                 .isRead(false)
@@ -78,6 +80,7 @@ public class MessageRepositoryTest {
     void saveMessage() {
         Message newMessage = Message.builder()
                 .chat(chat1)
+                .user(buyer1)
                 .content("네, 깨끗합니다.")
                 .sentAt(LocalDateTime.now().plusMinutes(5))
                 .isRead(true)
@@ -109,9 +112,17 @@ public class MessageRepositoryTest {
     }
 
     @Test
+    void findByUserId() {
+        List<Message> foundMessages = messageRepository.findByUser_UserId(message1.getUser().getUserId());
+        assertThat(foundMessages.get(0).getUser().getUserId()).isEqualTo(1L);
+        assertThat(foundMessages.get(0).getUser().getUserName()).isEqualTo("구매자1");
+    }
+
+    @Test
     void updateIsRead() {
         Message unreadMessage = Message.builder()
                 .chat(chat1)
+                .user(buyer1)
                 .content("확인 부탁드립니다.")
                 .sentAt(LocalDateTime.now().plusMinutes(10))
                 .isRead(false)

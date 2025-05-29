@@ -34,7 +34,7 @@ public class DibsRepositoryTest {
                 .loginId("testUser")
                 .password("password")
                 .userName("테스트유저")
-                .phone("01012345678")
+                .phone("010-1234-5678")
                 .build();
         entityManager.persist(user);
 

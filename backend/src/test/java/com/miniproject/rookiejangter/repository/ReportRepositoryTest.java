@@ -36,7 +36,7 @@ public class ReportRepositoryTest {
                 .userName("신고자1")
                 .loginId("reporter1")
                 .password("password")
-                .phone("01012341234")
+                .phone("010-1234-1234")
                 .build();
         entityManager.persist(reporter1);
 
@@ -44,7 +44,7 @@ public class ReportRepositoryTest {
                 .userName("대상자1")
                 .loginId("target1")
                 .password("password")
-                .phone("01056785678")
+                .phone("010-5678-5678")
                 .build();
         entityManager.persist(targetUser1);
 

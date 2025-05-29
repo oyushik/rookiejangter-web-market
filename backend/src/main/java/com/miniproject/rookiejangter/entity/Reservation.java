@@ -14,6 +14,10 @@ import java.time.LocalDateTime;
 @Builder
 public class Reservation extends BaseEntity {
 
+    public enum TradeStatus {
+        REQUESTED, ACCEPTED, DECLINED, CANCELLED, COMPLETED
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "reservation_id")
@@ -33,6 +37,10 @@ public class Reservation extends BaseEntity {
 
     @Column(name = "is_canceled")
     private Boolean isCanceled;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status")
+    private TradeStatus status;
 
     @Override
     public String toString() {
