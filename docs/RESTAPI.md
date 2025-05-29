@@ -285,7 +285,7 @@ User-Agent: LibraryApp/1.0.0
 
 #### 4.1.1 회원 목록 조회
 ```yaml
-GET /api/admin/users?page=0%size=10
+GET /api/admin/users
 Authorization: Bearer {JWT_TOKEN}
 Required Role: ADMIN
 
@@ -347,7 +347,7 @@ Response (403 Forbidden):
 
 #### 4.1.2 회원 상세 조회
 ```yaml
-GET /api/v1/users/{user_id}/profile
+GET /api/users/{user_id}/profile
 Authorization: Bearer {JWT_TOKEN}
 Required Role: USER (본인만), ADMIN
 
@@ -554,7 +554,7 @@ Response (200 OK):
 
 #### 4.2.1 상품 목록 조회
 ```yaml
-GET /api/products?page=0&size=10
+GET /api/products
 Authorization: 불필요 (공개 API)
 
 Query Parameters:
