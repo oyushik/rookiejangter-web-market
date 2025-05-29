@@ -1,6 +1,7 @@
 package com.miniproject.rookiejangter.controller.dto;
 
 import com.miniproject.rookiejangter.entity.Ban;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 
 import java.time.OffsetDateTime;
@@ -13,6 +14,7 @@ public class BanDTO {
     @AllArgsConstructor
     @Builder
     public static class Request {
+        @Size(max = 50, message = "제재 사유는 최대 50자까지 가능합니다.")
         private String banReason;
     }
 

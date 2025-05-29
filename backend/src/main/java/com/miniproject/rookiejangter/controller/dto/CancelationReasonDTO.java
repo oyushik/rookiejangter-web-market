@@ -12,8 +12,6 @@ public class CancelationReasonDTO {
     @Builder
     public static class Response {
         private Integer cancelationReasonId;
-
-        @Size(max = 50, message = "취소 사유 타입은 최대 50자까지 가능합니다.")
         private String cancelationReasonType;
 
         public static Response fromEntity(CancelationReason cancelationReason) {
