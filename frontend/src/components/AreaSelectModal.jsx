@@ -1,13 +1,18 @@
 import React, { useState } from 'react';
 import emdData from '../json/emd_code.json';
+import axios from 'axios';
 
 const PAGE_SIZE = 20;
+const KAKAO_REST_API_KEY = import.meta.env.VITE_KAKAO_REST_API_KEY; // 실제 키로 교체 필요
 
 const AreaSelectModal = ({ onSelect, onClose }) => {
     const [area, setArea] = useState('');
     const [suggestions, setSuggestions] = useState([]);
     const [showSuggestions, setShowSuggestions] = useState(false);
     const [page, setPage] = useState(0);
+    const [myLocation, setMyLocation] = useState(null);
+    const [locLoading, setLocLoading] = useState(false);
+    const [locError, setLocError] = useState('');
 
     const handleAreaChange = (e) => {
         const value = e.target.value.replace(/\s+/g, ' ').trim().toLowerCase();
@@ -35,7 +40,79 @@ const AreaSelectModal = ({ onSelect, onClose }) => {
     };
 
     const handleSuggestionClick = (suggestion) => {
-        onSelect(suggestion); // 부모에 값 전달
+        onSelect(suggestion);
+    };
+
+    // 내 위치 찾기 버튼 클릭 시
+    const handleFindMyLocation = async () => {
+        setLocLoading(true);
+        setLocError('');
+        setMyLocation(null);
+        try {
+            // // 1) 백엔드에서 주소 정보 받아오기
+            // const res = await axios.get('/get-location');
+            // const addressInfo = res.data.documents?.[0]?.address;
+            // if (!addressInfo) throw new Error('주소 정보를 찾을 수 없습니다.');
+
+            // // 2) 시도명, 시군구명, 읍면동명 추출 및 공백 기준 앞부분만
+            // const 시도명 = addressInfo.region_1depth_name;
+            // const 시군구명 = addressInfo.region_2depth_name;
+            // let 읍면동명 = addressInfo.region_3depth_name;
+            // if (읍면동명 && 읍면동명.includes(' ')) {
+            //     읍면동명 = 읍면동명.split(' ')[0];
+            // }
+
+            // <test> 브라우저에서 직접 위경도 얻기
+            const getPosition = () =>
+                new Promise((resolve, reject) => {
+                    if (!navigator.geolocation) {
+                        reject(new Error('이 브라우저에서는 위치 정보를 지원하지 않습니다.'));
+                    } else {
+                        navigator.geolocation.getCurrentPosition(
+                            pos => resolve(pos),
+                            err => reject(err)
+                        );
+                    }
+                });
+
+            const pos = await getPosition();
+            const lat = pos.coords.latitude;
+            const lng = pos.coords.longitude;
+
+            const kakaoRes = await axios.get(
+                `https://dapi.kakao.com/v2/local/geo/coord2address.json?x=${lng}&y=${lat}`,
+                {
+                    headers: {
+                        Authorization: `KakaoAK ${KAKAO_REST_API_KEY}`,
+                    },
+                }
+            );
+
+            const addressInfo = kakaoRes.data.documents[0]?.address;
+            if (!addressInfo) throw new Error('주소 정보를 찾을 수 없습니다.');
+
+            const 시도명 = addressInfo.region_1depth_name;
+            const 시군구명 = addressInfo.region_2depth_name;
+            let 읍면동명 = addressInfo.region_3depth_name;
+
+            if (읍면동명 && 읍면동명.includes(' ')) {
+                읍면동명 = 읍면동명.split(' ')[0];
+            }
+            // </test> end
+
+            setMyLocation({
+                시도명,
+                시군구명,
+                읍면동명,
+                lat,
+                lng,
+            });
+        } catch (err) {
+            setLocError('내 위치를 찾을 수 없습니다.');
+            console.error(err);
+        } finally {
+            setLocLoading(false);
+        }
     };
 
     const pagedSuggestions = suggestions.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE);
@@ -75,6 +152,26 @@ const AreaSelectModal = ({ onSelect, onClose }) => {
                     style={{ width: '100%', marginBottom: 8 }}
                     autoFocus
                 />
+                {/* 내 위치 찾기 버튼 */}
+                <button
+                    style={{ width: '100%', marginBottom: 8, background: '#f0f0f0', padding: 8, borderRadius: 4 }}
+                    onClick={handleFindMyLocation}
+                    disabled={locLoading}
+                >
+                    {locLoading ? '내 위치 찾는 중...' : '내 위치 찾기'}
+                </button>
+                {/* 내 위치 결과 시각화 */}
+                {locError && <div style={{ color: 'red', marginBottom: 8 }}>{locError}</div>}
+                {myLocation && (
+                    <div style={{ marginBottom: 8, background: '#f9f9f9', padding: 8, borderRadius: 4 }}>
+                        <button
+                            style={{fontSize: 20, width: 350 }}
+                            onClick={() => onSelect(myLocation)}>
+                            내 위치: {[myLocation.시도명, myLocation.시군구명, myLocation.읍면동명]
+                                .filter(Boolean).join(' ')}
+                        </button>
+                    </div>
+                )}
                 {showSuggestions && pagedSuggestions.length > 0 && (
                     <ul
                         style={{

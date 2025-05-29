@@ -1,5 +1,3 @@
-import React from 'react';
-
 const KeywordSearch = ({ value, onChange, onSearch }) => {
     const handleKeyDown = (e) => {
         if (e.key === 'Enter' && onSearch) {
