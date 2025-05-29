@@ -44,13 +44,14 @@ public class CompleteRepositoryTest {
                 .userName("판매자1")
                 .loginId("seller1")
                 .password("password")
-                .phone("01022222222")
+                .phone("010-2222-2222")
                 .build();
         entityManager.persist(seller1);
 
         post1 = Post.builder()
                 .title("Test Post 1")
                 .content("Test Content 1")
+                .price(10000)
                 .user(seller1)
                 .build();
         entityManager.persist(post1);
@@ -66,20 +67,29 @@ public class CompleteRepositoryTest {
         entityManager.flush();
     }
 
-//    @Test
-//    void saveComplete() {
-//        Complete savedComplete = completeRepository.save(Complete.builder()
-//                .post(Post.builder().postId(post1.getPostId()).build())
-//                .buyer(User.builder().userId(buyer1.getUserId()).build())
-//                .seller(User.builder().userId(seller1.getUserId()).build())
-//                .completedAt(LocalDateTime.now().plusHours(1))
-//                .build());
-//
-//        Optional<Complete> foundComplete = completeRepository.findById(savedComplete.getPost().getPostId());
-//        assertThat(foundComplete).isPresent();
-//        assertThat(foundComplete.get().getBuyer().getUserId()).isEqualTo(buyer1.getUserId());
-//        assertThat(foundComplete.get().getSeller().getUserId()).isEqualTo(seller1.getUserId());
-//    }
+    @Test
+    void saveComplete() {
+        Post newPost = Post.builder()
+                .title("New Test Post")
+                .content("New Test Content")
+                .price(20000)
+                .user(seller1)
+                .build();
+        entityManager.persist(newPost);
+        entityManager.flush();
+
+        Complete savedComplete = completeRepository.save(Complete.builder()
+                .post(newPost)
+                .buyer(User.builder().userId(buyer1.getUserId()).build())
+                .seller(User.builder().userId(seller1.getUserId()).build())
+                .completedAt(LocalDateTime.now().plusHours(1))
+                .build());
+
+        Optional<Complete> foundComplete = completeRepository.findById(savedComplete.getPost().getPostId());
+        assertThat(foundComplete).isPresent();
+        assertThat(foundComplete.get().getBuyer().getUserId()).isEqualTo(buyer1.getUserId());
+        assertThat(foundComplete.get().getSeller().getUserId()).isEqualTo(seller1.getUserId());
+    }
 
     @Test
     void findByPostId() {

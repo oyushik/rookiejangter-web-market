@@ -137,4 +137,29 @@ public class NotificationRepositoryTest {
         assertThat(updatedNotification).isPresent();
         assertThat(updatedNotification.get().getIsRead()).isTrue();
     }
+
+    @Test
+    void findByIsRead() {
+        Notification unreadNotification = Notification.builder()
+                .user(user1)
+                .message("읽음 여부 테스트용 알림입니다")
+                .entityType("Report")
+                .entityId(6L)
+                .sentAt(LocalDateTime.now().plusMinutes(30))
+                .isRead(false)
+                .build();
+        Notification savedUnreadNotification = entityManager.persist(unreadNotification);
+        entityManager.flush();
+        List<Notification> foundNotifications = notificationRepository.findByIsRead(false);
+        assertThat(foundNotifications.get(0).getIsRead()).isFalse();
+
+        // update 후 test
+        notificationRepository.updateIsReadByNotificationId(true, savedUnreadNotification.getNotificationId());
+        entityManager.clear();
+
+        Optional<Notification> updatedNotification = notificationRepository.findById(savedUnreadNotification.getNotificationId());
+        assertThat(updatedNotification).isPresent();
+        assertThat(updatedNotification.get().getIsRead()).isTrue();
+
+    }
 }

@@ -42,6 +42,7 @@ public class ReviewRepositoryTest {
         post = Post.builder()
                 .title("test title")
                 .content("test content")
+                .price(10000)
                 .build();
 
         complete = Complete.builder()

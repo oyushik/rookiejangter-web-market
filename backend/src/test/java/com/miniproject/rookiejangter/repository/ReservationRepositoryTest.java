@@ -46,6 +46,7 @@ public class ReservationRepositoryTest {
         post = Post.builder()
                 .title("Test Post")
                 .content("Test Content")
+                .price(10000)
                 .build();
 
         entityManager.persist(buyer);

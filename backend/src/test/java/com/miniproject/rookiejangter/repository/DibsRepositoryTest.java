@@ -41,6 +41,7 @@ public class DibsRepositoryTest {
         post = Post.builder()
                 .title("테스트 게시글")
                 .content("테스트 내용")
+                .price(10000)
                 .user(user)
                 .build();
         entityManager.persist(post);

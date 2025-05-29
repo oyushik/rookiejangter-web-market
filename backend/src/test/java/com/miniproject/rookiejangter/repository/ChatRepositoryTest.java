@@ -62,6 +62,7 @@ public class ChatRepositoryTest {
         post1 = Post.builder()
                 .title("Test Post 1")
                 .content("Test Content 1")
+                .price(10000)
                 .user(seller1)
                 .build();
         entityManager.persist(post1);
@@ -69,6 +70,7 @@ public class ChatRepositoryTest {
         post2 = Post.builder()
                 .title("Test Post 2")
                 .content("Test Content 2")
+                .price(10000)
                 .user(seller1)
                 .build();
         entityManager.persist(post2);
