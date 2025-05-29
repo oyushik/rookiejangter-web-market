@@ -40,6 +40,11 @@
 
     "react-dom": "^19.1.0",
 
+<<<<<<< HEAD
+    "react-infinite-scroll-component": "^6.1.0",
+
+=======
+>>>>>>> 4c89600b29f008cfec721ae0bccba9e156a9f02a
     "react-redux": "^9.2.0",
 
     "react-router-dom": "^7.6.1"

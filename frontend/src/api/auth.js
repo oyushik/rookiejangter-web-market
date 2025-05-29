@@ -15,4 +15,10 @@ export const fetchVerificationResult = (identityVerificationId) =>
     axios.post(`${BASE_URL}/identity-verifications`, { identityVerificationId });
 
 export const signup = (userData) =>
-    axios.post(`${BASE_URL}/auth/signup`, userData);
+    axios.post(`${BASE_URL}/signup`, userData);
+
+export const loginUser = (userData) =>
+    axios.post(`${BASE_URL}/login`, userData);
+
+export const logoutUser = () =>
+    axios.post(`${BASE_URL}/logout`);
