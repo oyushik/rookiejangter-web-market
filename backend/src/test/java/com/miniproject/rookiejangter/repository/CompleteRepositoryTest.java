@@ -36,7 +36,7 @@ public class CompleteRepositoryTest {
                 .userName("구매자1")
                 .loginId("buyer1")
                 .password("password")
-                .phone("01011111111")
+                .phone("010-1111-1111")
                 .build();
         entityManager.persist(buyer1);
 

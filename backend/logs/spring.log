@@ -1209,3 +1209,239 @@
 2025-05-29T01:54:18.311+09:00  INFO 26344 --- [Rookiejangter] [Test worker] o.s.d.j.r.query.QueryEnhancerFactory     : Hibernate is in classpath; If applicable, HQL parser will be used.
 2025-05-29T01:54:19.175+09:00  INFO 26344 --- [Rookiejangter] [Test worker] c.m.r.r.CancelationReasonRepositoryTest  : Started CancelationReasonRepositoryTest in 4.152 seconds (process running for 5.112)
 2025-05-29T01:54:19.928+09:00  INFO 26344 --- [Rookiejangter] [SpringApplicationShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2025-05-29T10:38:09.918+09:00  INFO 9764 --- [Rookiejangter] [Test worker] c.m.r.RookiejangterApplicationTests      : Starting RookiejangterApplicationTests using Java 17.0.14 with PID 9764 (started by user in C:\Users\user\Desktop\rookies-java\project_joongo\backend)
+2025-05-29T10:38:09.920+09:00  INFO 9764 --- [Rookiejangter] [Test worker] c.m.r.RookiejangterApplicationTests      : The following 1 profile is active: "test"
+2025-05-29T10:38:10.936+09:00  INFO 9764 --- [Rookiejangter] [Test worker] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-05-29T10:38:11.026+09:00  INFO 9764 --- [Rookiejangter] [Test worker] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 83 ms. Found 19 JPA repository interfaces.
+2025-05-29T10:38:12.001+09:00  INFO 9764 --- [Rookiejangter] [Test worker] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-05-29T10:38:12.161+09:00  INFO 9764 --- [Rookiejangter] [Test worker] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.6.15.Final
+2025-05-29T10:38:12.246+09:00  INFO 9764 --- [Rookiejangter] [Test worker] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2025-05-29T10:38:12.923+09:00  INFO 9764 --- [Rookiejangter] [Test worker] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-05-29T10:38:13.005+09:00  INFO 9764 --- [Rookiejangter] [Test worker] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2025-05-29T10:38:13.397+09:00  INFO 9764 --- [Rookiejangter] [Test worker] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection conn0: url=jdbc:h2:mem:testdb user=SA
+2025-05-29T10:38:13.401+09:00  INFO 9764 --- [Rookiejangter] [Test worker] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2025-05-29T10:38:13.456+09:00  WARN 9764 --- [Rookiejangter] [Test worker] org.hibernate.orm.deprecation            : HHH90000025: H2Dialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2025-05-29T10:38:13.500+09:00  INFO 9764 --- [Rookiejangter] [Test worker] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 2.3.232
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2025-05-29T10:38:16.279+09:00  INFO 9764 --- [Rookiejangter] [Test worker] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-05-29T10:38:16.488+09:00  INFO 9764 --- [Rookiejangter] [Test worker] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-05-29T10:38:16.576+09:00  WARN 9764 --- [Rookiejangter] [Test worker] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2025-05-29T10:38:16.640+09:00  WARN 9764 --- [Rookiejangter] [Test worker] .s.s.UserDetailsServiceAutoConfiguration : 
+
+Using generated security password: 2dddafd1-bd7c-4388-bd3f-742c5efb8c07
+
+This generated password is for development use only. Your security configuration must be updated before running your application in production.
+
+2025-05-29T10:38:16.717+09:00  INFO 9764 --- [Rookiejangter] [Test worker] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name inMemoryUserDetailsManager
+2025-05-29T10:38:17.914+09:00  INFO 9764 --- [Rookiejangter] [Test worker] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
+2025-05-29T10:38:19.545+09:00  INFO 9764 --- [Rookiejangter] [Test worker] o.s.d.j.r.query.QueryEnhancerFactory     : Hibernate is in classpath; If applicable, HQL parser will be used.
+2025-05-29T10:38:20.868+09:00  INFO 9764 --- [Rookiejangter] [Test worker] o.s.b.a.h2.H2ConsoleAutoConfiguration    : H2 console available at '/h2-console'. Database available at 'jdbc:h2:mem:testdb'
+2025-05-29T10:38:21.017+09:00  INFO 9764 --- [Rookiejangter] [Test worker] c.m.r.RookiejangterApplicationTests      : Started RookiejangterApplicationTests in 11.391 seconds (process running for 12.452)
+2025-05-29T10:38:21.771+09:00  INFO 9764 --- [Rookiejangter] [Test worker] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.miniproject.rookiejangter.repository.AreaRepositoryTest]: AreaRepositoryTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2025-05-29T10:38:21.830+09:00  INFO 9764 --- [Rookiejangter] [Test worker] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.miniproject.rookiejangter.RookiejangterApplication for test class com.miniproject.rookiejangter.repository.AreaRepositoryTest
+2025-05-29T10:38:21.881+09:00  INFO 9764 --- [Rookiejangter] [Test worker] c.m.r.repository.AreaRepositoryTest      : Starting AreaRepositoryTest using Java 17.0.14 with PID 9764 (started by user in C:\Users\user\Desktop\rookies-java\project_joongo\backend)
+2025-05-29T10:38:21.883+09:00  INFO 9764 --- [Rookiejangter] [Test worker] c.m.r.repository.AreaRepositoryTest      : The following 1 profile is active: "test"
+2025-05-29T10:38:22.070+09:00  INFO 9764 --- [Rookiejangter] [Test worker] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-05-29T10:38:22.127+09:00  INFO 9764 --- [Rookiejangter] [Test worker] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 54 ms. Found 19 JPA repository interfaces.
+2025-05-29T10:38:22.157+09:00  INFO 9764 --- [Rookiejangter] [Test worker] beddedDataSourceBeanFactoryPostProcessor : Replacing 'dataSource' DataSource bean with embedded version
+2025-05-29T10:38:22.208+09:00  INFO 9764 --- [Rookiejangter] [Test worker] o.s.j.d.e.EmbeddedDatabaseFactory        : Starting embedded database: url='jdbc:h2:mem:d2bfcf9b-9837-41cc-96d8-928665e842c5;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=false', username='sa'
+2025-05-29T10:38:22.245+09:00  INFO 9764 --- [Rookiejangter] [Test worker] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-05-29T10:38:22.253+09:00  INFO 9764 --- [Rookiejangter] [Test worker] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2025-05-29T10:38:22.280+09:00  INFO 9764 --- [Rookiejangter] [Test worker] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-05-29T10:38:22.284+09:00  WARN 9764 --- [Rookiejangter] [Test worker] org.hibernate.orm.deprecation            : HHH90000025: H2Dialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2025-05-29T10:38:22.284+09:00  INFO 9764 --- [Rookiejangter] [Test worker] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseFactory$EmbeddedDataSourceProxy@721af8d0']
+	Database driver: undefined/unknown
+	Database version: 2.3.232
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2025-05-29T10:38:22.561+09:00  INFO 9764 --- [Rookiejangter] [Test worker] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-05-29T10:38:22.664+09:00  INFO 9764 --- [Rookiejangter] [Test worker] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-05-29T10:38:22.997+09:00  INFO 9764 --- [Rookiejangter] [Test worker] c.m.r.repository.AreaRepositoryTest      : Started AreaRepositoryTest in 1.162 seconds (process running for 14.434)
+2025-05-29T10:38:23.375+09:00  INFO 9764 --- [Rookiejangter] [Test worker] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.miniproject.rookiejangter.repository.BanRepositoryTest]: BanRepositoryTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2025-05-29T10:38:23.390+09:00  INFO 9764 --- [Rookiejangter] [Test worker] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.miniproject.rookiejangter.RookiejangterApplication for test class com.miniproject.rookiejangter.repository.BanRepositoryTest
+2025-05-29T10:38:23.748+09:00  INFO 9764 --- [Rookiejangter] [Test worker] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.miniproject.rookiejangter.repository.BumpRepositoryTest]: BumpRepositoryTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2025-05-29T10:38:23.768+09:00  INFO 9764 --- [Rookiejangter] [Test worker] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.miniproject.rookiejangter.RookiejangterApplication for test class com.miniproject.rookiejangter.repository.BumpRepositoryTest
+2025-05-29T10:38:23.881+09:00  INFO 9764 --- [Rookiejangter] [Test worker] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.miniproject.rookiejangter.repository.CancelationReasonRepositoryTest]: CancelationReasonRepositoryTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2025-05-29T10:38:23.897+09:00  INFO 9764 --- [Rookiejangter] [Test worker] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.miniproject.rookiejangter.RookiejangterApplication for test class com.miniproject.rookiejangter.repository.CancelationReasonRepositoryTest
+2025-05-29T10:38:24.029+09:00  INFO 9764 --- [Rookiejangter] [Test worker] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.miniproject.rookiejangter.repository.CancelationRepositoryTest]: CancelationRepositoryTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2025-05-29T10:38:24.045+09:00  INFO 9764 --- [Rookiejangter] [Test worker] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.miniproject.rookiejangter.RookiejangterApplication for test class com.miniproject.rookiejangter.repository.CancelationRepositoryTest
+2025-05-29T10:38:24.127+09:00  INFO 9764 --- [Rookiejangter] [Test worker] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.miniproject.rookiejangter.repository.CategoryRepositoryTest]: CategoryRepositoryTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2025-05-29T10:38:24.140+09:00  INFO 9764 --- [Rookiejangter] [Test worker] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.miniproject.rookiejangter.RookiejangterApplication for test class com.miniproject.rookiejangter.repository.CategoryRepositoryTest
+2025-05-29T10:38:24.207+09:00  INFO 9764 --- [Rookiejangter] [Test worker] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.miniproject.rookiejangter.repository.ChatRepositoryTest]: ChatRepositoryTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2025-05-29T10:38:24.221+09:00  INFO 9764 --- [Rookiejangter] [Test worker] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.miniproject.rookiejangter.RookiejangterApplication for test class com.miniproject.rookiejangter.repository.ChatRepositoryTest
+2025-05-29T10:38:24.345+09:00  INFO 9764 --- [Rookiejangter] [Test worker] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.miniproject.rookiejangter.repository.CompleteRepositoryTest]: CompleteRepositoryTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2025-05-29T10:38:24.354+09:00  INFO 9764 --- [Rookiejangter] [Test worker] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.miniproject.rookiejangter.RookiejangterApplication for test class com.miniproject.rookiejangter.repository.CompleteRepositoryTest
+2025-05-29T10:38:24.407+09:00  INFO 9764 --- [Rookiejangter] [Test worker] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.miniproject.rookiejangter.repository.DibsRepositoryTest]: DibsRepositoryTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2025-05-29T10:38:24.421+09:00  INFO 9764 --- [Rookiejangter] [Test worker] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.miniproject.rookiejangter.RookiejangterApplication for test class com.miniproject.rookiejangter.repository.DibsRepositoryTest
+2025-05-29T10:38:24.499+09:00  INFO 9764 --- [Rookiejangter] [Test worker] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.miniproject.rookiejangter.repository.GoodsRepositoryTest]: GoodsRepositoryTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2025-05-29T10:38:24.514+09:00  INFO 9764 --- [Rookiejangter] [Test worker] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.miniproject.rookiejangter.RookiejangterApplication for test class com.miniproject.rookiejangter.repository.GoodsRepositoryTest
+2025-05-29T10:38:24.541+09:00  INFO 9764 --- [Rookiejangter] [Test worker] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.miniproject.rookiejangter.repository.ImageRepositoryTest]: ImageRepositoryTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2025-05-29T10:38:24.553+09:00  INFO 9764 --- [Rookiejangter] [Test worker] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.miniproject.rookiejangter.RookiejangterApplication for test class com.miniproject.rookiejangter.repository.ImageRepositoryTest
+2025-05-29T10:38:24.589+09:00  INFO 9764 --- [Rookiejangter] [Test worker] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.miniproject.rookiejangter.repository.MessageRepositoryTest]: MessageRepositoryTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2025-05-29T10:38:24.597+09:00  INFO 9764 --- [Rookiejangter] [Test worker] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.miniproject.rookiejangter.RookiejangterApplication for test class com.miniproject.rookiejangter.repository.MessageRepositoryTest
+2025-05-29T10:38:24.700+09:00  INFO 9764 --- [Rookiejangter] [Test worker] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.miniproject.rookiejangter.repository.NotificationRepositoryTest]: NotificationRepositoryTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2025-05-29T10:38:24.713+09:00  INFO 9764 --- [Rookiejangter] [Test worker] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.miniproject.rookiejangter.RookiejangterApplication for test class com.miniproject.rookiejangter.repository.NotificationRepositoryTest
+2025-05-29T10:38:24.775+09:00  INFO 9764 --- [Rookiejangter] [Test worker] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.miniproject.rookiejangter.repository.PostRepositoryTest]: PostRepositoryTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2025-05-29T10:38:24.788+09:00  INFO 9764 --- [Rookiejangter] [Test worker] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.miniproject.rookiejangter.RookiejangterApplication for test class com.miniproject.rookiejangter.repository.PostRepositoryTest
+2025-05-29T10:38:24.923+09:00  INFO 9764 --- [Rookiejangter] [Test worker] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.miniproject.rookiejangter.repository.ReportReasonRepositoryTest]: ReportReasonRepositoryTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2025-05-29T10:38:24.945+09:00  INFO 9764 --- [Rookiejangter] [Test worker] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.miniproject.rookiejangter.RookiejangterApplication for test class com.miniproject.rookiejangter.repository.ReportReasonRepositoryTest
+2025-05-29T10:38:24.979+09:00  INFO 9764 --- [Rookiejangter] [Test worker] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.miniproject.rookiejangter.repository.ReportRepositoryTest]: ReportRepositoryTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2025-05-29T10:38:24.993+09:00  INFO 9764 --- [Rookiejangter] [Test worker] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.miniproject.rookiejangter.RookiejangterApplication for test class com.miniproject.rookiejangter.repository.ReportRepositoryTest
+2025-05-29T10:38:25.075+09:00  INFO 9764 --- [Rookiejangter] [Test worker] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.miniproject.rookiejangter.repository.ReservationRepositoryTest]: ReservationRepositoryTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2025-05-29T10:38:25.090+09:00  INFO 9764 --- [Rookiejangter] [Test worker] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.miniproject.rookiejangter.RookiejangterApplication for test class com.miniproject.rookiejangter.repository.ReservationRepositoryTest
+2025-05-29T10:38:25.190+09:00  INFO 9764 --- [Rookiejangter] [Test worker] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.miniproject.rookiejangter.repository.ReviewRepositoryTest]: ReviewRepositoryTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2025-05-29T10:38:25.204+09:00  INFO 9764 --- [Rookiejangter] [Test worker] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.miniproject.rookiejangter.RookiejangterApplication for test class com.miniproject.rookiejangter.repository.ReviewRepositoryTest
+2025-05-29T10:38:25.279+09:00  INFO 9764 --- [Rookiejangter] [Test worker] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.miniproject.rookiejangter.repository.UserRepositoryTest]: UserRepositoryTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2025-05-29T10:38:25.287+09:00  INFO 9764 --- [Rookiejangter] [Test worker] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.miniproject.rookiejangter.RookiejangterApplication for test class com.miniproject.rookiejangter.repository.UserRepositoryTest
+2025-05-29T10:38:25.344+09:00  INFO 9764 --- [Rookiejangter] [SpringApplicationShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2025-05-29T10:38:25.360+09:00  INFO 9764 --- [Rookiejangter] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2025-05-29T10:38:25.363+09:00  INFO 9764 --- [Rookiejangter] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+2025-05-29T10:38:25.366+09:00  INFO 9764 --- [Rookiejangter] [SpringApplicationShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2025-05-29T10:48:09.745+09:00  INFO 10036 --- [Rookiejangter] [Test worker] c.m.r.repository.UserRepositoryTest      : Starting UserRepositoryTest using Java 17.0.14 with PID 10036 (started by user in C:\Users\user\Desktop\rookies-java\project_joongo\backend)
+2025-05-29T10:48:09.746+09:00  INFO 10036 --- [Rookiejangter] [Test worker] c.m.r.repository.UserRepositoryTest      : The following 1 profile is active: "test"
+2025-05-29T10:48:10.183+09:00  INFO 10036 --- [Rookiejangter] [Test worker] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-05-29T10:48:10.276+09:00  INFO 10036 --- [Rookiejangter] [Test worker] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 85 ms. Found 19 JPA repository interfaces.
+2025-05-29T10:48:10.341+09:00  INFO 10036 --- [Rookiejangter] [Test worker] beddedDataSourceBeanFactoryPostProcessor : Replacing 'dataSource' DataSource bean with embedded version
+2025-05-29T10:48:10.446+09:00  INFO 10036 --- [Rookiejangter] [Test worker] o.s.j.d.e.EmbeddedDatabaseFactory        : Starting embedded database: url='jdbc:h2:mem:0d1c4c5d-b062-489f-ad8a-474de7b0a56a;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=false', username='sa'
+2025-05-29T10:48:10.741+09:00  INFO 10036 --- [Rookiejangter] [Test worker] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-05-29T10:48:10.788+09:00  INFO 10036 --- [Rookiejangter] [Test worker] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.6.15.Final
+2025-05-29T10:48:10.816+09:00  INFO 10036 --- [Rookiejangter] [Test worker] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2025-05-29T10:48:11.083+09:00  INFO 10036 --- [Rookiejangter] [Test worker] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-05-29T10:48:11.128+09:00  WARN 10036 --- [Rookiejangter] [Test worker] org.hibernate.orm.deprecation            : HHH90000025: H2Dialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2025-05-29T10:48:11.149+09:00  INFO 10036 --- [Rookiejangter] [Test worker] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseFactory$EmbeddedDataSourceProxy@71039ce1']
+	Database driver: undefined/unknown
+	Database version: 2.3.232
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2025-05-29T10:48:13.279+09:00  INFO 10036 --- [Rookiejangter] [Test worker] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-05-29T10:48:13.499+09:00  INFO 10036 --- [Rookiejangter] [Test worker] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-05-29T10:48:14.489+09:00  INFO 10036 --- [Rookiejangter] [Test worker] o.s.d.j.r.query.QueryEnhancerFactory     : Hibernate is in classpath; If applicable, HQL parser will be used.
+2025-05-29T10:48:15.721+09:00  INFO 10036 --- [Rookiejangter] [Test worker] c.m.r.repository.UserRepositoryTest      : Started UserRepositoryTest in 6.307 seconds (process running for 7.264)
+2025-05-29T10:48:17.033+09:00  INFO 10036 --- [Rookiejangter] [SpringApplicationShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2025-05-29T10:48:47.031+09:00  INFO 7204 --- [Rookiejangter] [restartedMain] c.m.r.RookiejangterApplication           : Starting RookiejangterApplication using Java 17.0.14 with PID 7204 (C:\Users\user\Desktop\rookies-java\project_joongo\backend\build\classes\java\main started by user in C:\Users\user\Desktop\rookies-java\project_joongo\backend)
+2025-05-29T10:48:47.033+09:00  INFO 7204 --- [Rookiejangter] [restartedMain] c.m.r.RookiejangterApplication           : The following 1 profile is active: "test"
+2025-05-29T10:48:47.077+09:00  INFO 7204 --- [Rookiejangter] [restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+2025-05-29T10:48:47.077+09:00  INFO 7204 --- [Rookiejangter] [restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+2025-05-29T10:48:48.097+09:00  INFO 7204 --- [Rookiejangter] [restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-05-29T10:48:48.177+09:00  INFO 7204 --- [Rookiejangter] [restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 74 ms. Found 19 JPA repository interfaces.
+2025-05-29T10:48:49.416+09:00  INFO 7204 --- [Rookiejangter] [restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
+2025-05-29T10:48:49.452+09:00  INFO 7204 --- [Rookiejangter] [restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2025-05-29T10:48:49.453+09:00  INFO 7204 --- [Rookiejangter] [restartedMain] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.41]
+2025-05-29T10:48:49.550+09:00  INFO 7204 --- [Rookiejangter] [restartedMain] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2025-05-29T10:48:49.551+09:00  INFO 7204 --- [Rookiejangter] [restartedMain] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 2474 ms
+2025-05-29T10:48:50.026+09:00  INFO 7204 --- [Rookiejangter] [restartedMain] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-05-29T10:48:50.162+09:00  INFO 7204 --- [Rookiejangter] [restartedMain] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.6.15.Final
+2025-05-29T10:48:50.240+09:00  INFO 7204 --- [Rookiejangter] [restartedMain] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2025-05-29T10:48:50.822+09:00  INFO 7204 --- [Rookiejangter] [restartedMain] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-05-29T10:48:50.886+09:00  INFO 7204 --- [Rookiejangter] [restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2025-05-29T10:48:51.230+09:00  INFO 7204 --- [Rookiejangter] [restartedMain] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection conn0: url=jdbc:h2:mem:testdb user=SA
+2025-05-29T10:48:51.234+09:00  INFO 7204 --- [Rookiejangter] [restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2025-05-29T10:48:51.275+09:00  WARN 7204 --- [Rookiejangter] [restartedMain] org.hibernate.orm.deprecation            : HHH90000025: H2Dialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2025-05-29T10:48:51.323+09:00  INFO 7204 --- [Rookiejangter] [restartedMain] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 2.3.232
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2025-05-29T10:48:53.965+09:00  INFO 7204 --- [Rookiejangter] [restartedMain] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-05-29T10:48:54.135+09:00  INFO 7204 --- [Rookiejangter] [restartedMain] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-05-29T10:48:54.249+09:00  WARN 7204 --- [Rookiejangter] [restartedMain] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2025-05-29T10:48:54.303+09:00  WARN 7204 --- [Rookiejangter] [restartedMain] .s.s.UserDetailsServiceAutoConfiguration : 
+
+Using generated security password: adcd1c1e-e55e-483b-95d1-5421f6a65ba5
+
+This generated password is for development use only. Your security configuration must be updated before running your application in production.
+
+2025-05-29T10:48:54.356+09:00  INFO 7204 --- [Rookiejangter] [restartedMain] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name inMemoryUserDetailsManager
+2025-05-29T10:48:55.047+09:00  INFO 7204 --- [Rookiejangter] [restartedMain] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
+2025-05-29T10:48:56.327+09:00  INFO 7204 --- [Rookiejangter] [restartedMain] o.s.d.j.r.query.QueryEnhancerFactory     : Hibernate is in classpath; If applicable, HQL parser will be used.
+2025-05-29T10:48:57.554+09:00  INFO 7204 --- [Rookiejangter] [restartedMain] o.s.b.a.h2.H2ConsoleAutoConfiguration    : H2 console available at '/h2-console'. Database available at 'jdbc:h2:mem:testdb'
+2025-05-29T10:48:57.638+09:00  INFO 7204 --- [Rookiejangter] [restartedMain] o.s.b.d.a.OptionalLiveReloadServer       : LiveReload server is running on port 35729
+2025-05-29T10:48:57.747+09:00  INFO 7204 --- [Rookiejangter] [restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8080 (http) with context path '/'
+2025-05-29T10:48:57.776+09:00  INFO 7204 --- [Rookiejangter] [restartedMain] c.m.r.RookiejangterApplication           : Started RookiejangterApplication in 11.204 seconds (process running for 11.533)
+2025-05-29T13:11:45.038+09:00  INFO 3760 --- [Rookiejangter] [Test worker] c.m.r.repository.UserRepositoryTest      : Starting UserRepositoryTest using Java 17.0.14 with PID 3760 (started by user in C:\Users\user\Desktop\rookies-java\project_joongo\backend)
+2025-05-29T13:11:45.041+09:00  INFO 3760 --- [Rookiejangter] [Test worker] c.m.r.repository.UserRepositoryTest      : The following 1 profile is active: "test"
+2025-05-29T13:11:45.494+09:00  INFO 3760 --- [Rookiejangter] [Test worker] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-05-29T13:11:45.602+09:00  INFO 3760 --- [Rookiejangter] [Test worker] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 96 ms. Found 19 JPA repository interfaces.
+2025-05-29T13:11:45.670+09:00  INFO 3760 --- [Rookiejangter] [Test worker] beddedDataSourceBeanFactoryPostProcessor : Replacing 'dataSource' DataSource bean with embedded version
+2025-05-29T13:11:45.768+09:00  INFO 3760 --- [Rookiejangter] [Test worker] o.s.j.d.e.EmbeddedDatabaseFactory        : Starting embedded database: url='jdbc:h2:mem:bcf18075-fe62-4d95-929f-aab5ef13bac3;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=false', username='sa'
+2025-05-29T13:11:46.040+09:00  INFO 3760 --- [Rookiejangter] [Test worker] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-05-29T13:11:46.091+09:00  INFO 3760 --- [Rookiejangter] [Test worker] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.6.15.Final
+2025-05-29T13:11:46.116+09:00  INFO 3760 --- [Rookiejangter] [Test worker] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2025-05-29T13:11:46.381+09:00  INFO 3760 --- [Rookiejangter] [Test worker] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-05-29T13:11:46.423+09:00  WARN 3760 --- [Rookiejangter] [Test worker] org.hibernate.orm.deprecation            : HHH90000025: H2Dialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2025-05-29T13:11:46.444+09:00  INFO 3760 --- [Rookiejangter] [Test worker] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseFactory$EmbeddedDataSourceProxy@3d6778d5']
+	Database driver: undefined/unknown
+	Database version: 2.3.232
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2025-05-29T13:11:48.593+09:00  INFO 3760 --- [Rookiejangter] [Test worker] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-05-29T13:11:48.825+09:00  INFO 3760 --- [Rookiejangter] [Test worker] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-05-29T13:11:49.778+09:00  INFO 3760 --- [Rookiejangter] [Test worker] o.s.d.j.r.query.QueryEnhancerFactory     : Hibernate is in classpath; If applicable, HQL parser will be used.
+2025-05-29T13:11:51.020+09:00  INFO 3760 --- [Rookiejangter] [Test worker] c.m.r.repository.UserRepositoryTest      : Started UserRepositoryTest in 6.316 seconds (process running for 7.264)
+2025-05-29T13:11:52.104+09:00  INFO 3760 --- [Rookiejangter] [SpringApplicationShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2025-05-29T15:58:26.323+09:00  INFO 20424 --- [Rookiejangter] [Test worker] c.m.r.repository.MessageRepositoryTest   : Starting MessageRepositoryTest using Java 17.0.14 with PID 20424 (started by user in C:\Users\user\Desktop\rookies-java\project_joongo\backend)
+2025-05-29T15:58:26.325+09:00  INFO 20424 --- [Rookiejangter] [Test worker] c.m.r.repository.MessageRepositoryTest   : The following 1 profile is active: "test"
+2025-05-29T15:58:26.713+09:00  INFO 20424 --- [Rookiejangter] [Test worker] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-05-29T15:58:26.805+09:00  INFO 20424 --- [Rookiejangter] [Test worker] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 83 ms. Found 18 JPA repository interfaces.
+2025-05-29T15:58:26.861+09:00  INFO 20424 --- [Rookiejangter] [Test worker] beddedDataSourceBeanFactoryPostProcessor : Replacing 'dataSource' DataSource bean with embedded version
+2025-05-29T15:58:26.960+09:00  INFO 20424 --- [Rookiejangter] [Test worker] o.s.j.d.e.EmbeddedDatabaseFactory        : Starting embedded database: url='jdbc:h2:mem:62c48c85-2672-4b3a-a0ca-9b386beff9c0;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=false', username='sa'
+2025-05-29T15:58:27.184+09:00  INFO 20424 --- [Rookiejangter] [Test worker] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-05-29T15:58:27.240+09:00  INFO 20424 --- [Rookiejangter] [Test worker] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.6.15.Final
+2025-05-29T15:58:27.265+09:00  INFO 20424 --- [Rookiejangter] [Test worker] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2025-05-29T15:58:27.539+09:00  INFO 20424 --- [Rookiejangter] [Test worker] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-05-29T15:58:27.584+09:00  WARN 20424 --- [Rookiejangter] [Test worker] org.hibernate.orm.deprecation            : HHH90000025: H2Dialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2025-05-29T15:58:27.607+09:00  INFO 20424 --- [Rookiejangter] [Test worker] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseFactory$EmbeddedDataSourceProxy@1846ad0f']
+	Database driver: undefined/unknown
+	Database version: 2.3.232
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2025-05-29T15:58:29.340+09:00  INFO 20424 --- [Rookiejangter] [Test worker] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-05-29T15:58:29.517+09:00  INFO 20424 --- [Rookiejangter] [Test worker] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-05-29T15:58:30.551+09:00  INFO 20424 --- [Rookiejangter] [Test worker] o.s.d.j.r.query.QueryEnhancerFactory     : Hibernate is in classpath; If applicable, HQL parser will be used.
+2025-05-29T15:58:31.872+09:00  INFO 20424 --- [Rookiejangter] [Test worker] c.m.r.repository.MessageRepositoryTest   : Started MessageRepositoryTest in 5.865 seconds (process running for 6.813)
+2025-05-29T15:58:33.275+09:00  INFO 20424 --- [Rookiejangter] [SpringApplicationShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2025-05-29T16:07:09.751+09:00  INFO 8856 --- [Rookiejangter] [Test worker] c.m.r.repository.MessageRepositoryTest   : Starting MessageRepositoryTest using Java 17.0.14 with PID 8856 (started by user in C:\Users\user\Desktop\rookies-java\project_joongo\backend)
+2025-05-29T16:07:09.752+09:00  INFO 8856 --- [Rookiejangter] [Test worker] c.m.r.repository.MessageRepositoryTest   : The following 1 profile is active: "test"
+2025-05-29T16:07:10.152+09:00  INFO 8856 --- [Rookiejangter] [Test worker] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-05-29T16:07:10.247+09:00  INFO 8856 --- [Rookiejangter] [Test worker] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 82 ms. Found 18 JPA repository interfaces.
+2025-05-29T16:07:10.306+09:00  INFO 8856 --- [Rookiejangter] [Test worker] beddedDataSourceBeanFactoryPostProcessor : Replacing 'dataSource' DataSource bean with embedded version
+2025-05-29T16:07:10.402+09:00  INFO 8856 --- [Rookiejangter] [Test worker] o.s.j.d.e.EmbeddedDatabaseFactory        : Starting embedded database: url='jdbc:h2:mem:c0270694-e0b3-46be-a353-9878c603812a;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=false', username='sa'
+2025-05-29T16:07:10.652+09:00  INFO 8856 --- [Rookiejangter] [Test worker] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-05-29T16:07:10.703+09:00  INFO 8856 --- [Rookiejangter] [Test worker] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.6.15.Final
+2025-05-29T16:07:10.733+09:00  INFO 8856 --- [Rookiejangter] [Test worker] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2025-05-29T16:07:10.986+09:00  INFO 8856 --- [Rookiejangter] [Test worker] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-05-29T16:07:11.023+09:00  WARN 8856 --- [Rookiejangter] [Test worker] org.hibernate.orm.deprecation            : HHH90000025: H2Dialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2025-05-29T16:07:11.045+09:00  INFO 8856 --- [Rookiejangter] [Test worker] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseFactory$EmbeddedDataSourceProxy@29d3d0fb']
+	Database driver: undefined/unknown
+	Database version: 2.3.232
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2025-05-29T16:07:13.043+09:00  INFO 8856 --- [Rookiejangter] [Test worker] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-05-29T16:07:13.257+09:00  INFO 8856 --- [Rookiejangter] [Test worker] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-05-29T16:07:14.373+09:00  INFO 8856 --- [Rookiejangter] [Test worker] o.s.d.j.r.query.QueryEnhancerFactory     : Hibernate is in classpath; If applicable, HQL parser will be used.
+2025-05-29T16:07:15.664+09:00  INFO 8856 --- [Rookiejangter] [Test worker] c.m.r.repository.MessageRepositoryTest   : Started MessageRepositoryTest in 6.236 seconds (process running for 7.191)
+2025-05-29T16:07:16.818+09:00  INFO 8856 --- [Rookiejangter] [SpringApplicationShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'

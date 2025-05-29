@@ -26,7 +26,6 @@ public class Ban extends BaseEntity {
     @JoinColumn(name = "report_id")
     private Report report;
 
-    @Size(max = 50, message = "제재 사유는 최대 50자까지 가능합니다.")
     @Column(name = "ban_reason", length = 50)
     private String banReason;
 
