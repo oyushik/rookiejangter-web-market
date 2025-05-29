@@ -151,8 +151,7 @@ public class EntityName extends BaseEntity {
 | **Notification** | IDENTITY (Auto Increment, 알림 순서)              | 알림 발생 순서 보장                             | notification_id: 8001, 8002...         |
 | **Report**       | IDENTITY (Auto Increment, 신고 순서, unique 식별) | 신고 접수 순서 및 고유성 보장                   | report_id: 9001, 9002...               |
 | **Ban**          | IDENTITY (Auto Increment, unique 식별)            | 제재 이력 고유성 및 순서 관리                   | ban_id: 11001, 11002...                |
-| **Goods**        | IDENTITY (Post의 ID를 PK 겸 FK로 사용)            | 게시글과 1:1 관계, 참조 무결성 보장             | goods_id = post_id                     |
-| **Cancellation** | IDENTITY (Reservation의 ID를 PK 겸 FK로 사용)     | 예약과 1:1 관계, 참조 무결성 보장               | cancellation_id = reservation_id       |
+| **Cancelation**  | IDENTITY (Reservation의 ID를 PK 겸 FK로 사용)     | 예약과 1:1 관계, 참조 무결성 보장               | cancellation_id = reservation_id       |
 | **Category**     | IDENTITY (범주 별로 고정된 id 부여, unique 식별)  | 카테고리는 미리 정의된 고정값 사용              | category_id: 1(전자기기), 2(의류)...   |
 | **Area**         | IDENTITY (지역 별로 고정된 id 부여, unique 식별)  | 지역정보는 행정구역 기준 고정값                 | area_id: 1(서울), 2(부산)...           |
 | **ReportReason** | IDENTITY (사유 별로 고정된 id 부여)               | 신고사유는 미리 정의된 고정 코드값              | reason_id: 1(스팸), 2(욕설)...         |
@@ -283,6 +282,7 @@ public class EntityName extends BaseEntity {
 | **buyer_id**       | BIGINT      | buyer_id       | NULL     | 구매자의 식별자        | 상품을 예약한 구매자의 고유 식별자, 사용자 테이블과 연결되는 외래키, NULL 값 허용   |
 | **seller_id**      | BIGINT      | seller_id      | NULL     | 판매자의 식별자        | 상품을 판매하는 판매자의 고유 식별자, 사용자 테이블과 연결되는 외래키, NULL 값 허용 |
 | **post_id**        | BIGINT      | post_id        | NULL     | 예약된 게시물의 식별자 | 예약 대상 게시물의 고유 식별자, 게시물 테이블과 연결되는 외래키, NULL 값 허용       |
+| **status**         | ENUM        | status         | NULL     | 예약 상태 식별         | 예약 상태 구분을 위한 문자열 포함                                                   |
 
 #### 4.6.3 검증 어노테이션
 
@@ -302,6 +302,7 @@ public class EntityName extends BaseEntity {
 | -------------- | ------------ | ---------- | -------- | ----------------------------- | ---------------------------------------------------------------------------------------------------------- |
 | **message_id** | BIGINT       | message_id | NOT NULL | 메시지의 고유 식별자          | 기본키로 사용, 자동 증가 값 권장, 중복 불가                                                                |
 | **chat_id**    | BIGINT       | chat_id    | NULL     | 메시지가 속한 채팅방의 식별자 | 외래키로 사용, chats 테이블의 chat_id 참조                                                                 |
+| **sender_id**  | BIGINT       | sender_id  | NULL     | 메시지가 속한 채팅방의 식별자 | 외래키로 사용, users 테이블의 user_id 참조                                                                 |
 | **content**    | VARCHAR(255) | content    | NOT NULL | 메시지 내용                   | 최대 255자까지 입력 가능, 빈 문자열 허용하지 않음, 특수문자, 이모지 포함 가능                              |
 | **sent_at**    | TIMESTAMP    | sent_at    | NULL     | 메시지 전송 시각              | 메시지 생성 시 자동으로 현재 시간 설정 권장, NULL 허용 (임시 저장된 메시지의 경우), UTC 기준으로 저장 권장 |
 | **is_read**    | BOOLEAN      | is_read    | NULL     | 메시지 읽음 여부              | 기본값: FALSE, TRUE: 읽음, FALSE: 읽지 않음, NULL: 읽음 상태 미확인                                        |
@@ -347,7 +348,7 @@ public class EntityName extends BaseEntity {
 | **login_id**  | VARCHAR(20) | login_id  | NOT NULL | 로그인용 사용자 아이디      | 최대 20자까지 입력 가능, 영문, 숫자 조합 권장, 중복 불가 (UNIQUE 제약조건 필요), 빈 문자열 허용하지 않음  |
 | **password**  | VARCHAR(20) | password  | NOT NULL | 사용자 비밀번호             | 최대 20자까지 입력 가능, 암호화하여 저장 권장, 특수문자 포함 권장, 빈 문자열 허용하지 않음                |
 | **user_name** | VARCHAR(12) | user_name | NOT NULL | 사용자 실명 또는 닉네임     | 최대 12자까지 입력 가능, 한글, 영문 모두 허용, 빈 문자열 허용하지 않음                                    |
-| **phone**     | VARCHAR(12) | phone     | NOT NULL | 사용자 전화번호             | 최대 12자까지 입력 가능, 숫자와 하이픈(-) 허용, 중복 불가 (UNIQUE 제약조건 권장), 빈 문자열 허용하지 않음 |
+| **phone**     | VARCHAR(20) | phone     | NOT NULL | 사용자 전화번호             | 최대 20자까지 입력 가능, 숫자와 하이픈(-) 허용, 중복 불가 (UNIQUE 제약조건 권장), 빈 문자열 허용하지 않음 |
 | **is_banned** | BOOLEAN     | is_banned | NULL     | 사용자 차단 여부            | 기본값: FALSE, TRUE: 차단됨, FALSE: 정상, NULL: 차단 상태 미확인                                          |
 | **is_admin**  | BOOLEAN     | is_admin  | NULL     | 관리자 권한 여부            | 기본값: FALSE, TRUE: 관리자, FALSE: 일반 사용자, NULL: 권한 상태 미확인                                   |
 
@@ -412,6 +413,7 @@ public class EntityName extends BaseEntity {
 | **user_id**      | BIGINT       | user_id      | NULL     | 게시물 작성자의 식별자          | 외래키로 사용, users 테이블의 user_id 참조, NULL 허용 (익명 게시물 또는 탈퇴한 사용자) |
 | **title**        | VARCHAR(50)  | title        | NOT NULL | 게시물 제목                     | 최대 50자까지 입력 가능, 빈 문자열 허용하지 않음, 특수문자 포함 가능                   |
 | **content**      | VARCHAR(255) | content      | NOT NULL | 게시물 내용                     | 최대 255자까지 입력 가능, 빈 문자열 허용하지 않음, 특수문자, 줄바꿈 포함 가능          |
+| **price**        | INT          | price        | NULL     | 상품 가격                       | 원 단위로 저장, 음수 값 허용하지 않음, NULL 허용 (가격 협의 또는 무료 나눔)            |
 | **view_count**   | INT          | view_count   | NULL     | 게시물 조회수                   | 기본값: 0, 음수 값 허용하지 않음, NULL 허용 (조회수 미집계 상태)                       |
 | **is_bumped**    | BOOLEAN      | is_bumped    | NULL     | 게시물 끌어올리기 여부          | 기본값: FALSE, TRUE: 끌어올림, FALSE: 일반, NULL: 끌어올리기 상태 미확인               |
 | **is_reserved**  | BOOLEAN      | is_reserved  | NULL     | 게시물 예약 여부                | 기본값: FALSE, TRUE: 예약됨, FALSE: 예약 안됨, NULL: 예약 상태 미확인                  |
@@ -469,17 +471,19 @@ public class EntityName extends BaseEntity {
 
 #### 4.14.6 생성자 및 팩토리 메서드
 
-### 4.15 Goods Entity
+### 4.15 Cancelations Entity
 
 #### 4.15.1 기본 정보
 
 #### 4.15.2 필드 상세 명세
 
-| 필드명         | 데이터 타입 | 컬럼명     | 제약조건 | 설명                          | 비즈니스 규칙                                                               |
-| -------------- | ----------- | ---------- | -------- | ----------------------------- | --------------------------------------------------------------------------- |
-| **post_id**    | BIGINT      | post_id    | NOT NULL | 상품이 등록된 게시물의 식별자 | 기본키로 사용, 외래키로 사용, posts 테이블의 post_id 참조, 중복 불가        |
-| **goods_name** | VARCHAR(50) | goods_name | NULL     | 상품명                        | 최대 50자까지 입력 가능, NULL 허용 (상품명 미등록), 특수문자 포함 가능      |
-| **price**      | INT         | price      | NULL     | 상품 가격                     | 원 단위로 저장, 음수 값 허용하지 않음, NULL 허용 (가격 협의 또는 무료 나눔) |
+| 필드명                    | 데이터 타입  | 컬럼명                | 제약조건 | 설명                 | 비즈니스 규칙                                                                                   |
+| ------------------------- | ------------ | --------------------- | -------- | -------------------- | ----------------------------------------------------------------------------------------------- |
+| **reservation_id**        | BIGINT       | reservation_id        | NOT NULL | 취소된 예약의 식별자 | 기본키로 사용, 외래키로 사용, reservations 테이블의 reservation_id 참조, 중복 불가              |
+| **cancelation_reason_id** | INT          | cancelation_reason_id | NULL     | 취소 사유의 식별자   | 외래키로 사용, cancelation_reasons 테이블의 cancelation_reason_id 참조                          |
+| **canceler_id**           | BIGINT       | canceler_id           | NULL     | 취소 사유의 식별자   | 외래키로 사용, cancelation_reasons 테이블의 user_id 참조                                        |
+| **report_detail**         | VARCHAR(255) | report_detail         | NULL     | 취소 상세 내용       | 최대 255자까지 입력 가능, NULL 허용 (기본 취소 사유만 적용), 사용자가 직접 입력하는 상세 사유   |
+| **canceled_at**           | TIMESTAMP    | canceled_at           | NULL     | 취소 처리 시각       | 취소 처리 시 자동으로 현재 시간 설정 권장, NULL 허용 (취소 시간 미기록), UTC 기준으로 저장 권장 |
 
 #### 4.15.3 검증 어노테이션
 
@@ -489,18 +493,18 @@ public class EntityName extends BaseEntity {
 
 #### 4.15.6 생성자 및 팩토리 메서드
 
-### 4.16 Cancelations Entity
+### 4.16 Chats Entity
 
 #### 4.16.1 기본 정보
 
 #### 4.16.2 필드 상세 명세
 
-| 필드명                    | 데이터 타입  | 컬럼명                | 제약조건 | 설명                 | 비즈니스 규칙                                                                                   |
-| ------------------------- | ------------ | --------------------- | -------- | -------------------- | ----------------------------------------------------------------------------------------------- |
-| **reservation_id**        | BIGINT       | reservation_id        | NOT NULL | 취소된 예약의 식별자 | 기본키로 사용, 외래키로 사용, reservations 테이블의 reservation_id 참조, 중복 불가              |
-| **cancelation_reason_id** | INT          | cancelation_reason_id | NULL     | 취소 사유의 식별자   | 외래키로 사용, cancelation_reasons 테이블의 cancelation_reason_id 참조                          |
-| **report_detail**         | VARCHAR(255) | report_detail         | NULL     | 취소 상세 내용       | 최대 255자까지 입력 가능, NULL 허용 (기본 취소 사유만 적용), 사용자가 직접 입력하는 상세 사유   |
-| **canceled_at**           | TIMESTAMP    | canceled_at           | NULL     | 취소 처리 시각       | 취소 처리 시 자동으로 현재 시간 설정 권장, NULL 허용 (취소 시간 미기록), UTC 기준으로 저장 권장 |
+| 필드명        | 데이터 타입 | 컬럼명    | 제약조건 | 설명                      | 비즈니스 규칙                                                                        |
+| ------------- | ----------- | --------- | -------- | ------------------------- | ------------------------------------------------------------------------------------ |
+| **chat_id**   | BIGINT      | chat_id   | NOT NULL | 채팅방의 고유 식별자      | 기본키로 사용<br>자동 증가 값 권장, 중복 불가                                        |
+| **buyer_id**  | BIGINT      | buyer_id  | NULL     | 구매자의 식별자           | 외래키로 사용, users 테이블의 user_id 참조, NULL 허용 (익명 채팅 또는 탈퇴한 사용자) |
+| **seller_id** | BIGINT      | seller_id | NULL     | 판매자의 식별자           | 외래키로 사용, users 테이블의 user_id 참조, NULL 허용 (익명 채팅 또는 탈퇴한 사용자) |
+| **post_id**   | BIGINT      | post_id   | NULL     | 채팅 관련 게시물의 식별자 | 외래키로 사용, posts 테이블의 post_id 참조, NULL 허용 (게시물 삭제된 경우)           |
 
 #### 4.16.3 검증 어노테이션
 
@@ -510,18 +514,16 @@ public class EntityName extends BaseEntity {
 
 #### 4.16.6 생성자 및 팩토리 메서드
 
-### 4.17 Chats Entity
+### 4.17 Cancelation_reasons Entity
 
 #### 4.17.1 기본 정보
 
 #### 4.17.2 필드 상세 명세
 
-| 필드명        | 데이터 타입 | 컬럼명    | 제약조건 | 설명                      | 비즈니스 규칙                                                                        |
-| ------------- | ----------- | --------- | -------- | ------------------------- | ------------------------------------------------------------------------------------ |
-| **chat_id**   | BIGINT      | chat_id   | NOT NULL | 채팅방의 고유 식별자      | 기본키로 사용<br>자동 증가 값 권장, 중복 불가                                        |
-| **buyer_id**  | BIGINT      | buyer_id  | NULL     | 구매자의 식별자           | 외래키로 사용, users 테이블의 user_id 참조, NULL 허용 (익명 채팅 또는 탈퇴한 사용자) |
-| **seller_id** | BIGINT      | seller_id | NULL     | 판매자의 식별자           | 외래키로 사용, users 테이블의 user_id 참조, NULL 허용 (익명 채팅 또는 탈퇴한 사용자) |
-| **post_id**   | BIGINT      | post_id   | NULL     | 채팅 관련 게시물의 식별자 | 외래키로 사용, posts 테이블의 post_id 참조, NULL 허용 (게시물 삭제된 경우)           |
+| 필드명                      | 데이터 타입 | 컬럼명                  | 제약조건 | 설명                    | 비즈니스 규칙                                                                                         |
+| --------------------------- | ----------- | ----------------------- | -------- | ----------------------- | ----------------------------------------------------------------------------------------------------- |
+| **cancelation_reason_id**   | INT         | cancelation_reason_id   | NOT NULL | 취소 사유의 고유 식별자 | 기본키로 사용, 자동 증가 값 권장, 중복 불가                                                           |
+| **cancelation_reason_type** | VARCHAR(50) | cancelation_reason_type | NULL     | 취소 사유 유형          | 최대 50자까지 입력 가능, NULL 허용 (기타 사유의 경우), 예: '단순 변심', '상품 불만족', '일정 변경' 등 |
 
 #### 4.17.3 검증 어노테이션
 
@@ -531,16 +533,16 @@ public class EntityName extends BaseEntity {
 
 #### 4.17.6 생성자 및 팩토리 메서드
 
-### 4.18 Cancelation_reasons Entity
+### 4.18 Report_reasons Entity
 
 #### 4.18.1 기본 정보
 
 #### 4.18.2 필드 상세 명세
 
-| 필드명                      | 데이터 타입 | 컬럼명                  | 제약조건 | 설명                    | 비즈니스 규칙                                                                                         |
-| --------------------------- | ----------- | ----------------------- | -------- | ----------------------- | ----------------------------------------------------------------------------------------------------- |
-| **cancelation_reason_id**   | INT         | cancelation_reason_id   | NOT NULL | 취소 사유의 고유 식별자 | 기본키로 사용, 자동 증가 값 권장, 중복 불가                                                           |
-| **cancelation_reason_type** | VARCHAR(50) | cancelation_reason_type | NULL     | 취소 사유 유형          | 최대 50자까지 입력 가능, NULL 허용 (기타 사유의 경우), 예: '단순 변심', '상품 불만족', '일정 변경' 등 |
+| 필드명                 | 데이터 타입 | 컬럼명             | 제약조건 | 설명                    | 비즈니스 규칙                                                                                 |
+| ---------------------- | ----------- | ------------------ | -------- | ----------------------- | --------------------------------------------------------------------------------------------- |
+| **report_reason_id**   | INT         | report_reason_id   | NOT NULL | 신고 사유의 고유 식별자 | 기본키로 사용, 자동 증가 값 권장, 중복 불가                                                   |
+| **report_reason_type** | VARCHAR(50) | report_reason_type | NULL     | 신고 사유 유형          | 최대 50자까지 입력 가능, NULL 허용 (기타 사유의 경우), 예: '스팸', '욕설', '부적절한 내용' 등 |
 
 #### 4.18.3 검증 어노테이션
 
@@ -549,25 +551,6 @@ public class EntityName extends BaseEntity {
 #### 4.18.5 비즈니스 메서드
 
 #### 4.18.6 생성자 및 팩토리 메서드
-
-### 4.19 Report_reasons Entity
-
-#### 4.19.1 기본 정보
-
-#### 4.19.2 필드 상세 명세
-
-| 필드명                 | 데이터 타입 | 컬럼명             | 제약조건 | 설명                    | 비즈니스 규칙                                                                                 |
-| ---------------------- | ----------- | ------------------ | -------- | ----------------------- | --------------------------------------------------------------------------------------------- |
-| **report_reason_id**   | INT         | report_reason_id   | NOT NULL | 신고 사유의 고유 식별자 | 기본키로 사용, 자동 증가 값 권장, 중복 불가                                                   |
-| **report_reason_type** | VARCHAR(50) | report_reason_type | NULL     | 신고 사유 유형          | 최대 50자까지 입력 가능, NULL 허용 (기타 사유의 경우), 예: '스팸', '욕설', '부적절한 내용' 등 |
-
-#### 4.19.3 검증 어노테이션
-
-#### 4.19.4 연관관계 매핑
-
-#### 4.19.5 비즈니스 메서드
-
-#### 4.19.6 생성자 및 팩토리 메서드
 
 ## 5. Enum 타입 정의
 

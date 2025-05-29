@@ -128,7 +128,6 @@ graph TD
 
 | 도메인 객체                        | 유형   | 중요도 | 복잡도 | 비고                         |
 | ---------------------------------- | ------ | ------ | ------ | ---------------------------- |
-| **Goods (상품)**                   | Entity | 높음   | 낮음   | 게시물 내 상품 상세 정보     |
 | **Post (게시물)**                  | Entity | 높음   | 높음   | 중고 상품 게시물             |
 | **User (사용자)**                  | Entity | 높음   | 낮음   | 사용자 정보                  |
 | **Reservation (예약)**             | Entity | 높음   | 중간   | 거래 예약                    |
@@ -161,7 +160,7 @@ graph TD
 - `login_id`: 로그인 아이디 (VARCHAR(20), NOT NULL)
 - `password`: 비밀번호 (VARCHAR(20), NOT NULL)
 - `user_name`: 사용자 이름 (VARCHAR(12), NOT NULL)
-- `phone`: 휴대폰 번호 (VARCHAR(12), NOT NULL)
+- `phone`: 휴대폰 번호 (VARCHAR(20), NOT NULL)
 - `is_banned`: 밴 여부 (BOOLEAN, NULL)
 - `is_admin`: 관리자 여부 (BOOLEAN, NULL)
 
@@ -206,6 +205,7 @@ graph TD
 - `user_id`: 사용자 식별자 (외래 키, BIGINT, NULL) - `users` 테이블 참조 (작성자)
 - `title`: 게시물 제목 (VARCHAR(50), NOT NULL)
 - `content`: 게시물 내용 (VARCHAR(255), NOT NULL)
+- `price`: 상품 가격 (INT, NULL)
 - `view_count`: 조회수 (INT, NULL)
 - `is_bumped`: 끌올 여부 (BOOLEAN, NULL)
 - `is_reserved`: 예약 여부 (BOOLEAN, NULL)
@@ -236,32 +236,7 @@ graph TD
 - 삭제된 게시물은 사용자에게 노출되지 않는다 (soft delete 적용 가능).
 - 게시물은 작성일(posted_at) 기준으로 정렬하여 노출된다.
 
-#### 3.2.3 Goods (상품)
-
-**역할**: 게시물과 관련된 판매 상품의 구체적인 정보를 나타냄
-
-**주요 속성:**
-
-- `post_id`: 게시물 식별자 (기본 키 및 외래 키, BIGINT, NOT NULL) - `posts` 테이블 참조
-- `goods_name`: 상품 이름 (VARCHAR(50), NULL)
-- `price`: 상품 가격 (INT, NULL)
-
-**주요 행동 (메서드):**
-
-- `createGoods(postId, goodsName, price)`: 게시물에 연결된 상품 정보를 생성한다.
-- `updateGoods(postId, goodsName, price)`: 상품 정보를 수정한다.
-- `deleteGoods(postId)`: 해당 게시물에 연결된 상품 정보를 삭제한다.
-- `getGoodsByPostId(postId)`: 특정 게시물에 연결된 상품 정보를 조회한다.
-
-**비즈니스 규칙:**
-
-- 하나의 게시물(post)에 하나의 상품(goods)만 연결될 수 있다.
-- 상품 이름(goods_name)은 최대 50자까지 입력 가능하다.
-- 상품 가격(price)은 0 이상의 정수여야 한다.
-- 상품 정보는 해당 게시물이 존재할 경우에만 생성 가능하다 (posts 테이블에 존재하는 post_id 참조 필요).
-- 상품 가격이 없거나 이름이 없는 경우에도 상품 등록은 가능하나, 판매 전에는 필수 값으로 검증될 수 있다.
-
-#### 3.2.4 Category (카테고리)
+#### 3.2.3 Category (카테고리)
 
 **역할**: 상품 게시물을 분류하는 기준을 나타냄
 
@@ -286,7 +261,7 @@ graph TD
 - 카테고리는 시스템에서 미리 정의된 값으로 제한될 수 있으며, 관리 권한이 있는 사용자만 수정/생성할 수 있다.
 - 게시물 또는 상품은 반드시 하나의 유효한 카테고리에 속해야 한다.
 
-#### 3.2.5 Notification (알림)
+#### 3.2.4 Notification (알림)
 
 **역할:** 사용자에게 발생하는 이벤트에 대한 알림 정보를 제공
 
@@ -311,7 +286,7 @@ graph TD
 - `deleteNotification(notification_id)`: 특정 알림을 삭제한다.
 - `deleteAllNotifications(user_id)`: 해당 사용자의 모든 알림을 삭제한다.
 
-#### 3.2.6 Dibs (찜)
+#### 3.2.5 Dibs (찜)
 
 **역할:** 사용자가 관심 있는 상품 게시물을 찜(저장)한 정보를 나타냄
 
@@ -330,7 +305,7 @@ graph TD
 - `isPostDibbed(user_id, post_id)`: 사용자가 특정 게시물을 이미 찜했는지 여부를 확인한다.
 - `countDibsForPost(post_id)`: 특정 게시물이 받은 총 찜 개수를 반환한다.
 
-#### 3.2.7 Chat (채팅)
+#### 3.2.6 Chat (채팅)
 
 **역할:** 구매자와 판매자 간의 실시간 대화를 위한 채팅방 정보를 나타냄
 
@@ -349,7 +324,7 @@ graph TD
 - `deleteChat(chat_id)`: 특정 채팅방을 삭제한다. 주로 관리자가 수행하거나 거래 종료 후 자동 삭제될 수 있다.
 - `getChatByPostAndUsers(post_id, buyer_id, seller_id)`: 특정 게시물과 사용자 조합으로 채팅방을 조회하거나 존재 여부를 확인한다.
 
-#### 3.2.8 Message (메시지)
+#### 3.2.7 Message (메시지)
 
 **역할:** 채팅방 내에서 오고 간 개별 메시지 내용을 나타냄
 
@@ -357,6 +332,7 @@ graph TD
 
 - `message_id`: 메시지 식별자 (기본 키, BIGINT, NOT NULL)
 - `chat_id`: 채팅방 식별자 (외래 키, BIGINT, NULL) - `chats` 테이블 참조 (소속된 채팅방)
+- `sender_id`: 메시지 송신자 (외래 키, BIGINT, NULL)
 - `content`: 메시지 내용 (VARCHAR(255), NULL)
 - `sent_at`: 메시지 발송 시간 (TIMESTAMP, NULL)
 - `is_read`: 메시지 읽음 여부 (BOOLEAN, NULL)
@@ -369,7 +345,7 @@ graph TD
 - `markAllMessagesAsRead(chat_id, user_id)`: 해당 채팅방에서 사용자가 받지 않은 모든 메시지를 읽음 처리한다.
 - `getUnreadMessageCount(chat_id, user_id)`: 특정 채팅방에서 사용자가 읽지 않은 메시지 수를 반환한다.
 
-#### 3.2.9 Reservation (예약)
+#### 3.2.8 Reservation (예약)
 
 **역할:** 상품 구매를 위해 구매자가 판매자에게 예약을 요청한 정보를 나타냄
 
@@ -379,6 +355,7 @@ graph TD
 - `buyer_id`: 구매자 식별자 (외래 키, BIGINT, NULL) - `users` 테이블 참조 (예약 요청자)
 - `seller_id`: 판매자 식별자 (외래 키, BIGINT, NULL) - `users` 테이블 참조 (판매자)
 - `post_id`: 게시물 식별자 (외래 키, BIGINT, NULL) - `posts` 테이블 참조 (예약된 상품)
+- `status`: 예약(거래) 상태 식별별 (외래 키, ENUM, NULL) - `posts` 테이블 참조 (예약된 상품)
 
 **주요 행동 (메서드):**
 
@@ -388,7 +365,7 @@ graph TD
 - `getReservationByPost(post_id)`: 특정 게시물에 대한 예약 정보를 조회한다.
 - `isPostReserved(post_id)`: 해당 게시물이 현재 예약된 상태인지 확인한다.
 
-#### 3.2.10 Cancelation (취소)
+#### 3.2.9 Cancelation (취소)
 
 **역할:** 예약을 취소함에 대한 정보를 나타냄
 
@@ -396,6 +373,7 @@ graph TD
 
 - `reservation_id`: 예약 식별자 (기본 키 및 외래 키, BIGINT, NOT NULL) - `reservations`테이블 참조
 - `cancelation_reason_id`: 취소 사유 식별자 (외래 키, INT, NULL) - `cancelation_reasons` 테이블 참조
+- `canceler_reason_id`: 취소자 식별자 (외래 키, BIGINT, NULL) - `users` 테이블 참조
 - `canceled_at`: 취소 시간 (TIMESTAMP, NULL)
 
 **주요 행동 (메서드):**
@@ -403,7 +381,7 @@ graph TD
 - `createCancelation(reservationId, cancelationReasonId)`: 예약에 대한 취소 정보를 생성한다.
 - `getCancelationByReservationId(reservationId)`: 특정 예약의 취소 정보를 조회한다.
 
-#### 3.2.11 Cancelation_reason (취소 사유)
+#### 3.2.10 Cancelation_reason (취소 사유)
 
 **역할:** 예약을 취소한 사유에 대한 정보를 나타냄
 
@@ -419,7 +397,7 @@ graph TD
 - `deleteCancelationReason(reasonId)`: 특정 취소 사유를 삭제한다.
 - `listAllCancelationReasons()`: 전체 취소 사유 목록을 조회한다.
 
-#### 3.2.12 Complete (완료)
+#### 3.2.11 Complete (완료)
 
 **역할:** 상품 거래가 완료된 정보를 나타냄
 
@@ -437,7 +415,7 @@ graph TD
 - `getCompleteById(completeId)`: 특정 완료 정보(complete_id)를 조회한다.
 - `getCompleteByPostId(postId)`: 게시물 기준으로 거래 완료 정보를 조회한다.
 
-#### 3.2.13 Review (리뷰)
+#### 3.2.12 Review (리뷰)
 
 **역할:** 거래 완료 후 구매자가 판매자에 대해 작성하는 후기 정보를 나타냄
 
@@ -458,7 +436,7 @@ graph TD
 - `getReviewsByUserId(userId)`: 특정 사용자가 작성한 리뷰를 조회한다.
 - `getReviewByCompleteId(completeId)`: 특정 거래 완료건에 대한 리뷰를 조회한다.
 
-#### 3.2.14 Area (지역)
+#### 3.2.13 Area (지역)
 
 **역할:** 사용자의 활동 지역 정보를 나타냄
 
@@ -474,7 +452,7 @@ graph TD
 - `deleteArea(areaId)`: 지역 정보를 삭제한다.
 - `listAllAreas()`: 전체 지역 목록을 조회한다.
 
-#### 3.2.15 Bump (끌올)
+#### 3.2.14 Bump (끌올)
 
 **역할:** 사용자가 자신의 게시물을 목록 상단으로 끌어올린 이력을 관리
 
@@ -491,7 +469,7 @@ graph TD
 - `getBumpsByPostId(postId)`: 특정 게시물의 끌올 이력을 조회한다.
 - `countBumpsByDate(postId, date)`: 해당 날짜에 특정 게시물이 끌올된 횟수를 조회한다.
 
-#### 3.2.16 Image (이미지)
+#### 3.2.15 Image (이미지)
 
 **역할:** 상품 게시물에 첨부된 이미지 정보를 나타냄
 
@@ -507,7 +485,7 @@ graph TD
 - `deleteImage(imageId)`: 특정 이미지를 삭제한다.
 - `getImagesByPostId(postId)`: 게시물에 첨부된 모든 이미지를 조회한다.
 
-#### 3.2.17 Report (신고)
+#### 3.2.16 Report (신고)
 
 **역할:** 사용자가 다른 사용자, 게시물 또는 채팅에 대해 신고한 내역을 관리
 
@@ -528,7 +506,7 @@ graph TD
 - `getUnprocessedReports()`: 처리되지 않은 신고 목록을 조회한다.
 - `markReportAsProcessed(reportId)`: 신고를 처리 완료 상태로 변경한다.
 
-#### 3.2.18 Report_reason (신고 사유)
+#### 3.2.17 Report_reason (신고 사유)
 
 **역할:** 신고의 종류를 정의하고 관리
 
@@ -544,7 +522,7 @@ graph TD
 - `deleteReportReason(reasonId)`: 신고 사유를 삭제한다.
 - `listAllReportReasons()`: 전체 신고 사유 목록을 조회한다.
 
-#### 3.2.19 Ban (제재)
+#### 3.2.18 Ban (제재)
 
 **역할:** 플랫폼 이용이 제한된 사용자 정보를 관리
 
@@ -601,12 +579,6 @@ ERDiagram
         varchar category_name
     }
 
-    GOODS {
-        bigint post_id PK_FK
-        varchar goods_name
-        int price
-    }
-
     IMAGE {
         bigint image_id PK
         bigint post_id FK
@@ -623,6 +595,7 @@ ERDiagram
     MESSAGE {
         bigint message_id PK
         bigint chat_id FK
+        bigint sender_id FK
         varchar content
         timestamp sent_at
         boolean is_read
@@ -633,6 +606,7 @@ ERDiagram
         bigint buyer_id FK
         bigint seller_id FK
         bigint post_id FK
+        enum('REQUESTED', 'ACCEPTED', 'DECLINED', 'CANCELLED', 'COMPLETED') status
     }
 
     CANCELATION {
@@ -724,7 +698,6 @@ ERDiagram
 
     CATEGORY ||--o{ POST : "분류"
 
-    POST ||--|| GOODS : "상품정보"
     POST ||--o{ IMAGE : "이미지"
     POST ||--o{ CHAT : "관련채팅"
     POST ||--o{ RESERVATION : "예약"
@@ -760,10 +733,12 @@ ERDiagram
 | user ↔ report                    | 1:N        | 하나의 user는 여러 report를 작성함                            | -                               |
 | user ↔ reservation               | 1:N        | 하나의 user는 여러 reservation을 가질 수 있음 (buyer, seller) | -                               |
 | user ↔ review                    | 1:N        | 하나의 user는 여러 review를 작성함                            | -                               |
+| user ↔ message                   | 1:N        | 하나의 user는 여러 message를 보냄                             | -                               |
+| user ↔ chat                      | 1:N        | 하나의 user는 여러 chat에 속함                                | -                               |
+| user ↔ cancelation               | 1:N        | 하나의 user는 여러 cancelation을 가질 수 있음                 | -                               |
 | cancelation_reason ↔ cancelation | 1:N        | 하나의 cancelation_reason에는 여러 cancelation이 속함         | -                               |
 | complete ↔ review                | 1:1        | 하나의 complete는 하나의 review를 가질 수 있음                | 거래 완료 후에만 리뷰 작성 가능 |
 | post ↔ complete                  | 1:1        | 하나의 post는 하나의 complete 정보를 가짐                     | 거래 완료시에만 생성            |
-| post ↔ goods                     | 1:1        | 하나의 post는 하나의 goods 정보를 가짐                        | 필수 상품 정보                  |
 | report ↔ ban                     | 1:1        | 하나의 report는 하나의 ban에 해당할 수 있음                   | 신고 처리 결과에 따라 제재      |
 | reservation ↔ cancelation        | 1:1        | 하나의 reservation은 하나의 cancelation을 가질 수 있음        | 예약 취소시에만 생성            |
 
@@ -857,7 +832,6 @@ graph TD
 | ------------- | --------------------------------------------- | ----------- | ------------------------ |
 | **회원**      | 중고 거래 플랫폼을 사용하는 개인 사용자       | User        | 구매자, 판매자 모두 포함 |
 | **게시물**    | 중고 상품의 상세 설명을 포함한 판매 등록 정보 | Post        | 이미지 포함              |
-| **상품**      | 게시물에 포함된 실제 중고 물품 정보           | Goods       | 가격 포함                |
 | **채팅**      | 거래를 위한 실시간 대화                       | Chat        | 구매자-판매자 간         |
 | **예약**      | 상품을 특정 사용자와 거래하기 위해 예약       | Reservation | 1건만 가능               |
 | **거래 완료** | 실제 상품 거래가 완료된 상태                  | Complete    | 후기 가능 상태           |

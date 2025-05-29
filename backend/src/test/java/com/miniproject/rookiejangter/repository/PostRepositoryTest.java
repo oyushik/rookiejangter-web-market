@@ -147,7 +147,7 @@ public class PostRepositoryTest {
     }
 
     @Test
-    void getPostsByCategory() {
+    void findByCategory() {
         // Given
         Post post1 = Post.builder()
                 .category(testCategory)

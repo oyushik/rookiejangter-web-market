@@ -2,6 +2,7 @@ package com.miniproject.rookiejangter.repository;
 
 import com.miniproject.rookiejangter.entity.Chat;
 import com.miniproject.rookiejangter.entity.Message;
+import com.miniproject.rookiejangter.entity.Notification;
 import com.miniproject.rookiejangter.entity.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -135,6 +136,26 @@ public class MessageRepositoryTest {
 
         Optional<Message> updatedMessage = messageRepository.findById(savedUnreadMessage.getMessageId());
         assertThat(updatedMessage).isPresent();
+        assertThat(updatedMessage.get().getIsRead()).isTrue();
+    }
+
+    @Test
+    void findByIsRead() {
+        Message unreadMessage = Message.builder()
+                .chat(chat1)
+                .user(buyer1)
+                .content("읽음 여부로 조회 테스트용입니다")
+                .sentAt(LocalDateTime.now().plusMinutes(30))
+                .isRead(false)
+                .build();
+        Message savedUnreadMessage = entityManager.persist(unreadMessage);
+        entityManager.flush();
+        assertThat(savedUnreadMessage.getIsRead()).isFalse();
+
+        // update 후 test
+        messageRepository.updateIsReadByMessageId(true, savedUnreadMessage.getMessageId());
+        entityManager.clear();
+        Optional<Message> updatedMessage = messageRepository.findById(savedUnreadMessage.getMessageId());
         assertThat(updatedMessage.get().getIsRead()).isTrue();
     }
 }
