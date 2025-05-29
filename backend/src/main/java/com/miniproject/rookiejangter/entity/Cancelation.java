@@ -28,7 +28,6 @@ public class Cancelation {
     @JoinColumn(name = "cancelation_reason_id")
     private CancelationReason cancelationReason;
 
-    @Size(max = 255, message = "취소 상세는 최대 255자까지 가능합니다.")
     @Column(name = "cancelation_detail", length = 255)
     private String cancelationDetail;
 

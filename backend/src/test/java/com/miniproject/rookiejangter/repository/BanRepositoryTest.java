@@ -37,7 +37,7 @@ public class BanRepositoryTest {
                 .userName("밴대상1")
                 .loginId("ban1")
                 .password("password")
-                .phone("01012341234")
+                .phone("010-1234-1234")
                 .isBanned(true)
                 .build();
         entityManager.persist(bannedUser1);
@@ -46,7 +46,7 @@ public class BanRepositoryTest {
                 .userName("밴대상2")
                 .loginId("ban2")
                 .password("password")
-                .phone("01056785678")
+                .phone("010-5678-5678")
                 .isBanned(true)
                 .build();
         entityManager.persist(bannedUser2);
@@ -88,7 +88,7 @@ public class BanRepositoryTest {
                 .userName("새로운 밴 대상")
                 .loginId("newban")
                 .password("password")
-                .phone("01034347878")
+                .phone("010-3434-7878")
                 .isBanned(true)
                 .build();
         entityManager.persist(newUser);
