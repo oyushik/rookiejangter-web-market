@@ -1,10 +1,10 @@
 package com.miniproject.rookiejangter.repository;
 
 import com.miniproject.rookiejangter.entity.Category;
-import com.miniproject.rookiejangter.entity.Post;
+import com.miniproject.rookiejangter.entity.Product;
 import com.miniproject.rookiejangter.entity.User;
 import com.miniproject.rookiejangter.repository.CategoryRepository;
-import com.miniproject.rookiejangter.repository.PostRepository;
+import com.miniproject.rookiejangter.repository.ProductRepository;
 import com.miniproject.rookiejangter.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,10 +17,10 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
-public class PostRepositoryTest {
+public class ProductRepositoryTest {
 
     @Autowired
-    private PostRepository postRepository;
+    private ProductRepository productRepository;
 
     @Autowired
     private CategoryRepository categoryRepository;
@@ -52,13 +52,13 @@ public class PostRepositoryTest {
     }
 
     @Test
-    void createPost() {
+    void createProduct() {
         // Given
-        Post post = Post.builder()
+        Product product = Product.builder()
                 .category(testCategory)
                 .user(testUser)
-                .title("Test Post Title")
-                .content("Test Post Content")
+                .title("Test Product Title")
+                .content("Test Product Content")
                 .price(10000)
                 .viewCount(0)
                 .isBumped(false)
@@ -67,120 +67,120 @@ public class PostRepositoryTest {
                 .build();
 
         // When
-        Post savedPost = postRepository.save(post);
+        Product savedProduct = productRepository.save(product);
 
         // Then
-        assertThat(savedPost.getPostId()).isNotNull();
-        assertThat(savedPost.getTitle()).isEqualTo("Test Post Title");
+        assertThat(savedProduct.getProductId()).isNotNull();
+        assertThat(savedProduct.getTitle()).isEqualTo("Test Product Title");
     }
 
     @Test
-    void getPostById() {
+    void getProductById() {
         // Given
-        Post post = Post.builder()
+        Product product = Product.builder()
                 .category(testCategory)
                 .user(testUser)
-                .title("Test Post Title")
-                .content("Test Post Content")
+                .title("Test Product Title")
+                .content("Test Product Content")
                 .price(10000)
                 .viewCount(0)
                 .isBumped(false)
                 .isReserved(false)
                 .isCompleted(false)
                 .build();
-        post = postRepository.save(post);
+        product = productRepository.save(product);
 
         // When
-        Post foundPost = postRepository.findById(post.getPostId()).orElse(null);
+        Product foundProduct = productRepository.findById(product.getProductId()).orElse(null);
 
         // Then
-        assertThat(foundPost).isNotNull();
-        assertThat(foundPost.getTitle()).isEqualTo("Test Post Title");
+        assertThat(foundProduct).isNotNull();
+        assertThat(foundProduct.getTitle()).isEqualTo("Test Product Title");
     }
 
     @Test
-    void updatePost() {
+    void updateProduct() {
         // Given
-        Post post = Post.builder()
+        Product product = Product.builder()
                 .category(testCategory)
                 .user(testUser)
-                .title("Test Post Title")
-                .content("Test Post Content")
+                .title("Test Product Title")
+                .content("Test Product Content")
                 .price(10000)
                 .viewCount(0)
                 .isBumped(false)
                 .isReserved(false)
                 .isCompleted(false)
                 .build();
-        post = postRepository.save(post);
+        product = productRepository.save(product);
 
         // When
-        post.setTitle("Updated Post Title");
-        Post updatedPost = postRepository.save(post);
+        product.setTitle("Updated Product Title");
+        Product updatedProduct = productRepository.save(product);
 
         // Then
-        assertThat(updatedPost.getTitle()).isEqualTo("Updated Post Title");
+        assertThat(updatedProduct.getTitle()).isEqualTo("Updated Product Title");
     }
 
     @Test
-    void deletePost() {
+    void deleteProduct() {
         // Given
-        Post post = Post.builder()
+        Product product = Product.builder()
                 .category(testCategory)
                 .user(testUser)
-                .title("Test Post Title")
-                .content("Test Post Content")
+                .title("Test Product Title")
+                .content("Test Product Content")
                 .price(10000)
                 .viewCount(0)
                 .isBumped(false)
                 .isReserved(false)
                 .isCompleted(false)
                 .build();
-        post = postRepository.save(post);
+        product = productRepository.save(product);
 
         // When
-        postRepository.delete(post);
-        Post deletedPost = postRepository.findById(post.getPostId()).orElse(null);
+        productRepository.delete(product);
+        Product deletedProduct = productRepository.findById(product.getProductId()).orElse(null);
 
         // Then
-        assertThat(deletedPost).isNull();
+        assertThat(deletedProduct).isNull();
     }
 
     @Test
     void findByCategory() {
         // Given
-        Post post1 = Post.builder()
+        Product product1 = Product.builder()
                 .category(testCategory)
                 .user(testUser)
-                .title("Test Post Title 1")
-                .content("Test Post Content 1")
+                .title("Test Product Title 1")
+                .content("Test Product Content 1")
                 .price(10000)
                 .viewCount(0)
                 .isBumped(false)
                 .isReserved(false)
                 .isCompleted(false)
                 .build();
-        postRepository.save(post1);
+        productRepository.save(product1);
 
-        Post post2 = Post.builder()
+        Product product2 = Product.builder()
                 .category(testCategory)
                 .user(testUser)
-                .title("Test Post Title 2")
-                .content("Test Post Content 2")
+                .title("Test Product Title 2")
+                .content("Test Product Content 2")
                 .price(10000)
                 .viewCount(0)
                 .isBumped(false)
                 .isReserved(false)
                 .isCompleted(false)
                 .build();
-        postRepository.save(post2);
+        productRepository.save(product2);
 
         // When
-        List<Post> posts = postRepository.findByCategory(testCategory);
+        List<Product> products = productRepository.findByCategory(testCategory);
 
         // Then
-        assertThat(posts).hasSize(2);
-        assertThat(posts.get(0).getTitle()).isEqualTo("Test Post Title 1");
-        assertThat(posts.get(1).getTitle()).isEqualTo("Test Post Title 2");
+        assertThat(products).hasSize(2);
+        assertThat(products.get(0).getTitle()).isEqualTo("Test Product Title 1");
+        assertThat(products.get(1).getTitle()).isEqualTo("Test Product Title 2");
     }
 }

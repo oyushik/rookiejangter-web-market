@@ -1354,16 +1354,23 @@ Responses:
 
 ### 5.2 비즈니스 로직 에러 코드
 
-| 코드                           | 설명                | 해결 방법                     |
-| ------------------------------ | ------------------- | ----------------------------- |
-| **MEMBER_NOT_FOUND**           | 회원을 찾을 수 없음 | 회원 ID 확인                  |
-| **MEMBER_SUSPENDED**           | 정지된 회원         | 정지 해제 후 이용             |
-| **BOOK_NOT_FOUND**             | 도서를 찾을 수 없음 | 도서 ID 확인                  |
-| **BOOK_NOT_AVAILABLE**         | 대출 불가능한 도서  | 예약 또는 다른 도서 선택      |
-| **LOAN_LIMIT_EXCEEDED**        | 대출 한도 초과      | 기존 도서 반납 후 대출        |
-| **HAS_OVERDUE_LOANS**          | 연체 도서 보유      | 연체 도서 반납 및 연체료 납부 |
-| **DUPLICATE_LOAN**             | 중복 대출 시도      | 기존 대출 확인                |
-| **RESERVATION_LIMIT_EXCEEDED** | 예약 한도 초과      | 기존 예약 취소 후 예약        |
+| 코드                                    | 설명                                               | 해결 방법                               |
+| :-------------------------------------- | :------------------------------------------------- | :-------------------------------------- |
+| **USER_NOT_FOUND**                      | 사용자를 찾을 수 없음                              | 사용자 ID 확인                          |
+| **USER_SUSPENDED**                      | 정지된 사용자                                      | 정지 해제 후 이용                       |
+| **PRODUCT_NOT_FOUND**                   | 상품을 찾을 수 없음                                | 상품 ID 확인                            |
+| **PRODUCT_ALREADY_SOLD**                | 이미 판매된 상품                                   | 다른 상품 선택                          |
+| **PRODUCT_NOT_EDITABLE**                | 수정 불가능한 상태의 상품 (예: 예약 중, 거래 완료) | 상품 상태 확인 후 수정 가능 시점 확인   |
+| **PRODUCT_NOT_DELETABLE**               | 삭제 불가능한 상태의 상품 (예: 예약 중)            | 상품 상태 확인 후 삭제 가능 시점 확인   |
+| **PRODUCT_REGISTRATION_LIMIT_EXCEEDED** | 상품 등록 가능 횟수 초과                           | 등록 가능한 상품 수 확인 후 등록        |
+| **TRADE_ALREADY_REQUESTED**             | 이미 거래가 요청된 상품                            | 다른 상품 선택 또는 기존 거래 요청 확인 |
+| **TRADE_NOT_FOUND**                     | 거래 정보를 찾을 수 없음                           | 거래 ID 확인                            |
+| **TRADE_UNAUTHORIZED**                  | 거래를 처리할 권한 없음                            | 권한 확인                               |
+| **DUPLICATE_REVIEW**                    | 이미 후기를 작성한 거래                            | 기존 후기 확인                          |
+| **CHATROOM_NOT_FOUND**                  | 채팅방을 찾을 수 없음                              | 채팅방 ID 확인                          |
+| **SELF_TRADE_NOT_ALLOWED**              | 자기 자신에게 거래 요청 시도                       | 다른 사용자와 거래                      |
+| **INVALID_PRODUCT_STATUS**              | 유효하지 않은 상품 상태 값                         | 유효한 상품 상태 값으로 요청            |
+| **INVALID_TRADE_STATUS**                | 유효하지 않은 거래 상태 값                         | 유효한 거래 상태 값으로 요청            |
 
 ---
 

@@ -2,9 +2,9 @@ package com.miniproject.rookiejangter.service;
 
 import com.miniproject.rookiejangter.controller.dto.ImageDTO;
 import com.miniproject.rookiejangter.entity.Image;
-import com.miniproject.rookiejangter.entity.Post;
+import com.miniproject.rookiejangter.entity.Product;
 import com.miniproject.rookiejangter.repository.ImageRepository;
-import com.miniproject.rookiejangter.repository.PostRepository;
+import com.miniproject.rookiejangter.repository.ProductRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -18,15 +18,15 @@ import java.util.stream.Collectors;
 public class ImageService {
 
     private final ImageRepository imageRepository;
-    private final PostRepository postRepository;
+    private final ProductRepository productRepository;
 
     @Transactional
-    public ImageDTO.Response createImage(Long postId, String imageUrl) {
-        Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new EntityNotFoundException("게시글을 찾을 수 없습니다: " + postId));
+    public ImageDTO.Response createImage(Long productId, String imageUrl) {
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new EntityNotFoundException("게시글을 찾을 수 없습니다: " + productId));
 
         Image image = Image.builder()
-                .post(post)
+                .product(product)
                 .imageUrl(imageUrl)
                 .build();
         Image savedImage = imageRepository.save(image);
@@ -34,11 +34,11 @@ public class ImageService {
     }
 
     @Transactional(readOnly = true)
-    public List<ImageDTO.Response> getImagesByPostId(Long postId) {
-        if (!postRepository.existsById(postId)) {
-            throw new EntityNotFoundException("게시글을 찾을 수 없습니다: " + postId);
+    public List<ImageDTO.Response> getImagesByProductId(Long productId) {
+        if (!productRepository.existsById(productId)) {
+            throw new EntityNotFoundException("게시글을 찾을 수 없습니다: " + productId);
         }
-        return imageRepository.findByPost_PostId(postId).stream()
+        return imageRepository.findByProduct_ProductId(productId).stream()
                 .map(ImageDTO.Response::fromEntity)
                 .collect(Collectors.toList());
     }
@@ -51,11 +51,11 @@ public class ImageService {
     }
 
     @Transactional
-    public void deleteImagesByPostId(Long postId) {
-        if (!postRepository.existsById(postId)) {
-            throw new EntityNotFoundException("게시글을 찾을 수 없습니다: " + postId);
+    public void deleteImagesByProductId(Long productId) {
+        if (!productRepository.existsById(productId)) {
+            throw new EntityNotFoundException("게시글을 찾을 수 없습니다: " + productId);
         }
-        List<Image> images = imageRepository.findByPost_PostId(postId);
+        List<Image> images = imageRepository.findByProduct_ProductId(productId);
         imageRepository.deleteAll(images);
     }
 }

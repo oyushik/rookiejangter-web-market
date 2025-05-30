@@ -1,7 +1,7 @@
 package com.miniproject.rookiejangter.controller.dto;
 
 import com.miniproject.rookiejangter.entity.Image;
-import com.miniproject.rookiejangter.entity.Post;
+import com.miniproject.rookiejangter.entity.Product;
 import com.miniproject.rookiejangter.entity.User;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -13,7 +13,7 @@ import java.time.ZoneOffset;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class PostDTO {
+public class ProductDTO {
 
     @Data
     @NoArgsConstructor
@@ -115,24 +115,24 @@ public class PostDTO {
         private Integer likeCount;
         private Boolean isLiked;
 
-        public static Response fromEntity(Post post, List<Image> imageList) {
+        public static Response fromEntity(Product product, List<Image> imageList) {
             List<ImageResponse> imageResponses = imageList.stream()
                     .map(ImageResponse::fromEntity)
                     .collect(Collectors.toList());
 
             return Response.builder()
-                    .id(post.getPostId())
-                    .title(post.getTitle())
-                    .description(post.getContent())
-                    .price(post.getPrice())
-                    .categoryName(post.getCategory() != null ? post.getCategory().getCategoryName() : null)
-                    .status(post.getIsCompleted() != null && post.getIsCompleted() ? "COMPLETED" :
-                            post.getIsReserved() != null && post.getIsReserved() ? "RESERVED" : "SALE")
+                    .id(product.getProductId())
+                    .title(product.getTitle())
+                    .description(product.getContent())
+                    .price(product.getPrice())
+                    .categoryName(product.getCategory() != null ? product.getCategory().getCategoryName() : null)
+                    .status(product.getIsCompleted() != null && product.getIsCompleted() ? "COMPLETED" :
+                            product.getIsReserved() != null && product.getIsReserved() ? "RESERVED" : "SALE")
                     .images(imageResponses)
-                    .seller(SellerInfo.fromEntity(post.getUser()))
-                    .createdAt(post.getCreatedAt().atOffset(ZoneOffset.UTC))
-                    .updatedAt(post.getUpdatedAt() != null ? post.getUpdatedAt().atOffset(ZoneOffset.UTC) : null)
-                    .viewCount(post.getViewCount())
+                    .seller(SellerInfo.fromEntity(product.getUser()))
+                    .createdAt(product.getCreatedAt().atOffset(ZoneOffset.UTC))
+                    .updatedAt(product.getUpdatedAt() != null ? product.getUpdatedAt().atOffset(ZoneOffset.UTC) : null)
+                    .viewCount(product.getViewCount())
                     .likeCount(null) // 실제 구현 필요
                     .isLiked(false) // 실제 구현 필요 (로그인 시)
                     .build();
@@ -145,7 +145,7 @@ public class PostDTO {
     @NoArgsConstructor
     @AllArgsConstructor
     @Builder
-    public static class PostListPagination {
+    public static class ProductListPagination {
         private int page;
         private int size;
         private long totalElements;
@@ -158,8 +158,8 @@ public class PostDTO {
     @NoArgsConstructor
     @AllArgsConstructor
     @Builder
-    public static class PostListData {
-        private PostListPagination pagination;
+    public static class ProductListData {
+        private ProductListPagination pagination;
         private List<Response> content;
     }
 

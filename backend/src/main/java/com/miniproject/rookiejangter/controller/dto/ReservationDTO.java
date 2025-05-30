@@ -13,7 +13,7 @@ public class ReservationDTO {
     @AllArgsConstructor
     @Builder
     public static class TradeRequest {
-        private Long postId;
+        private Long productId;
     }
 
     @Data
@@ -30,7 +30,7 @@ public class ReservationDTO {
     @Builder
     public static class Response {
         private Long tradeId;
-        private Long postId;
+        private Long productId;
         private Long buyerId;
         private Reservation.TradeStatus status;
         private OffsetDateTime requestedAt;
@@ -39,7 +39,7 @@ public class ReservationDTO {
         public static Response fromEntity(Reservation reservation) {
             return Response.builder()
                     .tradeId(reservation.getReservationId())
-                    .postId(reservation.getPost().getPostId())
+                    .productId(reservation.getProduct().getProductId())
                     .buyerId(reservation.getBuyer().getUserId())
                     .status(reservation.getStatus())
                     .requestedAt(reservation.getCreatedAt() != null ? reservation.getCreatedAt().atOffset(ZoneOffset.UTC) : null)

@@ -2,9 +2,9 @@ package com.miniproject.rookiejangter.service;
 
 import com.miniproject.rookiejangter.controller.dto.BumpDTO;
 import com.miniproject.rookiejangter.entity.Bump;
-import com.miniproject.rookiejangter.entity.Post;
+import com.miniproject.rookiejangter.entity.Product;
 import com.miniproject.rookiejangter.repository.BumpRepository;
-import com.miniproject.rookiejangter.repository.PostRepository;
+import com.miniproject.rookiejangter.repository.ProductRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -22,62 +22,62 @@ import java.util.stream.Collectors;
 public class BumpService {
 
     private final BumpRepository bumpRepository;
-    private final PostRepository postRepository;
+    private final ProductRepository productRepository;
     private static final int MAX_BUMPS_PER_DAY = 5; // 일일 최대 끌어올리기 횟수 (예시)
 
     @Transactional
-    public BumpDTO.Response bumpPost(Long postId) {
-        Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new EntityNotFoundException("게시글을 찾을 수 없습니다: " + postId));
+    public BumpDTO.Response bumpProduct(Long productId) {
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new EntityNotFoundException("게시글을 찾을 수 없습니다: " + productId));
 
         LocalDateTime todayStart = LocalDateTime.of(LocalDate.now(), LocalTime.MIN);
         LocalDateTime todayEnd = LocalDateTime.of(LocalDate.now(), LocalTime.MAX);
 
-        long bumpsToday = bumpRepository.countByPost_PostIdAndBumpedAtBetween(postId, todayStart, todayEnd); //
+        long bumpsToday = bumpRepository.countByProduct_ProductIdAndBumpedAtBetween(productId, todayStart, todayEnd); //
         if (bumpsToday >= MAX_BUMPS_PER_DAY) {
             throw new IllegalStateException("오늘 해당 게시글의 끌어올리기 가능 횟수를 초과했습니다.");
         }
 
-        Optional<Bump> latestBumpOpt = bumpRepository.findTopByPost_PostIdOrderByBumpedAtDesc(postId); //
+        Optional<Bump> latestBumpOpt = bumpRepository.findTopByProduct_ProductIdOrderByBumpedAtDesc(productId); //
         int nextBumpCount = latestBumpOpt.map(bump -> bump.getBumpCount() + 1).orElse(1);
 
         Bump newBump = Bump.builder()
-                .post(post)
+                .product(product)
                 .bumpedAt(LocalDateTime.now())
                 .bumpCount(nextBumpCount)
                 .build();
         Bump savedBump = bumpRepository.save(newBump);
 
-        post.setIsBumped(true);
-        // post.setLastBumpedAt(savedBump.getBumpedAt()); // Post 엔티티에 lastBumpedAt 필드가 있다면 설정
-        postRepository.save(post);
+        product.setIsBumped(true);
+        // product.setLastBumpedAt(savedBump.getBumpedAt()); // Product 엔티티에 lastBumpedAt 필드가 있다면 설정
+        productRepository.save(product);
 
         return BumpDTO.Response.fromEntity(savedBump);
     }
 
     @Transactional(readOnly = true)
-    public Optional<BumpDTO.Response> getLatestBumpForPost(Long postId) {
-        return bumpRepository.findTopByPost_PostIdOrderByBumpedAtDesc(postId) //
+    public Optional<BumpDTO.Response> getLatestBumpForProduct(Long productId) {
+        return bumpRepository.findTopByProduct_ProductIdOrderByBumpedAtDesc(productId) //
                 .map(BumpDTO.Response::fromEntity);
     }
 
     @Transactional(readOnly = true)
-    public List<BumpDTO.Response> getBumpsForPost(Long postId) {
-        if (!postRepository.existsById(postId)) {
-            throw new EntityNotFoundException("게시글을 찾을 수 없습니다: " + postId);
+    public List<BumpDTO.Response> getBumpsForProduct(Long productId) {
+        if (!productRepository.existsById(productId)) {
+            throw new EntityNotFoundException("게시글을 찾을 수 없습니다: " + productId);
         }
-        return bumpRepository.findByPost_PostId(postId).stream() //
+        return bumpRepository.findByProduct_ProductId(productId).stream() //
                 .map(BumpDTO.Response::fromEntity)
                 .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
-    public Long getTodaysBumpCountForPost(Long postId) {
-        if (!postRepository.existsById(postId)) {
-            throw new EntityNotFoundException("게시글을 찾을 수 없습니다: " + postId);
+    public Long getTodaysBumpCountForProduct(Long productId) {
+        if (!productRepository.existsById(productId)) {
+            throw new EntityNotFoundException("게시글을 찾을 수 없습니다: " + productId);
         }
         LocalDateTime todayStart = LocalDateTime.of(LocalDate.now(), LocalTime.MIN);
         LocalDateTime todayEnd = LocalDateTime.of(LocalDate.now(), LocalTime.MAX);
-        return bumpRepository.countByPost_PostIdAndBumpedAtBetween(postId, todayStart, todayEnd); //
+        return bumpRepository.countByProduct_ProductIdAndBumpedAtBetween(productId, todayStart, todayEnd); //
     }
 }

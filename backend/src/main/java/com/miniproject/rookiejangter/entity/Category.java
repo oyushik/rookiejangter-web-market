@@ -28,7 +28,7 @@ public class Category {
     private String categoryName;
 
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Post> posts = new ArrayList<>();
+    private List<Product> products = new ArrayList<>();
 
     @Override
     public String toString() {

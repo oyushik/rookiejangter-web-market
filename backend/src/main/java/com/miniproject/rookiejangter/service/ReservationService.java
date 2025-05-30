@@ -1,10 +1,10 @@
 package com.miniproject.rookiejangter.service;
 
 import com.miniproject.rookiejangter.controller.dto.ReservationDTO;
-import com.miniproject.rookiejangter.entity.Post;
+import com.miniproject.rookiejangter.entity.Product;
 import com.miniproject.rookiejangter.entity.Reservation;
 import com.miniproject.rookiejangter.entity.User;
-import com.miniproject.rookiejangter.repository.PostRepository;
+import com.miniproject.rookiejangter.repository.ProductRepository;
 import com.miniproject.rookiejangter.repository.ReservationRepository;
 import com.miniproject.rookiejangter.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -21,40 +21,40 @@ public class ReservationService {
 
     private final ReservationRepository reservationRepository;
     private final UserRepository userRepository;
-    private final PostRepository postRepository;
-    private final PostService postService;
+    private final ProductRepository productRepository;
+    private final ProductService productService;
 
     @Transactional
-    public ReservationDTO.Response createReservation(Long buyerId, Long postId) {
+    public ReservationDTO.Response createReservation(Long buyerId, Long productId) {
         User buyer = userRepository.findById(buyerId)
                 .orElseThrow(() -> new EntityNotFoundException("구매자를 찾을 수 없습니다: " + buyerId));
-        Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new EntityNotFoundException("게시글을 찾을 수 없습니다: " + postId));
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new EntityNotFoundException("게시글을 찾을 수 없습니다: " + productId));
 
-        if (post.getIsCompleted() || (post.getIsReserved() && !post.getUser().getUserId().equals(buyerId))) {
+        if (product.getIsCompleted() || (product.getIsReserved() && !product.getUser().getUserId().equals(buyerId))) {
             throw new IllegalStateException("이미 판매 완료되었거나 다른 사용자에 의해 예약된 게시글입니다.");
         }
 
-        if (post.getUser().getUserId().equals(buyerId)) {
+        if (product.getUser().getUserId().equals(buyerId)) {
             throw new IllegalArgumentException("자신의 게시글은 예약할 수 없습니다.");
         }
 
-        if (reservationRepository.existsByBuyer_UserIdAndPost_PostId(buyerId, postId)) { //
+        if (reservationRepository.existsByBuyer_UserIdAndProduct_ProductId(buyerId, productId)) { //
             throw new IllegalStateException("이미 해당 게시글에 대한 예약 요청이 존재합니다.");
         }
 
-        User seller = post.getUser();
+        User seller = product.getUser();
 
         Reservation reservation = Reservation.builder()
                 .buyer(buyer)
                 .seller(seller)
-                .post(post)
+                .product(product)
                 .status(Reservation.TradeStatus.REQUESTED) //
                 .isCanceled(false)
                 .build();
         Reservation savedReservation = reservationRepository.save(reservation);
 
-        postService.updatePostStatus(postId, true, null, seller.getUserId());
+        productService.updateProductStatus(productId, true, null, seller.getUserId());
 
 
         return ReservationDTO.Response.fromEntity(savedReservation);
@@ -79,10 +79,10 @@ public class ReservationService {
     }
 
     @Transactional(readOnly = true)
-    public List<ReservationDTO.Response> getReservationsByPost(Long postId) {
-        postRepository.findById(postId)
-                .orElseThrow(() -> new EntityNotFoundException("게시글을 찾을 수 없습니다: " + postId));
-        return reservationRepository.findByPost_PostId(postId).stream() //
+    public List<ReservationDTO.Response> getReservationsByProduct(Long productId) {
+        productRepository.findById(productId)
+                .orElseThrow(() -> new EntityNotFoundException("게시글을 찾을 수 없습니다: " + productId));
+        return reservationRepository.findByProduct_ProductId(productId).stream() //
                 .map(ReservationDTO.Response::fromEntity)
                 .collect(Collectors.toList());
     }
@@ -106,7 +106,7 @@ public class ReservationService {
         boolean isSeller = reservation.getSeller().getUserId().equals(currentUserId);
         boolean isBuyer = reservation.getBuyer().getUserId().equals(currentUserId);
 
-        Post post = reservation.getPost();
+        Product product = reservation.getProduct();
 
         switch (newStatus) {
             case ACCEPTED:
@@ -114,16 +114,16 @@ public class ReservationService {
                     throw new SecurityException("예약 수락 권한이 없습니다.");
                 }
                 reservation.setStatus(Reservation.TradeStatus.ACCEPTED); //
-                post.setIsReserved(true);
-                postRepository.save(post);
+                product.setIsReserved(true);
+                productRepository.save(product);
                 break;
             case DECLINED:
                 if (!isSeller) {
                     throw new SecurityException("예약 거절 권한이 없습니다.");
                 }
                 reservation.setStatus(Reservation.TradeStatus.DECLINED); //
-                post.setIsReserved(false);
-                postRepository.save(post);
+                product.setIsReserved(false);
+                productRepository.save(product);
                 break;
             case CANCELLED:
                 if (!isBuyer && !isSeller) {
@@ -140,8 +140,8 @@ public class ReservationService {
                 } else {
                     throw new IllegalStateException("현재 상태에서는 예약을 취소할 수 없습니다.");
                 }
-                post.setIsReserved(false);
-                postRepository.save(post);
+                product.setIsReserved(false);
+                productRepository.save(product);
                 break;
             case COMPLETED:
                 if (!isSeller) {
@@ -151,9 +151,9 @@ public class ReservationService {
                     throw new IllegalStateException("수락된 예약만 완료 처리할 수 있습니다.");
                 }
                 reservation.setStatus(Reservation.TradeStatus.COMPLETED); //
-                post.setIsCompleted(true);
-                post.setIsReserved(false); // 예약 상태 해제
-                postRepository.save(post);
+                product.setIsCompleted(true);
+                product.setIsReserved(false); // 예약 상태 해제
+                productRepository.save(product);
                 // 여기에 CompleteService를 호출하여 거래 완료 기록 생성 로직 추가 가능
                 break;
             default:
@@ -185,7 +185,7 @@ public class ReservationService {
                 reservation.getStatus() == Reservation.TradeStatus.CANCELLED) {
 
             // 게시글의 예약 상태를 풀어줄 필요가 있는지 확인 (보통 REQUESTED 상태에서는 isReserved가 false일 것임)
-            if (reservation.getPost().getIsReserved() && reservation.getStatus() == Reservation.TradeStatus.REQUESTED) {
+            if (reservation.getProduct().getIsReserved() && reservation.getStatus() == Reservation.TradeStatus.REQUESTED) {
                 // 이 경우는 드물지만, 방어적으로 코딩
             }
             reservationRepository.delete(reservation);
