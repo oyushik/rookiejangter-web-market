@@ -5,6 +5,7 @@ import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Table(name = "users")
@@ -102,6 +103,6 @@ public class User extends BaseEntity {
 
     @Override
     public int hashCode() {
-        return getClass().hashCode();
+        return Objects.hash(userId); // userId 기반으로 hashCode 생성
     }
 }

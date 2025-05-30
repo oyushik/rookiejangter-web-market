@@ -64,7 +64,7 @@ public class ReviewRepositoryTest {
                 .complete(complete)
                 .user(user)
                 .rating(4)
-                .content("Good product.")
+                .content("Good post.")
                 .build();
         entityManager.persist(review2);
 

@@ -14,7 +14,7 @@ public class ChatDTO {
     @AllArgsConstructor
     @Builder
     public static class Request {
-        private Long productId;
+        private Long postId;
         private Long participantId; // 상대방 사용자 ID
     }
 
@@ -24,14 +24,14 @@ public class ChatDTO {
     @Builder
     public static class Response {
         private Long chatRoomId;
-        private Long productId;
+        private Long postId;
         private List<Long> participants; // buyerId, sellerId
         private OffsetDateTime createdAt;
 
         public static Response fromEntity(Chat chat) {
             return Response.builder()
                     .chatRoomId(chat.getChatId())
-                    .productId(chat.getPost().getPostId())
+                    .postId(chat.getPost().getPostId())
                     .participants(List.of(chat.getBuyer().getUserId(), chat.getSeller().getUserId()))
                     .createdAt(chat.getCreatedAt().atOffset(ZoneOffset.UTC))
                     .build();
@@ -57,7 +57,7 @@ public class ChatDTO {
         @Builder
         public static class ChatInfo {
             private Long chatRoomId;
-            private Long productId;
+            private Long postId;
             private String lastMessage;
             private Integer unreadCount;
             private OffsetDateTime updatedAt;
@@ -65,7 +65,7 @@ public class ChatDTO {
             public static ChatInfo fromEntity(Chat chat, String lastMessage, Integer unreadCount) {
                 return ChatInfo.builder()
                         .chatRoomId(chat.getChatId())
-                        .productId(chat.getPost().getPostId())
+                        .postId(chat.getPost().getPostId())
                         .lastMessage(lastMessage)
                         .unreadCount(unreadCount)
                         .updatedAt(chat.getUpdatedAt() != null ? chat.getUpdatedAt().atOffset(ZoneOffset.UTC) : chat.getCreatedAt().atOffset(ZoneOffset.UTC)) // updatedAt 없을 경우 createdAt 사용
