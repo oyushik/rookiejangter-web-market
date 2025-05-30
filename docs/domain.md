@@ -128,8 +128,7 @@ graph TD
 
 | 도메인 객체                        | 유형   | 중요도 | 복잡도 | 비고                         |
 | ---------------------------------- | ------ | ------ | ------ | ---------------------------- |
-| **Goods (상품)**                   | Entity | 높음   | 낮음   | 게시물 내 상품 상세 정보     |
-| **Post (게시물)**                  | Entity | 높음   | 높음   | 중고 상품 게시물             |
+| **Product (게시물)**               | Entity | 높음   | 높음   | 중고 상품 게시물             |
 | **User (사용자)**                  | Entity | 높음   | 낮음   | 사용자 정보                  |
 | **Reservation (예약)**             | Entity | 높음   | 중간   | 거래 예약                    |
 | **Complete (완료)**                | Entity | 높음   | 낮음   | 거래 완료 정보               |
@@ -161,7 +160,7 @@ graph TD
 - `login_id`: 로그인 아이디 (VARCHAR(20), NOT NULL)
 - `password`: 비밀번호 (VARCHAR(20), NOT NULL)
 - `user_name`: 사용자 이름 (VARCHAR(12), NOT NULL)
-- `phone`: 휴대폰 번호 (VARCHAR(12), NOT NULL)
+- `phone`: 휴대폰 번호 (VARCHAR(20), NOT NULL)
 - `is_banned`: 밴 여부 (BOOLEAN, NULL)
 - `is_admin`: 관리자 여부 (BOOLEAN, NULL)
 
@@ -195,17 +194,18 @@ graph TD
 - ban() 호출 시, is_banned는 true로 바뀌고 해당 사용자는 즉시 로그아웃 처리 및 기능 접근이 제한된다.
 - unban() 호출 시, is_banned는 false로 바뀌고 사용자는 기능을 다시 사용할 수 있다.
 
-#### 3.2.2 Post (게시물)
+#### 3.2.2 Product (게시물)
 
 **역할**: 사용자가 판매 또는 홍보를 위해 등록하는 중고 상품 게시물을 나타냄
 
 **주요 속성:**
 
-- `post_id`: 고유 식별자 (대리 키, BIGINT, NOT NULL)
+- `product_id`: 고유 식별자 (대리 키, BIGINT, NOT NULL)
 - `category_id`: 카테고리 식별자 (외래 키, INT, NULL) - `categories` 테이블 참조
 - `user_id`: 사용자 식별자 (외래 키, BIGINT, NULL) - `users` 테이블 참조 (작성자)
 - `title`: 게시물 제목 (VARCHAR(50), NOT NULL)
 - `content`: 게시물 내용 (VARCHAR(255), NOT NULL)
+- `price`: 상품 가격 (INT, NULL)
 - `view_count`: 조회수 (INT, NULL)
 - `is_bumped`: 끌올 여부 (BOOLEAN, NULL)
 - `is_reserved`: 예약 여부 (BOOLEAN, NULL)
@@ -213,16 +213,16 @@ graph TD
 
 **주요 행동 (메서드):**
 
-- `createPost(category_id, user_id, title, content)`: 새 게시물을 생성한다.
-- `updatePost(post_id, title, content)`: 게시물 제목 또는 내용을 수정한다.
-- `deletePost(post_id)`: 게시물을 삭제한다.
-- `bumpPost(post_id)`: 게시물을 끌올(최신화)한다.
-- `reservePost(post_id)`: 게시물을 예약 상태로 변경한다.
-- `completePost(post_id)`: 게시물을 거래 완료 상태로 변경한다.
-- `incrementViewCount(post_id)`: 게시물의 조회수를 1 증가시킨다.
-- `getPostById(post_id)`: 특정 게시물의 상세 정보를 조회한다.
-- `listPostsByCategory(category_id):` 특정 카테고리의 게시물 목록을 조회한다.
-- `listRecentPosts(limit, offset)`: 최신 게시물 목록을 페이징하여 조회한다.
+- `createProduct(category_id, user_id, title, content)`: 새 게시물을 생성한다.
+- `updateProduct(product_id, title, content)`: 게시물 제목 또는 내용을 수정한다.
+- `deleteProduct(product_id)`: 게시물을 삭제한다.
+- `bumpProduct(product_id)`: 게시물을 끌올(최신화)한다.
+- `reserveProduct(product_id)`: 게시물을 예약 상태로 변경한다.
+- `completeProduct(product_id)`: 게시물을 거래 완료 상태로 변경한다.
+- `incrementViewCount(product_id)`: 게시물의 조회수를 1 증가시킨다.
+- `getProductById(product_id)`: 특정 게시물의 상세 정보를 조회한다.
+- `listProductsByCategory(category_id):` 특정 카테고리의 게시물 목록을 조회한다.
+- `listRecentProducts(limit, offset)`: 최신 게시물 목록을 페이징하여 조회한다.
 
 **비즈니스 규칙:**
 
@@ -234,34 +234,9 @@ graph TD
 - 예약(is_reserved) 상태인 게시물은 동시에 한 명만 예약할 수 있다 (예약자 정보는 다른 테이블에서 관리 가능).
 - 조회수(view_count)는 게시물이 조회될 때마다 1씩 증가한다.
 - 삭제된 게시물은 사용자에게 노출되지 않는다 (soft delete 적용 가능).
-- 게시물은 작성일(posted_at) 기준으로 정렬하여 노출된다.
+- 게시물은 작성일(producted_at) 기준으로 정렬하여 노출된다.
 
-#### 3.2.3 Goods (상품)
-
-**역할**: 게시물과 관련된 판매 상품의 구체적인 정보를 나타냄
-
-**주요 속성:**
-
-- `post_id`: 게시물 식별자 (기본 키 및 외래 키, BIGINT, NOT NULL) - `posts` 테이블 참조
-- `goods_name`: 상품 이름 (VARCHAR(50), NULL)
-- `price`: 상품 가격 (INT, NULL)
-
-**주요 행동 (메서드):**
-
-- `createGoods(postId, goodsName, price)`: 게시물에 연결된 상품 정보를 생성한다.
-- `updateGoods(postId, goodsName, price)`: 상품 정보를 수정한다.
-- `deleteGoods(postId)`: 해당 게시물에 연결된 상품 정보를 삭제한다.
-- `getGoodsByPostId(postId)`: 특정 게시물에 연결된 상품 정보를 조회한다.
-
-**비즈니스 규칙:**
-
-- 하나의 게시물(post)에 하나의 상품(goods)만 연결될 수 있다.
-- 상품 이름(goods_name)은 최대 50자까지 입력 가능하다.
-- 상품 가격(price)은 0 이상의 정수여야 한다.
-- 상품 정보는 해당 게시물이 존재할 경우에만 생성 가능하다 (posts 테이블에 존재하는 post_id 참조 필요).
-- 상품 가격이 없거나 이름이 없는 경우에도 상품 등록은 가능하나, 판매 전에는 필수 값으로 검증될 수 있다.
-
-#### 3.2.4 Category (카테고리)
+#### 3.2.3 Category (카테고리)
 
 **역할**: 상품 게시물을 분류하는 기준을 나타냄
 
@@ -286,7 +261,7 @@ graph TD
 - 카테고리는 시스템에서 미리 정의된 값으로 제한될 수 있으며, 관리 권한이 있는 사용자만 수정/생성할 수 있다.
 - 게시물 또는 상품은 반드시 하나의 유효한 카테고리에 속해야 한다.
 
-#### 3.2.5 Notification (알림)
+#### 3.2.4 Notification (알림)
 
 **역할:** 사용자에게 발생하는 이벤트에 대한 알림 정보를 제공
 
@@ -295,7 +270,7 @@ graph TD
 - `notification_id`: 알림 식별자 (기본 키, BIGINT, NOT NULL)
 - `user_id`: 사용자 식별자 (외래 키, BIGINT, NULL) - `users` 테이블 참조 (알림 대상)
 - `entity_id`: 관련 엔티티 식별자 (BIGINT, NULL) - 예를 들어, 게시물 ID, 채팅 ID 등
-- `entity_type`: 관련 엔티티 타입 (VARCHAR(20), NULL) - 예를 들어, 'post', 'chat' 등
+- `entity_type`: 관련 엔티티 타입 (VARCHAR(20), NULL) - 예를 들어, 'product', 'chat' 등
 - `message`: 알림 메시지 내용 (VARCHAR(255), NULL)
 - `sent_at`: 알림 발송 시간 (TIMESTAMP, NULL)
 - `is_read`: 알림 확인 여부 (BOOLEAN, NULL)
@@ -311,7 +286,7 @@ graph TD
 - `deleteNotification(notification_id)`: 특정 알림을 삭제한다.
 - `deleteAllNotifications(user_id)`: 해당 사용자의 모든 알림을 삭제한다.
 
-#### 3.2.6 Dibs (찜)
+#### 3.2.5 Dibs (찜)
 
 **역할:** 사용자가 관심 있는 상품 게시물을 찜(저장)한 정보를 나타냄
 
@@ -319,18 +294,18 @@ graph TD
 
 - `dibs_id`: 찜 식별자 (기본 키, BIGINT, NOT NULL)
 - `user_id`: 사용자 식별자 (외래 키, BIGINT, NULL) - `users` 테이블 참조 (찜한 사용자)
-- `post_id`: 게시물 식별자 (외래 키, BIGINT, NULL) - `posts` 테이블 참조 (찜된 게시물)
+- `product_id`: 게시물 식별자 (외래 키, BIGINT, NULL) - `products` 테이블 참조 (찜된 게시물)
 - `added_at`: 찜한 시간 (TIMESTAMP, NULL)
 
 **주요 행동 (메서드):**
 
-- `addDibs(user_id, post_id)`: 사용자가 특정 게시물을 찜한다. (이미 찜한 게시물인 경우 중복 등록 방지.)
-- `removeDibs(user_id, post_id)`: 사용자가 찜한 게시물을 찜 목록에서 제거한다.
+- `addDibs(user_id, product_id)`: 사용자가 특정 게시물을 찜한다. (이미 찜한 게시물인 경우 중복 등록 방지.)
+- `removeDibs(user_id, product_id)`: 사용자가 찜한 게시물을 찜 목록에서 제거한다.
 - `getDibsByUser(user_id)`: 사용자가 찜한 게시물 목록을 조회한다.
-- `isPostDibbed(user_id, post_id)`: 사용자가 특정 게시물을 이미 찜했는지 여부를 확인한다.
-- `countDibsForPost(post_id)`: 특정 게시물이 받은 총 찜 개수를 반환한다.
+- `isProductDibbed(user_id, product_id)`: 사용자가 특정 게시물을 이미 찜했는지 여부를 확인한다.
+- `countDibsForProduct(product_id)`: 특정 게시물이 받은 총 찜 개수를 반환한다.
 
-#### 3.2.7 Chat (채팅)
+#### 3.2.6 Chat (채팅)
 
 **역할:** 구매자와 판매자 간의 실시간 대화를 위한 채팅방 정보를 나타냄
 
@@ -339,17 +314,17 @@ graph TD
 - `chat_id`: 채팅방 식별자 (기본 키, BIGINT, NOT NULL)
 - `buyer_id`: 구매자 식별자 (외래 키, BIGINT, NULL) - `users` 테이블 참조
 - `seller_id`: 판매자 식별자 (외래 키, BIGINT, NULL) - `users` 테이블 참조
-- `post_id`: 게시물 식별자 (외래 키, BIGINT, NULL) - `posts` 테이블 참조 (관련 상품)
+- `product_id`: 게시물 식별자 (외래 키, BIGINT, NULL) - `products` 테이블 참조 (관련 상품)
 
 **주요 행동 (메서드):**
 
-- `createChat(buyer_id, seller_id, post_id)`: 구매자와 판매자 간의 새로운 채팅방을 생성한다. 동일한 구성원이 동일 게시물에 대해 이미 채팅방이 있는 경우 기존 채팅방을 반환할 수 있다.
+- `createChat(buyer_id, seller_id, product_id)`: 구매자와 판매자 간의 새로운 채팅방을 생성한다. 동일한 구성원이 동일 게시물에 대해 이미 채팅방이 있는 경우 기존 채팅방을 반환할 수 있다.
 - `getChatById(chat_id)`: 채팅방의 상세 정보를 조회한다.
 - `getChatsByUser(user_id)`: 사용자가 참여한 모든 채팅방 목록을 조회한다.
 - `deleteChat(chat_id)`: 특정 채팅방을 삭제한다. 주로 관리자가 수행하거나 거래 종료 후 자동 삭제될 수 있다.
-- `getChatByPostAndUsers(post_id, buyer_id, seller_id)`: 특정 게시물과 사용자 조합으로 채팅방을 조회하거나 존재 여부를 확인한다.
+- `getChatByProductAndUsers(product_id, buyer_id, seller_id)`: 특정 게시물과 사용자 조합으로 채팅방을 조회하거나 존재 여부를 확인한다.
 
-#### 3.2.8 Message (메시지)
+#### 3.2.7 Message (메시지)
 
 **역할:** 채팅방 내에서 오고 간 개별 메시지 내용을 나타냄
 
@@ -357,6 +332,7 @@ graph TD
 
 - `message_id`: 메시지 식별자 (기본 키, BIGINT, NOT NULL)
 - `chat_id`: 채팅방 식별자 (외래 키, BIGINT, NULL) - `chats` 테이블 참조 (소속된 채팅방)
+- `sender_id`: 메시지 송신자 (외래 키, BIGINT, NULL)
 - `content`: 메시지 내용 (VARCHAR(255), NULL)
 - `sent_at`: 메시지 발송 시간 (TIMESTAMP, NULL)
 - `is_read`: 메시지 읽음 여부 (BOOLEAN, NULL)
@@ -369,7 +345,7 @@ graph TD
 - `markAllMessagesAsRead(chat_id, user_id)`: 해당 채팅방에서 사용자가 받지 않은 모든 메시지를 읽음 처리한다.
 - `getUnreadMessageCount(chat_id, user_id)`: 특정 채팅방에서 사용자가 읽지 않은 메시지 수를 반환한다.
 
-#### 3.2.9 Reservation (예약)
+#### 3.2.8 Reservation (예약)
 
 **역할:** 상품 구매를 위해 구매자가 판매자에게 예약을 요청한 정보를 나타냄
 
@@ -378,17 +354,18 @@ graph TD
 - `reservation_id`: 예약 식별자 (기본 키, BIGINT, NOT NULL)
 - `buyer_id`: 구매자 식별자 (외래 키, BIGINT, NULL) - `users` 테이블 참조 (예약 요청자)
 - `seller_id`: 판매자 식별자 (외래 키, BIGINT, NULL) - `users` 테이블 참조 (판매자)
-- `post_id`: 게시물 식별자 (외래 키, BIGINT, NULL) - `posts` 테이블 참조 (예약된 상품)
+- `product_id`: 게시물 식별자 (외래 키, BIGINT, NULL) - `products` 테이블 참조 (예약된 상품)
+- `status`: 예약(거래) 상태 식별별 (외래 키, ENUM, NULL) - `products` 테이블 참조 (예약된 상품)
 
 **주요 행동 (메서드):**
 
-- `createReservation(buyer_id, seller_id, post_id)`: 구매자가 특정 게시물에 대해 예약을 생성한다. `reserved_at`은 자동으로 현재 시간으로 설정된다.
+- `createReservation(buyer_id, seller_id, product_id)`: 구매자가 특정 게시물에 대해 예약을 생성한다. `reserved_at`은 자동으로 현재 시간으로 설정된다.
 - `cancelReservation(reservation_id)`: 예약을 취소한다.
 - `getReservationsByUser(user_id)`: 사용자가 생성한 또는 받은 모든 예약 요청을 조회한다.
-- `getReservationByPost(post_id)`: 특정 게시물에 대한 예약 정보를 조회한다.
-- `isPostReserved(post_id)`: 해당 게시물이 현재 예약된 상태인지 확인한다.
+- `getReservationByProduct(product_id)`: 특정 게시물에 대한 예약 정보를 조회한다.
+- `isProductReserved(product_id)`: 해당 게시물이 현재 예약된 상태인지 확인한다.
 
-#### 3.2.10 Cancelation (취소)
+#### 3.2.9 Cancelation (취소)
 
 **역할:** 예약을 취소함에 대한 정보를 나타냄
 
@@ -396,6 +373,7 @@ graph TD
 
 - `reservation_id`: 예약 식별자 (기본 키 및 외래 키, BIGINT, NOT NULL) - `reservations`테이블 참조
 - `cancelation_reason_id`: 취소 사유 식별자 (외래 키, INT, NULL) - `cancelation_reasons` 테이블 참조
+- `canceler_reason_id`: 취소자 식별자 (외래 키, BIGINT, NULL) - `users` 테이블 참조
 - `canceled_at`: 취소 시간 (TIMESTAMP, NULL)
 
 **주요 행동 (메서드):**
@@ -403,7 +381,7 @@ graph TD
 - `createCancelation(reservationId, cancelationReasonId)`: 예약에 대한 취소 정보를 생성한다.
 - `getCancelationByReservationId(reservationId)`: 특정 예약의 취소 정보를 조회한다.
 
-#### 3.2.11 Cancelation_reason (취소 사유)
+#### 3.2.10 Cancelation_reason (취소 사유)
 
 **역할:** 예약을 취소한 사유에 대한 정보를 나타냄
 
@@ -419,25 +397,25 @@ graph TD
 - `deleteCancelationReason(reasonId)`: 특정 취소 사유를 삭제한다.
 - `listAllCancelationReasons()`: 전체 취소 사유 목록을 조회한다.
 
-#### 3.2.12 Complete (완료)
+#### 3.2.11 Complete (완료)
 
 **역할:** 상품 거래가 완료된 정보를 나타냄
 
 **주요 속성:**
 
 - `complete_id`: 완료 식별자 (기본 키, BIGINT, NOT NULL)
-- `post_id`: 게시물 식별자 (외래 키, BIGINT, NULL) - `posts` 테이블 참조 (완료된 상품)
+- `product_id`: 게시물 식별자 (외래 키, BIGINT, NULL) - `products` 테이블 참조 (완료된 상품)
 - `buyer_id`: 구매자 식별자 (외래 키, BIGINT, NULL) - `users` 테이블 참조 (구매자)
 - `seller_id`: 판매자 식별자 (외래 키, BIGINT, NULL) - `users` 테이블 참조 (판매자)
 - `completed_at`: 거래 완료 시간 (TIMESTAMP, NULL)
 
 **주요 행동 (메서드):**
 
-- `createComplete(postId, buyerId, sellerId)`: 거래 완료 정보를 생성한다.
+- `createComplete(productId, buyerId, sellerId)`: 거래 완료 정보를 생성한다.
 - `getCompleteById(completeId)`: 특정 완료 정보(complete_id)를 조회한다.
-- `getCompleteByPostId(postId)`: 게시물 기준으로 거래 완료 정보를 조회한다.
+- `getCompleteByProductId(productId)`: 게시물 기준으로 거래 완료 정보를 조회한다.
 
-#### 3.2.13 Review (리뷰)
+#### 3.2.12 Review (리뷰)
 
 **역할:** 거래 완료 후 구매자가 판매자에 대해 작성하는 후기 정보를 나타냄
 
@@ -458,7 +436,7 @@ graph TD
 - `getReviewsByUserId(userId)`: 특정 사용자가 작성한 리뷰를 조회한다.
 - `getReviewByCompleteId(completeId)`: 특정 거래 완료건에 대한 리뷰를 조회한다.
 
-#### 3.2.14 Area (지역)
+#### 3.2.13 Area (지역)
 
 **역할:** 사용자의 활동 지역 정보를 나타냄
 
@@ -474,40 +452,40 @@ graph TD
 - `deleteArea(areaId)`: 지역 정보를 삭제한다.
 - `listAllAreas()`: 전체 지역 목록을 조회한다.
 
-#### 3.2.15 Bump (끌올)
+#### 3.2.14 Bump (끌올)
 
 **역할:** 사용자가 자신의 게시물을 목록 상단으로 끌어올린 이력을 관리
 
 **주요 속성:**
 
 - `bump_id`: 끌올 식별자 (기본 키, BIGINT, NOT NULL)
-- `post_id`: 게시물 식별자 (외래 키, BIGINT, NULL) - `posts` 테이블 참조 (끌어올려진 게시물)
+- `product_id`: 게시물 식별자 (외래 키, BIGINT, NULL) - `products` 테이블 참조 (끌어올려진 게시물)
 - `bumped_at`: 끌올 날짜 (TIMESTAMP, NULL)
 - `bump_count`: 해당 날짜의 끌올 횟수 (INT, NULL)
 
 **주요 행동 (메서드):**
 
-- `createBump(postId)`: 게시물을 상단으로 끌어올린다.
-- `getBumpsByPostId(postId)`: 특정 게시물의 끌올 이력을 조회한다.
-- `countBumpsByDate(postId, date)`: 해당 날짜에 특정 게시물이 끌올된 횟수를 조회한다.
+- `createBump(productId)`: 게시물을 상단으로 끌어올린다.
+- `getBumpsByProductId(productId)`: 특정 게시물의 끌올 이력을 조회한다.
+- `countBumpsByDate(productId, date)`: 해당 날짜에 특정 게시물이 끌올된 횟수를 조회한다.
 
-#### 3.2.16 Image (이미지)
+#### 3.2.15 Image (이미지)
 
 **역할:** 상품 게시물에 첨부된 이미지 정보를 나타냄
 
 **주요 속성:**
 
 - `image_id`: 이미지 식별자 (기본 키, BIGINT, NOT NULL)
-- `post_id`: 게시물 식별자 (외래 키, BIGINT, NULL) - `posts` 테이블 참조 (이미지가 속한 게시물)
+- `product_id`: 게시물 식별자 (외래 키, BIGINT, NULL) - `products` 테이블 참조 (이미지가 속한 게시물)
 - `image_url`: 이미지 파일 경로 또는 URL (VARCHAR(255), NOT NULL)
 
 **주요 행동 (메서드):**
 
-- `addImage(postId, imageUrl)`: 게시물에 이미지를 첨부한다.
+- `addImage(productId, imageUrl)`: 게시물에 이미지를 첨부한다.
 - `deleteImage(imageId)`: 특정 이미지를 삭제한다.
-- `getImagesByPostId(postId)`: 게시물에 첨부된 모든 이미지를 조회한다.
+- `getImagesByProductId(productId)`: 게시물에 첨부된 모든 이미지를 조회한다.
 
-#### 3.2.17 Report (신고)
+#### 3.2.16 Report (신고)
 
 **역할:** 사용자가 다른 사용자, 게시물 또는 채팅에 대해 신고한 내역을 관리
 
@@ -517,7 +495,7 @@ graph TD
 - `report_reason_id`: 신고 사유 식별자 (외래 키, INT, NULL) - `report_reasons` 테이블 참조
 - `user_id`: 신고자 식별자 (외래 키, BIGINT, NULL) - `users` 테이블 참조 (신고한 사용자)
 - `target_id`: 신고 대상 식별자 (BIGINT, NULL) - 사용자, 게시물, 채팅 등의 ID
-- `target_type`: 신고 대상 타입 (VARCHAR(10), NULL) - 'user', 'post', 'chat' 등
+- `target_type`: 신고 대상 타입 (VARCHAR(10), NULL) - 'user', 'product', 'chat' 등
 - `is_processed`: 처리 완료 여부 (BOOLEAN, NULL)
 
 **주요 행동 (메서드):**
@@ -528,7 +506,7 @@ graph TD
 - `getUnprocessedReports()`: 처리되지 않은 신고 목록을 조회한다.
 - `markReportAsProcessed(reportId)`: 신고를 처리 완료 상태로 변경한다.
 
-#### 3.2.18 Report_reason (신고 사유)
+#### 3.2.17 Report_reason (신고 사유)
 
 **역할:** 신고의 종류를 정의하고 관리
 
@@ -544,7 +522,7 @@ graph TD
 - `deleteReportReason(reasonId)`: 신고 사유를 삭제한다.
 - `listAllReportReasons()`: 전체 신고 사유 목록을 조회한다.
 
-#### 3.2.19 Ban (제재)
+#### 3.2.18 Ban (제재)
 
 **역할:** 플랫폼 이용이 제한된 사용자 정보를 관리
 
@@ -584,8 +562,8 @@ ERDiagram
         varchar area_name
     }
 
-    POST {
-        bigint post_id PK
+    PRODUCT {
+        bigint product_id PK
         int category_id FK
         bigint user_id FK
         varchar title
@@ -601,15 +579,9 @@ ERDiagram
         varchar category_name
     }
 
-    GOODS {
-        bigint post_id PK_FK
-        varchar goods_name
-        int price
-    }
-
     IMAGE {
         bigint image_id PK
-        bigint post_id FK
+        bigint product_id FK
         varchar image_url
     }
 
@@ -617,12 +589,13 @@ ERDiagram
         bigint chat_id PK
         bigint buyer_id FK
         bigint seller_id FK
-        bigint post_id FK
+        bigint product_id FK
     }
 
     MESSAGE {
         bigint message_id PK
         bigint chat_id FK
+        bigint sender_id FK
         varchar content
         timestamp sent_at
         boolean is_read
@@ -632,7 +605,8 @@ ERDiagram
         bigint reservation_id PK
         bigint buyer_id FK
         bigint seller_id FK
-        bigint post_id FK
+        bigint product_id FK
+        enum('REQUESTED', 'ACCEPTED', 'DECLINED', 'CANCELLED', 'COMPLETED') status
     }
 
     CANCELATION {
@@ -648,7 +622,7 @@ ERDiagram
 
     COMPLETE {
         bigint complete_id PK
-        bigint post_id FK
+        bigint product_id FK
         bigint buyer_id FK
         bigint seller_id FK
         timestamp completed_at
@@ -665,13 +639,13 @@ ERDiagram
     DIBS {
         bigint dibs_id PK
         bigint user_id FK
-        bigint post_id FK
+        bigint product_id FK
         timestamp added_at
     }
 
     BUMP {
         bigint bump_id PK
-        bigint post_id FK
+        bigint product_id FK
         timestamp bumped_at
         int bump_count
     }
@@ -708,7 +682,7 @@ ERDiagram
     }
 
     %% 관계 정의
-    USER ||--o{ POST : "작성"
+    USER ||--o{ PRODUCT : "작성"
     USER ||--|| AREA : "거주"
     USER ||--o{ CHAT : "구매자"
     USER ||--o{ CHAT : "판매자"
@@ -722,15 +696,14 @@ ERDiagram
     USER ||--o{ REPORT : "신고"
     USER ||--o{ BAN : "제재대상"
 
-    CATEGORY ||--o{ POST : "분류"
+    CATEGORY ||--o{ PRODUCT : "분류"
 
-    POST ||--|| GOODS : "상품정보"
-    POST ||--o{ IMAGE : "이미지"
-    POST ||--o{ CHAT : "관련채팅"
-    POST ||--o{ RESERVATION : "예약"
-    POST ||--o{ COMPLETE : "거래완료"
-    POST ||--o{ DIBS : "찜대상"
-    POST ||--o{ BUMP : "끌올"
+    PRODUCT ||--o{ IMAGE : "이미지"
+    PRODUCT ||--o{ CHAT : "관련채팅"
+    PRODUCT ||--o{ RESERVATION : "예약"
+    PRODUCT ||--o{ COMPLETE : "거래완료"
+    PRODUCT ||--o{ DIBS : "찜대상"
+    PRODUCT ||--o{ BUMP : "끌올"
 
     CHAT ||--o{ MESSAGE : "메시지"
 
@@ -746,24 +719,26 @@ ERDiagram
 
 | 관계                             | 카디널리티 | 설명                                                          | 제약조건                        |
 | -------------------------------- | ---------- | ------------------------------------------------------------- | ------------------------------- |
-| category ↔ post                  | 1:N        | 하나의 category에는 여러 post가 속함                          | -                               |
+| category ↔ product               | 1:N        | 하나의 category에는 여러 product가 속함                       | -                               |
 | chat ↔ message                   | 1:N        | 하나의 chat에는 여러 message가 속함                           | -                               |
-| post ↔ bump                      | 1:N        | 하나의 post는 여러 bump를 가질 수 있음                        | 일일 끌올 횟수 제한             |
-| post ↔ chat                      | 1:N        | 하나의 post는 여러 chat을 가질 수 있음                        | -                               |
-| post ↔ image                     | 1:N        | 하나의 post는 여러 image를 가질 수 있음                       | 최대 3장 제한                   |
-| post ↔ reservation               | 1:N        | 하나의 post는 하나의 reservation을 가질 수 있음               | 동시 예약 불가                  |
+| product ↔ bump                   | 1:N        | 하나의 product는 여러 bump를 가질 수 있음                     | 일일 끌올 횟수 제한             |
+| product ↔ chat                   | 1:N        | 하나의 product는 여러 chat을 가질 수 있음                     | -                               |
+| product ↔ image                  | 1:N        | 하나의 product는 여러 image를 가질 수 있음                    | 최대 3장 제한                   |
+| product ↔ reservation            | 1:N        | 하나의 product는 하나의 reservation을 가질 수 있음            | 동시 예약 불가                  |
 | report ↔ report_reason           | 1:N        | 하나의 report_reason에는 여러 report가 속함                   | -                               |
 | user ↔ area                      | 1:N        | 하나의 area에는 여러 user가 속함                              | -                               |
 | user ↔ ban                       | 1:N        | 하나의 user는 여러 ban을 받을 수 있음                         | -                               |
 | user ↔ dibs                      | 1:N        | 하나의 user는 여러 dibs를 가질 수 있음                        | -                               |
-| user ↔ post                      | 1:N        | 하나의 user는 여러 post를 작성함                              | 게시글 작성 횟수 제한 (5회)     |
+| user ↔ product                   | 1:N        | 하나의 user는 여러 product를 작성함                           | 게시글 작성 횟수 제한 (5회)     |
 | user ↔ report                    | 1:N        | 하나의 user는 여러 report를 작성함                            | -                               |
 | user ↔ reservation               | 1:N        | 하나의 user는 여러 reservation을 가질 수 있음 (buyer, seller) | -                               |
 | user ↔ review                    | 1:N        | 하나의 user는 여러 review를 작성함                            | -                               |
+| user ↔ message                   | 1:N        | 하나의 user는 여러 message를 보냄                             | -                               |
+| user ↔ chat                      | 1:N        | 하나의 user는 여러 chat에 속함                                | -                               |
+| user ↔ cancelation               | 1:N        | 하나의 user는 여러 cancelation을 가질 수 있음                 | -                               |
 | cancelation_reason ↔ cancelation | 1:N        | 하나의 cancelation_reason에는 여러 cancelation이 속함         | -                               |
 | complete ↔ review                | 1:1        | 하나의 complete는 하나의 review를 가질 수 있음                | 거래 완료 후에만 리뷰 작성 가능 |
-| post ↔ complete                  | 1:1        | 하나의 post는 하나의 complete 정보를 가짐                     | 거래 완료시에만 생성            |
-| post ↔ goods                     | 1:1        | 하나의 post는 하나의 goods 정보를 가짐                        | 필수 상품 정보                  |
+| product ↔ complete               | 1:1        | 하나의 product는 하나의 complete 정보를 가짐                  | 거래 완료시에만 생성            |
 | report ↔ ban                     | 1:1        | 하나의 report는 하나의 ban에 해당할 수 있음                   | 신고 처리 결과에 따라 제재      |
 | reservation ↔ cancelation        | 1:1        | 하나의 reservation은 하나의 cancelation을 가질 수 있음        | 예약 취소시에만 생성            |
 
@@ -788,17 +763,17 @@ ERDiagram
 
 ### 5.2 게시물 관련 규칙
 
-| 규칙 ID        | 규칙 내용                                              | 우선순위 | 검증 방법                                             |
-| -------------- | ------------------------------------------------------ | -------- | ----------------------------------------------------- |
-| **BR-POST-01** | 검색 시 노출 순서는 최신순                             | 낮음     | 게시물 시간 순으로 앞에 배치                          |
-| **BR-POST-02** | 거래 완료 상품은 검색 결과에서 제외                    | 중간     | 기본값은 보이지 않음이며 체크박스 클릭하여 시 보임    |
-| **BR-POST-03** | 위치를 기반으로 허용 범위 밖의 상품은 노출 금지        | 중간     | 위치 필터링                                           |
-| **BR-POST-04** | 예약 중 게시글은 수정, 삭제 할 수 없음                 | 중간     | 게시글 상태 확인                                      |
-| **BR-POST-05** | 거래 완료 게시글은 수정할 수 없음                      | 중간     | 게시글 상태 확인                                      |
-| **BR-POST-06** | 끌올 시도 횟수마다 다음 끌올 대기 시간이 2배로 증가    | 낮음     | 끌올 카운트 확인                                      |
-| **BR-POST-07** | 거래 중인 상품 게시글은 최대 5개                       | 높음     | 게시물 - 유저 연관관계 상태 확인                      |
-| **BR-POST-08** | 등록 가능한 상품 카테고리 또는 금지 품목 리스트는 정치 | 높음     | 관리자가 모니터링 후 게정 정지 등 처리. (자동필터링?) |
-| **BR-POST-09** | 사진 개수 제한                                         | 낮음     | (이상 이하 조건)                                      |
+| 규칙 ID           | 규칙 내용                                              | 우선순위 | 검증 방법                                             |
+| ----------------- | ------------------------------------------------------ | -------- | ----------------------------------------------------- |
+| **BR-PRODUCT-01** | 검색 시 노출 순서는 최신순                             | 낮음     | 게시물 시간 순으로 앞에 배치                          |
+| **BR-PRODUCT-02** | 거래 완료 상품은 검색 결과에서 제외                    | 중간     | 기본값은 보이지 않음이며 체크박스 클릭하여 시 보임    |
+| **BR-PRODUCT-03** | 위치를 기반으로 허용 범위 밖의 상품은 노출 금지        | 중간     | 위치 필터링                                           |
+| **BR-PRODUCT-04** | 예약 중 게시글은 수정, 삭제 할 수 없음                 | 중간     | 게시글 상태 확인                                      |
+| **BR-PRODUCT-05** | 거래 완료 게시글은 수정할 수 없음                      | 중간     | 게시글 상태 확인                                      |
+| **BR-PRODUCT-06** | 끌올 시도 횟수마다 다음 끌올 대기 시간이 2배로 증가    | 낮음     | 끌올 카운트 확인                                      |
+| **BR-PRODUCT-07** | 거래 중인 상품 게시글은 최대 5개                       | 높음     | 게시물 - 유저 연관관계 상태 확인                      |
+| **BR-PRODUCT-08** | 등록 가능한 상품 카테고리 또는 금지 품목 리스트는 정치 | 높음     | 관리자가 모니터링 후 게정 정지 등 처리. (자동필터링?) |
+| **BR-PRODUCT-09** | 사진 개수 제한                                         | 낮음     | (이상 이하 조건)                                      |
 
 ### 5.3 거래 관련 규칙
 
@@ -827,7 +802,7 @@ ERDiagram
 | **ReservationService**  | 예약 생성, 조회, 취소 기능 관리 | 상품 예약 요청, 예약 상태 확인, 예약 취소  |
 | **MembershipService**   | 회원 가입, 로그인, 인증 관리    | 회원 등록, 로그인, 정보 수정, 탈퇴         |
 | **ChatService**         | 실시간 채팅 기능 관리           | 채팅방 생성, 메시지 전송, 읽음 처리        |
-| **PostService**         | 게시물 CRUD 및 상태 관리        | 게시물 작성, 수정, 삭제, 끌올, 거래 완료   |
+| **ProductService**      | 게시물 CRUD 및 상태 관리        | 게시물 작성, 수정, 삭제, 끌올, 거래 완료   |
 | **ReviewService**       | 거래 완료 후 후기 관리          | 리뷰 작성, 수정, 삭제, 조회                |
 | **ReportService**       | 신고 등록 및 관리               | 사용자, 게시물 신고, 신고 처리, 제재 등록  |
 | **NotificationService** | 사용자 알림 관리                | 채팅, 예약 등 이벤트에 따른 알림 생성/확인 |
@@ -837,7 +812,7 @@ ERDiagram
 
 ```mermaid
 graph TD
-    A[MembershipService] --> B[PostService]
+    A[MembershipService] --> B[ProductService]
     A --> C[ChatService]
     B --> D[ReservationService]
     D --> E[CompleteService]
@@ -856,8 +831,7 @@ graph TD
 | 용어          | 정의                                          | 영문        | 비고                     |
 | ------------- | --------------------------------------------- | ----------- | ------------------------ |
 | **회원**      | 중고 거래 플랫폼을 사용하는 개인 사용자       | User        | 구매자, 판매자 모두 포함 |
-| **게시물**    | 중고 상품의 상세 설명을 포함한 판매 등록 정보 | Post        | 이미지 포함              |
-| **상품**      | 게시물에 포함된 실제 중고 물품 정보           | Goods       | 가격 포함                |
+| **게시물**    | 중고 상품의 상세 설명을 포함한 판매 등록 정보 | Product     | 이미지 포함              |
 | **채팅**      | 거래를 위한 실시간 대화                       | Chat        | 구매자-판매자 간         |
 | **예약**      | 상품을 특정 사용자와 거래하기 위해 예약       | Reservation | 1건만 가능               |
 | **거래 완료** | 실제 상품 거래가 완료된 상태                  | Complete    | 후기 가능 상태           |
@@ -869,7 +843,7 @@ graph TD
 | 용어                       | 정의                                  | 비고                         |
 | -------------------------- | ------------------------------------- | ---------------------------- |
 | **자연키 (Natural Key)**   | 실세계 의미를 가진 고유 식별자        | 예: 회원번호, 게시물 제목 등 |
-| **대리키 (Surrogate Key)** | 내부 식별을 위해 시스템이 생성하는 ID | 예: post_id, user_id 등      |
+| **대리키 (Surrogate Key)** | 내부 식별을 위해 시스템이 생성하는 ID | 예: product_id, user_id 등   |
 | **Soft Delete**            | 실제 삭제 대신 표시만 변경            | 삭제 상태 표시 필드 활용     |
 | **Boolean**                | 참/거짓 데이터 유형                   | 예: is_banned, is_admin      |
 | **Foreign Key**            | 다른 테이블을 참조하는 키             | 관계 무결성 유지에 사용      |

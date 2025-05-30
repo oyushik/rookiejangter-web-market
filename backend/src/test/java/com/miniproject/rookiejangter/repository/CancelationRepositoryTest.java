@@ -35,42 +35,28 @@ public class CancelationRepositoryTest {
 
     @BeforeEach
     void setUp() {
-        // 필요한 Entity 들을 미리 entityManager 를 통해 영속화
-        // Cancelation 엔티티는 Reservation, CancelationReason 에 의존성을 가짐
+        reservation1 = Reservation.builder().build();
+        reservation2 = Reservation.builder().build();
 
-        // 예시 데이터
-        reservation1 = Reservation.builder()
-                // .reservationId(1L) // 이 부분을 제거
-                .build();
-
-        reservation2 = Reservation.builder()
-                // .reservationId(2L) // 이 부분을 제거
-                .build();
-
-        cancelationReason1 = CancelationReason.builder()
-                .cancelationReasonType("질병 사유")
-                .build();
-
-        cancelationReason2 = CancelationReason.builder()
-                .cancelationReasonType("단순 변심")
-                .build();
+        cancelationReason1 = CancelationReason.builder().cancelationReasonType("질병 사유").build();
+        cancelationReason2 = CancelationReason.builder().cancelationReasonType("단순 변심").build();
 
         entityManager.persist(reservation1);
         entityManager.persist(reservation2);
         entityManager.persist(cancelationReason1);
         entityManager.persist(cancelationReason2);
-        entityManager.flush(); // 영속성 컨텍스트의 변경 내용을 데이터베이스에 즉시 반영
+        entityManager.flush();
 
         cancelation1 = Cancelation.builder()
-                .reservation(entityManager.find(Reservation.class, reservation1.getReservationId())) // 영속화된 Reservation 객체 사용
-                .cancelationReason(entityManager.find(CancelationReason.class, cancelationReason1.getCancelationReasonId())) // 영속화된 CancelationReason 객체 사용
+                .reservation(entityManager.find(Reservation.class, reservation1.getReservationId()))
+                .cancelationReason(entityManager.find(CancelationReason.class, cancelationReason1.getCancelationReasonId()))
                 .cancelationDetail("Test Cancelation Detail 1")
                 .canceledAt(LocalDateTime.now())
                 .build();
 
         cancelation2 = Cancelation.builder()
-                .reservation(entityManager.find(Reservation.class, reservation2.getReservationId())) // 영속화된 Reservation 객체 사용
-                .cancelationReason(entityManager.find(CancelationReason.class, cancelationReason2.getCancelationReasonId())) // 영속화된 CancelationReason 객체 사용
+                .reservation(entityManager.find(Reservation.class, reservation2.getReservationId()))
+                .cancelationReason(entityManager.find(CancelationReason.class, cancelationReason2.getCancelationReasonId()))
                 .cancelationDetail("Test Cancelation Detail 2")
                 .canceledAt(LocalDateTime.now().plusDays(1))
                 .build();
@@ -88,14 +74,14 @@ public class CancelationRepositoryTest {
 
     @Test
     void findByCancelationReason_CancelationReasonId_returnsListOfCancelations() {
-        // given (setUp 메서드에서 데이터가 이미 준비됨)
-        int searchReasonId = 1;
+        // given
+        int searchReasonId = cancelationReason1.getCancelationReasonId(); // 실제 영속화된 객체의 ID 사용
 
         // when
         List<Cancelation> foundCancelations = cancelationRepository.findByCancelationReason_CancelationReasonId(searchReasonId);
 
         // then
-        System.out.println("Found Cancelations: " + foundCancelations); // 조회 결과 출력
+        System.out.println("Found Cancelations: " + foundCancelations);
         assertThat(foundCancelations).isNotEmpty();
         assertThat(foundCancelations).contains(cancelation1);
     }

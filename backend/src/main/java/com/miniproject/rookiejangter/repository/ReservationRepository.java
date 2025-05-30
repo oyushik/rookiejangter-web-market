@@ -1,6 +1,6 @@
 package com.miniproject.rookiejangter.repository;
 
-import com.miniproject.rookiejangter.entity.Post;
+import com.miniproject.rookiejangter.entity.Product;
 import com.miniproject.rookiejangter.entity.Reservation;
 import com.miniproject.rookiejangter.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -13,9 +13,9 @@ import java.util.Optional;
 public interface ReservationRepository extends JpaRepository<Reservation, Long> {
     List<Reservation> findByBuyer_UserId(Long buyerId);
     List<Reservation> findBySeller_UserId(Long sellerId);
-    List<Reservation> findByPost_PostId(Long postId);
-    List<Reservation> findByBuyer_UserIdAndPost_PostId(Long buyerUserId, Long postPostId);
+    List<Reservation> findByProduct_ProductId(Long productId);
+    List<Reservation> findByBuyer_UserIdAndProduct_ProductId(Long buyerUserId, Long productProductId);
 
-    boolean existsByBuyer_UserIdAndPost_PostId(Long buyerId, Long postId);
-    void deleteByBuyer_UserIdAndPost_PostId(Long buyerId, Long postId);
+    boolean existsByBuyer_UserIdAndProduct_ProductId(Long buyerId, Long productId);
+    void deleteByBuyer_UserIdAndProduct_ProductId(Long buyerId, Long productId);
 }

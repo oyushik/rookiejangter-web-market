@@ -1,7 +1,7 @@
 package com.miniproject.rookiejangter.repository;
 
 import com.miniproject.rookiejangter.entity.Dibs;
-import com.miniproject.rookiejangter.entity.Post;
+import com.miniproject.rookiejangter.entity.Product;
 import com.miniproject.rookiejangter.entity.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -24,30 +24,31 @@ public class DibsRepositoryTest {
     private TestEntityManager entityManager; // 테스트용 Entity Manager
 
     private User user;
-    private Post post;
+    private Product product;
     private Dibs dibs;
 
     @BeforeEach // 각 테스트 메서드 실행 전 실행
     public void setUp() {
-        // User, Post, Dibs 객체 생성 및 저장
+        // User, Product, Dibs 객체 생성 및 저장
         user = User.builder()
                 .loginId("testUser")
                 .password("password")
                 .userName("테스트유저")
-                .phone("01012345678")
+                .phone("010-1234-5678")
                 .build();
         entityManager.persist(user);
 
-        post = Post.builder()
+        product = Product.builder()
                 .title("테스트 게시글")
                 .content("테스트 내용")
+                .price(10000)
                 .user(user)
                 .build();
-        entityManager.persist(post);
+        entityManager.persist(product);
 
         dibs = Dibs.builder()
                 .user(user)
-                .post(post)
+                .product(product)
                 .addedAt(LocalDateTime.now())
                 .build();
         entityManager.persist(dibs);
@@ -63,25 +64,25 @@ public class DibsRepositoryTest {
     }
 
     @Test
-    public void findByPost_PostId() {
-        // 특정 Post를 찜한 목록 조회 테스트
-        List<Dibs> dibsList = dibsRepository.findByPost_PostId(post.getPostId());
+    public void findByProduct_ProductId() {
+        // 특정 Product를 찜한 목록 조회 테스트
+        List<Dibs> dibsList = dibsRepository.findByProduct_ProductId(product.getProductId());
         assertThat(dibsList).isNotEmpty();
         assertThat(dibsList).contains(dibs);
     }
 
     @Test
-    public void existsByUser_UserIdAndPost_PostId() {
-        // 특정 User가 특정 Post를 찜했는지 확인하는 테스트
-        boolean exists = dibsRepository.existsByUser_UserIdAndPost_PostId(user.getUserId(), post.getPostId());
+    public void existsByUser_UserIdAndProduct_ProductId() {
+        // 특정 User가 특정 Product를 찜했는지 확인하는 테스트
+        boolean exists = dibsRepository.existsByUser_UserIdAndProduct_ProductId(user.getUserId(), product.getProductId());
         assertThat(exists).isTrue();
     }
 
     @Test
-    public void deleteByUser_UserIdAndPost_PostId() {
-        // 특정 User가 특정 Post를 찜한 것을 삭제하는 테스트
-        dibsRepository.deleteByUser_UserIdAndPost_PostId(user.getUserId(), post.getPostId());
-        boolean exists = dibsRepository.existsByUser_UserIdAndPost_PostId(user.getUserId(), post.getPostId());
+    public void deleteByUser_UserIdAndProduct_ProductId() {
+        // 특정 User가 특정 Product를 찜한 것을 삭제하는 테스트
+        dibsRepository.deleteByUser_UserIdAndProduct_ProductId(user.getUserId(), product.getProductId());
+        boolean exists = dibsRepository.existsByUser_UserIdAndProduct_ProductId(user.getUserId(), product.getProductId());
         assertThat(exists).isFalse();
     }
 }

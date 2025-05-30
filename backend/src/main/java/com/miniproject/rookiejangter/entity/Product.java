@@ -2,22 +2,23 @@ package com.miniproject.rookiejangter.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
 @Entity
-@Table(name = "posts")
+@Table(name = "products")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Post extends BaseEntity {
+public class Product extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "post_id")
-    private Long postId;
+    @Column(name = "product_id")
+    private Long productId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
@@ -27,15 +28,14 @@ public class Post extends BaseEntity {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @NotBlank(message = "제목은 필수입니다.")
-    @Size(max = 50, message = "제목은 최대 50자까지 가능합니다.")
     @Column(name = "title", length = 50, nullable = false)
     private String title;
 
-    @NotBlank(message = "내용은 필수입니다.")
-    @Size(max = 255, message = "내용은 최대 255자까지 가능합니다.")
     @Column(name = "content", length = 255, nullable = false)
     private String content;
+
+    @Column(name = "price", nullable = false)
+    private Integer price;
 
     @Column(name = "view_count")
     private Integer viewCount;
@@ -51,8 +51,8 @@ public class Post extends BaseEntity {
 
     @Override
     public String toString() {
-        return "Post{" +
-                "postId=" + postId +
+        return "Product{" +
+                "productId=" + productId +
                 ", title='" + title + '\'' +
                 ", content='" + content + '\'' +
                 ", viewCount=" + viewCount +
@@ -66,8 +66,8 @@ public class Post extends BaseEntity {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Post post = (Post) o;
-        return postId != null && postId.equals(post.postId);
+        Product product = (Product) o;
+        return productId != null && productId.equals(product.productId);
     }
 
     @Override

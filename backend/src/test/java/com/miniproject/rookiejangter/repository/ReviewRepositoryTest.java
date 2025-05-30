@@ -1,7 +1,7 @@
 package com.miniproject.rookiejangter.repository;
 
 import com.miniproject.rookiejangter.entity.Complete;
-import com.miniproject.rookiejangter.entity.Post;
+import com.miniproject.rookiejangter.entity.Product;
 import com.miniproject.rookiejangter.entity.Review;
 import com.miniproject.rookiejangter.entity.User;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,7 +24,7 @@ public class ReviewRepositoryTest {
     @Autowired
     private ReviewRepository reviewRepository;
 
-    private Post post;
+    private Product product;
     private Complete complete;
     private User user;
     private Review review1, review2, review3;
@@ -35,17 +35,18 @@ public class ReviewRepositoryTest {
                 .loginId("testuser")
                 .password("password")
                 .userName("Test User")
-                .phone("01012345678")
+                .phone("010-1234-5678")
                 .build();
         entityManager.persist(user);
 
-        post = Post.builder()
+        product = Product.builder()
                 .title("test title")
                 .content("test content")
+                .price(10000)
                 .build();
 
         complete = Complete.builder()
-                .post(post)
+                .product(product)
                 .buyer(user)
                 .seller(user)
                 .build();

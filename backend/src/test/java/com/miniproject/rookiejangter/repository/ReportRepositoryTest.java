@@ -36,7 +36,7 @@ public class ReportRepositoryTest {
                 .userName("신고자1")
                 .loginId("reporter1")
                 .password("password")
-                .phone("01012341234")
+                .phone("010-1234-1234")
                 .build();
         entityManager.persist(reporter1);
 
@@ -44,7 +44,7 @@ public class ReportRepositoryTest {
                 .userName("대상자1")
                 .loginId("target1")
                 .password("password")
-                .phone("01056785678")
+                .phone("010-5678-5678")
                 .build();
         entityManager.persist(targetUser1);
 
@@ -66,8 +66,8 @@ public class ReportRepositoryTest {
 
         report2 = Report.builder()
                 .user(reporter1)
-                .targetId(10L) // 예시 Post ID
-                .targetType("Post")
+                .targetId(10L) // 예시 Product ID
+                .targetType("Product")
                 .reportReason(reason1)
                 .reportDetail("게시글 내용 부적절")
                 .isProcessed(true)
@@ -80,8 +80,8 @@ public class ReportRepositoryTest {
     void saveReport() {
         Report newReport = Report.builder()
                 .user(reporter1)
-                .targetId(11L) // 다른 Post ID
-                .targetType("Post")
+                .targetId(11L) // 다른 Product ID
+                .targetType("Product")
                 .reportReason(reason1)
                 .reportDetail("광고성 게시글")
                 .isProcessed(false)
@@ -93,7 +93,7 @@ public class ReportRepositoryTest {
         assertThat(foundReport.get().getReportDetail()).isEqualTo("광고성 게시글");
         assertThat(foundReport.get().getUser().getUserId()).isEqualTo(reporter1.getUserId());
         assertThat(foundReport.get().getTargetId()).isEqualTo(11L);
-        assertThat(foundReport.get().getTargetType()).isEqualTo("Post");
+        assertThat(foundReport.get().getTargetType()).isEqualTo("Product");
         assertThat(foundReport.get().getIsProcessed()).isFalse();
         assertThat(foundReport.get().getCreatedAt()).isNotNull();
         assertThat(foundReport.get().getUpdatedAt()).isNotNull();

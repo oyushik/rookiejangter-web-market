@@ -43,7 +43,7 @@
 | **Reservation**        | 핵심 | 낮음            | 높음          | 3개         | 1순위    |
 | **Complete**           | 핵심 | 낮음            | 높음          | 3개         | 1순위    |
 | **Goods**              | 지원 | 낮음            | 높음          | 2개         | 1순위    |
-| **Post**               | 핵심 | 높음            | 높음          | 8개         | 1순위    |
+| **Product**            | 핵심 | 높음            | 높음          | 8개         | 1순위    |
 | **User**               | 핵심 | 중간            | 높음          | 10개        | 1순위    |
 | **CancellationReason** | 지원 | 중간            | 중간          | 1개         | 2순위    |
 | **Bump**               | 지원 | 낮음            | 중간          | 1개         | 2순위    |
@@ -75,7 +75,7 @@ classDiagram
     Reservation --|> BaseEntity
     Complete --|> BaseEntity
     Goods --|> BaseEntity
-    Post --|> BaseEntity
+    Product --|> BaseEntity
     User --|> BaseEntity
 
     %% 2순위 지원/이력 엔티티들
@@ -97,12 +97,12 @@ classDiagram
     Ban --|> BaseEntity
 
     %% 주요 관계 표시 (우선순위가 높은 엔티티들 간)
-    User "1" --> "0..*" Post : creates
+    User "1" --> "0..*" Product : creates
     User "1" --> "0..*" Reservation : makes
-    Post "1" --> "0..*" Goods : contains
-    Post "1" --> "0..*" Review : receives
+    Product "1" --> "0..*" Goods : contains
+    Product "1" --> "0..*" Review : receives
     User "1" --> "0..*" Chat : participates
-    Post "1" --> "0..*" Dibs : gets
+    Product "1" --> "0..*" Dibs : gets
     Reservation "1" --> "1" Complete : becomes
 ```
 
@@ -140,7 +140,7 @@ public class EntityName extends BaseEntity {
 | Entity           | 전략                                              | 이유                                            | 예시                                   |
 | ---------------- | ------------------------------------------------- | ----------------------------------------------- | -------------------------------------- |
 | **User**         | IDENTITY (Auto Increment, unique 식별)            | 사용자는 고유해야 하며, 성능상 자동 증가가 적합 | user_id: 1, 2, 3...                    |
-| **Post**         | IDENTITY (Auto Increment, 순차 증가)              | 게시글 순서 관리 및 성능 최적화                 | post_id: 1001, 1002, 1003...           |
+| **Product**      | IDENTITY (Auto Increment, 순차 증가)              | 게시글 순서 관리 및 성능 최적화                 | product_id: 1001, 1002, 1003...        |
 | **Reservation**  | IDENTITY (Auto Increment, 순차 증가)              | 예약 순서 관리 및 빠른 조회                     | reservation_id: 2001, 2002...          |
 | **Chat**         | IDENTITY (Auto Increment, 순차 증가)              | 채팅방 생성 순서 관리                           | chat_id: 3001, 3002...                 |
 | **Message**      | IDENTITY (Auto Increment, 메시지 순서)            | 메시지 전송 순서 보장 필요                      | message_id: 10001, 10002...            |
@@ -151,8 +151,7 @@ public class EntityName extends BaseEntity {
 | **Notification** | IDENTITY (Auto Increment, 알림 순서)              | 알림 발생 순서 보장                             | notification_id: 8001, 8002...         |
 | **Report**       | IDENTITY (Auto Increment, 신고 순서, unique 식별) | 신고 접수 순서 및 고유성 보장                   | report_id: 9001, 9002...               |
 | **Ban**          | IDENTITY (Auto Increment, unique 식별)            | 제재 이력 고유성 및 순서 관리                   | ban_id: 11001, 11002...                |
-| **Goods**        | IDENTITY (Post의 ID를 PK 겸 FK로 사용)            | 게시글과 1:1 관계, 참조 무결성 보장             | goods_id = post_id                     |
-| **Cancellation** | IDENTITY (Reservation의 ID를 PK 겸 FK로 사용)     | 예약과 1:1 관계, 참조 무결성 보장               | cancellation_id = reservation_id       |
+| **Cancelation**  | IDENTITY (Reservation의 ID를 PK 겸 FK로 사용)     | 예약과 1:1 관계, 참조 무결성 보장               | cancellation_id = reservation_id       |
 | **Category**     | IDENTITY (범주 별로 고정된 id 부여, unique 식별)  | 카테고리는 미리 정의된 고정값 사용              | category_id: 1(전자기기), 2(의류)...   |
 | **Area**         | IDENTITY (지역 별로 고정된 id 부여, unique 식별)  | 지역정보는 행정구역 기준 고정값                 | area_id: 1(서울), 2(부산)...           |
 | **ReportReason** | IDENTITY (사유 별로 고정된 id 부여)               | 신고사유는 미리 정의된 고정 코드값              | reason_id: 1(스팸), 2(욕설)...         |
@@ -173,7 +172,7 @@ public class EntityName extends BaseEntity {
 | **notificationId** | Long          | notification_id | NOT NULL, PK       | 알림 고유 식별자      | 시스템에서 자동 생성되는 고유값     |
 | **userId**         | Long          | user_id         | NULL, FK           | 알림 수신자 사용자 ID | 반드시 존재하는 사용자여야 함       |
 | **entityId**       | Long          | entity_id       | NULL               | 연관된 엔티티의 ID    | 특정 객체와 연관된 알림인 경우 사용 |
-| **entityType**     | String        | entity_type     | VARCHAR(10), NULL  | 연관된 엔티티 타입    | POST, COMMENT, USER 등의 값         |
+| **entityType**     | String        | entity_type     | VARCHAR(10), NULL  | 연관된 엔티티 타입    | PRODUCT, COMMENT, USER 등의 값      |
 | **message**        | String        | message         | VARCHAR(255), NULL | 알림 메시지 내용      | 사용자에게 표시될 알림 텍스트       |
 | **sentAt**         | LocalDateTime | sent_at         | NULL               | 알림 발송 시간        | 기본값은 현재 시간                  |
 | **isRead**         | Boolean       | is_read         | NULL               | 읽음 여부             | 기본값은 false (미읽음)             |
@@ -217,7 +216,7 @@ public class EntityName extends BaseEntity {
 | **report_reason_id** | INT          | report_reason_id | NULL     | 신고 사유의 식별자     | 신고 사유 테이블과 연결되는 외래키 NULL 값 허용 사전에 정의된 신고 사유 중 하나를 선택           |
 | **user_id**          | BIGINT       | user_id          | NULL     | 신고한 사용자의 식별자 | 신고자의 고유 식별자 사용자 테이블과 연결되는 외래키 NULL 값 허용                                |
 | **target_id**        | BIGINT       | target_id        | NULL     | 신고 대상의 식별자     | 신고 대상(게시물, 댓글 등)의 고유 식별자 NULL 값 허용 target_type과 함께 사용하여 신고 대상 특정 |
-| **target_type**      | VARCHAR(10)  | target_type      | NULL     | 신고 대상의 유형       | 신고 대상의 종류 구분 (예: POST, COMMENT, USER 등) 최대 10자까지 입력 가능 NULL 값 허용          |
+| **target_type**      | VARCHAR(10)  | target_type      | NULL     | 신고 대상의 유형       | 신고 대상의 종류 구분 (예: PRODUCT, COMMENT, USER 등) 최대 10자까지 입력 가능 NULL 값 허용       |
 | **report_detail**    | VARCHAR(255) | report_detail    | NULL     | 신고에 대한 상세 설명  | 신고자가 작성한 추가 설명 최대 255자까지 입력 가능 NULL 값 허용                                  |
 | **is_processed**     | BOOLEAN      | is_processed     | NULL     | 신고 처리 완료 여부    | true: 처리 완료, false: 미처리 NULL 값 허용 (기본값 false 권장) 관리자의 신고 처리 상태 추적용   |
 
@@ -238,7 +237,7 @@ public class EntityName extends BaseEntity {
 | 필드명         | 데이터 타입 | 컬럼명     | 제약조건 | 설명                      | 비즈니스 규칙                                                                    |
 | -------------- | ----------- | ---------- | -------- | ------------------------- | -------------------------------------------------------------------------------- |
 | **bump_id**    | BIGINT      | bump_id    | NOT NULL | 범프의 고유 식별자        | 각 범프마다 고유한 정수값 할당, NULL 값 허용하지 않음, Primary Key로 사용 권장   |
-| **post_id**    | BIGINT      | post_id    | NULL     | 범프 대상 게시물의 식별자 | 게시물 테이블과 연결되는 외래키, NULL 값 허용, 범프할 게시물을 특정              |
+| **product_id** | BIGINT      | product_id | NULL     | 범프 대상 게시물의 식별자 | 게시물 테이블과 연결되는 외래키, NULL 값 허용, 범프할 게시물을 특정              |
 | **bumped_at**  | TIMESTAMP   | bumped_at  | NULL     | 범프가 실행된 일시        | 범프 발생 시점 기록, NULL 값 허용, 자동으로 현재 시간 설정 권장                  |
 | **bump_count** | INT         | bump_count | NULL     | 범프 실행 횟수            | 해당 게시물의 총 범프 횟수, NULL 값 허용, 기본값 1로 설정 권장, 범프 시마다 증가 |
 
@@ -256,12 +255,12 @@ public class EntityName extends BaseEntity {
 
 #### 4.5.2 필드 상세 명세
 
-| 필드명       | 데이터 타입 | 컬럼명   | 제약조건 | 설명                 | 비즈니스 규칙                                                                |
-| ------------ | ----------- | -------- | -------- | -------------------- | ---------------------------------------------------------------------------- |
-| **dibs_id**  | BIGINT      | dibs_id  | NOT NULL | 찜의 고유 식별자     | 각 찜마다 고유한 정수값 할당, NULL 값 허용하지 않음, Primary Key로 사용 권장 |
-| **user_id**  | BIGINT      | user_id  | NULL     | 찜한 사용자의 식별자 | 찜을 한 사용자의 고유 식별자, 사용자 테이블과 연결되는 외래키, NULL 값 허용  |
-| **post_id**  | BIGINT      | post_id  | NULL     | 찜한 게시물의 식별자 | 찜 대상 게시물의 고유 식별자, 게시물 테이블과 연결되는 외래키, NULL 값 허용  |
-| **added_at** | TIMESTAMP   | added_at | NULL     | 찜이 추가된 일시     | 찜 등록 시점 기록, NULL 값 허용, 자동으로 현재 시간 설정 권장                |
+| 필드명         | 데이터 타입 | 컬럼명     | 제약조건 | 설명                 | 비즈니스 규칙                                                                |
+| -------------- | ----------- | ---------- | -------- | -------------------- | ---------------------------------------------------------------------------- |
+| **dibs_id**    | BIGINT      | dibs_id    | NOT NULL | 찜의 고유 식별자     | 각 찜마다 고유한 정수값 할당, NULL 값 허용하지 않음, Primary Key로 사용 권장 |
+| **user_id**    | BIGINT      | user_id    | NULL     | 찜한 사용자의 식별자 | 찜을 한 사용자의 고유 식별자, 사용자 테이블과 연결되는 외래키, NULL 값 허용  |
+| **product_id** | BIGINT      | product_id | NULL     | 찜한 게시물의 식별자 | 찜 대상 게시물의 고유 식별자, 게시물 테이블과 연결되는 외래키, NULL 값 허용  |
+| **added_at**   | TIMESTAMP   | added_at   | NULL     | 찜이 추가된 일시     | 찜 등록 시점 기록, NULL 값 허용, 자동으로 현재 시간 설정 권장                |
 
 #### 4.5.3 검증 어노테이션
 
@@ -282,7 +281,8 @@ public class EntityName extends BaseEntity {
 | **reservation_id** | BIGINT      | reservation_id | NOT NULL | 예약의 고유 식별자     | 각 예약마다 고유한 정수값 할당, NULL 값 허용하지 않음, Primary Key로 사용 권장      |
 | **buyer_id**       | BIGINT      | buyer_id       | NULL     | 구매자의 식별자        | 상품을 예약한 구매자의 고유 식별자, 사용자 테이블과 연결되는 외래키, NULL 값 허용   |
 | **seller_id**      | BIGINT      | seller_id      | NULL     | 판매자의 식별자        | 상품을 판매하는 판매자의 고유 식별자, 사용자 테이블과 연결되는 외래키, NULL 값 허용 |
-| **post_id**        | BIGINT      | post_id        | NULL     | 예약된 게시물의 식별자 | 예약 대상 게시물의 고유 식별자, 게시물 테이블과 연결되는 외래키, NULL 값 허용       |
+| **product_id**     | BIGINT      | product_id     | NULL     | 예약된 게시물의 식별자 | 예약 대상 게시물의 고유 식별자, 게시물 테이블과 연결되는 외래키, NULL 값 허용       |
+| **status**         | ENUM        | status         | NULL     | 예약 상태 식별         | 예약 상태 구분을 위한 문자열 포함                                                   |
 
 #### 4.6.3 검증 어노테이션
 
@@ -302,6 +302,7 @@ public class EntityName extends BaseEntity {
 | -------------- | ------------ | ---------- | -------- | ----------------------------- | ---------------------------------------------------------------------------------------------------------- |
 | **message_id** | BIGINT       | message_id | NOT NULL | 메시지의 고유 식별자          | 기본키로 사용, 자동 증가 값 권장, 중복 불가                                                                |
 | **chat_id**    | BIGINT       | chat_id    | NULL     | 메시지가 속한 채팅방의 식별자 | 외래키로 사용, chats 테이블의 chat_id 참조                                                                 |
+| **sender_id**  | BIGINT       | sender_id  | NULL     | 메시지가 속한 채팅방의 식별자 | 외래키로 사용, users 테이블의 user_id 참조                                                                 |
 | **content**    | VARCHAR(255) | content    | NOT NULL | 메시지 내용                   | 최대 255자까지 입력 가능, 빈 문자열 허용하지 않음, 특수문자, 이모지 포함 가능                              |
 | **sent_at**    | TIMESTAMP    | sent_at    | NULL     | 메시지 전송 시각              | 메시지 생성 시 자동으로 현재 시간 설정 권장, NULL 허용 (임시 저장된 메시지의 경우), UTC 기준으로 저장 권장 |
 | **is_read**    | BOOLEAN      | is_read    | NULL     | 메시지 읽음 여부              | 기본값: FALSE, TRUE: 읽음, FALSE: 읽지 않음, NULL: 읽음 상태 미확인                                        |
@@ -320,11 +321,11 @@ public class EntityName extends BaseEntity {
 
 #### 4.8.2 필드 상세 명세
 
-| 필드명        | 데이터 타입  | 컬럼명    | 제약조건 | 설명                          | 비즈니스 규칙                                                                                              |
-| ------------- | ------------ | --------- | -------- | ----------------------------- | ---------------------------------------------------------------------------------------------------------- |
-| **image_id**  | BIGINT       | image_id  | NOT NULL | 이미지의 고유 식별자          | 기본키로 사용, 자동 증가 값 권장, 중복 불가                                                                |
-| **post_id**   | BIGINT       | post_id   | NULL     | 이미지가 속한 게시물의 식별자 | 외래키로 사용, posts 테이블의 post_id 참조                                                                 |
-| **image_url** | VARCHAR(255) | image_url | NOT NULL | 이미지 파일의 URL 경로        | 최대 255자까지 입력 가능, 유효한 URL 형식이어야 함, 절대 경로 또는 상대 경로 허용, 빈 문자열 허용하지 않음 |
+| 필드명         | 데이터 타입  | 컬럼명     | 제약조건 | 설명                          | 비즈니스 규칙                                                                                              |
+| -------------- | ------------ | ---------- | -------- | ----------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| **image_id**   | BIGINT       | image_id   | NOT NULL | 이미지의 고유 식별자          | 기본키로 사용, 자동 증가 값 권장, 중복 불가                                                                |
+| **product_id** | BIGINT       | product_id | NULL     | 이미지가 속한 게시물의 식별자 | 외래키로 사용, products 테이블의 product_id 참조                                                           |
+| **image_url**  | VARCHAR(255) | image_url  | NOT NULL | 이미지 파일의 URL 경로        | 최대 255자까지 입력 가능, 유효한 URL 형식이어야 함, 절대 경로 또는 상대 경로 허용, 빈 문자열 허용하지 않음 |
 
 #### 4.8.3 검증 어노테이션
 
@@ -347,7 +348,7 @@ public class EntityName extends BaseEntity {
 | **login_id**  | VARCHAR(20) | login_id  | NOT NULL | 로그인용 사용자 아이디      | 최대 20자까지 입력 가능, 영문, 숫자 조합 권장, 중복 불가 (UNIQUE 제약조건 필요), 빈 문자열 허용하지 않음  |
 | **password**  | VARCHAR(20) | password  | NOT NULL | 사용자 비밀번호             | 최대 20자까지 입력 가능, 암호화하여 저장 권장, 특수문자 포함 권장, 빈 문자열 허용하지 않음                |
 | **user_name** | VARCHAR(12) | user_name | NOT NULL | 사용자 실명 또는 닉네임     | 최대 12자까지 입력 가능, 한글, 영문 모두 허용, 빈 문자열 허용하지 않음                                    |
-| **phone**     | VARCHAR(12) | phone     | NOT NULL | 사용자 전화번호             | 최대 12자까지 입력 가능, 숫자와 하이픈(-) 허용, 중복 불가 (UNIQUE 제약조건 권장), 빈 문자열 허용하지 않음 |
+| **phone**     | VARCHAR(20) | phone     | NOT NULL | 사용자 전화번호             | 최대 20자까지 입력 가능, 숫자와 하이픈(-) 허용, 중복 불가 (UNIQUE 제약조건 권장), 빈 문자열 허용하지 않음 |
 | **is_banned** | BOOLEAN     | is_banned | NULL     | 사용자 차단 여부            | 기본값: FALSE, TRUE: 차단됨, FALSE: 정상, NULL: 차단 상태 미확인                                          |
 | **is_admin**  | BOOLEAN     | is_admin  | NULL     | 관리자 권한 여부            | 기본값: FALSE, TRUE: 관리자, FALSE: 일반 사용자, NULL: 권한 상태 미확인                                   |
 
@@ -399,7 +400,7 @@ public class EntityName extends BaseEntity {
 
 #### 4.11.6 생성자 및 팩토리 메서드
 
-### 4.12 Posts Entity
+### 4.12 Products Entity
 
 #### 4.12.1 기본 정보
 
@@ -407,11 +408,12 @@ public class EntityName extends BaseEntity {
 
 | 필드명           | 데이터 타입  | 컬럼명       | 제약조건 | 설명                            | 비즈니스 규칙                                                                          |
 | ---------------- | ------------ | ------------ | -------- | ------------------------------- | -------------------------------------------------------------------------------------- |
-| **post_id**      | BIGINT       | post_id      | NOT NULL | 게시물의 고유 식별자            | 기본키로 사용, 자동 증가 값 권장, 중복 불가                                            |
+| **product_id**   | BIGINT       | product_id   | NOT NULL | 게시물의 고유 식별자            | 기본키로 사용, 자동 증가 값 권장, 중복 불가                                            |
 | **category_id**  | INT          | category_id  | NULL     | 게시물이 속한 카테고리의 식별자 | 외래키로 사용, categories 테이블의 category_id 참조                                    |
 | **user_id**      | BIGINT       | user_id      | NULL     | 게시물 작성자의 식별자          | 외래키로 사용, users 테이블의 user_id 참조, NULL 허용 (익명 게시물 또는 탈퇴한 사용자) |
 | **title**        | VARCHAR(50)  | title        | NOT NULL | 게시물 제목                     | 최대 50자까지 입력 가능, 빈 문자열 허용하지 않음, 특수문자 포함 가능                   |
 | **content**      | VARCHAR(255) | content      | NOT NULL | 게시물 내용                     | 최대 255자까지 입력 가능, 빈 문자열 허용하지 않음, 특수문자, 줄바꿈 포함 가능          |
+| **price**        | INT          | price        | NULL     | 상품 가격                       | 원 단위로 저장, 음수 값 허용하지 않음, NULL 허용 (가격 협의 또는 무료 나눔)            |
 | **view_count**   | INT          | view_count   | NULL     | 게시물 조회수                   | 기본값: 0, 음수 값 허용하지 않음, NULL 허용 (조회수 미집계 상태)                       |
 | **is_bumped**    | BOOLEAN      | is_bumped    | NULL     | 게시물 끌어올리기 여부          | 기본값: FALSE, TRUE: 끌어올림, FALSE: 일반, NULL: 끌어올리기 상태 미확인               |
 | **is_reserved**  | BOOLEAN      | is_reserved  | NULL     | 게시물 예약 여부                | 기본값: FALSE, TRUE: 예약됨, FALSE: 예약 안됨, NULL: 예약 상태 미확인                  |
@@ -456,7 +458,7 @@ public class EntityName extends BaseEntity {
 | 필드명           | 데이터 타입 | 컬럼명       | 제약조건 | 설명                        | 비즈니스 규칙                                                                                   |
 | ---------------- | ----------- | ------------ | -------- | --------------------------- | ----------------------------------------------------------------------------------------------- |
 | **complete_id**  | BIGINT      | complete_id  | NOT NULL | 완료된 거래의 고유 식별자   | 기본키로 사용, 자동 증가 값 권장, 중복 불가                                                     |
-| **post_id**      | BIGINT      | post_id      | NULL     | 거래 완료된 게시물의 식별자 | 외래키로 사용, posts 테이블의 post_id 참조, NULL 허용 (게시물 삭제된 경우)                      |
+| **product_id**   | BIGINT      | product_id   | NULL     | 거래 완료된 게시물의 식별자 | 외래키로 사용, products 테이블의 product_id 참조, NULL 허용 (게시물 삭제된 경우)                |
 | **buyer_id**     | BIGINT      | buyer_id     | NULL     | 구매자의 식별자             | 외래키로 사용, users 테이블의 user_id 참조, NULL 허용 (익명 거래 또는 탈퇴한 사용자)            |
 | **seller_id**    | BIGINT      | seller_id    | NULL     | 판매자의 식별자             | 외래키로 사용, users 테이블의 user_id 참조, NULL 허용 (익명 거래 또는 탈퇴한 사용자)            |
 | **completed_at** | TIMESTAMP   | completed_at | NULL     | 거래 완료 시각              | 거래 완료 시 자동으로 현재 시간 설정 권장, NULL 허용 (완료 시간 미기록), UTC 기준으로 저장 권장 |
@@ -469,17 +471,19 @@ public class EntityName extends BaseEntity {
 
 #### 4.14.6 생성자 및 팩토리 메서드
 
-### 4.15 Goods Entity
+### 4.15 Cancelations Entity
 
 #### 4.15.1 기본 정보
 
 #### 4.15.2 필드 상세 명세
 
-| 필드명         | 데이터 타입 | 컬럼명     | 제약조건 | 설명                          | 비즈니스 규칙                                                               |
-| -------------- | ----------- | ---------- | -------- | ----------------------------- | --------------------------------------------------------------------------- |
-| **post_id**    | BIGINT      | post_id    | NOT NULL | 상품이 등록된 게시물의 식별자 | 기본키로 사용, 외래키로 사용, posts 테이블의 post_id 참조, 중복 불가        |
-| **goods_name** | VARCHAR(50) | goods_name | NULL     | 상품명                        | 최대 50자까지 입력 가능, NULL 허용 (상품명 미등록), 특수문자 포함 가능      |
-| **price**      | INT         | price      | NULL     | 상품 가격                     | 원 단위로 저장, 음수 값 허용하지 않음, NULL 허용 (가격 협의 또는 무료 나눔) |
+| 필드명                    | 데이터 타입  | 컬럼명                | 제약조건 | 설명                 | 비즈니스 규칙                                                                                   |
+| ------------------------- | ------------ | --------------------- | -------- | -------------------- | ----------------------------------------------------------------------------------------------- |
+| **reservation_id**        | BIGINT       | reservation_id        | NOT NULL | 취소된 예약의 식별자 | 기본키로 사용, 외래키로 사용, reservations 테이블의 reservation_id 참조, 중복 불가              |
+| **cancelation_reason_id** | INT          | cancelation_reason_id | NULL     | 취소 사유의 식별자   | 외래키로 사용, cancelation_reasons 테이블의 cancelation_reason_id 참조                          |
+| **canceler_id**           | BIGINT       | canceler_id           | NULL     | 취소 사유의 식별자   | 외래키로 사용, cancelation_reasons 테이블의 user_id 참조                                        |
+| **report_detail**         | VARCHAR(255) | report_detail         | NULL     | 취소 상세 내용       | 최대 255자까지 입력 가능, NULL 허용 (기본 취소 사유만 적용), 사용자가 직접 입력하는 상세 사유   |
+| **canceled_at**           | TIMESTAMP    | canceled_at           | NULL     | 취소 처리 시각       | 취소 처리 시 자동으로 현재 시간 설정 권장, NULL 허용 (취소 시간 미기록), UTC 기준으로 저장 권장 |
 
 #### 4.15.3 검증 어노테이션
 
@@ -489,18 +493,18 @@ public class EntityName extends BaseEntity {
 
 #### 4.15.6 생성자 및 팩토리 메서드
 
-### 4.16 Cancelations Entity
+### 4.16 Chats Entity
 
 #### 4.16.1 기본 정보
 
 #### 4.16.2 필드 상세 명세
 
-| 필드명                    | 데이터 타입  | 컬럼명                | 제약조건 | 설명                 | 비즈니스 규칙                                                                                   |
-| ------------------------- | ------------ | --------------------- | -------- | -------------------- | ----------------------------------------------------------------------------------------------- |
-| **reservation_id**        | BIGINT       | reservation_id        | NOT NULL | 취소된 예약의 식별자 | 기본키로 사용, 외래키로 사용, reservations 테이블의 reservation_id 참조, 중복 불가              |
-| **cancelation_reason_id** | INT          | cancelation_reason_id | NULL     | 취소 사유의 식별자   | 외래키로 사용, cancelation_reasons 테이블의 cancelation_reason_id 참조                          |
-| **report_detail**         | VARCHAR(255) | report_detail         | NULL     | 취소 상세 내용       | 최대 255자까지 입력 가능, NULL 허용 (기본 취소 사유만 적용), 사용자가 직접 입력하는 상세 사유   |
-| **canceled_at**           | TIMESTAMP    | canceled_at           | NULL     | 취소 처리 시각       | 취소 처리 시 자동으로 현재 시간 설정 권장, NULL 허용 (취소 시간 미기록), UTC 기준으로 저장 권장 |
+| 필드명         | 데이터 타입 | 컬럼명     | 제약조건 | 설명                      | 비즈니스 규칙                                                                        |
+| -------------- | ----------- | ---------- | -------- | ------------------------- | ------------------------------------------------------------------------------------ |
+| **chat_id**    | BIGINT      | chat_id    | NOT NULL | 채팅방의 고유 식별자      | 기본키로 사용<br>자동 증가 값 권장, 중복 불가                                        |
+| **buyer_id**   | BIGINT      | buyer_id   | NULL     | 구매자의 식별자           | 외래키로 사용, users 테이블의 user_id 참조, NULL 허용 (익명 채팅 또는 탈퇴한 사용자) |
+| **seller_id**  | BIGINT      | seller_id  | NULL     | 판매자의 식별자           | 외래키로 사용, users 테이블의 user_id 참조, NULL 허용 (익명 채팅 또는 탈퇴한 사용자) |
+| **product_id** | BIGINT      | product_id | NULL     | 채팅 관련 게시물의 식별자 | 외래키로 사용, products 테이블의 product_id 참조, NULL 허용 (게시물 삭제된 경우)     |
 
 #### 4.16.3 검증 어노테이션
 
@@ -510,18 +514,16 @@ public class EntityName extends BaseEntity {
 
 #### 4.16.6 생성자 및 팩토리 메서드
 
-### 4.17 Chats Entity
+### 4.17 Cancelation_reasons Entity
 
 #### 4.17.1 기본 정보
 
 #### 4.17.2 필드 상세 명세
 
-| 필드명        | 데이터 타입 | 컬럼명    | 제약조건 | 설명                      | 비즈니스 규칙                                                                        |
-| ------------- | ----------- | --------- | -------- | ------------------------- | ------------------------------------------------------------------------------------ |
-| **chat_id**   | BIGINT      | chat_id   | NOT NULL | 채팅방의 고유 식별자      | 기본키로 사용<br>자동 증가 값 권장, 중복 불가                                        |
-| **buyer_id**  | BIGINT      | buyer_id  | NULL     | 구매자의 식별자           | 외래키로 사용, users 테이블의 user_id 참조, NULL 허용 (익명 채팅 또는 탈퇴한 사용자) |
-| **seller_id** | BIGINT      | seller_id | NULL     | 판매자의 식별자           | 외래키로 사용, users 테이블의 user_id 참조, NULL 허용 (익명 채팅 또는 탈퇴한 사용자) |
-| **post_id**   | BIGINT      | post_id   | NULL     | 채팅 관련 게시물의 식별자 | 외래키로 사용, posts 테이블의 post_id 참조, NULL 허용 (게시물 삭제된 경우)           |
+| 필드명                      | 데이터 타입 | 컬럼명                  | 제약조건 | 설명                    | 비즈니스 규칙                                                                                         |
+| --------------------------- | ----------- | ----------------------- | -------- | ----------------------- | ----------------------------------------------------------------------------------------------------- |
+| **cancelation_reason_id**   | INT         | cancelation_reason_id   | NOT NULL | 취소 사유의 고유 식별자 | 기본키로 사용, 자동 증가 값 권장, 중복 불가                                                           |
+| **cancelation_reason_type** | VARCHAR(50) | cancelation_reason_type | NULL     | 취소 사유 유형          | 최대 50자까지 입력 가능, NULL 허용 (기타 사유의 경우), 예: '단순 변심', '상품 불만족', '일정 변경' 등 |
 
 #### 4.17.3 검증 어노테이션
 
@@ -531,16 +533,16 @@ public class EntityName extends BaseEntity {
 
 #### 4.17.6 생성자 및 팩토리 메서드
 
-### 4.18 Cancelation_reasons Entity
+### 4.18 Report_reasons Entity
 
 #### 4.18.1 기본 정보
 
 #### 4.18.2 필드 상세 명세
 
-| 필드명                      | 데이터 타입 | 컬럼명                  | 제약조건 | 설명                    | 비즈니스 규칙                                                                                         |
-| --------------------------- | ----------- | ----------------------- | -------- | ----------------------- | ----------------------------------------------------------------------------------------------------- |
-| **cancelation_reason_id**   | INT         | cancelation_reason_id   | NOT NULL | 취소 사유의 고유 식별자 | 기본키로 사용, 자동 증가 값 권장, 중복 불가                                                           |
-| **cancelation_reason_type** | VARCHAR(50) | cancelation_reason_type | NULL     | 취소 사유 유형          | 최대 50자까지 입력 가능, NULL 허용 (기타 사유의 경우), 예: '단순 변심', '상품 불만족', '일정 변경' 등 |
+| 필드명                 | 데이터 타입 | 컬럼명             | 제약조건 | 설명                    | 비즈니스 규칙                                                                                 |
+| ---------------------- | ----------- | ------------------ | -------- | ----------------------- | --------------------------------------------------------------------------------------------- |
+| **report_reason_id**   | INT         | report_reason_id   | NOT NULL | 신고 사유의 고유 식별자 | 기본키로 사용, 자동 증가 값 권장, 중복 불가                                                   |
+| **report_reason_type** | VARCHAR(50) | report_reason_type | NULL     | 신고 사유 유형          | 최대 50자까지 입력 가능, NULL 허용 (기타 사유의 경우), 예: '스팸', '욕설', '부적절한 내용' 등 |
 
 #### 4.18.3 검증 어노테이션
 
@@ -549,25 +551,6 @@ public class EntityName extends BaseEntity {
 #### 4.18.5 비즈니스 메서드
 
 #### 4.18.6 생성자 및 팩토리 메서드
-
-### 4.19 Report_reasons Entity
-
-#### 4.19.1 기본 정보
-
-#### 4.19.2 필드 상세 명세
-
-| 필드명                 | 데이터 타입 | 컬럼명             | 제약조건 | 설명                    | 비즈니스 규칙                                                                                 |
-| ---------------------- | ----------- | ------------------ | -------- | ----------------------- | --------------------------------------------------------------------------------------------- |
-| **report_reason_id**   | INT         | report_reason_id   | NOT NULL | 신고 사유의 고유 식별자 | 기본키로 사용, 자동 증가 값 권장, 중복 불가                                                   |
-| **report_reason_type** | VARCHAR(50) | report_reason_type | NULL     | 신고 사유 유형          | 최대 50자까지 입력 가능, NULL 허용 (기타 사유의 경우), 예: '스팸', '욕설', '부적절한 내용' 등 |
-
-#### 4.19.3 검증 어노테이션
-
-#### 4.19.4 연관관계 매핑
-
-#### 4.19.5 비즈니스 메서드
-
-#### 4.19.6 생성자 및 팩토리 메서드
 
 ## 5. Enum 타입 정의
 
@@ -926,50 +909,146 @@ class MemberTest {
 
 ```java
 @DataJpaTest
-@DisplayName("LoanRepository 테스트")
-class LoanRepositoryTest {
+public class MessageRepositoryTest {
+
+    @Autowired
+    private MessageRepository messageRepository;
 
     @Autowired
     private TestEntityManager entityManager;
 
-    @Autowired
-    private LoanRepository loanRepository;
+    private User buyer1;
+    private User seller1;
+    private Chat chat1;
+    private Message message1;
+    private Message message2;
 
-    @Test
-    @DisplayName("회원 ID와 상태로 대출 목록을 조회해야 한다")
-    void findByMemberIdAndStatus_ShouldReturnLoans() {
-        // given
-        Member member = createAndSaveMember();
-        Book book = createAndSaveBook();
-        Loan loan = createAndSaveLoan(member, book, LoanStatus.BORROWED);
+    @BeforeEach
+    void setUp() {
+        buyer1 = User.builder()
+                .userName("구매자1")
+                .loginId("buyer1")
+                .password("password")
+                .phone("010-1234-1234")
+                .build();
+        entityManager.persist(buyer1);
 
-        // when
-        List<Loan> result = loanRepository.findByMemberIdAndStatus(
-            member.getId(), LoanStatus.BORROWED);
+        seller1 = User.builder()
+                .userName("판매자1")
+                .loginId("seller1")
+                .password("password")
+                .phone("010-5678-5678")
+                .build();
 
-        // then
-        assertThat(result).hasSize(1);
-        assertThat(result.get(0).getId()).isEqualTo(loan.getId());
+        entityManager.persist(seller1);
+
+        chat1 = Chat.builder()
+                .buyer(buyer1)
+                .seller(seller1)
+                .build();
+        entityManager.persist(chat1);
+        entityManager.flush();
+
+        message1 = Message.builder()
+                .chat(chat1)
+                .user(buyer1)
+                .content("안녕하세요!")
+                .sentAt(LocalDateTime.now())
+                .isRead(false)
+                .build();
+        entityManager.persist(message1);
+
+        message2 = Message.builder()
+                .chat(chat1)
+                .user(seller1)
+                .content("물건 상태는 어떤가요?")
+                .sentAt(LocalDateTime.now().plusMinutes(2))
+                .isRead(false)
+                .build();
+        entityManager.persist(message2);
+        entityManager.flush();
     }
 
     @Test
-    @DisplayName("연체된 대출 목록을 조회해야 한다")
-    void findOverdueLoans_ShouldReturnOverdueLoans() {
-        // given
-        Member member = createAndSaveMember();
-        Book book = createAndSaveBook();
-        Loan overdueLoan = createAndSaveLoan(member, book, LoanStatus.BORROWED);
+    void saveMessage() {
+        Message newMessage = Message.builder()
+                .chat(chat1)
+                .user(buyer1)
+                .content("네, 깨끗합니다.")
+                .sentAt(LocalDateTime.now().plusMinutes(5))
+                .isRead(true)
+                .build();
+        Message savedMessage = messageRepository.save(newMessage);
 
-        // 반납예정일을 과거로 설정
-        overdueLoan.setDueDate(LocalDate.now().minusDays(1));
-        entityManager.persistAndFlush(overdueLoan);
+        Optional<Message> foundMessage = messageRepository.findById(savedMessage.getMessageId());
+        assertThat(foundMessage).isPresent();
+        assertThat(foundMessage.get().getContent()).isEqualTo("네, 깨끗합니다.");
+        assertThat(foundMessage.get().getChat().getChatId()).isEqualTo(chat1.getChatId());
+        assertThat(foundMessage.get().getSentAt()).isNotNull();
+        assertThat(foundMessage.get().getIsRead()).isTrue();
+    }
 
-        // when
-        List<Loan> result = loanRepository.findOverdueLoans();
+    @Test
+    void findByMessageId() {
+        Optional<Message> foundMessage = messageRepository.findById(message1.getMessageId());
+        assertThat(foundMessage).isPresent();
+        assertThat(foundMessage.get().getContent()).isEqualTo("안녕하세요!");
+        assertThat(foundMessage.get().getChat().getChatId()).isEqualTo(chat1.getChatId());
+    }
 
-        // then
-        assertThat(result).hasSize(1);
-        assertThat(result.get(0).isOverdue()).isTrue();
+    @Test
+    void findByChatId() {
+        List<Message> foundMessages = messageRepository.findByChat_ChatId(chat1.getChatId());
+        assertThat(foundMessages).hasSize(2);
+        assertThat(foundMessages).extracting(Message::getContent)
+                .containsExactlyInAnyOrder("안녕하세요!", "물건 상태는 어떤가요?");
+    }
+
+    @Test
+    void findByUserId() {
+        List<Message> foundMessages = messageRepository.findByUser_UserId(message1.getUser().getUserId());
+        assertThat(foundMessages.get(0).getUser().getUserId()).isEqualTo(1L);
+        assertThat(foundMessages.get(0).getUser().getUserName()).isEqualTo("구매자1");
+    }
+
+    @Test
+    void updateIsRead() {
+        Message unreadMessage = Message.builder()
+                .chat(chat1)
+                .user(buyer1)
+                .content("확인 부탁드립니다.")
+                .sentAt(LocalDateTime.now().plusMinutes(10))
+                .isRead(false)
+                .build();
+        Message savedUnreadMessage = entityManager.persist(unreadMessage);
+        entityManager.flush();
+
+        messageRepository.updateIsReadByMessageId(true, savedUnreadMessage.getMessageId());
+        entityManager.clear(); // 영속성 컨텍스트를 비워 다시 로드
+
+        Optional<Message> updatedMessage = messageRepository.findById(savedUnreadMessage.getMessageId());
+        assertThat(updatedMessage).isPresent();
+        assertThat(updatedMessage.get().getIsRead()).isTrue();
+    }
+
+    @Test
+    void findByIsRead() {
+        Message unreadMessage = Message.builder()
+                .chat(chat1)
+                .user(buyer1)
+                .content("읽음 여부로 조회 테스트용입니다")
+                .sentAt(LocalDateTime.now().plusMinutes(30))
+                .isRead(false)
+                .build();
+        Message savedUnreadMessage = entityManager.persist(unreadMessage);
+        entityManager.flush();
+        assertThat(savedUnreadMessage.getIsRead()).isFalse();
+
+        // update 후 test
+        messageRepository.updateIsReadByMessageId(true, savedUnreadMessage.getMessageId());
+        entityManager.clear();
+        Optional<Message> updatedMessage = messageRepository.findById(savedUnreadMessage.getMessageId());
+        assertThat(updatedMessage.get().getIsRead()).isTrue();
     }
 }
 ```

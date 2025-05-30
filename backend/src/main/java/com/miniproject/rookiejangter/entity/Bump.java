@@ -20,8 +20,8 @@ public class Bump {
     private Long bumpId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "post_id")
-    private Post post;
+    @JoinColumn(name = "product_id")
+    private Product product;
 
     @Column(name = "bumped_at")
     private LocalDateTime bumpedAt;

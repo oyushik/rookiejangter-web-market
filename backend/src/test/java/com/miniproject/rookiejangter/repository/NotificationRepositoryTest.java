@@ -35,7 +35,7 @@ public class NotificationRepositoryTest {
                 .userName("사용자1")
                 .loginId("user1")
                 .password("password")
-                .phone("01012341234")
+                .phone("010-1234-1234")
                 .build();
         entityManager.persist(user1);
 
@@ -43,7 +43,7 @@ public class NotificationRepositoryTest {
                 .userName("사용자2")
                 .loginId("user2")
                 .password("password")
-                .phone("01056785678")
+                .phone("010-5678-5678")
                 .build();
         entityManager.persist(user2);
         entityManager.flush();
@@ -136,5 +136,30 @@ public class NotificationRepositoryTest {
         Optional<Notification> updatedNotification = notificationRepository.findById(savedUnreadNotification.getNotificationId());
         assertThat(updatedNotification).isPresent();
         assertThat(updatedNotification.get().getIsRead()).isTrue();
+    }
+
+    @Test
+    void findByIsRead() {
+        Notification unreadNotification = Notification.builder()
+                .user(user1)
+                .message("읽음 여부 테스트용 알림입니다")
+                .entityType("Report")
+                .entityId(6L)
+                .sentAt(LocalDateTime.now().plusMinutes(30))
+                .isRead(false)
+                .build();
+        Notification savedUnreadNotification = entityManager.persist(unreadNotification);
+        entityManager.flush();
+        List<Notification> foundNotifications = notificationRepository.findByIsRead(false);
+        assertThat(foundNotifications.get(0).getIsRead()).isFalse();
+
+        // update 후 test
+        notificationRepository.updateIsReadByNotificationId(true, savedUnreadNotification.getNotificationId());
+        entityManager.clear();
+
+        Optional<Notification> updatedNotification = notificationRepository.findById(savedUnreadNotification.getNotificationId());
+        assertThat(updatedNotification).isPresent();
+        assertThat(updatedNotification.get().getIsRead()).isTrue();
+
     }
 }
