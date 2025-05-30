@@ -14,14 +14,14 @@ public class BumpDTO {
     @Builder
     public static class Response {
         private Long bumpId;
-        private Long postId;
+        private Long productId;
         private OffsetDateTime bumpedAt;
         private Integer bumpCount;
 
         public static Response fromEntity(Bump bump) {
             return Response.builder()
                     .bumpId(bump.getBumpId())
-                    .postId(bump.getPost().getPostId())
+                    .productId(bump.getProduct().getProductId())
                     .bumpedAt(bump.getBumpedAt() != null ? bump.getBumpedAt().atOffset(ZoneOffset.UTC) : null)
                     .bumpCount(bump.getBumpCount())
                     .build();

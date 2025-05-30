@@ -1,7 +1,7 @@
 package com.miniproject.rookiejangter.repository;
 
 import com.miniproject.rookiejangter.entity.Chat;
-import com.miniproject.rookiejangter.entity.Post;
+import com.miniproject.rookiejangter.entity.Product;
 import com.miniproject.rookiejangter.entity.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -27,8 +27,8 @@ public class ChatRepositoryTest {
     private User buyer1;
     private User seller1;
     private User buyer2;
-    private Post post1;
-    private Post post2;
+    private Product product1;
+    private Product product2;
     private Chat chat1;
     private Chat chat2;
     private Chat chat3;
@@ -59,41 +59,41 @@ public class ChatRepositoryTest {
                 .build();
         entityManager.persist(buyer2);
 
-        post1 = Post.builder()
-                .title("Test Post 1")
+        product1 = Product.builder()
+                .title("Test Product 1")
                 .content("Test Content 1")
                 .price(10000)
                 .user(seller1)
                 .build();
-        entityManager.persist(post1);
+        entityManager.persist(product1);
 
-        post2 = Post.builder()
-                .title("Test Post 2")
+        product2 = Product.builder()
+                .title("Test Product 2")
                 .content("Test Content 2")
                 .price(10000)
                 .user(seller1)
                 .build();
-        entityManager.persist(post2);
+        entityManager.persist(product2);
         entityManager.flush();
 
         chat1 = Chat.builder()
                 .buyer(buyer1)
                 .seller(seller1)
-                .post(post1)
+                .product(product1)
                 .build();
         entityManager.persist(chat1);
 
         chat2 = Chat.builder()
                 .buyer(buyer2)
                 .seller(seller1)
-                .post(post1)
+                .product(product1)
                 .build();
         entityManager.persist(chat2);
 
         chat3 = Chat.builder()
                 .buyer(buyer1)
                 .seller(seller1)
-                .post(post2)
+                .product(product2)
                 .build();
         entityManager.persist(chat3);
         entityManager.flush();
@@ -104,7 +104,7 @@ public class ChatRepositoryTest {
         Chat newChat = Chat.builder()
                 .buyer(buyer2)
                 .seller(seller1)
-                .post(post2)
+                .product(product2)
                 .build();
         Chat savedChat = chatRepository.save(newChat);
 
@@ -112,7 +112,7 @@ public class ChatRepositoryTest {
         assertThat(foundChat).isPresent();
         assertThat(foundChat.get().getBuyer().getUserId()).isEqualTo(buyer2.getUserId());
         assertThat(foundChat.get().getSeller().getUserId()).isEqualTo(seller1.getUserId());
-        assertThat(foundChat.get().getPost().getPostId()).isEqualTo(post2.getPostId());
+        assertThat(foundChat.get().getProduct().getProductId()).isEqualTo(product2.getProductId());
         assertThat(foundChat.get().getCreatedAt()).isNotNull(); // 자동 생성 확인
         assertThat(foundChat.get().getUpdatedAt()).isNotNull(); // 자동 생성 확인
     }
@@ -123,30 +123,30 @@ public class ChatRepositoryTest {
         assertThat(foundChat).isPresent();
         assertThat(foundChat.get().getBuyer().getUserId()).isEqualTo(buyer1.getUserId());
         assertThat(foundChat.get().getSeller().getUserId()).isEqualTo(seller1.getUserId());
-        assertThat(foundChat.get().getPost().getPostId()).isEqualTo(post1.getPostId());
+        assertThat(foundChat.get().getProduct().getProductId()).isEqualTo(product1.getProductId());
     }
 
     @Test
     void findByBuyerId() {
         List<Chat> foundChats = chatRepository.findByBuyer_UserId(buyer1.getUserId());
         assertThat(foundChats).hasSize(2);
-        assertThat(foundChats).extracting(Chat::getPost).extracting(Post::getPostId)
-                .containsExactlyInAnyOrder(post1.getPostId(), post2.getPostId());
+        assertThat(foundChats).extracting(Chat::getProduct).extracting(Product::getProductId)
+                .containsExactlyInAnyOrder(product1.getProductId(), product2.getProductId());
     }
 
     @Test
     void findBySellerId() {
         List<Chat> foundChats = chatRepository.findBySeller_UserId(seller1.getUserId());
         assertThat(foundChats).hasSize(3);
-        assertThat(foundChats).extracting(Chat::getPost).extracting(Post::getPostId)
-                .containsExactlyInAnyOrder(post1.getPostId(), post1.getPostId(), post2.getPostId());
+        assertThat(foundChats).extracting(Chat::getProduct).extracting(Product::getProductId)
+                .containsExactlyInAnyOrder(product1.getProductId(), product1.getProductId(), product2.getProductId());
         assertThat(foundChats).extracting(Chat::getBuyer).extracting(User::getUserId)
                 .containsExactlyInAnyOrder(buyer1.getUserId(), buyer2.getUserId(), buyer1.getUserId());
     }
 
     @Test
-    void findByPostId() {
-        List<Chat> foundChats = chatRepository.findByPost_PostId(post1.getPostId());
+    void findByProductId() {
+        List<Chat> foundChats = chatRepository.findByProduct_ProductId(product1.getProductId());
         assertThat(foundChats).hasSize(2);
         assertThat(foundChats).extracting(Chat::getBuyer).extracting(User::getUserId)
                 .containsExactlyInAnyOrder(buyer1.getUserId(), buyer2.getUserId());

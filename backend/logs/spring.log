@@ -2321,3 +2321,303 @@ This generated password is for development use only. Your security configuration
 2025-05-29T23:05:43.769+09:00  WARN 20728 --- [Rookiejangter] [SpringApplicationShutdownHook] o.s.b.f.support.DisposableBeanAdapter    : Invocation of destroy method failed on bean with name 'inMemoryDatabaseShutdownExecutor': org.h2.jdbc.JdbcSQLNonTransientConnectionException: Database is already closed (to disable automatic closing at VM shutdown, add ";DB_CLOSE_ON_EXIT=FALSE" to the db URL) [90121-232]
 2025-05-29T23:05:43.770+09:00  INFO 20728 --- [Rookiejangter] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
 2025-05-29T23:05:43.771+09:00  INFO 20728 --- [Rookiejangter] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+2025-05-30T11:31:12.413+09:00  INFO 19412 --- [Rookiejangter] [Test worker] c.m.r.repository.ChatRepositoryTest      : Starting ChatRepositoryTest using Java 17.0.14 with PID 19412 (started by user in C:\Users\user\Desktop\rookies-java\project_joongo\backend)
+2025-05-30T11:31:12.414+09:00  INFO 19412 --- [Rookiejangter] [Test worker] c.m.r.repository.ChatRepositoryTest      : The following 1 profile is active: "test"
+2025-05-30T11:31:12.872+09:00  INFO 19412 --- [Rookiejangter] [Test worker] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-05-30T11:31:12.989+09:00  INFO 19412 --- [Rookiejangter] [Test worker] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 108 ms. Found 18 JPA repository interfaces.
+2025-05-30T11:31:13.057+09:00  INFO 19412 --- [Rookiejangter] [Test worker] beddedDataSourceBeanFactoryPostProcessor : Replacing 'dataSource' DataSource bean with embedded version
+2025-05-30T11:31:13.164+09:00  INFO 19412 --- [Rookiejangter] [Test worker] o.s.j.d.e.EmbeddedDatabaseFactory        : Starting embedded database: url='jdbc:h2:mem:3c8fb2d7-6b8c-4320-acc8-69fc01366d03;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=false', username='sa'
+2025-05-30T11:31:13.453+09:00  INFO 19412 --- [Rookiejangter] [Test worker] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-05-30T11:31:13.534+09:00  INFO 19412 --- [Rookiejangter] [Test worker] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.6.15.Final
+2025-05-30T11:31:13.569+09:00  INFO 19412 --- [Rookiejangter] [Test worker] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2025-05-30T11:31:13.852+09:00  INFO 19412 --- [Rookiejangter] [Test worker] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-05-30T11:31:13.909+09:00  WARN 19412 --- [Rookiejangter] [Test worker] org.hibernate.orm.deprecation            : HHH90000025: H2Dialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2025-05-30T11:31:13.925+09:00  INFO 19412 --- [Rookiejangter] [Test worker] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseFactory$EmbeddedDataSourceProxy@3d6778d5']
+	Database driver: undefined/unknown
+	Database version: 2.3.232
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2025-05-30T11:31:14.886+09:00  INFO 19412 --- [Rookiejangter] [Test worker] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-05-30T11:31:14.964+09:00  INFO 19412 --- [Rookiejangter] [Test worker] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-05-30T11:31:15.577+09:00  INFO 19412 --- [Rookiejangter] [Test worker] o.s.d.j.r.query.QueryEnhancerFactory     : Hibernate is in classpath; If applicable, HQL parser will be used.
+2025-05-30T11:31:16.271+09:00  INFO 19412 --- [Rookiejangter] [Test worker] c.m.r.repository.ChatRepositoryTest      : Started ChatRepositoryTest in 4.186 seconds (process running for 5.142)
+2025-05-30T11:31:16.948+09:00  INFO 19412 --- [Rookiejangter] [SpringApplicationShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2025-05-30T11:31:23.324+09:00  INFO 9644 --- [Rookiejangter] [Test worker] c.m.r.repository.PostRepositoryTest      : Starting PostRepositoryTest using Java 17.0.14 with PID 9644 (started by user in C:\Users\user\Desktop\rookies-java\project_joongo\backend)
+2025-05-30T11:31:23.326+09:00  INFO 9644 --- [Rookiejangter] [Test worker] c.m.r.repository.PostRepositoryTest      : The following 1 profile is active: "test"
+2025-05-30T11:31:23.849+09:00  INFO 9644 --- [Rookiejangter] [Test worker] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-05-30T11:31:23.973+09:00  INFO 9644 --- [Rookiejangter] [Test worker] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 116 ms. Found 18 JPA repository interfaces.
+2025-05-30T11:31:24.046+09:00  INFO 9644 --- [Rookiejangter] [Test worker] beddedDataSourceBeanFactoryPostProcessor : Replacing 'dataSource' DataSource bean with embedded version
+2025-05-30T11:31:24.157+09:00  INFO 9644 --- [Rookiejangter] [Test worker] o.s.j.d.e.EmbeddedDatabaseFactory        : Starting embedded database: url='jdbc:h2:mem:2c20a508-b55b-48ee-823e-8af0b3af1414;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=false', username='sa'
+2025-05-30T11:31:24.460+09:00  INFO 9644 --- [Rookiejangter] [Test worker] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-05-30T11:31:24.506+09:00  INFO 9644 --- [Rookiejangter] [Test worker] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.6.15.Final
+2025-05-30T11:31:24.533+09:00  INFO 9644 --- [Rookiejangter] [Test worker] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2025-05-30T11:31:24.803+09:00  INFO 9644 --- [Rookiejangter] [Test worker] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-05-30T11:31:24.858+09:00  WARN 9644 --- [Rookiejangter] [Test worker] org.hibernate.orm.deprecation            : HHH90000025: H2Dialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2025-05-30T11:31:24.877+09:00  INFO 9644 --- [Rookiejangter] [Test worker] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseFactory$EmbeddedDataSourceProxy@3d6778d5']
+	Database driver: undefined/unknown
+	Database version: 2.3.232
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2025-05-30T11:31:25.853+09:00  INFO 9644 --- [Rookiejangter] [Test worker] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-05-30T11:31:25.941+09:00  INFO 9644 --- [Rookiejangter] [Test worker] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-05-30T11:31:26.422+09:00  INFO 9644 --- [Rookiejangter] [Test worker] o.s.d.j.r.query.QueryEnhancerFactory     : Hibernate is in classpath; If applicable, HQL parser will be used.
+2025-05-30T11:31:27.126+09:00  INFO 9644 --- [Rookiejangter] [Test worker] c.m.r.repository.PostRepositoryTest      : Started PostRepositoryTest in 4.142 seconds (process running for 5.073)
+2025-05-30T11:31:27.769+09:00  INFO 9644 --- [Rookiejangter] [SpringApplicationShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2025-05-30T12:16:54.052+09:00  INFO 17816 --- [Rookiejangter] [restartedMain] c.m.r.RookiejangterApplication           : Starting RookiejangterApplication using Java 17.0.14 with PID 17816 (C:\Users\user\Desktop\rookies-java\project_joongo\backend\build\classes\java\main started by user in C:\Users\user\Desktop\rookies-java\project_joongo\backend)
+2025-05-30T12:16:54.054+09:00  INFO 17816 --- [Rookiejangter] [restartedMain] c.m.r.RookiejangterApplication           : The following 1 profile is active: "test"
+2025-05-30T12:16:54.090+09:00  INFO 17816 --- [Rookiejangter] [restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+2025-05-30T12:16:54.091+09:00  INFO 17816 --- [Rookiejangter] [restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+2025-05-30T12:16:54.978+09:00  INFO 17816 --- [Rookiejangter] [restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-05-30T12:16:55.057+09:00  INFO 17816 --- [Rookiejangter] [restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 72 ms. Found 18 JPA repository interfaces.
+2025-05-30T12:16:55.577+09:00  INFO 17816 --- [Rookiejangter] [restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
+2025-05-30T12:16:55.588+09:00  INFO 17816 --- [Rookiejangter] [restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2025-05-30T12:16:55.589+09:00  INFO 17816 --- [Rookiejangter] [restartedMain] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.41]
+2025-05-30T12:16:55.631+09:00  INFO 17816 --- [Rookiejangter] [restartedMain] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2025-05-30T12:16:55.631+09:00  INFO 17816 --- [Rookiejangter] [restartedMain] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 1540 ms
+2025-05-30T12:16:55.792+09:00  INFO 17816 --- [Rookiejangter] [restartedMain] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-05-30T12:16:55.827+09:00  INFO 17816 --- [Rookiejangter] [restartedMain] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.6.15.Final
+2025-05-30T12:16:55.854+09:00  INFO 17816 --- [Rookiejangter] [restartedMain] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2025-05-30T12:16:56.048+09:00  INFO 17816 --- [Rookiejangter] [restartedMain] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-05-30T12:16:56.069+09:00  INFO 17816 --- [Rookiejangter] [restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2025-05-30T12:16:56.198+09:00  INFO 17816 --- [Rookiejangter] [restartedMain] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection conn0: url=jdbc:h2:mem:testdb user=SA
+2025-05-30T12:16:56.203+09:00  INFO 17816 --- [Rookiejangter] [restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2025-05-30T12:16:56.218+09:00  WARN 17816 --- [Rookiejangter] [restartedMain] org.hibernate.orm.deprecation            : HHH90000025: H2Dialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2025-05-30T12:16:56.235+09:00  INFO 17816 --- [Rookiejangter] [restartedMain] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 2.3.232
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2025-05-30T12:16:57.148+09:00  INFO 17816 --- [Rookiejangter] [restartedMain] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-05-30T12:16:57.230+09:00  INFO 17816 --- [Rookiejangter] [restartedMain] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-05-30T12:16:57.648+09:00  WARN 17816 --- [Rookiejangter] [restartedMain] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2025-05-30T12:16:57.662+09:00  WARN 17816 --- [Rookiejangter] [restartedMain] .s.s.UserDetailsServiceAutoConfiguration : 
+
+Using generated security password: fb5f77bc-f748-42c7-a370-cfa08da8ab61
+
+This generated password is for development use only. Your security configuration must be updated before running your application in production.
+
+2025-05-30T12:16:57.678+09:00  INFO 17816 --- [Rookiejangter] [restartedMain] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name inMemoryUserDetailsManager
+2025-05-30T12:16:57.924+09:00  INFO 17816 --- [Rookiejangter] [restartedMain] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
+2025-05-30T12:16:58.217+09:00  INFO 17816 --- [Rookiejangter] [restartedMain] o.s.d.j.r.query.QueryEnhancerFactory     : Hibernate is in classpath; If applicable, HQL parser will be used.
+2025-05-30T12:16:58.453+09:00  INFO 17816 --- [Rookiejangter] [restartedMain] o.s.b.a.h2.H2ConsoleAutoConfiguration    : H2 console available at '/h2-console'. Database available at 'jdbc:h2:mem:testdb'
+2025-05-30T12:16:58.490+09:00  INFO 17816 --- [Rookiejangter] [restartedMain] o.s.b.d.a.OptionalLiveReloadServer       : LiveReload server is running on port 35729
+2025-05-30T12:16:58.539+09:00  INFO 17816 --- [Rookiejangter] [restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8080 (http) with context path '/'
+2025-05-30T12:16:58.550+09:00  INFO 17816 --- [Rookiejangter] [restartedMain] c.m.r.RookiejangterApplication           : Started RookiejangterApplication in 4.839 seconds (process running for 5.275)
+2025-05-30T12:16:59.098+09:00  INFO 17816 --- [Rookiejangter] [RMI TCP Connection(2)-192.168.219.104] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2025-05-30T12:16:59.098+09:00  INFO 17816 --- [Rookiejangter] [RMI TCP Connection(2)-192.168.219.104] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2025-05-30T12:16:59.100+09:00  INFO 17816 --- [Rookiejangter] [RMI TCP Connection(2)-192.168.219.104] o.s.web.servlet.DispatcherServlet        : Completed initialization in 2 ms
+2025-05-30T12:17:03.080+09:00  INFO 17816 --- [Rookiejangter] [SpringApplicationShutdownHook] o.s.b.w.e.tomcat.GracefulShutdown        : Commencing graceful shutdown. Waiting for active requests to complete
+2025-05-30T12:17:03.255+09:00  INFO 17816 --- [Rookiejangter] [tomcat-shutdown] o.s.b.w.e.tomcat.GracefulShutdown        : Graceful shutdown complete
+2025-05-30T12:17:03.259+09:00  INFO 17816 --- [Rookiejangter] [SpringApplicationShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2025-05-30T12:17:03.272+09:00  WARN 17816 --- [Rookiejangter] [SpringApplicationShutdownHook] o.s.b.f.support.DisposableBeanAdapter    : Invocation of destroy method failed on bean with name 'inMemoryDatabaseShutdownExecutor': org.h2.jdbc.JdbcSQLNonTransientConnectionException: Database is already closed (to disable automatic closing at VM shutdown, add ";DB_CLOSE_ON_EXIT=FALSE" to the db URL) [90121-232]
+2025-05-30T12:17:03.272+09:00  INFO 17816 --- [Rookiejangter] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2025-05-30T12:17:03.273+09:00  INFO 17816 --- [Rookiejangter] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+2025-05-30T13:10:59.338+09:00  INFO 16484 --- [Rookiejangter] [Test worker] c.m.r.repository.ProductRepositoryTest   : Starting ProductRepositoryTest using Java 17.0.14 with PID 16484 (started by user in C:\Users\user\Desktop\rookies-java\project_joongo\backend)
+2025-05-30T13:10:59.339+09:00  INFO 16484 --- [Rookiejangter] [Test worker] c.m.r.repository.ProductRepositoryTest   : The following 1 profile is active: "test"
+2025-05-30T13:10:59.785+09:00  INFO 16484 --- [Rookiejangter] [Test worker] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-05-30T13:10:59.877+09:00  INFO 16484 --- [Rookiejangter] [Test worker] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 84 ms. Found 18 JPA repository interfaces.
+2025-05-30T13:10:59.939+09:00  INFO 16484 --- [Rookiejangter] [Test worker] beddedDataSourceBeanFactoryPostProcessor : Replacing 'dataSource' DataSource bean with embedded version
+2025-05-30T13:11:00.036+09:00  INFO 16484 --- [Rookiejangter] [Test worker] o.s.j.d.e.EmbeddedDatabaseFactory        : Starting embedded database: url='jdbc:h2:mem:e79bd39a-2938-4f0a-a56c-cb6e62176575;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=false', username='sa'
+2025-05-30T13:11:00.271+09:00  INFO 16484 --- [Rookiejangter] [Test worker] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-05-30T13:11:00.330+09:00  INFO 16484 --- [Rookiejangter] [Test worker] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.6.15.Final
+2025-05-30T13:11:00.369+09:00  INFO 16484 --- [Rookiejangter] [Test worker] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2025-05-30T13:11:00.634+09:00  INFO 16484 --- [Rookiejangter] [Test worker] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-05-30T13:11:00.682+09:00  WARN 16484 --- [Rookiejangter] [Test worker] org.hibernate.orm.deprecation            : HHH90000025: H2Dialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2025-05-30T13:11:00.701+09:00  INFO 16484 --- [Rookiejangter] [Test worker] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseFactory$EmbeddedDataSourceProxy@45c90a05']
+	Database driver: undefined/unknown
+	Database version: 2.3.232
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2025-05-30T13:11:01.685+09:00  INFO 16484 --- [Rookiejangter] [Test worker] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-05-30T13:11:01.778+09:00  INFO 16484 --- [Rookiejangter] [Test worker] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-05-30T13:11:02.200+09:00  INFO 16484 --- [Rookiejangter] [Test worker] o.s.d.j.r.query.QueryEnhancerFactory     : Hibernate is in classpath; If applicable, HQL parser will be used.
+2025-05-30T13:11:02.898+09:00  INFO 16484 --- [Rookiejangter] [Test worker] c.m.r.repository.ProductRepositoryTest   : Started ProductRepositoryTest in 3.907 seconds (process running for 4.854)
+2025-05-30T13:11:03.605+09:00  INFO 16484 --- [Rookiejangter] [SpringApplicationShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2025-05-30T13:11:20.088+09:00  INFO 21520 --- [Rookiejangter] [Test worker] c.m.r.repository.ReviewRepositoryTest    : Starting ReviewRepositoryTest using Java 17.0.14 with PID 21520 (started by user in C:\Users\user\Desktop\rookies-java\project_joongo\backend)
+2025-05-30T13:11:20.090+09:00  INFO 21520 --- [Rookiejangter] [Test worker] c.m.r.repository.ReviewRepositoryTest    : The following 1 profile is active: "test"
+2025-05-30T13:11:20.539+09:00  INFO 21520 --- [Rookiejangter] [Test worker] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-05-30T13:11:20.642+09:00  INFO 21520 --- [Rookiejangter] [Test worker] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 94 ms. Found 18 JPA repository interfaces.
+2025-05-30T13:11:20.715+09:00  INFO 21520 --- [Rookiejangter] [Test worker] beddedDataSourceBeanFactoryPostProcessor : Replacing 'dataSource' DataSource bean with embedded version
+2025-05-30T13:11:20.817+09:00  INFO 21520 --- [Rookiejangter] [Test worker] o.s.j.d.e.EmbeddedDatabaseFactory        : Starting embedded database: url='jdbc:h2:mem:c9ae194a-61f6-431f-8084-af98bff427dd;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=false', username='sa'
+2025-05-30T13:11:21.092+09:00  INFO 21520 --- [Rookiejangter] [Test worker] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-05-30T13:11:21.137+09:00  INFO 21520 --- [Rookiejangter] [Test worker] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.6.15.Final
+2025-05-30T13:11:21.167+09:00  INFO 21520 --- [Rookiejangter] [Test worker] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2025-05-30T13:11:21.435+09:00  INFO 21520 --- [Rookiejangter] [Test worker] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-05-30T13:11:21.485+09:00  WARN 21520 --- [Rookiejangter] [Test worker] org.hibernate.orm.deprecation            : HHH90000025: H2Dialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2025-05-30T13:11:21.504+09:00  INFO 21520 --- [Rookiejangter] [Test worker] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseFactory$EmbeddedDataSourceProxy@37e55819']
+	Database driver: undefined/unknown
+	Database version: 2.3.232
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2025-05-30T13:11:22.475+09:00  INFO 21520 --- [Rookiejangter] [Test worker] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-05-30T13:11:22.564+09:00  INFO 21520 --- [Rookiejangter] [Test worker] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-05-30T13:11:23.287+09:00  INFO 21520 --- [Rookiejangter] [Test worker] o.s.d.j.r.query.QueryEnhancerFactory     : Hibernate is in classpath; If applicable, HQL parser will be used.
+2025-05-30T13:11:24.000+09:00  INFO 21520 --- [Rookiejangter] [Test worker] c.m.r.repository.ReviewRepositoryTest    : Started ReviewRepositoryTest in 4.235 seconds (process running for 5.174)
+2025-05-30T13:11:24.649+09:00  INFO 21520 --- [Rookiejangter] [SpringApplicationShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2025-05-30T13:11:32.044+09:00  INFO 22496 --- [Rookiejangter] [Test worker] c.m.r.repository.UserRepositoryTest      : Starting UserRepositoryTest using Java 17.0.14 with PID 22496 (started by user in C:\Users\user\Desktop\rookies-java\project_joongo\backend)
+2025-05-30T13:11:32.045+09:00  INFO 22496 --- [Rookiejangter] [Test worker] c.m.r.repository.UserRepositoryTest      : The following 1 profile is active: "test"
+2025-05-30T13:11:32.512+09:00  INFO 22496 --- [Rookiejangter] [Test worker] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-05-30T13:11:32.620+09:00  INFO 22496 --- [Rookiejangter] [Test worker] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 98 ms. Found 18 JPA repository interfaces.
+2025-05-30T13:11:32.685+09:00  INFO 22496 --- [Rookiejangter] [Test worker] beddedDataSourceBeanFactoryPostProcessor : Replacing 'dataSource' DataSource bean with embedded version
+2025-05-30T13:11:32.795+09:00  INFO 22496 --- [Rookiejangter] [Test worker] o.s.j.d.e.EmbeddedDatabaseFactory        : Starting embedded database: url='jdbc:h2:mem:148a3b9d-68a8-4f80-88cd-1c4cfecf7c1c;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=false', username='sa'
+2025-05-30T13:11:33.123+09:00  INFO 22496 --- [Rookiejangter] [Test worker] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-05-30T13:11:33.182+09:00  INFO 22496 --- [Rookiejangter] [Test worker] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.6.15.Final
+2025-05-30T13:11:33.212+09:00  INFO 22496 --- [Rookiejangter] [Test worker] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2025-05-30T13:11:33.527+09:00  INFO 22496 --- [Rookiejangter] [Test worker] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-05-30T13:11:33.592+09:00  WARN 22496 --- [Rookiejangter] [Test worker] org.hibernate.orm.deprecation            : HHH90000025: H2Dialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2025-05-30T13:11:33.610+09:00  INFO 22496 --- [Rookiejangter] [Test worker] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseFactory$EmbeddedDataSourceProxy@31f7eb8']
+	Database driver: undefined/unknown
+	Database version: 2.3.232
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2025-05-30T13:11:34.596+09:00  INFO 22496 --- [Rookiejangter] [Test worker] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-05-30T13:11:34.686+09:00  INFO 22496 --- [Rookiejangter] [Test worker] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-05-30T13:11:35.306+09:00  INFO 22496 --- [Rookiejangter] [Test worker] o.s.d.j.r.query.QueryEnhancerFactory     : Hibernate is in classpath; If applicable, HQL parser will be used.
+2025-05-30T13:11:36.065+09:00  INFO 22496 --- [Rookiejangter] [Test worker] c.m.r.repository.UserRepositoryTest      : Started UserRepositoryTest in 4.345 seconds (process running for 5.299)
+2025-05-30T13:11:36.686+09:00  INFO 22496 --- [Rookiejangter] [SpringApplicationShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2025-05-30T13:11:51.170+09:00  INFO 20108 --- [Rookiejangter] [Test worker] c.m.r.repository.CompleteRepositoryTest  : Starting CompleteRepositoryTest using Java 17.0.14 with PID 20108 (started by user in C:\Users\user\Desktop\rookies-java\project_joongo\backend)
+2025-05-30T13:11:51.171+09:00  INFO 20108 --- [Rookiejangter] [Test worker] c.m.r.repository.CompleteRepositoryTest  : The following 1 profile is active: "test"
+2025-05-30T13:11:51.628+09:00  INFO 20108 --- [Rookiejangter] [Test worker] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-05-30T13:11:51.729+09:00  INFO 20108 --- [Rookiejangter] [Test worker] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 91 ms. Found 18 JPA repository interfaces.
+2025-05-30T13:11:51.791+09:00  INFO 20108 --- [Rookiejangter] [Test worker] beddedDataSourceBeanFactoryPostProcessor : Replacing 'dataSource' DataSource bean with embedded version
+2025-05-30T13:11:51.887+09:00  INFO 20108 --- [Rookiejangter] [Test worker] o.s.j.d.e.EmbeddedDatabaseFactory        : Starting embedded database: url='jdbc:h2:mem:d344d0b1-9e35-408e-8dee-08d76d65a40e;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=false', username='sa'
+2025-05-30T13:11:52.129+09:00  INFO 20108 --- [Rookiejangter] [Test worker] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-05-30T13:11:52.185+09:00  INFO 20108 --- [Rookiejangter] [Test worker] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.6.15.Final
+2025-05-30T13:11:52.215+09:00  INFO 20108 --- [Rookiejangter] [Test worker] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2025-05-30T13:11:52.483+09:00  INFO 20108 --- [Rookiejangter] [Test worker] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-05-30T13:11:52.527+09:00  WARN 20108 --- [Rookiejangter] [Test worker] org.hibernate.orm.deprecation            : HHH90000025: H2Dialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2025-05-30T13:11:52.545+09:00  INFO 20108 --- [Rookiejangter] [Test worker] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseFactory$EmbeddedDataSourceProxy@3d88ce0e']
+	Database driver: undefined/unknown
+	Database version: 2.3.232
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2025-05-30T13:11:53.525+09:00  INFO 20108 --- [Rookiejangter] [Test worker] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-05-30T13:11:53.603+09:00  INFO 20108 --- [Rookiejangter] [Test worker] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-05-30T13:11:54.133+09:00  INFO 20108 --- [Rookiejangter] [Test worker] o.s.d.j.r.query.QueryEnhancerFactory     : Hibernate is in classpath; If applicable, HQL parser will be used.
+2025-05-30T13:11:54.831+09:00  INFO 20108 --- [Rookiejangter] [Test worker] c.m.r.repository.CompleteRepositoryTest  : Started CompleteRepositoryTest in 3.976 seconds (process running for 4.921)
+2025-05-30T13:11:55.419+09:00  INFO 20108 --- [Rookiejangter] [SpringApplicationShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2025-05-30T13:12:13.180+09:00  INFO 12232 --- [Rookiejangter] [restartedMain] c.m.r.RookiejangterApplication           : Starting RookiejangterApplication using Java 17.0.14 with PID 12232 (C:\Users\user\Desktop\rookies-java\project_joongo\backend\build\classes\java\main started by user in C:\Users\user\Desktop\rookies-java\project_joongo\backend)
+2025-05-30T13:12:13.181+09:00  INFO 12232 --- [Rookiejangter] [restartedMain] c.m.r.RookiejangterApplication           : The following 1 profile is active: "test"
+2025-05-30T13:12:13.217+09:00  INFO 12232 --- [Rookiejangter] [restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+2025-05-30T13:12:13.217+09:00  INFO 12232 --- [Rookiejangter] [restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+2025-05-30T13:12:13.995+09:00  INFO 12232 --- [Rookiejangter] [restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-05-30T13:12:14.071+09:00  INFO 12232 --- [Rookiejangter] [restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 69 ms. Found 18 JPA repository interfaces.
+2025-05-30T13:12:14.537+09:00  INFO 12232 --- [Rookiejangter] [restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
+2025-05-30T13:12:14.553+09:00  INFO 12232 --- [Rookiejangter] [restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2025-05-30T13:12:14.553+09:00  INFO 12232 --- [Rookiejangter] [restartedMain] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.41]
+2025-05-30T13:12:14.593+09:00  INFO 12232 --- [Rookiejangter] [restartedMain] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2025-05-30T13:12:14.593+09:00  INFO 12232 --- [Rookiejangter] [restartedMain] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 1376 ms
+2025-05-30T13:12:14.749+09:00  INFO 12232 --- [Rookiejangter] [restartedMain] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-05-30T13:12:14.785+09:00  INFO 12232 --- [Rookiejangter] [restartedMain] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.6.15.Final
+2025-05-30T13:12:14.807+09:00  INFO 12232 --- [Rookiejangter] [restartedMain] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2025-05-30T13:12:14.992+09:00  INFO 12232 --- [Rookiejangter] [restartedMain] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-05-30T13:12:15.016+09:00  INFO 12232 --- [Rookiejangter] [restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2025-05-30T13:12:15.144+09:00  INFO 12232 --- [Rookiejangter] [restartedMain] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection conn0: url=jdbc:h2:mem:testdb user=SA
+2025-05-30T13:12:15.145+09:00  INFO 12232 --- [Rookiejangter] [restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2025-05-30T13:12:15.160+09:00  WARN 12232 --- [Rookiejangter] [restartedMain] org.hibernate.orm.deprecation            : HHH90000025: H2Dialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2025-05-30T13:12:15.176+09:00  INFO 12232 --- [Rookiejangter] [restartedMain] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 2.3.232
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2025-05-30T13:12:16.064+09:00  INFO 12232 --- [Rookiejangter] [restartedMain] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-05-30T13:12:16.147+09:00  INFO 12232 --- [Rookiejangter] [restartedMain] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-05-30T13:12:16.540+09:00  WARN 12232 --- [Rookiejangter] [restartedMain] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2025-05-30T13:12:16.555+09:00  WARN 12232 --- [Rookiejangter] [restartedMain] .s.s.UserDetailsServiceAutoConfiguration : 
+
+Using generated security password: 265b4c0f-35c4-4377-8455-e9d58a130490
+
+This generated password is for development use only. Your security configuration must be updated before running your application in production.
+
+2025-05-30T13:12:16.570+09:00  INFO 12232 --- [Rookiejangter] [restartedMain] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name inMemoryUserDetailsManager
+2025-05-30T13:12:16.801+09:00  INFO 12232 --- [Rookiejangter] [restartedMain] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
+2025-05-30T13:12:17.050+09:00  INFO 12232 --- [Rookiejangter] [restartedMain] o.s.d.j.r.query.QueryEnhancerFactory     : Hibernate is in classpath; If applicable, HQL parser will be used.
+2025-05-30T13:12:17.322+09:00  INFO 12232 --- [Rookiejangter] [restartedMain] o.s.b.a.h2.H2ConsoleAutoConfiguration    : H2 console available at '/h2-console'. Database available at 'jdbc:h2:mem:testdb'
+2025-05-30T13:12:17.358+09:00  INFO 12232 --- [Rookiejangter] [restartedMain] o.s.b.d.a.OptionalLiveReloadServer       : LiveReload server is running on port 35729
+2025-05-30T13:12:17.407+09:00  INFO 12232 --- [Rookiejangter] [restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8080 (http) with context path '/'
+2025-05-30T13:12:17.418+09:00  INFO 12232 --- [Rookiejangter] [restartedMain] c.m.r.RookiejangterApplication           : Started RookiejangterApplication in 4.557 seconds (process running for 4.958)
+2025-05-30T13:12:17.755+09:00  INFO 12232 --- [Rookiejangter] [RMI TCP Connection(1)-192.168.219.104] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2025-05-30T13:12:17.755+09:00  INFO 12232 --- [Rookiejangter] [RMI TCP Connection(1)-192.168.219.104] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2025-05-30T13:12:17.757+09:00  INFO 12232 --- [Rookiejangter] [RMI TCP Connection(1)-192.168.219.104] o.s.web.servlet.DispatcherServlet        : Completed initialization in 2 ms
+2025-05-30T13:12:23.837+09:00  INFO 12232 --- [Rookiejangter] [SpringApplicationShutdownHook] o.s.b.w.e.tomcat.GracefulShutdown        : Commencing graceful shutdown. Waiting for active requests to complete
+2025-05-30T13:12:24.011+09:00  INFO 12232 --- [Rookiejangter] [tomcat-shutdown] o.s.b.w.e.tomcat.GracefulShutdown        : Graceful shutdown complete
+2025-05-30T13:12:24.018+09:00  INFO 12232 --- [Rookiejangter] [SpringApplicationShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2025-05-30T13:12:24.029+09:00  WARN 12232 --- [Rookiejangter] [SpringApplicationShutdownHook] o.s.b.f.support.DisposableBeanAdapter    : Invocation of destroy method failed on bean with name 'inMemoryDatabaseShutdownExecutor': org.h2.jdbc.JdbcSQLNonTransientConnectionException: Database is already closed (to disable automatic closing at VM shutdown, add ";DB_CLOSE_ON_EXIT=FALSE" to the db URL) [90121-232]
+2025-05-30T13:12:24.029+09:00  INFO 12232 --- [Rookiejangter] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2025-05-30T13:12:24.030+09:00  INFO 12232 --- [Rookiejangter] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+2025-05-30T13:19:12.994+09:00  INFO 19628 --- [Rookiejangter] [restartedMain] c.m.r.RookiejangterApplication           : Starting RookiejangterApplication using Java 17.0.14 with PID 19628 (C:\Users\user\Desktop\rookies-java\project_joongo\backend\build\classes\java\main started by user in C:\Users\user\Desktop\rookies-java\project_joongo\backend)
+2025-05-30T13:19:12.995+09:00  INFO 19628 --- [Rookiejangter] [restartedMain] c.m.r.RookiejangterApplication           : The following 1 profile is active: "test"
+2025-05-30T13:19:13.029+09:00  INFO 19628 --- [Rookiejangter] [restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+2025-05-30T13:19:13.029+09:00  INFO 19628 --- [Rookiejangter] [restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+2025-05-30T13:19:13.808+09:00  INFO 19628 --- [Rookiejangter] [restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-05-30T13:19:13.884+09:00  INFO 19628 --- [Rookiejangter] [restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 70 ms. Found 18 JPA repository interfaces.
+2025-05-30T13:19:14.350+09:00  INFO 19628 --- [Rookiejangter] [restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
+2025-05-30T13:19:14.358+09:00  INFO 19628 --- [Rookiejangter] [restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2025-05-30T13:19:14.358+09:00  INFO 19628 --- [Rookiejangter] [restartedMain] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.41]
+2025-05-30T13:19:14.400+09:00  INFO 19628 --- [Rookiejangter] [restartedMain] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2025-05-30T13:19:14.400+09:00  INFO 19628 --- [Rookiejangter] [restartedMain] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 1371 ms
+2025-05-30T13:19:14.556+09:00  INFO 19628 --- [Rookiejangter] [restartedMain] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-05-30T13:19:14.593+09:00  INFO 19628 --- [Rookiejangter] [restartedMain] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.6.15.Final
+2025-05-30T13:19:14.614+09:00  INFO 19628 --- [Rookiejangter] [restartedMain] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2025-05-30T13:19:14.800+09:00  INFO 19628 --- [Rookiejangter] [restartedMain] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-05-30T13:19:14.820+09:00  INFO 19628 --- [Rookiejangter] [restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2025-05-30T13:19:14.950+09:00  INFO 19628 --- [Rookiejangter] [restartedMain] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection conn0: url=jdbc:h2:mem:testdb user=SA
+2025-05-30T13:19:14.952+09:00  INFO 19628 --- [Rookiejangter] [restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2025-05-30T13:19:14.967+09:00  WARN 19628 --- [Rookiejangter] [restartedMain] org.hibernate.orm.deprecation            : HHH90000025: H2Dialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2025-05-30T13:19:14.983+09:00  INFO 19628 --- [Rookiejangter] [restartedMain] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 2.3.232
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2025-05-30T13:19:15.873+09:00  INFO 19628 --- [Rookiejangter] [restartedMain] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-05-30T13:19:15.951+09:00  INFO 19628 --- [Rookiejangter] [restartedMain] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-05-30T13:19:16.347+09:00  WARN 19628 --- [Rookiejangter] [restartedMain] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2025-05-30T13:19:16.361+09:00  WARN 19628 --- [Rookiejangter] [restartedMain] .s.s.UserDetailsServiceAutoConfiguration : 
+
+Using generated security password: 71c7ff11-662c-4f77-991c-476d55e62ace
+
+This generated password is for development use only. Your security configuration must be updated before running your application in production.
+
+2025-05-30T13:19:16.376+09:00  INFO 19628 --- [Rookiejangter] [restartedMain] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name inMemoryUserDetailsManager
+2025-05-30T13:19:16.597+09:00  INFO 19628 --- [Rookiejangter] [restartedMain] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
+2025-05-30T13:19:16.867+09:00  INFO 19628 --- [Rookiejangter] [restartedMain] o.s.d.j.r.query.QueryEnhancerFactory     : Hibernate is in classpath; If applicable, HQL parser will be used.
+2025-05-30T13:19:17.117+09:00  INFO 19628 --- [Rookiejangter] [restartedMain] o.s.b.a.h2.H2ConsoleAutoConfiguration    : H2 console available at '/h2-console'. Database available at 'jdbc:h2:mem:testdb'
+2025-05-30T13:19:17.152+09:00  INFO 19628 --- [Rookiejangter] [restartedMain] o.s.b.d.a.OptionalLiveReloadServer       : LiveReload server is running on port 35729
+2025-05-30T13:19:17.203+09:00  INFO 19628 --- [Rookiejangter] [restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8080 (http) with context path '/'
+2025-05-30T13:19:17.214+09:00  INFO 19628 --- [Rookiejangter] [restartedMain] c.m.r.RookiejangterApplication           : Started RookiejangterApplication in 4.555 seconds (process running for 4.984)
+2025-05-30T13:19:17.436+09:00  INFO 19628 --- [Rookiejangter] [RMI TCP Connection(2)-192.168.219.104] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2025-05-30T13:19:17.436+09:00  INFO 19628 --- [Rookiejangter] [RMI TCP Connection(2)-192.168.219.104] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2025-05-30T13:19:17.437+09:00  INFO 19628 --- [Rookiejangter] [RMI TCP Connection(2)-192.168.219.104] o.s.web.servlet.DispatcherServlet        : Completed initialization in 1 ms
+2025-05-30T13:19:20.845+09:00  INFO 19628 --- [Rookiejangter] [SpringApplicationShutdownHook] o.s.b.w.e.tomcat.GracefulShutdown        : Commencing graceful shutdown. Waiting for active requests to complete
+2025-05-30T13:19:21.017+09:00  INFO 19628 --- [Rookiejangter] [tomcat-shutdown] o.s.b.w.e.tomcat.GracefulShutdown        : Graceful shutdown complete
+2025-05-30T13:19:21.021+09:00  INFO 19628 --- [Rookiejangter] [SpringApplicationShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2025-05-30T13:19:21.036+09:00  WARN 19628 --- [Rookiejangter] [SpringApplicationShutdownHook] o.s.b.f.support.DisposableBeanAdapter    : Invocation of destroy method failed on bean with name 'inMemoryDatabaseShutdownExecutor': org.h2.jdbc.JdbcSQLNonTransientConnectionException: Database is already closed (to disable automatic closing at VM shutdown, add ";DB_CLOSE_ON_EXIT=FALSE" to the db URL) [90121-232]
+2025-05-30T13:19:21.036+09:00  INFO 19628 --- [Rookiejangter] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2025-05-30T13:19:21.037+09:00  INFO 19628 --- [Rookiejangter] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.

@@ -5,6 +5,7 @@ import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Table(name = "users")
@@ -43,7 +44,7 @@ public class User extends BaseEntity {
     private Boolean isAdmin;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Post> posts = new ArrayList<>();
+    private List<Product> products = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Report> reports = new ArrayList<>();
@@ -102,6 +103,6 @@ public class User extends BaseEntity {
 
     @Override
     public int hashCode() {
-        return getClass().hashCode();
+        return Objects.hash(userId); // userId 기반으로 hashCode 생성
     }
 }

@@ -7,18 +7,18 @@ import jakarta.validation.constraints.Size;
 import lombok.*;
 
 @Entity
-@Table(name = "posts")
+@Table(name = "products")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Post extends BaseEntity {
+public class Product extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "post_id")
-    private Long postId;
+    @Column(name = "product_id")
+    private Long productId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
@@ -51,8 +51,8 @@ public class Post extends BaseEntity {
 
     @Override
     public String toString() {
-        return "Post{" +
-                "postId=" + postId +
+        return "Product{" +
+                "productId=" + productId +
                 ", title='" + title + '\'' +
                 ", content='" + content + '\'' +
                 ", viewCount=" + viewCount +
@@ -66,8 +66,8 @@ public class Post extends BaseEntity {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Post post = (Post) o;
-        return postId != null && postId.equals(post.postId);
+        Product product = (Product) o;
+        return productId != null && productId.equals(product.productId);
     }
 
     @Override

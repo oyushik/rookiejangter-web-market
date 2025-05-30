@@ -1,7 +1,7 @@
 package com.miniproject.rookiejangter.repository;
 
 import com.miniproject.rookiejangter.entity.Bump;
-import com.miniproject.rookiejangter.entity.Post;
+import com.miniproject.rookiejangter.entity.Product;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,30 +20,30 @@ public class BumpRepositoryTest {
     private BumpRepository bumpRepository;
 
     @Autowired
-    private PostRepository postRepository;
+    private ProductRepository productRepository;
 
-    private Post testPost;
+    private Product testProduct;
     private Bump testBump1;
     private Bump testBump2;
 
     @BeforeEach
     void setUp() {
         // Given
-        testPost = Post.builder()
-                .title("Test Post")
+        testProduct = Product.builder()
+                .title("Test Product")
                 .content("Test Content")
                 .price(10000)
                 .build();
-        postRepository.save(testPost);
+        productRepository.save(testProduct);
 
         testBump1 = Bump.builder()
-                .post(testPost)
+                .product(testProduct)
                 .bumpedAt(LocalDateTime.now().minusDays(2))
                 .bumpCount(1)
                 .build();
 
         testBump2 = Bump.builder()
-                .post(testPost)
+                .product(testProduct)
                 .bumpedAt(LocalDateTime.now())
                 .bumpCount(2)
                 .build();
@@ -53,9 +53,9 @@ public class BumpRepositoryTest {
     }
 
     @Test
-    void findTopByPost_PostIdOrderByBumpedAtDesc() {
+    void findTopByProduct_ProductIdOrderByBumpedAtDesc() {
         // When
-        Optional<Bump> latestBump = bumpRepository.findTopByPost_PostIdOrderByBumpedAtDesc(testPost.getPostId());
+        Optional<Bump> latestBump = bumpRepository.findTopByProduct_ProductIdOrderByBumpedAtDesc(testProduct.getProductId());
 
         // Then
         assertThat(latestBump).isPresent();
@@ -63,23 +63,23 @@ public class BumpRepositoryTest {
     }
 
     @Test
-    void findByPost_PostId() {
+    void findByProduct_ProductId() {
         // When
-        List<Bump> bumps = bumpRepository.findByPost_PostId(testPost.getPostId());
+        List<Bump> bumps = bumpRepository.findByProduct_ProductId(testProduct.getProductId());
 
         // Then
         assertThat(bumps).hasSize(2);
-        assertThat(bumps.get(0).getPost().getPostId()).isEqualTo(testPost.getPostId());
+        assertThat(bumps.get(0).getProduct().getProductId()).isEqualTo(testProduct.getProductId());
     }
 
     @Test
-    void countByPost_PostIdAndBumpedAtBetween() {
+    void countByProduct_ProductIdAndBumpedAtBetween() {
         // Given
         LocalDateTime start = LocalDateTime.now().minusDays(3);
         LocalDateTime end = LocalDateTime.now().plusDays(1);
 
         // When
-        Long count = bumpRepository.countByPost_PostIdAndBumpedAtBetween(testPost.getPostId(), start, end);
+        Long count = bumpRepository.countByProduct_ProductIdAndBumpedAtBetween(testProduct.getProductId(), start, end);
 
         // Then
         assertThat(count).isEqualTo(2);
