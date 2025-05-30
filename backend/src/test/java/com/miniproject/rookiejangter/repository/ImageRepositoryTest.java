@@ -1,7 +1,7 @@
 package com.miniproject.rookiejangter.repository;
 
 import com.miniproject.rookiejangter.entity.Image;
-import com.miniproject.rookiejangter.entity.Post;
+import com.miniproject.rookiejangter.entity.Product;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,26 +22,26 @@ public class ImageRepositoryTest {
     @Autowired
     private TestEntityManager entityManager; // 테스트용 Entity Manager
 
-    private Post testPost;
+    private Product testProduct;
     private Image testImage1, testImage2;
 
     @BeforeEach // 각 테스트 메서드 실행 전에 실행
     void setUp() {
-        // 테스트에 필요한 Post 객체 생성 및 저장
-        testPost = Post.builder()
-                .title("Test Post")
+        // 테스트에 필요한 Product 객체 생성 및 저장
+        testProduct = Product.builder()
+                .title("Test Product")
                 .content("Test Content")
                 .price(10000)
                 .build();
-        entityManager.persist(testPost);
+        entityManager.persist(testProduct);
 
         // 테스트에 필요한 Image 객체 생성 및 저장
         testImage1 = Image.builder()
-                .post(testPost)
+                .product(testProduct)
                 .imageUrl("http://example.com/image1.jpg")
                 .build();
         testImage2 = Image.builder()
-                .post(testPost)
+                .product(testProduct)
                 .imageUrl("http://example.com/image2.jpg")
                 .build();
         entityManager.persist(testImage1);
@@ -49,9 +49,9 @@ public class ImageRepositoryTest {
     }
 
     @Test
-    void findByPost_PostId_ShouldReturnImagesForGivenPostId() {
+    void findByProduct_ProductId_ShouldReturnImagesForGivenProductId() {
         // When
-        List<Image> images = imageRepository.findByPost_PostId(testPost.getPostId());
+        List<Image> images = imageRepository.findByProduct_ProductId(testProduct.getProductId());
 
         // Then
         assertThat(images).hasSize(2);
@@ -69,9 +69,9 @@ public class ImageRepositoryTest {
     }
 
     @Test
-    void countByPost_PostId_ShouldReturnCorrectCountForGivenPostId() {
+    void countByProduct_ProductId_ShouldReturnCorrectCountForGivenProductId() {
         // When
-        long count = imageRepository.countByPost_PostId(testPost.getPostId());
+        long count = imageRepository.countByProduct_ProductId(testProduct.getProductId());
 
         // Then
         assertThat(count).isEqualTo(2);

@@ -1,6 +1,6 @@
 package com.miniproject.rookiejangter.repository;
 
-import com.miniproject.rookiejangter.entity.Post;
+import com.miniproject.rookiejangter.entity.Product;
 import com.miniproject.rookiejangter.entity.Reservation;
 import com.miniproject.rookiejangter.entity.User;
 import org.junit.jupiter.api.BeforeEach;
@@ -25,7 +25,7 @@ public class ReservationRepositoryTest {
 
     private User buyer;
     private User seller;
-    private Post post;
+    private Product product;
     private Reservation reservation;
 
     @BeforeEach
@@ -43,20 +43,20 @@ public class ReservationRepositoryTest {
                 .userName("Seller User")
                 .phone("010-5678-5678")
                 .build();
-        post = Post.builder()
-                .title("Test Post")
+        product = Product.builder()
+                .title("Test Product")
                 .content("Test Content")
                 .price(10000)
                 .build();
 
         entityManager.persist(buyer);
         entityManager.persist(seller);
-        entityManager.persist(post);
+        entityManager.persist(product);
 
         reservation = Reservation.builder()
                 .buyer(buyer)
                 .seller(seller)
-                .post(post)
+                .product(product)
                 .isCanceled(false)
                 .build();
 
@@ -85,37 +85,37 @@ public class ReservationRepositoryTest {
     }
 
     @Test
-    void findByPost_PostId() {
+    void findByProduct_ProductId() {
         // When
-        List<Reservation> foundReservations = reservationRepository.findByPost_PostId(post.getPostId());
+        List<Reservation> foundReservations = reservationRepository.findByProduct_ProductId(product.getProductId());
 
         // Then
         assertThat(foundReservations).hasSize(1);
-        assertThat(foundReservations.get(0).getPost().getPostId()).isEqualTo(post.getPostId());
+        assertThat(foundReservations.get(0).getProduct().getProductId()).isEqualTo(product.getProductId());
     }
 
     @Test
-    void findByBuyer_UserIdAndPost_PostId() {
+    void findByBuyer_UserIdAndProduct_ProductId() {
         // When
-        List<Reservation> foundReservation = reservationRepository.findByBuyer_UserIdAndPost_PostId(buyer.getUserId(), post.getPostId());
+        List<Reservation> foundReservation = reservationRepository.findByBuyer_UserIdAndProduct_ProductId(buyer.getUserId(), product.getProductId());
 
         // Then
         assertThat(foundReservation).isNotNull();
         assertThat(foundReservation.get(0).getBuyer().getUserId()).isEqualTo(buyer.getUserId());
-        assertThat(foundReservation.get(0).getPost().getPostId()).isEqualTo(post.getPostId());
+        assertThat(foundReservation.get(0).getProduct().getProductId()).isEqualTo(product.getProductId());
     }
 
     @Test
-    void existsByBuyer_UserIdAndPost_PostId_shouldReturnTrue_ifExists() {
+    void existsByBuyer_UserIdAndProduct_ProductId_shouldReturnTrue_ifExists() {
         // When
-        boolean exists = reservationRepository.existsByBuyer_UserIdAndPost_PostId(buyer.getUserId(), post.getPostId());
+        boolean exists = reservationRepository.existsByBuyer_UserIdAndProduct_ProductId(buyer.getUserId(), product.getProductId());
 
         // Then
         assertThat(exists).isTrue();
     }
 
     @Test
-    void existsByBuyer_UserIdAndPost_PostId_shouldReturnFalse_ifNotExists() {
+    void existsByBuyer_UserIdAndProduct_ProductId_shouldReturnFalse_ifNotExists() {
         // Given
         User otherBuyer = User.builder()
                 .loginId("otherBuyer")
@@ -126,17 +126,17 @@ public class ReservationRepositoryTest {
         entityManager.persist(otherBuyer);
 
         // When
-        boolean exists = reservationRepository.existsByBuyer_UserIdAndPost_PostId(otherBuyer.getUserId(), post.getPostId());
+        boolean exists = reservationRepository.existsByBuyer_UserIdAndProduct_ProductId(otherBuyer.getUserId(), product.getProductId());
 
         // Then
         assertThat(exists).isFalse();
     }
 
     @Test
-    void deleteByBuyer_UserIdAndPost_PostId() {
+    void deleteByBuyer_UserIdAndProduct_ProductId() {
         // When
-        reservationRepository.deleteByBuyer_UserIdAndPost_PostId(buyer.getUserId(), post.getPostId());
-        List<Reservation> deletedReservation = reservationRepository.findByBuyer_UserIdAndPost_PostId(buyer.getUserId(), post.getPostId());
+        reservationRepository.deleteByBuyer_UserIdAndProduct_ProductId(buyer.getUserId(), product.getProductId());
+        List<Reservation> deletedReservation = reservationRepository.findByBuyer_UserIdAndProduct_ProductId(buyer.getUserId(), product.getProductId());
 
         // Then
         assertThat(deletedReservation).isEmpty();

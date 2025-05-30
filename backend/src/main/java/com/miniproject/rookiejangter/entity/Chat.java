@@ -26,8 +26,8 @@ public class Chat extends BaseEntity {
     private User seller;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "post_id")
-    private Post post;
+    @JoinColumn(name = "product_id")
+    private Product product;
 
     @Override
     public String toString() {

@@ -1,7 +1,7 @@
 package com.miniproject.rookiejangter.repository;
 
 import com.miniproject.rookiejangter.entity.Complete;
-import com.miniproject.rookiejangter.entity.Post;
+import com.miniproject.rookiejangter.entity.Product;
 import com.miniproject.rookiejangter.entity.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
@@ -27,7 +27,7 @@ public class CompleteRepositoryTest {
 
     private User buyer1;
     private User seller1;
-    private Post post1;
+    private Product product1;
     private Complete complete1;
 
     @BeforeEach
@@ -48,17 +48,17 @@ public class CompleteRepositoryTest {
                 .build();
         entityManager.persist(seller1);
 
-        post1 = Post.builder()
-                .title("Test Post 1")
+        product1 = Product.builder()
+                .title("Test Product 1")
                 .content("Test Content 1")
                 .price(10000)
                 .user(seller1)
                 .build();
-        entityManager.persist(post1);
-        entityManager.flush(); // Post ID를 얻기 위해 flush
+        entityManager.persist(product1);
+        entityManager.flush(); // Product ID를 얻기 위해 flush
 
         complete1 = Complete.builder()
-                .post(post1)
+                .product(product1)
                 .buyer(buyer1)
                 .seller(seller1)
                 .completedAt(LocalDateTime.now())
@@ -69,31 +69,31 @@ public class CompleteRepositoryTest {
 
     @Test
     void saveComplete() {
-        Post newPost = Post.builder()
-                .title("New Test Post")
+        Product newProduct = Product.builder()
+                .title("New Test Product")
                 .content("New Test Content")
                 .price(20000)
                 .user(seller1)
                 .build();
-        entityManager.persist(newPost);
+        entityManager.persist(newProduct);
         entityManager.flush();
 
         Complete savedComplete = completeRepository.save(Complete.builder()
-                .post(newPost)
+                .product(newProduct)
                 .buyer(User.builder().userId(buyer1.getUserId()).build())
                 .seller(User.builder().userId(seller1.getUserId()).build())
                 .completedAt(LocalDateTime.now().plusHours(1))
                 .build());
 
-        Optional<Complete> foundComplete = completeRepository.findById(savedComplete.getPost().getPostId());
+        Optional<Complete> foundComplete = completeRepository.findById(savedComplete.getProduct().getProductId());
         assertThat(foundComplete).isPresent();
         assertThat(foundComplete.get().getBuyer().getUserId()).isEqualTo(buyer1.getUserId());
         assertThat(foundComplete.get().getSeller().getUserId()).isEqualTo(seller1.getUserId());
     }
 
     @Test
-    void findByPostId() {
-        Optional<Complete> foundComplete = completeRepository.findById(post1.getPostId());
+    void findByProductId() {
+        Optional<Complete> foundComplete = completeRepository.findById(product1.getProductId());
         assertThat(foundComplete).isPresent();
         assertThat(foundComplete.get().getBuyer().getUserId()).isEqualTo(buyer1.getUserId());
         assertThat(foundComplete.get().getSeller().getUserId()).isEqualTo(seller1.getUserId());
@@ -105,7 +105,7 @@ public class CompleteRepositoryTest {
         // 현재 Complete 엔티티 구조상 buyer 객체를 통해 접근해야 함
         List<Complete> foundComplete = completeRepository.findByBuyer_UserId(buyer1.getUserId());
         assertThat(foundComplete).isNotNull();
-        assertThat(foundComplete.get(0).getPost().getPostId()).isEqualTo(post1.getPostId());
+        assertThat(foundComplete.get(0).getProduct().getProductId()).isEqualTo(product1.getProductId());
     }
 
     @Test
@@ -114,6 +114,6 @@ public class CompleteRepositoryTest {
         // 현재 Complete 엔티티 구조상 seller 객체를 통해 접근해야 함
         List<Complete> foundComplete = completeRepository.findBySeller_UserId(seller1.getUserId());
         assertThat(foundComplete).isNotNull();
-        assertThat(foundComplete.get(0).getPost().getPostId()).isEqualTo(post1.getPostId());
+        assertThat(foundComplete.get(0).getProduct().getProductId()).isEqualTo(product1.getProductId());
     }
 }

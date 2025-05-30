@@ -24,8 +24,8 @@ public class Dibs {
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "post_id")
-    private Post post;
+    @JoinColumn(name = "product_id")
+    private Product product;
 
     @Column(name = "added_at")
     private LocalDateTime addedAt;

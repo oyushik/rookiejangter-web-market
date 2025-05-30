@@ -13,14 +13,14 @@ public class CompleteDTO {
     @AllArgsConstructor
     @Builder
     public static class Response {
-        private Long postId;
+        private Long productId;
         private Long buyerId;
         private Long sellerId;
         private OffsetDateTime completedAt;
 
         public static Response fromEntity(Complete complete) {
             return Response.builder()
-                    .postId(complete.getPost().getPostId())
+                    .productId(complete.getProduct().getProductId())
                     .buyerId(complete.getBuyer().getUserId())
                     .sellerId(complete.getSeller().getUserId())
                     .completedAt(complete.getCompletedAt() != null ? complete.getCompletedAt().atOffset(ZoneOffset.UTC) : null)

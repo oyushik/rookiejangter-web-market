@@ -31,7 +31,7 @@ public class ChatDTO {
         public static Response fromEntity(Chat chat) {
             return Response.builder()
                     .chatRoomId(chat.getChatId())
-                    .productId(chat.getPost().getPostId())
+                    .productId(chat.getProduct().getProductId())
                     .participants(List.of(chat.getBuyer().getUserId(), chat.getSeller().getUserId()))
                     .createdAt(chat.getCreatedAt().atOffset(ZoneOffset.UTC))
                     .build();
@@ -65,7 +65,7 @@ public class ChatDTO {
             public static ChatInfo fromEntity(Chat chat, String lastMessage, Integer unreadCount) {
                 return ChatInfo.builder()
                         .chatRoomId(chat.getChatId())
-                        .productId(chat.getPost().getPostId())
+                        .productId(chat.getProduct().getProductId())
                         .lastMessage(lastMessage)
                         .unreadCount(unreadCount)
                         .updatedAt(chat.getUpdatedAt() != null ? chat.getUpdatedAt().atOffset(ZoneOffset.UTC) : chat.getCreatedAt().atOffset(ZoneOffset.UTC)) // updatedAt 없을 경우 createdAt 사용

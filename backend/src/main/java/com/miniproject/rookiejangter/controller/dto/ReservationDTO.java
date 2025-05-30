@@ -39,7 +39,7 @@ public class ReservationDTO {
         public static Response fromEntity(Reservation reservation) {
             return Response.builder()
                     .tradeId(reservation.getReservationId())
-                    .productId(reservation.getPost().getPostId())
+                    .productId(reservation.getProduct().getProductId())
                     .buyerId(reservation.getBuyer().getUserId())
                     .status(reservation.getStatus())
                     .requestedAt(reservation.getCreatedAt() != null ? reservation.getCreatedAt().atOffset(ZoneOffset.UTC) : null)

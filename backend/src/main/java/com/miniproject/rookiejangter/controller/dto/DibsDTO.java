@@ -1,7 +1,7 @@
 package com.miniproject.rookiejangter.controller.dto;
 
 import com.miniproject.rookiejangter.entity.Dibs;
-import com.miniproject.rookiejangter.entity.Post;
+import com.miniproject.rookiejangter.entity.Product;
 import lombok.*;
 
 import java.time.OffsetDateTime;
@@ -31,7 +31,7 @@ public class DibsDTO {
 
         public static Response fromEntity(Dibs dibs, boolean liked) {
             return Response.builder()
-                    .productId(dibs.getPost().getPostId())
+                    .productId(dibs.getProduct().getProductId())
                     .isLiked(liked)
                     .likedAt(dibs.getAddedAt() != null ? dibs.getAddedAt().atOffset(ZoneOffset.UTC) : null)
                     .build();
@@ -46,16 +46,16 @@ public class DibsDTO {
             private Long productId;
             private String title;
             private Integer price;
-            private String thumbnail; // Post 엔티티에 thumbnail 필드가 없으므로 필요시 추가해야 함
+            private String thumbnail; // Product 엔티티에 thumbnail 필드가 없으므로 필요시 추가해야 함
             private OffsetDateTime likedAt;
 
             public static DibbedProduct fromEntity(Dibs dibs) {
-                Post post = dibs.getPost();
+                Product product = dibs.getProduct();
                 return DibbedProduct.builder()
-                        .productId(post.getPostId())
-                        .title(post.getTitle())
-                        .price(post.getPrice())
-                        .thumbnail(null) // Post 엔티티에 thumbnail 필드가 없음
+                        .productId(product.getProductId())
+                        .title(product.getTitle())
+                        .price(product.getPrice())
+                        .thumbnail(null) // Product 엔티티에 thumbnail 필드가 없음
                         .likedAt(dibs.getAddedAt() != null ? dibs.getAddedAt().atOffset(ZoneOffset.UTC) : null)
                         .build();
             }
