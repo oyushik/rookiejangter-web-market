@@ -39,7 +39,7 @@ public class ChatRepositoryTest {
                 .userName("구매자1")
                 .loginId("buyer1")
                 .password("password")
-                .phone("01012341234")
+                .phone("010-1234-1234")
                 .build();
         entityManager.persist(buyer1);
 
@@ -47,7 +47,7 @@ public class ChatRepositoryTest {
                 .userName("판매자1")
                 .loginId("seller1")
                 .password("password")
-                .phone("01056785678")
+                .phone("010-5678-5678")
                 .build();
         entityManager.persist(seller1);
 
@@ -55,13 +55,14 @@ public class ChatRepositoryTest {
                 .userName("구매자2")
                 .loginId("buyer2")
                 .password("password")
-                .phone("01014146868")
+                .phone("010-1414-6868")
                 .build();
         entityManager.persist(buyer2);
 
         post1 = Post.builder()
                 .title("Test Post 1")
                 .content("Test Content 1")
+                .price(10000)
                 .user(seller1)
                 .build();
         entityManager.persist(post1);
@@ -69,6 +70,7 @@ public class ChatRepositoryTest {
         post2 = Post.builder()
                 .title("Test Post 2")
                 .content("Test Content 2")
+                .price(10000)
                 .user(seller1)
                 .build();
         entityManager.persist(post2);

@@ -35,13 +35,14 @@ public class ReviewRepositoryTest {
                 .loginId("testuser")
                 .password("password")
                 .userName("Test User")
-                .phone("01012345678")
+                .phone("010-1234-5678")
                 .build();
         entityManager.persist(user);
 
         post = Post.builder()
                 .title("test title")
                 .content("test content")
+                .price(10000)
                 .build();
 
         complete = Complete.builder()

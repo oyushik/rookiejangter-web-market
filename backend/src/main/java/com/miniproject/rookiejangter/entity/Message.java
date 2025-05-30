@@ -25,8 +25,10 @@ public class Message {
     @JoinColumn(name = "chat_id")
     private Chat chat;
 
-    @NotBlank(message = "내용은 필수입니다.")
-    @Size(max = 255, message = "내용은 최대 255자까지 가능합니다.")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "sender_id")
+    private User user;
+
     @Column(name = "content", length = 255, nullable = false)
     private String content;
 

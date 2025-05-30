@@ -46,7 +46,7 @@ public class PostRepositoryTest {
                 .loginId("testId")
                 .password("testPassword")
                 .userName("Test User")
-                .phone("01012345678")
+                .phone("010-1234-5678")
                 .build();
         testUser = userRepository.save(testUser);
     }
@@ -59,6 +59,7 @@ public class PostRepositoryTest {
                 .user(testUser)
                 .title("Test Post Title")
                 .content("Test Post Content")
+                .price(10000)
                 .viewCount(0)
                 .isBumped(false)
                 .isReserved(false)
@@ -81,6 +82,7 @@ public class PostRepositoryTest {
                 .user(testUser)
                 .title("Test Post Title")
                 .content("Test Post Content")
+                .price(10000)
                 .viewCount(0)
                 .isBumped(false)
                 .isReserved(false)
@@ -104,6 +106,7 @@ public class PostRepositoryTest {
                 .user(testUser)
                 .title("Test Post Title")
                 .content("Test Post Content")
+                .price(10000)
                 .viewCount(0)
                 .isBumped(false)
                 .isReserved(false)
@@ -127,6 +130,7 @@ public class PostRepositoryTest {
                 .user(testUser)
                 .title("Test Post Title")
                 .content("Test Post Content")
+                .price(10000)
                 .viewCount(0)
                 .isBumped(false)
                 .isReserved(false)
@@ -143,13 +147,14 @@ public class PostRepositoryTest {
     }
 
     @Test
-    void getPostsByCategory() {
+    void findByCategory() {
         // Given
         Post post1 = Post.builder()
                 .category(testCategory)
                 .user(testUser)
                 .title("Test Post Title 1")
                 .content("Test Post Content 1")
+                .price(10000)
                 .viewCount(0)
                 .isBumped(false)
                 .isReserved(false)
@@ -162,6 +167,7 @@ public class PostRepositoryTest {
                 .user(testUser)
                 .title("Test Post Title 2")
                 .content("Test Post Content 2")
+                .price(10000)
                 .viewCount(0)
                 .isBumped(false)
                 .isReserved(false)

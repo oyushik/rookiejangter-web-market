@@ -31,6 +31,7 @@ public class ImageRepositoryTest {
         testPost = Post.builder()
                 .title("Test Post")
                 .content("Test Content")
+                .price(10000)
                 .build();
         entityManager.persist(testPost);
 

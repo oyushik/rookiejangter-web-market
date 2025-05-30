@@ -32,6 +32,7 @@ public class BumpRepositoryTest {
         testPost = Post.builder()
                 .title("Test Post")
                 .content("Test Content")
+                .price(10000)
                 .build();
         postRepository.save(testPost);
 

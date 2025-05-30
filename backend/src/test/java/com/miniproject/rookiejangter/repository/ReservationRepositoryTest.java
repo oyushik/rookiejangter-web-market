@@ -35,17 +35,18 @@ public class ReservationRepositoryTest {
                 .loginId("buyer123")
                 .password("password")
                 .userName("Buyer User")
-                .phone("01012341234")
+                .phone("010-1234-1234")
                 .build();
         seller = User.builder()
                 .loginId("seller456")
                 .password("password")
                 .userName("Seller User")
-                .phone("01056785678")
+                .phone("010-5678-5678")
                 .build();
         post = Post.builder()
                 .title("Test Post")
                 .content("Test Content")
+                .price(10000)
                 .build();
 
         entityManager.persist(buyer);
@@ -120,7 +121,7 @@ public class ReservationRepositoryTest {
                 .loginId("otherBuyer")
                 .password("password")
                 .userName("Other Buyer")
-                .phone("01099999999")
+                .phone("010-9999-9999")
                 .build();
         entityManager.persist(otherBuyer);
 

@@ -2,6 +2,7 @@ package com.miniproject.rookiejangter.repository;
 
 import com.miniproject.rookiejangter.entity.Chat;
 import com.miniproject.rookiejangter.entity.Message;
+import com.miniproject.rookiejangter.entity.Notification;
 import com.miniproject.rookiejangter.entity.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -36,7 +37,7 @@ public class MessageRepositoryTest {
                 .userName("구매자1")
                 .loginId("buyer1")
                 .password("password")
-                .phone("01012341234")
+                .phone("010-1234-1234")
                 .build();
         entityManager.persist(buyer1);
 
@@ -44,7 +45,7 @@ public class MessageRepositoryTest {
                 .userName("판매자1")
                 .loginId("seller1")
                 .password("password")
-                .phone("01056785678")
+                .phone("010-5678-5678")
                 .build();
 
         entityManager.persist(seller1);
@@ -58,6 +59,7 @@ public class MessageRepositoryTest {
 
         message1 = Message.builder()
                 .chat(chat1)
+                .user(buyer1)
                 .content("안녕하세요!")
                 .sentAt(LocalDateTime.now())
                 .isRead(false)
@@ -66,6 +68,7 @@ public class MessageRepositoryTest {
 
         message2 = Message.builder()
                 .chat(chat1)
+                .user(seller1)
                 .content("물건 상태는 어떤가요?")
                 .sentAt(LocalDateTime.now().plusMinutes(2))
                 .isRead(false)
@@ -78,6 +81,7 @@ public class MessageRepositoryTest {
     void saveMessage() {
         Message newMessage = Message.builder()
                 .chat(chat1)
+                .user(buyer1)
                 .content("네, 깨끗합니다.")
                 .sentAt(LocalDateTime.now().plusMinutes(5))
                 .isRead(true)
@@ -109,9 +113,17 @@ public class MessageRepositoryTest {
     }
 
     @Test
+    void findByUserId() {
+        List<Message> foundMessages = messageRepository.findByUser_UserId(message1.getUser().getUserId());
+        assertThat(foundMessages.get(0).getUser().getUserId()).isEqualTo(1L);
+        assertThat(foundMessages.get(0).getUser().getUserName()).isEqualTo("구매자1");
+    }
+
+    @Test
     void updateIsRead() {
         Message unreadMessage = Message.builder()
                 .chat(chat1)
+                .user(buyer1)
                 .content("확인 부탁드립니다.")
                 .sentAt(LocalDateTime.now().plusMinutes(10))
                 .isRead(false)
@@ -124,6 +136,26 @@ public class MessageRepositoryTest {
 
         Optional<Message> updatedMessage = messageRepository.findById(savedUnreadMessage.getMessageId());
         assertThat(updatedMessage).isPresent();
+        assertThat(updatedMessage.get().getIsRead()).isTrue();
+    }
+
+    @Test
+    void findByIsRead() {
+        Message unreadMessage = Message.builder()
+                .chat(chat1)
+                .user(buyer1)
+                .content("읽음 여부로 조회 테스트용입니다")
+                .sentAt(LocalDateTime.now().plusMinutes(30))
+                .isRead(false)
+                .build();
+        Message savedUnreadMessage = entityManager.persist(unreadMessage);
+        entityManager.flush();
+        assertThat(savedUnreadMessage.getIsRead()).isFalse();
+
+        // update 후 test
+        messageRepository.updateIsReadByMessageId(true, savedUnreadMessage.getMessageId());
+        entityManager.clear();
+        Optional<Message> updatedMessage = messageRepository.findById(savedUnreadMessage.getMessageId());
         assertThat(updatedMessage.get().getIsRead()).isTrue();
     }
 }

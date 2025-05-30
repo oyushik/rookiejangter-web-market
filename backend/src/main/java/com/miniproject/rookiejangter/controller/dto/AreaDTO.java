@@ -1,0 +1,36 @@
+package com.miniproject.rookiejangter.controller.dto;
+
+import com.miniproject.rookiejangter.entity.Area;
+import lombok.*;
+
+public class AreaDTO {
+
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class Response {
+        private Integer areaId;
+        private String areaName;
+
+        public static Response fromEntity(Area area) {
+            return Response.builder()
+                    .areaId(area.getAreaId())
+                    .areaName(area.getAreaName())
+                    .build();
+        }
+    }
+
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class ApiResponseWrapper<T> {
+        private boolean success;
+        private T data;
+        private Object error;
+        private String message;
+        private java.time.OffsetDateTime timestamp = java.time.OffsetDateTime.now(java.time.ZoneOffset.UTC);
+        private String requestId;
+    }
+}
