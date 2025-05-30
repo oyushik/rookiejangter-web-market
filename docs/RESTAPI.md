@@ -570,7 +570,7 @@ Response (200 OK):
 
 ### 4.2 상품 관리 API
 
-#### 4.2.1 상품 목록 조회
+#### 4.2.1 공개 상품 목록 조회
 
 ```yaml
 GET /api/products
@@ -584,7 +584,7 @@ Query Parameters:
 - area_id: integer - 지역 ID
 - min_price: integer - 최소 가격
 - max_price: integer - 최대 가격
-- keyword: string - 검색 키워드
+- keyword: string - 검색 키워드 
 
 Business Rules:
 - 검색 시 노출 순서는 최신순
@@ -635,7 +635,7 @@ Response (200 OK):
 }
 ```
 
-#### 4.2.2 상품 상세 조회
+#### 4.2.2 공개 상품 상세 조회
 
 ```yaml
 GET /api/products/{product_id}
@@ -697,19 +697,12 @@ Response (404 Not Found):
 }
 ```
 
-#### 4.2.3 상품 등록
-
+#### 4.2.3 유저 상품 등록
 ```yaml
-POST /api/products
-Content-Type: application/json
+POST /api/users/{id}/products
 Authorization: Bearer {JWT_TOKEN}
+Content-Type: application/json
 Required Role: USER
-
-Business Rules:
-- 사용자당 등록 가능한 상품 최대 5개
-- 금지 품목 등록 불가
-- 계정이 정지된 회원은 이용 불가
-- 이미지는 최대 10장까지
 
 Request Body:
 {
@@ -723,6 +716,12 @@ Request Body:
   ]
 }
 
+Business Rules:
+- 사용자당 등록 상품 최대 5개
+- 금지 품목 등록 금지
+- 정지 계정은 등록 불가
+- 이미지 최대 10장
+
 Response (201 Created):
 {
   "success": true,
@@ -733,16 +732,13 @@ Response (201 Created):
     "price": 800000,
     "category": "전자제품",
     "status": "SALE",
-    "images": [
-      "https://example.com/image1.jpg",
-      "https://example.com/image2.jpg"
-    ],
+    "images": [...],
     "createdAt": "2025-05-24T10:30:00Z"
   },
   "error": null,
   "message": "상품이 등록되었습니다.",
-  "timestamp": "2025-05-29T14:35:00Z",
-  "requestId": "c0a8012b-7e6b-11eb-9439-0242ac130002"
+  "timestamp": "...",
+  "requestId": "..."
 }
 
 Response (422 Unprocessable Entity):
@@ -750,63 +746,143 @@ Response (422 Unprocessable Entity):
   "success": false,
   "data": null,
   "error": {
-    "code": "BUSINESS_RULE_VIOLATION",
-    "message": "등록 가능한 상품 개수를 초과했습니다. (최대 5개)",
+    "code": "PRODUCT_REGISTRATION_LIMIT_EXCEEDED",
+    "message": "등록 가능한 상품 개수를 초과했습니다.",
     "details": {
       "currentCount": 5,
       "maxCount": 5
     }
   },
   "message": null,
-  "timestamp": "2025-05-29T14:35:00Z",
-  "requestId": "c0a8012b-7e6b-11eb-9439-0242ac130002"
+  "timestamp": "...",
+  "requestId": "..."
 }
 ```
 
-#### 4.2.4 상품 수정
-
+#### 4.2.4 유저 상품 전체 조회
 ```yaml
-PUT /api/products/{product_id}
-Content-Type: application/json
+GET /api/users/{id}/products
 Authorization: Bearer {JWT_TOKEN}
-Required Role: USER (본인만), ADMIN
+Required Role: USER
 
-Path Parameters:
-- product_id: integer (required) - 상품 ID
-
-Business Rules:
-- 예약 중이거나 거래 완료된 상품은 수정 불가
-
-Request Body:
-{
-  "title": "아이폰 14 Pro 판매합니다",
-  "description": "상태 매우 좋습니다",
-  "price": 850000,
-  "category": "전자제품",
-  "images": [
-    "https://example.com/image1.jpg"
-  ]
-}
+Query Parameters:
+- page: integer (default: 0)
+- size: integer (default: 10)
+- sort: string (default: "createdAt,desc")
 
 Response (200 OK):
 {
   "success": true,
   "data": {
-    "id": 1,
-    "title": "아이폰 14 Pro 판매합니다",
-    "description": "상태 매우 좋습니다",
-    "price": 850000,
+    "content": [
+      {
+        "id": 156,
+        "title": "아이폰 14",
+        "price": 800000,
+        "status": "SALE",
+        "category": "전자제품",
+        "createdAt": "2025-05-24T10:30:00Z"
+      }
+    ],
+    "pagination": {
+      "page": 0,
+      "size": 10,
+      "totalElements": 2,
+      "totalPages": 1,
+      "first": true,
+      "last": true
+    }
+  },
+  "error": null,
+  "message": null,
+  "timestamp": "...",
+  "requestId": "..."
+}
+
+```
+
+#### 4.2.5 유저 상품 상세 조회
+```yaml
+GET /api/users/{user_id}/products/{product_id}
+Authorization: Bearer {JWT_TOKEN}
+Required Role: USER
+
+Path Parameters:
+- product_id: integer (required)
+
+Response (200 OK):
+{
+  "success": true,
+  "data": {
+    "id": 156,
+    "title": "아이폰 14",
+    "description": "상태 양호",
+    "price": 800000,
     "category": "전자제품",
     "status": "SALE",
-    "images": [
-      "https://example.com/image1.jpg"
-    ],
+    "images": [...],
+    "createdAt": "2025-05-24T10:30:00Z",
+    "updatedAt": "2025-05-24T10:30:00Z"
+  },
+  "error": null,
+  "message": null,
+  "timestamp": "...",
+  "requestId": "..."
+}
+
+Response (404 Not Found):
+{
+  "success": false,
+  "data": null,
+  "error": {
+    "code": "PRODUCT_NOT_FOUND",
+    "message": "존재하지 않는 상품입니다.",
+    "details": {
+      "field": "product_id",
+      "rejectedValue": 999
+    }
+  },
+  "message": null,
+  "timestamp": "...",
+  "requestId": "..."
+}
+```
+
+#### 4.2.6 유저 상품 수정
+```yaml
+PUT /api/users/{user_id}/products/{product_id}
+Authorization: Bearer {JWT_TOKEN}
+Required Role: USER (본인만), ADMIN
+
+Request Body:
+{
+  "title": "아이폰 14 Pro",
+  "description": "상태 최상급",
+  "price": 850000,
+  "category": "전자제품",
+  "images": ["https://example.com/image1.jpg"]
+}
+
+Business Rules:
+- 예약 중 또는 거래 완료 상품은 수정 불가
+
+Response (200 OK):
+{
+  "success": true,
+  "data": {
+    "id": 156,
+    "title": "아이폰 14 Pro",
+    "description": "상태 최상급",
+    "price": 850000,
+    "category": "전자제품",
+    "images": [...],
+    "status": "SALE",
     "updatedAt": "2025-05-26T18:27:00Z"
   },
   "error": null,
   "message": "상품이 수정되었습니다.",
-  "timestamp": "2025-05-29T14:35:00Z",
-  "requestId": "c0a8012b-7e6b-11eb-9439-0242ac130002"
+  "timestamp": "...",
+  "requestId": "..."
 }
 
 Response (422 Unprocessable Entity):
@@ -814,27 +890,23 @@ Response (422 Unprocessable Entity):
   "success": false,
   "data": null,
   "error": {
-    "code": "BUSINESS_RULE_VIOLATION",
+    "code": "PRODUCT_NOT_EDITABLE",
     "message": "예약 중이거나 거래 완료된 상품은 수정할 수 없습니다.",
     "details": {
       "currentStatus": "RESERVED"
     }
   },
   "message": null,
-  "timestamp": "2025-05-29T14:35:00Z",
-  "requestId": "c0a8012b-7e6b-11eb-9439-0242ac130002"
+  "timestamp": "...",
+  "requestId": "..."
 }
 ```
 
-#### 4.2.5 상품 삭제
-
+#### 유저 상품 삭제
 ```yaml
-DELETE /api/products/{product_id}
+DELETE /api/users/{user_id}/products/{product_id}
 Authorization: Bearer {JWT_TOKEN}
 Required Role: USER (본인만), ADMIN
-
-Path Parameters:
-- product_id: integer (required) - 상품 ID
 
 Business Rules:
 - 예약 중인 상품은 삭제 불가
@@ -845,8 +917,8 @@ Response (200 OK):
   "data": null,
   "error": null,
   "message": "상품이 삭제되었습니다.",
-  "timestamp": "2025-05-29T14:35:00Z",
-  "requestId": "c0a8012b-7e6b-11eb-9439-0242ac130002"
+  "timestamp": "...",
+  "requestId": "..."
 }
 
 Response (422 Unprocessable Entity):
@@ -854,16 +926,56 @@ Response (422 Unprocessable Entity):
   "success": false,
   "data": null,
   "error": {
-    "code": "BUSINESS_RULE_VIOLATION",
+    "code": "PRODUCT_NOT_DELETABLE",
     "message": "예약 중인 상품은 삭제할 수 없습니다.",
     "details": {
       "currentStatus": "RESERVED"
     }
   },
   "message": null,
-  "timestamp": "2025-05-29T14:35:00Z",
-  "requestId": "c0a8012b-7e6b-11eb-9439-0242ac130002"
+  "timestamp": "...",
+  "requestId": "..."
 }
+```
+
+#### 4.2.8 찜한 상품 목록 조회
+```yaml
+GET /api/users/{id}/dibs
+Authorization: Bearer {JWT_TOKEN}
+Required Role: USER
+
+Query Parameters:
+- page: integer (default: 0)
+- size: integer (default: 20)
+
+Response (200 OK):
+{
+  "success": true,
+  "data": {
+    "content": [
+      {
+        "productId": 123,
+        "title": "아이폰 14",
+        "price": 800000,
+        "thumbnail": "https://example.com/image1.jpg",
+        "likedAt": "2025-05-28T15:20:00Z"
+      }
+    ],
+    "pagination": {
+      "page": 0,
+      "size": 20,
+      "totalElements": 3,
+      "totalPages": 1,
+      "first": true,
+      "last": true
+    }
+  },
+  "error": null,
+  "message": null,
+  "timestamp": "...",
+  "requestId": "..."
+}
+
 ```
 
 ### 4.3 거래 관리 API
