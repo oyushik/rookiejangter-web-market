@@ -2,10 +2,7 @@ package com.miniproject.rookiejangter.controller.dto;
 
 import com.miniproject.rookiejangter.entity.Area;
 import com.miniproject.rookiejangter.entity.User;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.*;
 
 import java.time.OffsetDateTime;
@@ -127,8 +124,6 @@ public class UserDTO {
                     .createdAt(user.getCreatedAt().atOffset(ZoneOffset.UTC))
                     .isBanned(user.getIsBanned())
                     .isAdmin(user.getIsAdmin())
-                    .banReason(user.getBans().stream().findFirst().map(ban -> ban.getBanReason()).orElse(null))
-                    .bannedAt(user.getBans().stream().findFirst().map(ban -> ban.getCreatedAt().atOffset(ZoneOffset.UTC)).orElse(null))
                     .build();
         }
 
