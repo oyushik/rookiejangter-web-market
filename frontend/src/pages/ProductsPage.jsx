@@ -1,6 +1,6 @@
 import { Typography, Box, Button } from '@mui/material';
-import { products as allProducts } from "../constants/ExpProductDB";
-// import { useEffect, useState } from "react"; // 백엔드 연동 시 필요
+import { products as allProducts } from "../constants/ExpProductDB"; //예시 데이터베이스
+import { useEffect /*, useState*/ } from "react"; // 백엔드 연동 시 필요
 // import axios from "axios"; // 백엔드 연동 시 필요
 import { useLocation, useNavigate } from "react-router-dom";
 import { FilterProducts } from '../utils/FilterProducts';
@@ -21,6 +21,10 @@ const ProductsPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const params = new URLSearchParams(location.search);
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [location.search]);
 
   // 파라미터 추출 (기본값 없이)
   const keyword = params.get('keyword');

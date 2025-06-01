@@ -1,24 +1,38 @@
-import { useParams } from "react-router-dom";
-import { products } from "../constants/ExpProductDB";
-import { Box, Typography, Divider, Grid, IconButton } from "@mui/material";
+import { useParams, useNavigate } from "react-router-dom";
+import { products } from "../constants/ExpProductDB"; //예시 데이터베이스
+import { Box, Typography, Divider, Grid } from "@mui/material";
 import NotFound from "../err/NotFound";
 import { FormatTime } from "../utils/FormatTime";
-import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
-import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import ProductsList from "../components/ProductsList";
+import ProductImageSlider from "../components/ProductImageSlider";
+import ProductActions from "../components/ProductActions";
 
 const ProductDetailPage = () => {
   const { product_id } = useParams();
+  const navigate = useNavigate();
   const product = products.find(p => String(p.id) === String(product_id));
   const [imgIdx, setImgIdx] = useState(0);
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   if (!product) {
     return <NotFound />;
   }
 
   const images = product.images || [];
-  const hasImages = images.length > 0;
+
+  // 비슷한 상품 리스트 (같은 카테고리, 자기 자신 제외, 최근순 정렬, 5개 제한)
+  const similarProducts = products
+    .filter(
+      p =>
+        p.category === product.category &&
+        p.id !== product.id
+    )
+    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+    .slice(0, 5);
 
   const handlePrev = (e) => {
     e.stopPropagation();
@@ -30,14 +44,9 @@ const ProductDetailPage = () => {
     setImgIdx(idx => idx < images.length - 1 ? idx + 1 : idx);
   };
 
-  // 비슷한 상품 리스트 (같은 카테고리, 자기 자신 제외)
-  const similarProducts = products
-    .filter(
-      p =>
-        p.category === product.category &&
-        p.id !== product.id
-    )
-    .slice(0, 5);
+  const handleReport = () => {
+    alert('신고 처리가 완료되었습니다.');
+  };
 
   return (
     <Box sx={{ px: 5, py: 4 }}>
@@ -54,84 +63,14 @@ const ProductDetailPage = () => {
               position: 'relative'
             }}
           >
-            {/* 왼쪽: 이미지 영역 */}
-            <Box
-              sx={{
-                width: 400,
-                aspectRatio: '1/1',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                bgcolor: '#fafafa',
-                borderRadius: 2,
-                overflow: 'hidden',
-                position: 'relative',
-                flexShrink: 0,
-              }}
-            >
-              {hasImages ? (
-                <>
-                  <img
-                    src={images[imgIdx]}
-                    alt={product.title}
-                    style={{ width: '100%', height: 'auto', objectFit: 'contain', maxHeight: 400 }}
-                  />
-                  {images.length > 1 && (
-                    <>
-                      <IconButton
-                        onClick={handlePrev}
-                        disabled={imgIdx === 0}
-                        sx={{
-                          position: 'absolute',
-                          left: 8,
-                          top: '50%',
-                          transform: 'translateY(-50%)',
-                          bgcolor: 'rgba(255,255,255,0.7)',
-                          '&:hover': { bgcolor: 'rgba(255,255,255,0.9)' }
-                        }}
-                        size="small"
-                      >
-                        <ArrowBackIosNewIcon />
-                      </IconButton>
-                      <IconButton
-                        onClick={handleNext}
-                        disabled={imgIdx === images.length - 1}
-                        sx={{
-                          position: 'absolute',
-                          right: 8,
-                          top: '50%',
-                          transform: 'translateY(-50%)',
-                          bgcolor: 'rgba(255,255,255,0.7)',
-                          '&:hover': { bgcolor: 'rgba(255,255,255,0.9)' }
-                        }}
-                        size="small"
-                      >
-                        <ArrowForwardIosIcon />
-                      </IconButton>
-                      {/* 이미지 인덱스 표시 */}
-                      <Box
-                        sx={{
-                          position: 'absolute',
-                          bottom: 8,
-                          left: '50%',
-                          transform: 'translateX(-50%)',
-                          bgcolor: 'rgba(0,0,0,0.5)',
-                          color: '#fff',
-                          borderRadius: 2,
-                          px: 1.5,
-                          fontSize: 13,
-                          py: 0.2,
-                        }}
-                      >
-                        {imgIdx + 1} / {images.length}
-                      </Box>
-                    </>
-                  )}
-                </>
-              ) : (
-                <Typography color="text.secondary">이미지 없음</Typography>
-              )}
-            </Box>
+            {/* 왼쪽: 이미지 영역 (컴포넌트 분리) */}
+            <ProductImageSlider
+              images={images}
+              imgIdx={imgIdx}
+              onPrev={handlePrev}
+              onNext={handleNext}
+              title={product.title}
+            />
             {/* 오른쪽: 상세 정보 */}
             <Box sx={{ flex: 1, textAlign: 'left', display: 'flex', flexDirection: 'column' }}>
               <Typography variant="h4" sx={{ mb: 2 }}>{product.title}</Typography>
@@ -150,58 +89,8 @@ const ProductDetailPage = () => {
                 지역: {product.area || "지역정보 없음"}
               </Typography>
             </Box>
-            {/* 버튼 영역: 이미지+정보를 감싸는 Box의 맨 아래에 절대배치 */}
-            <Box
-              sx={{
-                position: 'absolute',
-                left: 0,
-                bottom: 0,
-                width: '100%',
-                display: 'flex',
-                justifyContent: { xs: 'flex-start', md: 'flex-end' },
-                gap: 3,
-                pr: 5,
-                boxSizing: 'border-box',
-                fontSize: 22,
-                fontWeight: 700,
-              }}
-            >
-              <button style={{
-                width: 200,
-                height: 60,
-                padding: '8px 20px',
-                border: '1px solid #e0e0e0',
-                background: '#fff',
-                cursor: 'pointer',
-                borderRadius: 0,
-              }}>
-                찜하기
-              </button>
-              <button style={{
-                width: 200,
-                height: 60,
-                padding: '8px 20px',
-                border: '1px solid #1976d2',
-                background: '#1976d2',
-                color: '#fff',
-                cursor: 'pointer',
-                borderRadius: 0,
-              }}>
-                대화하기
-              </button>
-              <button style={{
-                width: 200,
-                height: 60,
-                padding: '8px 20px',
-                border: '1px solid #43a047',
-                background: '#43a047',
-                color: '#fff',
-                cursor: 'pointer',
-                borderRadius: 0,
-              }}>
-                바로구매
-              </button>
-            </Box>
+            {/* 버튼 영역: 컴포넌트 분리 */}
+            <ProductActions />
           </Box>
         </Grid>
         {/* 설명은 아래에 별도 Row로 */}
@@ -213,7 +102,7 @@ const ProductDetailPage = () => {
             </Typography>
             <ProductsList
               products={similarProducts}
-              onProductClick={id => window.location.href = `/products/${id}`}
+              onProductClick={id => navigate(`/products/${id}`)}
               formatTime={FormatTime}
             />
           </Box>
@@ -230,7 +119,7 @@ const ProductDetailPage = () => {
                   {product.description}
                 </Typography>
               </Box>
-              {/* 판매자 정보 (추가 미결정) */}
+              {/* 판매자 정보 */}
               <Box sx={{
                 flex: 1,
                 minWidth: 280,
@@ -244,7 +133,6 @@ const ProductDetailPage = () => {
                 <Typography variant="h6" sx={{ fontWeight: 700, mb: 2 }}>
                   판매자 정보
                 </Typography>
-                {/* 판매자 정보 예시 (실제 데이터에 맞게 수정) */}
                 <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', mb: 2 }}>
                   <Box
                     component="img"
@@ -260,16 +148,16 @@ const ProductDetailPage = () => {
                   </Typography>
                   <button
                     style={{
-                      marginTop: 50,
+                      marginTop: 40,
                       padding: '6px 18px',
-                      border: '1px solid #e57373',
+                      border: '1px solid #EA002C',
                       borderRadius: 4,
-                      background: '#EA002C',
-                      color: 'white',
+                      background: '#fff',
+                      color: '#EA002C',
                       cursor: 'pointer',
                       fontWeight: 600
                     }}
-                    onClick={() => alert('신고 처리가 완료되었습니다.')}
+                    onClick={handleReport}
                   >
                     신고하기
                   </button>
