@@ -127,8 +127,6 @@ public class UserDTO {
                     .createdAt(user.getCreatedAt().atOffset(ZoneOffset.UTC))
                     .isBanned(user.getIsBanned())
                     .isAdmin(user.getIsAdmin())
-                    .banReason(user.getBans().stream().findFirst().map(ban -> ban.getBanReason()).orElse(null))
-                    .bannedAt(user.getBans().stream().findFirst().map(ban -> ban.getCreatedAt().atOffset(ZoneOffset.UTC)).orElse(null))
                     .build();
         }
 

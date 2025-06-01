@@ -41,7 +41,7 @@
 
 | **일반 사용자 (구매자)** | 상품을 검색하고 구매하는 주체 | 안전한 거래, 다양한 상품 정보, 간편한 검색 |
 | **일반 사용자 (판매자)** | 상품을 등록하고 판매하는 주체 | 쉬운 상품 등록, 빠른 거래 성사, 신뢰성 있는 거래 환경 |
-| **운영자 (관리자)** | 플랫폼 관리 및 사용자 관리 | 사용자 관리, 게시물 모니터링, 신고 처리 |
+| **운영자 (관리자)** | 플랫폼 관리 및 사용자 관리 | 사용자 관리, 상품 모니터링, 신고 처리 |
 | **개발팀** | 웹 서비스 개발 및 유지보수 | 명확한 요구사항, 기술적 타당성, 시스템 확장성 및 유지보수 용이성 |
 | **기획/디자인팀** | 서비스 UI/UX 기획 및 설계 | 사용자 중심의 인터페이스, 직관적인 흐름, 브랜드 일관성 |
 
@@ -128,18 +128,18 @@ graph TD
 
 | 도메인 객체                        | 유형   | 중요도 | 복잡도 | 비고                         |
 | ---------------------------------- | ------ | ------ | ------ | ---------------------------- |
-| **Product (게시물)**               | Entity | 높음   | 높음   | 중고 상품 게시물             |
+| **Product (상품)**                 | Entity | 높음   | 높음   | 중고 상품 게시물             |
 | **User (사용자)**                  | Entity | 높음   | 낮음   | 사용자 정보                  |
 | **Reservation (예약)**             | Entity | 높음   | 중간   | 거래 예약                    |
 | **Complete (완료)**                | Entity | 높음   | 낮음   | 거래 완료 정보               |
 | **Chat (채팅)**                    | Entity | 높음   | 높음   | 사용자 간 실시간 채팅방      |
 | **Message (메시지)**               | Entity | 높음   | 중간   | 채팅방 내 사용자 간 대화     |
 | **Cancelation (취소)**             | Entity | 높음   | 중간   | 예약 취소                    |
-| **Category (범주)**                | Entity | 중간   | 낮음   | 상품 분류                    |
+| **Category (카테고리)**            | Entity | 중간   | 낮음   | 상품 분류                    |
 | **Review (리뷰)**                  | Entity | 중간   | 낮음   | 거래 후기                    |
 | **Notification (알림**)            | Entity | 중간   | 중간   | 사용자 알림                  |
 | **Dibs (찜)**                      | Entity | 중간   | 낮음   | 관심 상품 등록               |
-| **Bump (끌올)**                    | Entity | 중간   | 낮음   | 게시물 순서 변경             |
+| **Bump (끌올)**                    | Entity | 중간   | 낮음   | 상품 순서 변경               |
 | **Cancelation_reason (취소 사유)** | Entity | 중간   | 낮음   | 예약 취소 사유               |
 | **Ban (제재)**                     | Entity | 낮음   | 중간   | 사용자 제재 관리             |
 | **Report (신고)**                  | Entity | 낮음   | 낮음   | 사용자/게시글/채팅 신고 관리 |
@@ -194,7 +194,7 @@ graph TD
 - ban() 호출 시, is_banned는 true로 바뀌고 해당 사용자는 즉시 로그아웃 처리 및 기능 접근이 제한된다.
 - unban() 호출 시, is_banned는 false로 바뀌고 사용자는 기능을 다시 사용할 수 있다.
 
-#### 3.2.2 Product (게시물)
+#### 3.2.2 Product (상품)
 
 **역할**: 사용자가 판매 또는 홍보를 위해 등록하는 중고 상품 게시물을 나타냄
 
@@ -203,8 +203,8 @@ graph TD
 - `product_id`: 고유 식별자 (대리 키, BIGINT, NOT NULL)
 - `category_id`: 카테고리 식별자 (외래 키, INT, NULL) - `categories` 테이블 참조
 - `user_id`: 사용자 식별자 (외래 키, BIGINT, NULL) - `users` 테이블 참조 (작성자)
-- `title`: 게시물 제목 (VARCHAR(50), NOT NULL)
-- `content`: 게시물 내용 (VARCHAR(255), NOT NULL)
+- `title`: 상품 제목 (VARCHAR(50), NOT NULL)
+- `content`: 상품 내용 (VARCHAR(255), NOT NULL)
 - `price`: 상품 가격 (INT, NULL)
 - `view_count`: 조회수 (INT, NULL)
 - `is_bumped`: 끌올 여부 (BOOLEAN, NULL)
@@ -213,28 +213,28 @@ graph TD
 
 **주요 행동 (메서드):**
 
-- `createProduct(category_id, user_id, title, content)`: 새 게시물을 생성한다.
-- `updateProduct(product_id, title, content)`: 게시물 제목 또는 내용을 수정한다.
-- `deleteProduct(product_id)`: 게시물을 삭제한다.
-- `bumpProduct(product_id)`: 게시물을 끌올(최신화)한다.
-- `reserveProduct(product_id)`: 게시물을 예약 상태로 변경한다.
-- `completeProduct(product_id)`: 게시물을 거래 완료 상태로 변경한다.
-- `incrementViewCount(product_id)`: 게시물의 조회수를 1 증가시킨다.
-- `getProductById(product_id)`: 특정 게시물의 상세 정보를 조회한다.
-- `listProductsByCategory(category_id):` 특정 카테고리의 게시물 목록을 조회한다.
-- `listRecentProducts(limit, offset)`: 최신 게시물 목록을 페이징하여 조회한다.
+- `createProduct(category_id, user_id, title, content)`: 새 상품을 생성한다.
+- `updateProduct(product_id, title, content)`: 상품 제목 또는 내용을 수정한다.
+- `deleteProduct(product_id)`: 상품을 삭제한다.
+- `bumpProduct(product_id)`: 상품을 끌올(최신화)한다.
+- `reserveProduct(product_id)`: 상품을 예약 상태로 변경한다.
+- `completeProduct(product_id)`: 상품을 거래 완료 상태로 변경한다.
+- `incrementViewCount(product_id)`: 상품의 조회수를 1 증가시킨다.
+- `getProductById(product_id)`: 특정 상품의 상세 정보를 조회한다.
+- `listProductsByCategory(category_id):` 특정 카테고리의 상품 목록을 조회한다.
+- `listRecentProducts(limit, offset)`: 최신 상품 목록을 페이징하여 조회한다.
 
 **비즈니스 규칙:**
 
-- 게시물 제목(title)과 내용(content)은 비어 있을 수 없다.
-- 하나의 게시물은 반드시 하나의 카테고리에 속해야 한다.
-- 사용자가 지정되지 않은 게시물도 생성 가능하지만, 일반적으로 작성자(user_id)는 존재한다.
+- 상품 제목(title)과 내용(content)은 비어 있을 수 없다.
+- 하나의 상품은 반드시 하나의 카테고리에 속해야 한다.
+- 사용자가 지정되지 않은 상품도 생성 가능하지만, 일반적으로 작성자(user_id)는 존재한다.
 - 끌올(is_bumped)은 일정 시간(예: 24시간) 이상 지난 후에만 가능하다.
-- 게시물이 거래 완료(is_completed)되면 더 이상 예약(is_reserved)할 수 없다.
-- 예약(is_reserved) 상태인 게시물은 동시에 한 명만 예약할 수 있다 (예약자 정보는 다른 테이블에서 관리 가능).
-- 조회수(view_count)는 게시물이 조회될 때마다 1씩 증가한다.
-- 삭제된 게시물은 사용자에게 노출되지 않는다 (soft delete 적용 가능).
-- 게시물은 작성일(producted_at) 기준으로 정렬하여 노출된다.
+- 상품이 거래 완료(is_completed)되면 더 이상 예약(is_reserved)할 수 없다.
+- 예약(is_reserved) 상태인 상품은 동시에 한 명만 예약할 수 있다 (예약자 정보는 다른 테이블에서 관리 가능).
+- 조회수(view_count)는 상품이 조회될 때마다 1씩 증가한다.
+- 삭제된 상품은 사용자에게 노출되지 않는다 (soft delete 적용 가능).
+- 상품은 작성일(producted_at) 기준으로 정렬하여 노출된다.
 
 #### 3.2.3 Category (카테고리)
 
@@ -242,8 +242,8 @@ graph TD
 
 **주요 속성:**
 
-- `category_id`: 범주 식별자 (기본 키, INT, NOT NULL)
-- `category_name`: 범주 이름 (VARCHAR(20), NULL)
+- `category_id`: 카테고리 식별자 (기본 키, INT, NOT NULL)
+- `category_name`: 카테고리 이름 (VARCHAR(20), NULL)
 
 **주요 행동 (메서드):**
 
@@ -257,9 +257,9 @@ graph TD
 
 - 카테고리 이름(`category_name`)은 중복될 수 없다.
 - 카테고리 이름은 최대 20자까지 입력 가능하다.
-- 카테고리 삭제 시, 해당 카테고리를 참조하는 게시물이나 상품이 존재하면 삭제가 제한될 수 있다 (연관 무결성 고려).
+- 카테고리 삭제 시, 해당 카테고리를 참조하는 상품이 존재하면 삭제가 제한될 수 있다 (연관 무결성 고려).
 - 카테고리는 시스템에서 미리 정의된 값으로 제한될 수 있으며, 관리 권한이 있는 사용자만 수정/생성할 수 있다.
-- 게시물 또는 상품은 반드시 하나의 유효한 카테고리에 속해야 한다.
+- 상품은 반드시 하나의 유효한 카테고리에 속해야 한다.
 
 #### 3.2.4 Notification (알림)
 
@@ -269,7 +269,7 @@ graph TD
 
 - `notification_id`: 알림 식별자 (기본 키, BIGINT, NOT NULL)
 - `user_id`: 사용자 식별자 (외래 키, BIGINT, NULL) - `users` 테이블 참조 (알림 대상)
-- `entity_id`: 관련 엔티티 식별자 (BIGINT, NULL) - 예를 들어, 게시물 ID, 채팅 ID 등
+- `entity_id`: 관련 엔티티 식별자 (BIGINT, NULL) - 예를 들어, 상품 ID, 채팅 ID 등
 - `entity_type`: 관련 엔티티 타입 (VARCHAR(20), NULL) - 예를 들어, 'product', 'chat' 등
 - `message`: 알림 메시지 내용 (VARCHAR(255), NULL)
 - `sent_at`: 알림 발송 시간 (TIMESTAMP, NULL)
@@ -294,16 +294,16 @@ graph TD
 
 - `dibs_id`: 찜 식별자 (기본 키, BIGINT, NOT NULL)
 - `user_id`: 사용자 식별자 (외래 키, BIGINT, NULL) - `users` 테이블 참조 (찜한 사용자)
-- `product_id`: 게시물 식별자 (외래 키, BIGINT, NULL) - `products` 테이블 참조 (찜된 게시물)
+- `product_id`: 상품 식별자 (외래 키, BIGINT, NULL) - `products` 테이블 참조 (찜된 상품)
 - `added_at`: 찜한 시간 (TIMESTAMP, NULL)
 
 **주요 행동 (메서드):**
 
-- `addDibs(user_id, product_id)`: 사용자가 특정 게시물을 찜한다. (이미 찜한 게시물인 경우 중복 등록 방지.)
-- `removeDibs(user_id, product_id)`: 사용자가 찜한 게시물을 찜 목록에서 제거한다.
-- `getDibsByUser(user_id)`: 사용자가 찜한 게시물 목록을 조회한다.
-- `isProductDibbed(user_id, product_id)`: 사용자가 특정 게시물을 이미 찜했는지 여부를 확인한다.
-- `countDibsForProduct(product_id)`: 특정 게시물이 받은 총 찜 개수를 반환한다.
+- `addDibs(user_id, product_id)`: 사용자가 특정 상품을 찜한다. (이미 찜한 상품인 경우 중복 등록 방지.)
+- `removeDibs(user_id, product_id)`: 사용자가 찜한 상품을 찜 목록에서 제거한다.
+- `getDibsByUser(user_id)`: 사용자가 찜한 상품 목록을 조회한다.
+- `isProductDibbed(user_id, product_id)`: 사용자가 특정 상품을 이미 찜했는지 여부를 확인한다.
+- `countDibsForProduct(product_id)`: 특정 상품이 받은 총 찜 개수를 반환한다.
 
 #### 3.2.6 Chat (채팅)
 
@@ -314,15 +314,15 @@ graph TD
 - `chat_id`: 채팅방 식별자 (기본 키, BIGINT, NOT NULL)
 - `buyer_id`: 구매자 식별자 (외래 키, BIGINT, NULL) - `users` 테이블 참조
 - `seller_id`: 판매자 식별자 (외래 키, BIGINT, NULL) - `users` 테이블 참조
-- `product_id`: 게시물 식별자 (외래 키, BIGINT, NULL) - `products` 테이블 참조 (관련 상품)
+- `product_id`: 상품 식별자 (외래 키, BIGINT, NULL) - `products` 테이블 참조 (관련 상품)
 
 **주요 행동 (메서드):**
 
-- `createChat(buyer_id, seller_id, product_id)`: 구매자와 판매자 간의 새로운 채팅방을 생성한다. 동일한 구성원이 동일 게시물에 대해 이미 채팅방이 있는 경우 기존 채팅방을 반환할 수 있다.
+- `createChat(buyer_id, seller_id, product_id)`: 구매자와 판매자 간의 새로운 채팅방을 생성한다. 동일한 구성원이 동일 상품에 대해 이미 채팅방이 있는 경우 기존 채팅방을 반환할 수 있다.
 - `getChatById(chat_id)`: 채팅방의 상세 정보를 조회한다.
 - `getChatsByUser(user_id)`: 사용자가 참여한 모든 채팅방 목록을 조회한다.
 - `deleteChat(chat_id)`: 특정 채팅방을 삭제한다. 주로 관리자가 수행하거나 거래 종료 후 자동 삭제될 수 있다.
-- `getChatByProductAndUsers(product_id, buyer_id, seller_id)`: 특정 게시물과 사용자 조합으로 채팅방을 조회하거나 존재 여부를 확인한다.
+- `getChatByProductAndUsers(product_id, buyer_id, seller_id)`: 특정 상품과 사용자 조합으로 채팅방을 조회하거나 존재 여부를 확인한다.
 
 #### 3.2.7 Message (메시지)
 
@@ -354,16 +354,16 @@ graph TD
 - `reservation_id`: 예약 식별자 (기본 키, BIGINT, NOT NULL)
 - `buyer_id`: 구매자 식별자 (외래 키, BIGINT, NULL) - `users` 테이블 참조 (예약 요청자)
 - `seller_id`: 판매자 식별자 (외래 키, BIGINT, NULL) - `users` 테이블 참조 (판매자)
-- `product_id`: 게시물 식별자 (외래 키, BIGINT, NULL) - `products` 테이블 참조 (예약된 상품)
+- `product_id`: 상품 식별자 (외래 키, BIGINT, NULL) - `products` 테이블 참조 (예약된 상품)
 - `status`: 예약(거래) 상태 식별별 (외래 키, ENUM, NULL) - `products` 테이블 참조 (예약된 상품)
 
 **주요 행동 (메서드):**
 
-- `createReservation(buyer_id, seller_id, product_id)`: 구매자가 특정 게시물에 대해 예약을 생성한다. `reserved_at`은 자동으로 현재 시간으로 설정된다.
+- `createReservation(buyer_id, seller_id, product_id)`: 구매자가 특정 상품에 대해 예약을 생성한다. `reserved_at`은 자동으로 현재 시간으로 설정된다.
 - `cancelReservation(reservation_id)`: 예약을 취소한다.
 - `getReservationsByUser(user_id)`: 사용자가 생성한 또는 받은 모든 예약 요청을 조회한다.
-- `getReservationByProduct(product_id)`: 특정 게시물에 대한 예약 정보를 조회한다.
-- `isProductReserved(product_id)`: 해당 게시물이 현재 예약된 상태인지 확인한다.
+- `getReservationByProduct(product_id)`: 특정 상품에 대한 예약 정보를 조회한다.
+- `isProductReserved(product_id)`: 해당 상품이 현재 예약된 상태인지 확인한다.
 
 #### 3.2.9 Cancelation (취소)
 
@@ -405,7 +405,7 @@ graph TD
 **주요 속성:**
 
 - `complete_id`: 완료 식별자 (기본 키, BIGINT, NOT NULL)
-- `product_id`: 게시물 식별자 (외래 키, BIGINT, NULL) - `products` 테이블 참조 (완료된 상품)
+- `product_id`: 상품 식별자 (외래 키, BIGINT, NULL) - `products` 테이블 참조 (완료된 상품)
 - `buyer_id`: 구매자 식별자 (외래 키, BIGINT, NULL) - `users` 테이블 참조 (구매자)
 - `seller_id`: 판매자 식별자 (외래 키, BIGINT, NULL) - `users` 테이블 참조 (판매자)
 - `completed_at`: 거래 완료 시간 (TIMESTAMP, NULL)
@@ -414,7 +414,7 @@ graph TD
 
 - `createComplete(productId, buyerId, sellerId)`: 거래 완료 정보를 생성한다.
 - `getCompleteById(completeId)`: 특정 완료 정보(complete_id)를 조회한다.
-- `getCompleteByProductId(productId)`: 게시물 기준으로 거래 완료 정보를 조회한다.
+- `getCompleteByProductId(productId)`: 상품 기준으로 거래 완료 정보를 조회한다.
 
 #### 3.2.12 Review (리뷰)
 
@@ -457,20 +457,20 @@ graph TD
 
 #### 3.2.14 Bump (끌올)
 
-**역할:** 사용자가 자신의 게시물을 목록 상단으로 끌어올린 이력을 관리
+**역할:** 사용자가 자신의 상품을 목록 상단으로 끌어올린 이력을 관리
 
 **주요 속성:**
 
 - `bump_id`: 끌올 식별자 (기본 키, BIGINT, NOT NULL)
-- `product_id`: 게시물 식별자 (외래 키, BIGINT, NULL) - `products` 테이블 참조 (끌어올려진 게시물)
+- `product_id`: 상품 식별자 (외래 키, BIGINT, NULL) - `products` 테이블 참조 (끌어올려진 상품)
 - `bumped_at`: 끌올 날짜 (TIMESTAMP, NULL)
 - `bump_count`: 해당 날짜의 끌올 횟수 (INT, NULL)
 
 **주요 행동 (메서드):**
 
-- `createBump(productId)`: 게시물을 상단으로 끌어올린다.
-- `getBumpsByProductId(productId)`: 특정 게시물의 끌올 이력을 조회한다.
-- `countBumpsByDate(productId, date)`: 해당 날짜에 특정 게시물이 끌올된 횟수를 조회한다.
+- `createBump(productId)`: 상품을 상단으로 끌어올린다.
+- `getBumpsByProductId(productId)`: 특정 상품의 끌올 이력을 조회한다.
+- `countBumpsByDate(productId, date)`: 해당 날짜에 특정 상품이 끌올된 횟수를 조회한다.
 
 #### 3.2.15 Image (이미지)
 
@@ -479,25 +479,25 @@ graph TD
 **주요 속성:**
 
 - `image_id`: 이미지 식별자 (기본 키, BIGINT, NOT NULL)
-- `product_id`: 게시물 식별자 (외래 키, BIGINT, NULL) - `products` 테이블 참조 (이미지가 속한 게시물)
+- `product_id`: 상품 식별자 (외래 키, BIGINT, NULL) - `products` 테이블 참조 (이미지가 속한 상품)
 - `image_url`: 이미지 파일 경로 또는 URL (VARCHAR(255), NOT NULL)
 
 **주요 행동 (메서드):**
 
-- `addImage(productId, imageUrl)`: 게시물에 이미지를 첨부한다.
+- `addImage(productId, imageUrl)`: 상품에 이미지를 첨부한다.
 - `deleteImage(imageId)`: 특정 이미지를 삭제한다.
-- `getImagesByProductId(productId)`: 게시물에 첨부된 모든 이미지를 조회한다.
+- `getImagesByProductId(productId)`: 상품에 첨부된 모든 이미지를 조회한다.
 
 #### 3.2.16 Report (신고)
 
-**역할:** 사용자가 다른 사용자, 게시물 또는 채팅에 대해 신고한 내역을 관리
+**역할:** 사용자가 다른 사용자, 상품 또는 채팅에 대해 신고한 내역을 관리
 
 **주요 속성:**
 
 - `report_id`: 신고 식별자 (기본 키, BIGINT, NOT NULL)
 - `report_reason_id`: 신고 사유 식별자 (외래 키, INT, NULL) - `report_reasons` 테이블 참조
 - `user_id`: 신고자 식별자 (외래 키, BIGINT, NULL) - `users` 테이블 참조 (신고한 사용자)
-- `target_id`: 신고 대상 식별자 (BIGINT, NULL) - 사용자, 게시물, 채팅 등의 ID
+- `target_id`: 신고 대상 식별자 (BIGINT, NULL) - 사용자, 상품, 채팅 등의 ID
 - `target_type`: 신고 대상 타입 (VARCHAR(10), NULL) - 'user', 'product', 'chat' 등
 - `is_processed`: 처리 완료 여부 (BOOLEAN, NULL)
 
@@ -726,7 +726,6 @@ ERDiagram
 | -------------------------------- | ---------- | ------------------------------------------------------------- | ------------------------------- |
 | category ↔ product               | 1:N        | 하나의 category에는 여러 product가 속함                       | -                               |
 | chat ↔ message                   | 1:N        | 하나의 chat에는 여러 message가 속함                           | -                               |
-| product ↔ bump                   | 1:N        | 하나의 product는 여러 bump를 가질 수 있음                     | 일일 끌올 횟수 제한             |
 | product ↔ chat                   | 1:N        | 하나의 product는 여러 chat을 가질 수 있음                     | -                               |
 | product ↔ image                  | 1:N        | 하나의 product는 여러 image를 가질 수 있음                    | 최대 3장 제한                   |
 | product ↔ reservation            | 1:N        | 하나의 product는 하나의 reservation을 가질 수 있음            | 동시 예약 불가                  |
@@ -743,6 +742,7 @@ ERDiagram
 | user ↔ cancelation               | 1:N        | 하나의 user는 여러 cancelation을 가질 수 있음                 | -                               |
 | cancelation_reason ↔ cancelation | 1:N        | 하나의 cancelation_reason에는 여러 cancelation이 속함         | -                               |
 | complete ↔ review                | 1:1        | 하나의 complete는 하나의 review를 가질 수 있음                | 거래 완료 후에만 리뷰 작성 가능 |
+| product ↔ bump                   | 1:1        | 하나의 product는 하나의 bump를 가질 수 있음                   | 일일 끌올 횟수 제한             |
 | product ↔ complete               | 1:1        | 하나의 product는 하나의 complete 정보를 가짐                  | 거래 완료시에만 생성            |
 | report ↔ ban                     | 1:1        | 하나의 report는 하나의 ban에 해당할 수 있음                   | 신고 처리 결과에 따라 제재      |
 | reservation ↔ cancelation        | 1:1        | 하나의 reservation은 하나의 cancelation을 가질 수 있음        | 예약 취소시에만 생성            |
@@ -766,17 +766,17 @@ ERDiagram
 | **BR-USER-09** | 위치 정보를 받아와 사용자정보에 기재          | 낮음     | 가입 시 확인                                                   |
 | **BR-USER-10** | 계정이 정지된 회원은 이용 불가                | 중간     | 회원 상태 확인 후 페이지 접근 시 이용 제한 페이지로 리다이렉트 |
 
-### 5.2 게시물 관련 규칙
+### 5.2 상품 관련 규칙
 
 | 규칙 ID           | 규칙 내용                                              | 우선순위 | 검증 방법                                             |
 | ----------------- | ------------------------------------------------------ | -------- | ----------------------------------------------------- |
-| **BR-PRODUCT-01** | 검색 시 노출 순서는 최신순                             | 낮음     | 게시물 시간 순으로 앞에 배치                          |
+| **BR-PRODUCT-01** | 검색 시 노출 순서는 최신순                             | 낮음     | 시간 순으로 앞에 배치                                 |
 | **BR-PRODUCT-02** | 거래 완료 상품은 검색 결과에서 제외                    | 중간     | 기본값은 보이지 않음이며 체크박스 클릭하여 시 보임    |
 | **BR-PRODUCT-03** | 위치를 기반으로 허용 범위 밖의 상품은 노출 금지        | 중간     | 위치 필터링                                           |
 | **BR-PRODUCT-04** | 예약 중 게시글은 수정, 삭제 할 수 없음                 | 중간     | 게시글 상태 확인                                      |
 | **BR-PRODUCT-05** | 거래 완료 게시글은 수정할 수 없음                      | 중간     | 게시글 상태 확인                                      |
 | **BR-PRODUCT-06** | 끌올 시도 횟수마다 다음 끌올 대기 시간이 2배로 증가    | 낮음     | 끌올 카운트 확인                                      |
-| **BR-PRODUCT-07** | 거래 중인 상품 게시글은 최대 5개                       | 높음     | 게시물 - 유저 연관관계 상태 확인                      |
+| **BR-PRODUCT-07** | 거래 중인 상품 게시글은 최대 5개                       | 높음     | 상품 - 유저 연관관계 상태 확인                        |
 | **BR-PRODUCT-08** | 등록 가능한 상품 카테고리 또는 금지 품목 리스트는 정치 | 높음     | 관리자가 모니터링 후 게정 정지 등 처리. (자동필터링?) |
 | **BR-PRODUCT-09** | 사진 개수 제한                                         | 낮음     | (이상 이하 조건)                                      |
 
@@ -784,17 +784,17 @@ ERDiagram
 
 | 규칙 ID         | 규칙 내용                                           | 우선순위 | 검증 방법                                     |
 | --------------- | --------------------------------------------------- | -------- | --------------------------------------------- |
-| **BR-TRADE-01** | 게시물 예약은 단 1명과 성립                         | 높음     | 게시물에 판매자, 구매자를 확인                |
+| **BR-TRADE-01** | 상품 예약은 단 1명과 성립                           | 높음     | 판매자, 구매자를 확인                         |
 | **BR-TRADE-02** | 예약 거래 취소에 관해서는 정당한 사유가 없으면 제재 | 중간     | 거래 취소 페이지에 작성한 사유를 검토 후 처리 |
 | **BR-TRADE-03** | 거래 후기 작성 기간 및 수정 제한 (1주일)            | 낮음     | 거래 완료 날짜로부터 확인                     |
 
 ### 5.4 채팅 관련 규칙
 
-| 규칙 ID        | 규칙 내용                                   | 우선순위 | 검증 방법                 |
-| -------------- | ------------------------------------------- | -------- | ------------------------- |
-| **BR-CHAT-01** | 거래 완료 & 예약 상태 상품은 채팅 불가능    | 중간     | 게시글 확인               |
-| **BR-CHAT-02** | 차단 및 신고 후 자동으로 채팅 단절          | 높음     | 채팅 확인                 |
-| **BR-CHAT-03** | 자신의 게시물에는 채팅 불가능 (본인 게시글) | 낮음     | 구매자 유저 - 채팅방 확인 |
+| 규칙 ID        | 규칙 내용                                 | 우선순위 | 검증 방법                 |
+| -------------- | ----------------------------------------- | -------- | ------------------------- |
+| **BR-CHAT-01** | 거래 완료 & 예약 상태 상품은 채팅 불가능  | 중간     | 게시글 확인               |
+| **BR-CHAT-02** | 차단 및 신고 후 자동으로 채팅 단절        | 높음     | 채팅 확인                 |
+| **BR-CHAT-03** | 자신의 상품에는 채팅 불가능 (본인 게시글) | 낮음     | 구매자 유저 - 채팅방 확인 |
 
 ---
 
@@ -807,9 +807,9 @@ ERDiagram
 | **ReservationService**  | 예약 생성, 조회, 취소 기능 관리 | 상품 예약 요청, 예약 상태 확인, 예약 취소  |
 | **MembershipService**   | 회원 가입, 로그인, 인증 관리    | 회원 등록, 로그인, 정보 수정, 탈퇴         |
 | **ChatService**         | 실시간 채팅 기능 관리           | 채팅방 생성, 메시지 전송, 읽음 처리        |
-| **ProductService**      | 게시물 CRUD 및 상태 관리        | 게시물 작성, 수정, 삭제, 끌올, 거래 완료   |
+| **ProductService**      | 상품 CRUD 및 상태 관리          | 상품 작성, 수정, 삭제, 끌올, 거래 완료     |
 | **ReviewService**       | 거래 완료 후 후기 관리          | 리뷰 작성, 수정, 삭제, 조회                |
-| **ReportService**       | 신고 등록 및 관리               | 사용자, 게시물 신고, 신고 처리, 제재 등록  |
+| **ReportService**       | 신고 등록 및 관리               | 사용자, 상품 신고, 신고 처리, 제재 등록    |
 | **NotificationService** | 사용자 알림 관리                | 채팅, 예약 등 이벤트에 따른 알림 생성/확인 |
 | **BanService**          | 사용자 제재 및 해제 관리        | 신고 기반 제재 등록 및 해제                |
 
@@ -836,22 +836,22 @@ graph TD
 | 용어          | 정의                                          | 영문        | 비고                     |
 | ------------- | --------------------------------------------- | ----------- | ------------------------ |
 | **회원**      | 중고 거래 플랫폼을 사용하는 개인 사용자       | User        | 구매자, 판매자 모두 포함 |
-| **게시물**    | 중고 상품의 상세 설명을 포함한 판매 등록 정보 | Product     | 이미지 포함              |
+| **상품**      | 중고 상품의 상세 설명을 포함한 판매 등록 정보 | Product     | 이미지 포함              |
 | **채팅**      | 거래를 위한 실시간 대화                       | Chat        | 구매자-판매자 간         |
 | **예약**      | 상품을 특정 사용자와 거래하기 위해 예약       | Reservation | 1건만 가능               |
 | **거래 완료** | 실제 상품 거래가 완료된 상태                  | Complete    | 후기 가능 상태           |
-| **찜**        | 관심 있는 게시물을 저장하는 기능              | Dibs        | 북마크 유사              |
+| **찜**        | 관심 있는 상품을 저장하는 기능                | Dibs        | 북마크 유사              |
 | **신고**      | 부적절한 사용자나 콘텐츠 제보                 | Report      | 관리자 처리 필요         |
 
 ### 7.2 기술 용어
 
-| 용어                       | 정의                                  | 비고                         |
-| -------------------------- | ------------------------------------- | ---------------------------- |
-| **자연키 (Natural Key)**   | 실세계 의미를 가진 고유 식별자        | 예: 회원번호, 게시물 제목 등 |
-| **대리키 (Surrogate Key)** | 내부 식별을 위해 시스템이 생성하는 ID | 예: product_id, user_id 등   |
-| **Soft Delete**            | 실제 삭제 대신 표시만 변경            | 삭제 상태 표시 필드 활용     |
-| **Boolean**                | 참/거짓 데이터 유형                   | 예: is_banned, is_admin      |
-| **Foreign Key**            | 다른 테이블을 참조하는 키             | 관계 무결성 유지에 사용      |
+| 용어                       | 정의                                  | 비고                       |
+| -------------------------- | ------------------------------------- | -------------------------- |
+| **자연키 (Natural Key)**   | 실세계 의미를 가진 고유 식별자        | 예: 회원번호, 상품 제목 등 |
+| **대리키 (Surrogate Key)** | 내부 식별을 위해 시스템이 생성하는 ID | 예: product_id, user_id 등 |
+| **Soft Delete**            | 실제 삭제 대신 표시만 변경            | 삭제 상태 표시 필드 활용   |
+| **Boolean**                | 참/거짓 데이터 유형                   | 예: is_banned, is_admin    |
+| **Foreign Key**            | 다른 테이블을 참조하는 키             | 관계 무결성 유지에 사용    |
 
 ---
 
@@ -872,7 +872,7 @@ graph TD
 ### 8.2 제약조건 (Constraints)
 
 - [ ] 기술 스택: Java 11, Spring Boot 2.7, MySQL 8.0
-- [ ] 게시물당 이미지 최대 3장 제한
+- [ ] 상품 당 이미지 최대 3장 제한
 - [ ] 한 사용자가 등록 가능한 게시글은 최대 5개
 - [ ] 거래 후 1주일 이내에만 후기 작성 가능
 - [ ] 끌올은 하루 3회로 제한되며, 이후 대기시간이 2배 증가
@@ -881,13 +881,13 @@ graph TD
 
 ### 8.3 위험요소 (Risks)
 
-| 위험                                         | 영향도 | 발생확률 | 대응방안                                    |
-| -------------------------------------------- | ------ | -------- | ------------------------------------------- |
-| **인증되지 않은 사용자의 비정상 활동**       | 높음   | 중간     | 휴대폰인증 필수                             |
-| **거래 후 허위 후기로 인한 신뢰도 하락**     | 중간   | 중간     | 리뷰 작성 제한 및 신고 기능 강화            |
-| **동일 게시물 반복 등록으로 인한 스팸 증가** | 중간   | 높음     | 자동 중복 게시물 감지 및 관리자 알림        |
-| **위조상품 또는 금지 품목 게시**             | 높음   | 낮음     | 금지어 필터링 및 신고 기반 게시물 자동 숨김 |
-| **관리자 미개입 시 신고 처리 지연**          | 중간   | 중간     | 자동 제재 로직 및 신고 우선순위 시스템 도입 |
+| 위험                                            | 영향도 | 발생확률 | 대응방안                                    |
+| ----------------------------------------------- | ------ | -------- | ------------------------------------------- |
+| **인증되지 않은 사용자의 비정상 활동**          | 높음   | 중간     | 휴대폰인증 필수                             |
+| **거래 후 허위 후기로 인한 신뢰도 하락**        | 중간   | 중간     | 리뷰 작성 제한 및 신고 기능 강화            |
+| **동일 상품 게시 반복 등록으로 인한 스팸 증가** | 중간   | 높음     | 자동 중복 감지 및 관리자 알림               |
+| **위조상품 또는 금지 품목 게시**                | 높음   | 낮음     | 금지어 필터링 및 신고 기반 상품 자동 숨김   |
+| **관리자 미개입 시 신고 처리 지연**             | 중간   | 중간     | 자동 제재 로직 및 신고 우선순위 시스템 도입 |
 
 ---
 
@@ -906,7 +906,7 @@ graph TD
 - [ ] 모바일 앱(Android/iOS) 출시
 - [ ] 위치 기반 추천 시스템 도입
 - [ ] 거래 안전 기능 도입 (예: 본인인증 강화)
-- [ ] 게시물 자동 비공개 기능
+- [ ] 상품 자동 비공개 기능
 - [ ] FAQ 및 고객센터 시스템 구축
 
 ### 9.3 장기 확장 (1년 내)
