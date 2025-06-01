@@ -1,0 +1,14 @@
+<component name="libraryTable">
+  <library name="Gradle: org.springframework.boot:spring-boot-starter-validation:3.4.6" type="java-imported" external-system-id="GRADLE">
+    <properties groupId="org.springframework.boot" artifactId="spring-boot-starter-validation" version="3.4.6" baseVersion="3.4.6" />
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.springframework.boot/spring-boot-starter-validation/3.4.6/8d2ae0ee4e2be3de75661855006078cf25dd5c5e/spring-boot-starter-validation-3.4.6.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.springframework.boot/spring-boot-starter-validation/3.4.6/f3262240e291e701423972e03fc508ab628387c4/spring-boot-starter-validation-3.4.6-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.springframework.boot/spring-boot-starter-validation/3.4.6/f3262240e291e701423972e03fc508ab628387c4/spring-boot-starter-validation-3.4.6-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

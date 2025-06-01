@@ -2,7 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/SK_Rookies_Mini_Project2.iml" filepath="$PROJECT_DIR$/.idea/SK_Rookies_Mini_Project2.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Rookiejangter.iml" filepath="$PROJECT_DIR$/.idea/modules/Rookiejangter.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Rookiejangter.main.iml" filepath="$PROJECT_DIR$/.idea/modules/Rookiejangter.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Rookiejangter.test.iml" filepath="$PROJECT_DIR$/.idea/modules/Rookiejangter.test.iml" />
     </modules>
   </component>
 </project>
