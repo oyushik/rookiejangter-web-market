@@ -18,7 +18,7 @@ public class UserDTO {
     @NoArgsConstructor
     @AllArgsConstructor
     @Builder
-    public static class Request {
+    public static class SignUpRequest {
         @NotBlank(message = "로그인 ID는 필수입니다.")
         @Size(min = 4, max = 20, message = "로그인 ID는 4~20자 이내로 입력해야 합니다.")
         @Pattern(regexp = "^[a-zA-Z0-9]+$", message = "로그인 ID는 영문과 숫자 조합만 가능합니다.")
@@ -42,6 +42,18 @@ public class UserDTO {
 
         @NotNull(message = "지역 ID는 필수입니다.")
         private Long areaId;
+    }
+
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class LoginRequest {
+        @NotBlank(message = "로그인 ID는 필수입니다.")
+        private String loginId;
+
+        @NotBlank(message = "비밀번호는 필수입니다.")
+        private String password;
     }
 
     @Data

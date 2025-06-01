@@ -31,24 +31,29 @@ public class UserController {
     }
 
     // 유저 정보 삭제
-    @DeleteMapping("{/id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
         userService.deleteUser(id);
         return ResponseEntity.noContent().build();
     }
 
-    // 유저 상품 등록
-    @PostMapping("/{user_id}/products")
-
-    // 유저가 등록한 모든 상품 조회
-    @GetMapping("/{user_id}/products")
-
-    // 유저가 등록한 특정 상품 조회
-    @GetMapping("/{user_id}/products/{product_id}")
-
-    // 유저가 등록한 상품 수정
-    @PutMapping("/{user}/products/{product_id}")
-
-    // 유저가 등록한 상품 삭제
-    @DeleteMapping("/{user}/products/{product_id}")
+//    // 유저 상품 등록
+//    @PostMapping("/{user_id}/products") {
+//
+//    }
+//
+//    // 유저가 등록한 모든 상품 조회
+//    @GetMapping("/{user_id}/products")
+//
+//    // 유저가 등록한 특정 상품 조회
+//    @GetMapping("/{user_id}/products/{product_id}")
+//
+//    // 유저가 등록한 상품 수정
+//    @PutMapping("/{user_id}/products/{product_id}")
+//
+//    // 유저가 등록한 상품 삭제
+//    @DeleteMapping("/{user_id}/products/{product_id}")
+//
+//    // 유저의 찜한 상품 조회
+//    @GetMapping("/{user_id}/dibs")
 }
