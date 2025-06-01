@@ -1,6 +1,8 @@
 package com.miniproject.rookiejangter.exception.advice;
 
+import com.miniproject.rookiejangter.exception.AuthenticationException;
 import com.miniproject.rookiejangter.exception.BusinessException;
+import com.miniproject.rookiejangter.exception.InvalidCredentialsException;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -9,12 +11,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -85,11 +90,11 @@ public class DefaultExceptionAdvice {
 
         ValidationErrorResponse response =
                 new ValidationErrorResponse(
-                400,
-                "입력항목 검증 오류",
-                LocalDateTime.now(),
-                errors
-        );
+                        400,
+                        "입력항목 검증 오류",
+                        LocalDateTime.now(),
+                        errors
+                );
         //badRequest() 400
         return ResponseEntity.badRequest().body(response);
     }
@@ -102,5 +107,50 @@ public class DefaultExceptionAdvice {
         private String message;
         private LocalDateTime timestamp;
         private Map<String, String> errors;
+    }
+
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseEntity<ErrorObject> handleAuthenticationException(AuthenticationException e) {
+        log.error("인증 오류: {}", e.getMessage());
+
+        ErrorObject errorObject = new ErrorObject();
+        errorObject.setStatusCode(401);
+        errorObject.setMessage(e.getMessage());
+
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorObject);
+    }
+
+    @ExceptionHandler(InvalidCredentialsException.class)
+    public ResponseEntity<ErrorObject> handleInvalidCredentialsException(InvalidCredentialsException e) {
+        log.error("인증 정보 오류: {}", e.getMessage());
+
+        ErrorObject errorObject = new ErrorObject();
+        errorObject.setStatusCode(401);
+        errorObject.setMessage(e.getMessage());
+
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorObject);
+    }
+
+    // 기존의 Spring Security 예외들도 처리하고 싶다면
+    @ExceptionHandler(UsernameNotFoundException.class)
+    public ResponseEntity<ErrorObject> handleUsernameNotFoundException(UsernameNotFoundException e) {
+        log.error("사용자를 찾을 수 없음: {}", e.getMessage());
+
+        ErrorObject errorObject = new ErrorObject();
+        errorObject.setStatusCode(401);
+        errorObject.setMessage("존재하지 않는 사용자입니다.");
+
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorObject);
+    }
+
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<ErrorObject> handleBadCredentialsException(BadCredentialsException e) {
+        log.error("잘못된 인증 정보: {}", e.getMessage());
+
+        ErrorObject errorObject = new ErrorObject();
+        errorObject.setStatusCode(401);
+        errorObject.setMessage("비밀번호가 일치하지 않습니다.");
+
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorObject);
     }
 }

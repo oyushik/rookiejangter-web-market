@@ -1,4 +1,4 @@
-package com.miniproject.rookiejangter.execption;
+package com.miniproject.rookiejangter.exception;
 
 public class AuthenticationException extends RuntimeException {
     public AuthenticationException(String message) {
