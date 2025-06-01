@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 // import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,6 +28,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final AreaRepository areaRepository;
     private final BanRepository banRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Transactional
     public UserDTO.Response createUser(UserDTO.SignUpRequest requestDto) {
@@ -40,12 +42,16 @@ public class UserService {
         }
 
 
-        Area area = areaRepository.findById(requestDto.getAreaId().intValue())        .orElseThrow(() -> new EntityNotFoundException("해당 지역을 찾을 수 없습니다: " + requestDto.getAreaId()));
+//        Area area = areaRepository.findById(requestDto.getAreaId().intValue())        .orElseThrow(() -> new EntityNotFoundException("해당 지역을 찾을 수 없습니다: " + requestDto.getAreaId()));
+        // (테스트)
+        Area area = new Area();
+        area.setAreaName("서울 특별시");
+        areaRepository.save(area);
 
         User user = User.builder()
                 .loginId(requestDto.getLoginId())
                 // .password(passwordEncoder.encode(requestDto.getPassword()))
-                .password(requestDto.getPassword())
+                .password(passwordEncoder.encode(requestDto.getPassword()))
                 .userName(requestDto.getUserName())
                 .phone(requestDto.getPhone())
                 .area(area)
@@ -65,6 +71,13 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
+    public UserDTO.Response getUserByUserName(String userName) {
+        User user = userRepository.findByUserName(userName)
+                .orElseThrow(() -> new EntityNotFoundException("사용자를 찾을 수 없습니다: " + userName));
+        return UserDTO.Response.fromEntity(user);
+    }
+
+    @Transactional(readOnly = true)
     public UserDTO.Response getUserByLoginId(String loginId) {
         User user = userRepository.findByLoginId(loginId)
                 .orElseThrow(() -> new EntityNotFoundException("사용자를 찾을 수 없습니다: " + loginId));
@@ -73,9 +86,9 @@ public class UserService {
 
 
     @Transactional
-    public UserDTO.Response updateUser(Long userId, UserDTO.UpdateRequest requestDto) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException("사용자를 찾을 수 없습니다: " + userId));
+    public UserDTO.Response updateUser(String username, UserDTO.UpdateRequest requestDto) {
+        User user = userRepository.findByUserName(username)
+                .orElseThrow(() -> new EntityNotFoundException("사용자를 찾을 수 없습니다: " + username));
 
         if (requestDto.getUserName() != null && !requestDto.getUserName().isEmpty()) {
             user.setUserName(requestDto.getUserName());
@@ -121,9 +134,9 @@ public class UserService {
         return UserDTO.Response.fromEntityStatus(finalUser);
     }
     @Transactional
-    public void deleteUser(Long userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException("사용자를 찾을 수 없습니다: " + userId));
+    public void deleteUser(String username) {
+        User user = userRepository.findByUserName(username)
+                .orElseThrow(() -> new EntityNotFoundException("사용자를 찾을 수 없습니다: " + username));
         userRepository.delete(user);
     }
 

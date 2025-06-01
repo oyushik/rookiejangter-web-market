@@ -43,21 +43,21 @@ public class JwtProvider {
     // AccessToken 생성 (실제 구현 - private)
     private String createAccessToken(String subject, Map<String, Object> claims) {
         return Jwts.builder()
-                .setClaims(claims)
-                .setSubject(subject)
-                .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + ACCESS_TOKEN_VALIDITY))
-                .signWith(key, SignatureAlgorithm.HS256)
+                .claims(claims)
+                .subject(subject)
+                .issuedAt(new Date())
+                .expiration(new Date(System.currentTimeMillis() + ACCESS_TOKEN_VALIDITY))
+                .signWith(key, Jwts.SIG.HS256)
                 .compact();
     }
 
     // RefreshToken 생성 (실제 구현 - private)
     private String createRefreshToken(String subject) {
         return Jwts.builder()
-                .setSubject(subject)
-                .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + REFRESH_TOKEN_VALIDITY))
-                .signWith(key, SignatureAlgorithm.HS256)
+                .subject(subject)
+                .issuedAt(new Date())
+                .expiration(new Date(System.currentTimeMillis() + REFRESH_TOKEN_VALIDITY))
+                .signWith(key, Jwts.SIG.HS256)
                 .compact();
     }
 
@@ -74,11 +74,11 @@ public class JwtProvider {
 
     // 모든 Claims 추출
     private Claims getAllClaimsFromToken(String token) {
-        return Jwts.parserBuilder()
-                .setSigningKey(key)
+        return Jwts.parser()
+                .verifyWith(key)
                 .build()
-                .parseClaimsJws(token)
-                .getBody();
+                .parseSignedClaims(token)
+                .getPayload();
     }
 
     // 토큰 만료 여부 확인
@@ -90,7 +90,7 @@ public class JwtProvider {
     // 토큰 유효성 검증
     public boolean validateToken(String token) {
         try {
-            Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
+            Jwts.parser().verifyWith(key).build().parseSignedClaims(token);
             return true;
         } catch (SecurityException | MalformedJwtException | ExpiredJwtException |
                  UnsupportedJwtException | IllegalArgumentException e) {
