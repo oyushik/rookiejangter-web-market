@@ -29,7 +29,7 @@ public class UserService {
     private final BanRepository banRepository;
 
     @Transactional
-    public UserDTO.Response createUser(UserDTO.Request requestDto) {
+    public UserDTO.Response createUser(UserDTO.SignUpRequest requestDto) {
 
         if (userRepository.existsByLoginId(requestDto.getLoginId())) {
             throw new IllegalArgumentException("이미 사용 중인 로그인 ID입니다: " + requestDto.getLoginId());

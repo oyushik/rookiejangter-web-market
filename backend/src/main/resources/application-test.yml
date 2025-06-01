@@ -1,3 +1,13 @@
+# UTF-8 인코딩 설정 추가
+server:
+  servlet:
+    encoding:
+      charset: UTF-8
+      force: true
+      force-request: true
+      force-response: true
+
+# 기존 설정 유지
 myprop:
   username: Test Env
 
@@ -6,19 +16,43 @@ logging:
     com:
       miniproject:
         joongo: debug
+  # UTF-8 로깅 설정 추가
+  charset:
+    console: UTF-8
+    file: UTF-8
 
 spring:
   datasource:
-    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;MODE=MySQL
+    url: jdbc:h2:mem:testdb;MODE=MySQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH
     username: sa
     password:
     driverClassName: org.h2.Driver
+    # H2에는 커넥션 초기화 SQL이 필요없음 (MySQL 전용)
+    # hikari:
+    #   connection-init-sql: SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci
+
   jpa:
     hibernate:
       ddl-auto: create-drop
     show-sql: true
     database-platform: org.hibernate.dialect.H2Dialect
+    # H2용 JPA 설정 (UTF-8 관련 MySQL 설정 제거)
+    properties:
+      hibernate:
+        format_sql: true
+        # H2는 기본적으로 UTF-8을 지원하므로 별도 인코딩 설정 불필요
+        # connection 관련 MySQL 설정들 제거
+
   h2:
     console:
       enabled: true
       path: /h2-console
+
+  # 테스트 환경에서는 Redis 설정 제거 또는 embedded Redis 사용
+  # data:
+  #   redis:
+  #     host: localhost
+  #     port: 6379
+
+jwt:
+  secret: "64461f01e1af406da538b9c48d801ce59142452199ff112fb5404c8e7e98e3ff"
