@@ -4,7 +4,11 @@
     <CLASSES>
       <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.springframework.data/spring-data-redis/3.4.6/8155a83a66b390838866f753b8c82eb1cab7268a/spring-data-redis-3.4.6.jar!/" />
     </CLASSES>
-    <JAVADOC />
-    <SOURCES />
+    <JAVADOC>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.springframework.data/spring-data-redis/3.4.6/e453547af1968d6eacfb1dac80189246b648b335/spring-data-redis-3.4.6-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.springframework.data/spring-data-redis/3.4.6/1c820ba15f80e09d5d3cab5e2a0984d22b66aa55/spring-data-redis-3.4.6-sources.jar!/" />
+    </SOURCES>
   </library>
 </component>

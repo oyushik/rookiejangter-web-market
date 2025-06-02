@@ -11,7 +11,7 @@
       </configuration>
     </facet>
   </component>
-  <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_17">
+  <component name="NewModuleRootManager">
     <output url="file://$MODULE_DIR$/../../backend/build/classes/java/main" />
     <exclude-output />
     <content url="file://$MODULE_DIR$/../../backend/build/generated/sources/annotationProcessor/java/main">
@@ -21,7 +21,7 @@
       <sourceFolder url="file://$MODULE_DIR$/../../backend/src/main/java" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/../../backend/src/main/resources" type="java-resource" />
     </content>
-    <orderEntry type="jdk" jdkName="17" jdkType="JavaSDK" />
+    <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" scope="PROVIDED" name="Gradle: org.projectlombok:lombok:1.18.38" level="project" />
     <orderEntry type="library" name="Gradle: org.springframework.boot:spring-boot-starter-actuator:3.4.6" level="project" />
@@ -33,8 +33,8 @@
     <orderEntry type="library" name="Gradle: org.springframework.boot:spring-boot-starter-web:3.4.6" level="project" />
     <orderEntry type="library" name="Gradle: org.thymeleaf.extras:thymeleaf-extras-springsecurity6:3.1.3.RELEASE" level="project" />
     <orderEntry type="library" name="Gradle: org.springframework.boot:spring-boot-starter-data-redis:3.4.6" level="project" />
-    <orderEntry type="library" name="Gradle: io.jsonwebtoken:jjwt-api:0.11.2" level="project" />
     <orderEntry type="library" name="Gradle: jakarta.annotation:jakarta.annotation-api:2.1.1" level="project" />
+    <orderEntry type="library" name="Gradle: io.jsonwebtoken:jjwt-api:0.12.6" level="project" />
     <orderEntry type="library" name="Gradle: org.springframework.boot:spring-boot-starter:3.4.6" level="project" />
     <orderEntry type="library" name="Gradle: org.springframework.boot:spring-boot-actuator-autoconfigure:3.4.6" level="project" />
     <orderEntry type="library" name="Gradle: io.micrometer:micrometer-jakarta9:1.14.7" level="project" />
@@ -113,6 +113,8 @@
     <orderEntry type="library" name="Gradle: ch.qos.logback:logback-core:1.5.18" level="project" />
     <orderEntry type="library" name="Gradle: org.apache.logging.log4j:log4j-api:2.24.3" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Gradle: org.springframework.boot:spring-boot-devtools:3.4.6" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Gradle: io.jsonwebtoken:jjwt-impl:0.12.6" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Gradle: io.jsonwebtoken:jjwt-jackson:0.12.6" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Gradle: com.h2database:h2:2.3.232" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Gradle: org.mariadb.jdbc:mariadb-java-client:3.4.2" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Gradle: com.github.waffle:waffle-jna:3.3.0" level="project" />

@@ -4,7 +4,11 @@
     <CLASSES>
       <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/io.netty/netty-transport/4.1.121.Final/726358c7a8d0bf25d8ba6be5e2318f1b14bb508d/netty-transport-4.1.121.Final.jar!/" />
     </CLASSES>
-    <JAVADOC />
-    <SOURCES />
+    <JAVADOC>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/io.netty/netty-transport/4.1.121.Final/2bdfd68db1fc73a7b865fb63150a2a9aa9c5311f/netty-transport-4.1.121.Final-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/io.netty/netty-transport/4.1.121.Final/d9eeabf14aca4798f60b18b2a7785ffb7cfb8f18/netty-transport-4.1.121.Final-sources.jar!/" />
+    </SOURCES>
   </library>
 </component>
