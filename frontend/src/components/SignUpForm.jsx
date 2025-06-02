@@ -4,11 +4,11 @@ import { signup } from "../api/auth"; // ✅ API 호출 함수 불러오기
 
 const SignUpForm = ({ defaultName, defaultPhone }) => {
   const [formData, setFormData] = useState({
-    userId: "",
+    loginId: "",
     password: "",
-    name: defaultName || "",
+    userName: defaultName || "",
     phone: defaultPhone || "",
-    areaCode: "",
+    areaId: "",
   });
 
   const [loading, setLoading] = useState(false);
@@ -22,29 +22,30 @@ const SignUpForm = ({ defaultName, defaultPhone }) => {
     }));
   };
 
-  const handleSubmit = async (e) => {
+    const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError("");
     setSuccess(false);
 
-    try {
-      await signup(formData); // ✅ API 호출
-      setSuccess(true);
-    } catch (err) {
-      setError(err.response?.data?.message || "회원가입에 실패했습니다.");
-    } finally {
-      setLoading(false);
-    }
-  };
+    console.log("POST 요청 데이터:", formData);  // ← 여기서 로그 찍기
 
+    try {
+        await signup(formData);
+        setSuccess(true);
+    } catch (err) {
+        setError(err.response?.data?.message || "회원가입에 실패했습니다.");
+    } finally {
+        setLoading(false);
+    }
+    };
   return (
     <Box component="form" onSubmit={handleSubmit} sx={{ mt: 4 }}>
       <TextField
         fullWidth
         label="아이디"
-        name="userId"
-        value={formData.userId}
+        name="loginId"
+        value={formData.loginId}
         onChange={handleChange}
         margin="normal"
         required
@@ -62,8 +63,8 @@ const SignUpForm = ({ defaultName, defaultPhone }) => {
       <TextField
         fullWidth
         label="이름"
-        name="name"
-        value={formData.name}
+        name="userName"
+        value={formData.userName}
         onChange={handleChange}
         margin="normal"
         required
@@ -80,8 +81,8 @@ const SignUpForm = ({ defaultName, defaultPhone }) => {
       <TextField
         fullWidth
         label="지역번호"
-        name="areaCode"
-        value={formData.areaCode}
+        name="areaId"
+        value={formData.areaId}
         onChange={handleChange}
         margin="normal"
         required
