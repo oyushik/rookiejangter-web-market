@@ -6,9 +6,11 @@ const LoginForm = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
 
-    const handleSubmit = async () => {
+    const handleSubmit = async (e) => {
+        e.preventDefault(); // 폼 기본 제출 동작 방지
+        console.log("전송할 데이터:", { loginId: username, password: password });
         try {
-            await loginUser({ username, password });
+            await loginUser({ loginId: username, password });
             alert('로그인 완료');
         } catch (err) {
             console.error(err);
@@ -17,7 +19,7 @@ const LoginForm = () => {
     };
 
     return (
-        <div>
+        <form onSubmit={handleSubmit}>
             <TextField
                 label="아이디"
                 value={username}
@@ -33,10 +35,10 @@ const LoginForm = () => {
                 fullWidth
                 margin="normal"
             />
-            <Button onClick={handleSubmit} variant="contained">
+            <Button type="submit" variant="contained">
                 로그인
             </Button>
-        </div>
+        </form>
     );
 };
 
