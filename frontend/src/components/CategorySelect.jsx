@@ -1,22 +1,34 @@
 import { useState } from 'react';
 import MenuIcon from '@mui/icons-material/Menu';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
 
 const CategorySelect = ({ value, onChange, options }) => {
-    const [open, setOpen] = useState(false);
+    const [anchorEl, setAnchorEl] = useState(null);
 
     // 현재 선택된 카테고리 라벨 찾기
     const selectedLabel = options.find(opt => opt.value === value)?.label || '카테고리';
 
+    const handleOpen = (event) => {
+        setAnchorEl(event.currentTarget);
+    };
+
+    const handleClose = () => {
+        setAnchorEl(null);
+    };
+
+    const handleSelect = (optValue) => {
+        if (value === optValue) {
+            // 이미 선택된 값을 다시 누르면 해제
+            onChange({ target: { value: "" } });
+        } else {
+            onChange({ target: { value: optValue } });
+        }
+        handleClose();
+    };
+
     return (
-        <div
-            style={{
-                position: 'relative',
-                display: 'inline-block',
-                paddingBottom: 12 // 시각적 간격만 띄움
-            }}
-            onMouseEnter={() => setOpen(true)}
-            onMouseLeave={() => setOpen(false)}
-        >
+        <div style={{ display: 'inline-block', paddingBottom: 12 }}>
             <button
                 style={{
                     width: 36,
@@ -32,74 +44,48 @@ const CategorySelect = ({ value, onChange, options }) => {
                     boxShadow: 'none',
                 }}
                 type="button"
+                aria-haspopup="true"
+                aria-controls={anchorEl ? "category-menu" : undefined}
+                aria-expanded={Boolean(anchorEl)}
+                onClick={handleOpen}
             >
                 <MenuIcon fontSize="large" />
             </button>
-            {open && (
-                <div
-                    style={{
-                        position: 'absolute',
-                        top: '100%',
-                        left: 0,
-                        background: '#fff',
-                        border: '1px solid #ccc',
-                        borderRadius: 4,
-                        boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-                        zIndex: 100,
-                        minWidth: 120,
-                        width: 120,
+            <Menu
+                id="category-menu"
+                anchorEl={anchorEl}
+                open={Boolean(anchorEl)}
+                onClose={handleClose}
+                MenuListProps={{
+                    'aria-labelledby': 'category-menu-button',
+                }}
+            >
+                <MenuItem
+                    disabled
+                    selected={!value}
+                    sx={{
+                        fontWeight: 600,
+                        color: value ? "#1976d2" : "#888",
+                        fontSize: 15,
                     }}
-                    // 드롭다운 전체에 마우스 이벤트 적용
-                    onMouseEnter={() => setOpen(true)}
-                    onMouseLeave={() => setOpen(false)}
                 >
-                    <div
-                        style={{
-                            padding: 6,
+                    {selectedLabel}
+                </MenuItem>
+                {options.map(opt => (
+                    <MenuItem
+                        key={opt.value}
+                        selected={value === opt.value}
+                        onClick={() => handleSelect(opt.value)}
+                        sx={{
                             fontSize: 14,
-                            fontWeight: 600,
-                            color: value ? '#1976d2' : '#888',
-                            borderBottom: '1px solid #eee',
-                            background: '#fafafa',
-                            textAlign: 'center',
-                            cursor: value ? 'pointer' : 'default',
-                            userSelect: 'none'
-                        }}
-                        onClick={() => {
-                            if (value) {
-                                onChange({ target: { value: '' } });
-                                setOpen(false);
-                            }
+                            color: value === opt.value ? "#1976d2" : "inherit",
+                            fontWeight: value === opt.value ? 700 : 400,
                         }}
                     >
-                        {selectedLabel}
-                    </div>
-                    {/* 구분선만 추가, 여백 최소화 */}
-                    {/* <div style={{ height: 8 }} /> */}
-                    {options.map(opt => (
-                        <div
-                            key={opt.value}
-                            style={{
-                                padding: 4,
-                                fontSize: 13,
-                                cursor: 'pointer',
-                                background: value === opt.value ? '#f0f0f0' : '#fff',
-                                textAlign: 'center'
-                            }}
-                            onClick={() => {
-                                if (value === opt.value) {
-                                    onChange({ target: { value: '' } });
-                                } else {
-                                    onChange({ target: { value: opt.value } });
-                                }
-                                setOpen(false);
-                            }}
-                        >
-                            {opt.label}
-                        </div>
-                    ))}
-                </div>
-            )}
+                        {opt.label}
+                    </MenuItem>
+                ))}
+            </Menu>
         </div>
     );
 };

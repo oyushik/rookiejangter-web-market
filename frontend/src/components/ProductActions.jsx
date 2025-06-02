@@ -1,3 +1,7 @@
+import React, { useState } from "react";
+import axios from "axios";
+import { useNavigate } from "react-router-dom"; // 추가
+
 const buttonStyle = {
   width: 200,
   height: 60,
@@ -7,32 +11,83 @@ const buttonStyle = {
   fontWeight: 700,
 };
 
-const ProductActions = () => (
-  <div
-    style={{
-      position: 'absolute',
-      left: 0,
-      bottom: 0,
-      width: '100%',
-      display: 'flex',
-      justifyContent: 'flex-end',
-      gap: 12,
-      paddingRight: 40,
-      boxSizing: 'border-box',
-      fontSize: 22,
-      fontWeight: 700,
-    }}
-  >
-    <button style={{ ...buttonStyle, border: '1px solid #e0e0e0', background: '#fff' }}>
-      찜하기
-    </button>
-    <button style={{ ...buttonStyle, border: '1px solid #1976d2', background: '#1976d2', color: '#fff' }}>
-      대화하기
-    </button>
-    <button style={{ ...buttonStyle, border: '1px solid #43a047', background: '#43a047', color: '#fff' }}>
-      바로구매
-    </button>
-  </div>
-);
+const ProductActions = ({ productId, isInitiallyLiked = false }) => {
+  const [isLiked, setIsLiked] = useState(isInitiallyLiked);
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+
+  const handleWishlist = async () => {
+    setLoading(true);
+    try {
+      const token = localStorage.getItem("accessToken");
+      if (!token) {
+        alert("먼저 로그인을 진행해주세요!");
+        setLoading(false);
+        return;
+      }
+      const res = await axios.put(
+        `/api/wishlist/${productId}`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      if (res.data?.success) {
+        setIsLiked(res.data.data.isLiked);
+        alert("찜 목록에 추가되었습니다.");
+      } else {
+          alert("찜 목록에서 제거되었습니다.");
+      }
+    } catch (e) {
+      if (e.response && e.response.status === 404) {
+        navigate("/err/NotFound");
+      } else {
+        alert("찜하기 처리 중 오류가 발생했습니다.");
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div
+      style={{
+        position: 'absolute',
+        left: 0,
+        bottom: 0,
+        width: '100%',
+        display: 'flex',
+        justifyContent: 'flex-end',
+        gap: 12,
+        paddingRight: 40,
+        boxSizing: 'border-box',
+        fontSize: 22,
+        fontWeight: 700,
+      }}
+    >
+      <button
+        style={{
+          ...buttonStyle,
+          border: isLiked ? '1px solid #EA002C' : '1px solid #e0e0e0',
+          background: isLiked ? '#EA002C' : '#fff',
+          color: isLiked ? '#fff' : '#222',
+          opacity: loading ? 0.6 : 1,
+        }}
+        onClick={handleWishlist}
+        disabled={loading}
+      >
+        {isLiked ? "찜 취소" : "찜하기"}
+      </button>
+      <button style={{ ...buttonStyle, border: '1px solid #1976d2', background: '#1976d2', color: '#fff' }}>
+        대화하기
+      </button>
+      <button style={{ ...buttonStyle, border: '1px solid #43a047', background: '#43a047', color: '#fff' }}>
+        바로구매
+      </button>
+    </div>
+  );
+};
 
 export default ProductActions;

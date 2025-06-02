@@ -29,9 +29,27 @@ const HomePage = () => {
     }, 500); // 로딩 느낌
   };
 
+  // 토큰 값 유무 검사
+  const handleRegisterClick = () => {
+    const token = localStorage.getItem("accessToken");
+    if (!token) {
+      alert("로그인을 진행해주세요!");
+      return;
+    }
+    navigate('/products/register');
+  };
+
   return (
     <Layout>
     <Container sx={{ paddingTop: '80px' }}>
+      <Button
+        variant="contained"
+        color="success"
+        sx={{ ml: 2 }}
+        onClick={handleRegisterClick}
+      >
+        상품 등록
+      </Button>
       <Typography variant="h5" sx={{ mt: 4, mb: 2 }}>오늘의 상품 추천</Typography>
         <InfiniteScroll
           dataLength={products.length}

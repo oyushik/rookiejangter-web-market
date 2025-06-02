@@ -10,7 +10,7 @@ import PaginationBar from '../components/PaginationBar';
 
 
 const ProductsPage = () => {
-  // 백엔드 연동 시 아래 코드로 대체
+  // 백엔드 연동 시 아래 코드 활성화화
   // const [allProducts, setAllProducts] = useState([]);
   // useEffect(() => {
   //   axios.get("/api/products")

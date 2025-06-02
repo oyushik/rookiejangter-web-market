@@ -49,7 +49,7 @@ const ProductSearch = () => {
     };
 
     return (
-        <Box sx={{ display: 'flex', gap: 1.5, alignItems: 'flex-start', mt: 1.25, mr: 4, position: 'relative' }}>
+        <Box sx={{ display: 'flex', gap: 1.5, alignItems: 'flex-start', mt: 1.25, mr: 4, ml:6.2, position: 'relative' }}>
             {/* 카테고리 입력 */}
             <CategorySelect
                 value={category}
