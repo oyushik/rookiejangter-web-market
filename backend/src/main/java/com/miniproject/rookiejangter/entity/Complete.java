@@ -15,11 +15,11 @@ import java.time.LocalDateTime;
 public class Complete {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "complete_id")
     private Long completeId;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @MapsId
     @JoinColumn(name = "product_id")
     private Product product;
 

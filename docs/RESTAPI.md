@@ -584,7 +584,7 @@ Query Parameters:
 - area_id: integer - 지역 ID
 - min_price: integer - 최소 가격
 - max_price: integer - 최대 가격
-- keyword: string - 검색 키워드 
+- keyword: string - 검색 키워드
 
 Business Rules:
 - 검색 시 노출 순서는 최신순
@@ -698,6 +698,7 @@ Response (404 Not Found):
 ```
 
 #### 4.2.3 유저 상품 등록
+
 ```yaml
 POST /api/users/{id}/products
 Authorization: Bearer {JWT_TOKEN}
@@ -760,6 +761,7 @@ Response (422 Unprocessable Entity):
 ```
 
 #### 4.2.4 유저 상품 전체 조회
+
 ```yaml
 GET /api/users/{id}/products
 Authorization: Bearer {JWT_TOKEN}
@@ -802,6 +804,7 @@ Response (200 OK):
 ```
 
 #### 4.2.5 유저 상품 상세 조회
+
 ```yaml
 GET /api/users/{user_id}/products/{product_id}
 Authorization: Bearer {JWT_TOKEN}
@@ -849,6 +852,7 @@ Response (404 Not Found):
 ```
 
 #### 4.2.6 유저 상품 수정
+
 ```yaml
 PUT /api/users/{user_id}/products/{product_id}
 Authorization: Bearer {JWT_TOKEN}
@@ -903,6 +907,7 @@ Response (422 Unprocessable Entity):
 ```
 
 #### 유저 상품 삭제
+
 ```yaml
 DELETE /api/users/{user_id}/products/{product_id}
 Authorization: Bearer {JWT_TOKEN}
@@ -939,6 +944,7 @@ Response (422 Unprocessable Entity):
 ```
 
 #### 4.2.8 찜한 상품 목록 조회
+
 ```yaml
 GET /api/users/{id}/dibs
 Authorization: Bearer {JWT_TOKEN}

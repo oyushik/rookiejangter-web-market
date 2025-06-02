@@ -51,7 +51,7 @@
 | **Notification**      | 지원 | 중간            | 중간          | 1개         | 2순위    |
 | **Review**            | 지원 | 낮음            | 중간          | 2개         | 2순위    |
 | **Category**          | 지원 | 낮음            | 중간          | 1개         | 2순위    |
-| **Cancelation**       | 이력 | 중              | 높음          | 2개         | 2순위    |
+| **Cancelation**       | 이력 | 중간            | 높음          | 2개         | 2순위    |
 | **Message**           | 이력 | 중간            | 높음          | 1개         | 2순위    |
 | **Chat**              | 핵심 | 높음            | 중간          | 3개         | 2순위    |
 | **Area**              | 이력 | 낮음            | 낮음          | 1개         | 3순위    |
@@ -137,25 +137,25 @@ public class EntityName extends BaseEntity {
 
 ### 3.3 ID 생성 전략
 
-| Entity           | 전략                                              | 이유                                            | 예시                                   |
-| ---------------- | ------------------------------------------------- | ----------------------------------------------- | -------------------------------------- |
-| **User**         | IDENTITY (Auto Increment, unique 식별)            | 사용자는 고유해야 하며, 성능상 자동 증가가 적합 | user_id: 1, 2, 3...                    |
-| **Product**      | IDENTITY (Auto Increment, 순차 증가)              | 게시글 순서 관리 및 성능 최적화                 | product_id: 1001, 1002, 1003...        |
-| **Reservation**  | IDENTITY (Auto Increment, 순차 증가)              | 예약 순서 관리 및 빠른 조회                     | reservation_id: 2001, 2002...          |
-| **Chat**         | IDENTITY (Auto Increment, 순차 증가)              | 채팅방 생성 순서 관리                           | chat_id: 3001, 3002...                 |
-| **Message**      | IDENTITY (Auto Increment, 메시지 순서)            | 메시지 전송 순서 보장 필요                      | message_id: 10001, 10002...            |
-| **Dibs**         | IDENTITY (Auto Increment, 순차 증가)              | 찜하기 순서 관리                                | dibs_id: 4001, 4002...                 |
-| **Complete**     | IDENTITY (Auto Increment, 순차 증가)              | 완료 거래 순서 관리                             | complete_id: 5001, 5002...             |
-| **Review**       | IDENTITY (Auto Increment, 순차 증가)              | 리뷰 작성 순서 관리                             | review_id: 6001, 6002...               |
-| **Bump**         | IDENTITY (Auto Increment, 순차 증가)              | 게시글 끌어올리기 순서 관리                     | bump_id: 7001, 7002...                 |
-| **Notification** | IDENTITY (Auto Increment, 알림 순서)              | 알림 발생 순서 보장                             | notification_id: 8001, 8002...         |
-| **Report**       | IDENTITY (Auto Increment, 신고 순서, unique 식별) | 신고 접수 순서 및 고유성 보장                   | report_id: 9001, 9002...               |
-| **Ban**          | IDENTITY (Auto Increment, unique 식별)            | 제재 이력 고유성 및 순서 관리                   | ban_id: 11001, 11002...                |
-| **Cancelation**  | IDENTITY (Auto Increment, 순차 증가)              | 취소 이력 고유성 관리                           | cancelation_id: 1                      |
-| **Category**     | IDENTITY (범주 별로 고정된 id 부여, unique 식별)  | 카테고리는 미리 정의된 고정값 사용              | category_id: 1(전자기기), 2(의류)...   |
-| **Area**         | IDENTITY (지역 별로 고정된 id 부여, unique 식별)  | 지역정보는 행정구역 기준 고정값                 | area_id: 1(서울), 2(부산)...           |
-| **ReportReason** | IDENTITY (사유 별로 고정된 id 부여)               | 신고사유는 미리 정의된 고정 코드값              | reason_id: 1(스팸), 2(욕설)...         |
-| **CancelReason** | IDENTITY (사유 별로 고정된 id 부여)               | 취소사유는 미리 정의된 고정 코드값              | reason_id: 1(단순변심), 2(상품결함)... |
+| Entity           | 전략                                                 | 이유                                            | 예시                                   |
+| ---------------- | ---------------------------------------------------- | ----------------------------------------------- | -------------------------------------- |
+| **User**         | IDENTITY (Auto Increment, unique 식별)               | 사용자는 고유해야 하며, 성능상 자동 증가가 적합 | user_id: 1, 2, 3...                    |
+| **Product**      | IDENTITY (Auto Increment, 순차 증가)                 | 게시글 순서 관리 및 성능 최적화                 | product_id: 1001, 1002, 1003...        |
+| **Reservation**  | IDENTITY (Auto Increment, 순차 증가)                 | 예약 순서 관리 및 빠른 조회                     | reservation_id: 2001, 2002...          |
+| **Chat**         | IDENTITY (Auto Increment, 순차 증가)                 | 채팅방 생성 순서 관리                           | chat_id: 3001, 3002...                 |
+| **Message**      | IDENTITY (Auto Increment, 메시지 순서)               | 메시지 전송 순서 보장 필요                      | message_id: 10001, 10002...            |
+| **Dibs**         | IDENTITY (Auto Increment, 순차 증가)                 | 찜하기 순서 관리                                | dibs_id: 4001, 4002...                 |
+| **Complete**     | IDENTITY (Auto Increment, 순차 증가)                 | 완료 거래 순서 관리                             | complete_id: 5001, 5002...             |
+| **Review**       | IDENTITY (Auto Increment, 순차 증가)                 | 리뷰 작성 순서 관리                             | review_id: 6001, 6002...               |
+| **Bump**         | IDENTITY (Auto Increment, 순차 증가)                 | 게시글 끌어올리기 순서 관리                     | bump_id: 7001, 7002...                 |
+| **Notification** | IDENTITY (Auto Increment, 알림 순서)                 | 알림 발생 순서 보장                             | notification_id: 8001, 8002...         |
+| **Report**       | IDENTITY (Auto Increment, 신고 순서, unique 식별)    | 신고 접수 순서 및 고유성 보장                   | report_id: 9001, 9002...               |
+| **Ban**          | IDENTITY (Auto Increment, unique 식별)               | 제재 이력 고유성 및 순서 관리                   | ban_id: 11001, 11002...                |
+| **Cancelation**  | IDENTITY (Auto Increment, 순차 증가)                 | 취소 이력 고유성 관리                           | cancelation_id: 1                      |
+| **Category**     | IDENTITY (카테고리 별로 고정된 id 부여, unique 식별) | 카테고리는 미리 정의된 고정값 사용              | category_id: 1(전자기기), 2(의류)...   |
+| **Area**         | IDENTITY (지역 별로 고정된 id 부여, unique 식별)     | 지역정보는 행정구역 기준 고정값                 | area_id: 1(서울), 2(부산)...           |
+| **ReportReason** | IDENTITY (사유 별로 고정된 id 부여)                  | 신고사유는 미리 정의된 고정 코드값              | reason_id: 1(스팸), 2(욕설)...         |
+| **CancelReason** | IDENTITY (사유 별로 고정된 id 부여)                  | 취소사유는 미리 정의된 고정 코드값              | reason_id: 1(단순변심), 2(상품결함)... |
 
 ---
 
@@ -179,7 +179,24 @@ public class EntityName extends BaseEntity {
 
 #### 4.1.3 검증 어노테이션
 
+```java
+@Size(max = 20, message = "엔티티 타입은 최대 20자까지 가능합니다.")
+@Column(name = "entity_type", length = 20)
+private String entityType;
+
+@Size(max = 255, message = "메시지는 최대 255자까지 가능합니다.")
+@Column(name = "message", length = 255)
+private String message;
+```
+
 #### 4.1.4 연관관계 매핑
+
+```java
+// N:1 - 여러 알림 내역 : 하나의 사용자
+@ManyToOne(fetch = FetchType.LAZY)
+@JoinColumn(name = "user_id")
+private User user;
+```
 
 #### 4.1.5 비즈니스 메서드
 
@@ -198,7 +215,20 @@ public class EntityName extends BaseEntity {
 
 #### 4.2.3 검증 어노테이션
 
+```java
+@NotBlank(message = "카테고리 이름은 필수입니다.")
+@Size(max = 20, message = "카테고리 이름은 최대 20자까지 가능합니다.")
+@Column(name = "category_name", length = 20)
+private String categoryName;
+```
+
 #### 4.2.4 연관관계 매핑
+
+```java
+// 1:N - 하나의 카테고리 : 여러 상품
+@OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
+private List<Product> products = new ArrayList<>();
+```
 
 #### 4.2.5 비즈니스 메서드
 
@@ -210,19 +240,41 @@ public class EntityName extends BaseEntity {
 
 #### 4.3.2 필드 상세 명세
 
-| 필드명               | 데이터 타입  | 컬럼명           | 제약조건 | 설명                   | 비즈니스 규칙                                                                                    |
-| -------------------- | ------------ | ---------------- | -------- | ---------------------- | ------------------------------------------------------------------------------------------------ |
-| **report_id**        | BIGINT       | report_id        | NOT NULL | 신고의 고유 식별자     | 각 신고마다 고유한 정수값 할당 NULL 값 허용하지 않음 Primary Key로 사용 권장                     |
-| **report_reason_id** | INT          | report_reason_id | NULL     | 신고 사유의 식별자     | 신고 사유 테이블과 연결되는 외래키 NULL 값 허용 사전에 정의된 신고 사유 중 하나를 선택           |
-| **user_id**          | BIGINT       | user_id          | NULL     | 신고한 사용자의 식별자 | 신고자의 고유 식별자 사용자 테이블과 연결되는 외래키 NULL 값 허용                                |
-| **target_id**        | BIGINT       | target_id        | NULL     | 신고 대상의 식별자     | 신고 대상(게시물, 댓글 등)의 고유 식별자 NULL 값 허용 target_type과 함께 사용하여 신고 대상 특정 |
-| **target_type**      | VARCHAR(10)  | target_type      | NULL     | 신고 대상의 유형       | 신고 대상의 종류 구분 (예: PRODUCT, COMMENT, USER 등) 최대 10자까지 입력 가능 NULL 값 허용       |
-| **report_detail**    | VARCHAR(255) | report_detail    | NULL     | 신고에 대한 상세 설명  | 신고자가 작성한 추가 설명 최대 255자까지 입력 가능 NULL 값 허용                                  |
-| **is_processed**     | BOOLEAN      | is_processed     | NULL     | 신고 처리 완료 여부    | true: 처리 완료, false: 미처리 NULL 값 허용 (기본값 false 권장) 관리자의 신고 처리 상태 추적용   |
+| 필드명               | 데이터 타입  | 컬럼명           | 제약조건 | 설명                   | 비즈니스 규칙                                                                                  |
+| -------------------- | ------------ | ---------------- | -------- | ---------------------- | ---------------------------------------------------------------------------------------------- |
+| **report_id**        | BIGINT       | report_id        | NOT NULL | 신고의 고유 식별자     | 각 신고마다 고유한 정수값 할당 NULL 값 허용하지 않음 Primary Key로 사용 권장                   |
+| **report_reason_id** | INT          | report_reason_id | NULL     | 신고사유의 식별자      | 신고사유 테이블과 연결되는 외래키 NULL 값 허용 사전에 정의된 신고사유 중 하나를 선택           |
+| **user_id**          | BIGINT       | user_id          | NULL     | 신고한 사용자의 식별자 | 신고자의 고유 식별자 사용자 테이블과 연결되는 외래키 NULL 값 허용                              |
+| **target_id**        | BIGINT       | target_id        | NULL     | 신고 대상의 식별자     | 신고 대상(상품, 댓글 등)의 고유 식별자 NULL 값 허용 target_type과 함께 사용하여 신고 대상 특정 |
+| **target_type**      | VARCHAR(10)  | target_type      | NULL     | 신고 대상의 유형       | 신고 대상의 종류 구분 (예: PRODUCT, COMMENT, USER 등) 최대 10자까지 입력 가능 NULL 값 허용     |
+| **report_detail**    | VARCHAR(255) | report_detail    | NULL     | 신고에 대한 상세 설명  | 신고자가 작성한 추가 설명 최대 255자까지 입력 가능 NULL 값 허용                                |
+| **is_processed**     | BOOLEAN      | is_processed     | NULL     | 신고 처리 완료 여부    | true: 처리 완료, false: 미처리 NULL 값 허용 (기본값 false 권장) 관리자의 신고 처리 상태 추적용 |
 
 #### 4.3.3 검증 어노테이션
 
+```java
+@Size(max = 10, message = "신고 대상 타입은 최대 20자까지 가능합니다.")
+@Column(name = "target_type", length = 20)
+private String targetType;
+
+@Size(max = 255, message = "신고 상세는 최대 255자까지 가능합니다.")
+@Column(name = "report_detail", length = 255)
+private String reportDetail;
+```
+
 #### 4.3.4 연관관계 매핑
+
+```java
+// N:1 - 여러 신고 내역 : 하나의 신고사유
+@ManyToOne(fetch = FetchType.LAZY)
+@JoinColumn(name = "report_reason_id")
+private ReportReason reportReason;
+
+// N:1 - 여러 신고 내역 : 하나의 사용자(신고자)
+@ManyToOne(fetch = FetchType.LAZY)
+@JoinColumn(name = "user_id")
+private User user;
+```
 
 #### 4.3.5 비즈니스 메서드
 
@@ -234,16 +286,23 @@ public class EntityName extends BaseEntity {
 
 #### 4.4.2 필드 상세 명세
 
-| 필드명         | 데이터 타입 | 컬럼명     | 제약조건 | 설명                      | 비즈니스 규칙                                                                    |
-| -------------- | ----------- | ---------- | -------- | ------------------------- | -------------------------------------------------------------------------------- |
-| **bump_id**    | BIGINT      | bump_id    | NOT NULL | 범프의 고유 식별자        | 각 범프마다 고유한 정수값 할당, NULL 값 허용하지 않음, Primary Key로 사용 권장   |
-| **product_id** | BIGINT      | product_id | NULL     | 범프 대상 게시물의 식별자 | 게시물 테이블과 연결되는 외래키, NULL 값 허용, 범프할 게시물을 특정              |
-| **bumped_at**  | TIMESTAMP   | bumped_at  | NULL     | 범프가 실행된 일시        | 범프 발생 시점 기록, NULL 값 허용, 자동으로 현재 시간 설정 권장                  |
-| **bump_count** | INT         | bump_count | NULL     | 범프 실행 횟수            | 해당 게시물의 총 범프 횟수, NULL 값 허용, 기본값 1로 설정 권장, 범프 시마다 증가 |
+| 필드명         | 데이터 타입 | 컬럼명     | 제약조건 | 설명                    | 비즈니스 규칙                                                                  |
+| -------------- | ----------- | ---------- | -------- | ----------------------- | ------------------------------------------------------------------------------ |
+| **bump_id**    | BIGINT      | bump_id    | NOT NULL | 범프의 고유 식별자      | 각 범프마다 고유한 정수값 할당, NULL 값 허용하지 않음, Primary Key로 사용 권장 |
+| **product_id** | BIGINT      | product_id | NULL     | 범프 대상 상품의 식별자 | 상품 테이블과 연결되는 외래키, NULL 값 허용, 범프할 상품을 특정                |
+| **bumped_at**  | TIMESTAMP   | bumped_at  | NULL     | 범프가 실행된 일시      | 범프 발생 시점 기록, NULL 값 허용, 자동으로 현재 시간 설정 권장                |
+| **bump_count** | INT         | bump_count | NULL     | 범프 실행 횟수          | 해당 상품의 총 범프 횟수, NULL 값 허용, 기본값 1로 설정 권장, 범프 시마다 증가 |
 
 #### 4.4.3 검증 어노테이션
 
 #### 4.4.4 연관관계 매핑
+
+```java
+// 1:1 - 하나의 재업로드(끌올) 정보 : 하나의 상품
+@OneToOne(fetch = FetchType.LAZY)
+@JoinColumn(name = "product_id")
+private Product product;
+```
 
 #### 4.4.5 비즈니스 메서드
 
@@ -259,12 +318,24 @@ public class EntityName extends BaseEntity {
 | -------------- | ----------- | ---------- | -------- | -------------------- | ---------------------------------------------------------------------------- |
 | **dibs_id**    | BIGINT      | dibs_id    | NOT NULL | 찜의 고유 식별자     | 각 찜마다 고유한 정수값 할당, NULL 값 허용하지 않음, Primary Key로 사용 권장 |
 | **user_id**    | BIGINT      | user_id    | NULL     | 찜한 사용자의 식별자 | 찜을 한 사용자의 고유 식별자, 사용자 테이블과 연결되는 외래키, NULL 값 허용  |
-| **product_id** | BIGINT      | product_id | NULL     | 찜한 게시물의 식별자 | 찜 대상 게시물의 고유 식별자, 게시물 테이블과 연결되는 외래키, NULL 값 허용  |
+| **product_id** | BIGINT      | product_id | NULL     | 찜한 상품의 식별자   | 찜 대상 상품의 고유 식별자, 상품 테이블과 연결되는 외래키, NULL 값 허용      |
 | **added_at**   | TIMESTAMP   | added_at   | NULL     | 찜이 추가된 일시     | 찜 등록 시점 기록, NULL 값 허용, 자동으로 현재 시간 설정 권장                |
 
 #### 4.5.3 검증 어노테이션
 
 #### 4.5.4 연관관계 매핑
+
+```java
+// N:1 - 여러 찜 : 하나의 사용자
+@ManyToOne(fetch = FetchType.LAZY)
+@JoinColumn(name = "user_id")
+private User user;
+
+// N:1 - 여러 찜 : 하나의 상품
+@ManyToOne(fetch = FetchType.LAZY)
+@JoinColumn(name = "product_id")
+private Product product;
+```
 
 #### 4.5.5 비즈니스 메서드
 
@@ -276,17 +347,34 @@ public class EntityName extends BaseEntity {
 
 #### 4.6.2 필드 상세 명세
 
-| 필드명             | 데이터 타입 | 컬럼명         | 제약조건 | 설명                   | 비즈니스 규칙                                                                       |
-| ------------------ | ----------- | -------------- | -------- | ---------------------- | ----------------------------------------------------------------------------------- |
-| **reservation_id** | BIGINT      | reservation_id | NOT NULL | 예약의 고유 식별자     | 각 예약마다 고유한 정수값 할당, NULL 값 허용하지 않음, Primary Key로 사용 권장      |
-| **buyer_id**       | BIGINT      | buyer_id       | NULL     | 구매자의 식별자        | 상품을 예약한 구매자의 고유 식별자, 사용자 테이블과 연결되는 외래키, NULL 값 허용   |
-| **seller_id**      | BIGINT      | seller_id      | NULL     | 판매자의 식별자        | 상품을 판매하는 판매자의 고유 식별자, 사용자 테이블과 연결되는 외래키, NULL 값 허용 |
-| **product_id**     | BIGINT      | product_id     | NULL     | 예약된 게시물의 식별자 | 예약 대상 게시물의 고유 식별자, 게시물 테이블과 연결되는 외래키, NULL 값 허용       |
-| **status**         | ENUM        | status         | NULL     | 예약 상태 식별         | 예약 상태 구분을 위한 문자열 포함                                                   |
+| 필드명             | 데이터 타입 | 컬럼명         | 제약조건 | 설명                 | 비즈니스 규칙                                                                       |
+| ------------------ | ----------- | -------------- | -------- | -------------------- | ----------------------------------------------------------------------------------- |
+| **reservation_id** | BIGINT      | reservation_id | NOT NULL | 예약의 고유 식별자   | 각 예약마다 고유한 정수값 할당, NULL 값 허용하지 않음, Primary Key로 사용 권장      |
+| **buyer_id**       | BIGINT      | buyer_id       | NULL     | 구매자의 식별자      | 상품을 예약한 구매자의 고유 식별자, 사용자 테이블과 연결되는 외래키, NULL 값 허용   |
+| **seller_id**      | BIGINT      | seller_id      | NULL     | 판매자의 식별자      | 상품을 판매하는 판매자의 고유 식별자, 사용자 테이블과 연결되는 외래키, NULL 값 허용 |
+| **product_id**     | BIGINT      | product_id     | NULL     | 예약된 상품의 식별자 | 예약 대상 상품의 고유 식별자, 상품 테이블과 연결되는 외래키, NULL 값 허용           |
+| **status**         | ENUM        | status         | NULL     | 예약 상태 식별       | 예약 상태 구분을 위한 문자열 포함                                                   |
 
 #### 4.6.3 검증 어노테이션
 
 #### 4.6.4 연관관계 매핑
+
+```java
+// N:1 - 여러 거래 예약 정보 : 하나의 사용자(구매자)
+@ManyToOne(fetch = FetchType.LAZY)
+@JoinColumn(name = "buyer_id")
+private User buyer;
+
+// N:1 - 여러 거래 예약 정보 : 하나의 사용자(판매자)
+@ManyToOne(fetch = FetchType.LAZY)
+@JoinColumn(name = "seller_id")
+private User seller;
+
+// N:1 - 여러 거래 예약 정보 : 하나의 상품 (취소된 예약 포함, 실질적으로는 1:1)
+@ManyToOne(fetch = FetchType.LAZY)
+@JoinColumn(name = "product_id")
+private Product product;
+```
 
 #### 4.6.5 비즈니스 메서드
 
@@ -309,7 +397,26 @@ public class EntityName extends BaseEntity {
 
 #### 4.7.3 검증 어노테이션
 
+```java
+    @NotBlank(message = "내용은 필수입니다.")
+    @Size(max = 255, message = "내용은 최대 255자까지 가능합니다.")
+    @Column(name = "content", length = 255, nullable = false)
+    private String content;
+```
+
 #### 4.7.4 연관관계 매핑
+
+```java
+// N:1 - 여러 메시지 : 하나의 채팅
+@ManyToOne(fetch = FetchType.LAZY)
+@JoinColumn(name = "chat_id")
+private Chat chat;
+
+// N:1 - 여러 메시지 : 하나의 사용자(송신자)
+@ManyToOne(fetch = FetchType.LAZY)
+@JoinColumn(name = "sender_id")
+private User user;
+```
 
 #### 4.7.5 비즈니스 메서드
 
@@ -321,15 +428,29 @@ public class EntityName extends BaseEntity {
 
 #### 4.8.2 필드 상세 명세
 
-| 필드명         | 데이터 타입  | 컬럼명     | 제약조건 | 설명                          | 비즈니스 규칙                                                                                              |
-| -------------- | ------------ | ---------- | -------- | ----------------------------- | ---------------------------------------------------------------------------------------------------------- |
-| **image_id**   | BIGINT       | image_id   | NOT NULL | 이미지의 고유 식별자          | 기본키로 사용, 자동 증가 값 권장, 중복 불가                                                                |
-| **product_id** | BIGINT       | product_id | NULL     | 이미지가 속한 게시물의 식별자 | 외래키로 사용, products 테이블의 product_id 참조                                                           |
-| **image_url**  | VARCHAR(255) | image_url  | NOT NULL | 이미지 파일의 URL 경로        | 최대 255자까지 입력 가능, 유효한 URL 형식이어야 함, 절대 경로 또는 상대 경로 허용, 빈 문자열 허용하지 않음 |
+| 필드명         | 데이터 타입  | 컬럼명     | 제약조건 | 설명                        | 비즈니스 규칙                                                                                              |
+| -------------- | ------------ | ---------- | -------- | --------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| **image_id**   | BIGINT       | image_id   | NOT NULL | 이미지의 고유 식별자        | 기본키로 사용, 자동 증가 값 권장, 중복 불가                                                                |
+| **product_id** | BIGINT       | product_id | NULL     | 이미지가 속한 상품의 식별자 | 외래키로 사용, products 테이블의 product_id 참조                                                           |
+| **image_url**  | VARCHAR(255) | image_url  | NOT NULL | 이미지 파일의 URL 경로      | 최대 255자까지 입력 가능, 유효한 URL 형식이어야 함, 절대 경로 또는 상대 경로 허용, 빈 문자열 허용하지 않음 |
 
 #### 4.8.3 검증 어노테이션
 
+```java
+@NotBlank(message = "이미지 URL은 필수입니다.")
+@Size(max = 255, message = "이미지 URL은 최대 255자까지 가능합니다.")
+@Column(name = "image_url", length = 255, nullable = false)
+private String imageUrl;
+```
+
 #### 4.8.4 연관관계 매핑
+
+```java
+// N:1 - 여러 이미지 : 하나의 상품
+@ManyToOne(fetch = FetchType.LAZY)
+@JoinColumn(name = "product_id")
+private Product product;
+```
 
 #### 4.8.5 비즈니스 메서드
 
@@ -354,7 +475,92 @@ public class EntityName extends BaseEntity {
 
 #### 4.9.3 검증 어노테이션
 
+```java
+@NotBlank(message = "로그인 ID는 필수입니다.")
+@Size(min = 4, max = 20, message = "로그인 ID는 4~20자 이내로 입력해야 합니다.")
+@Pattern(regexp = "^[a-zA-Z0-9]+$", message = "로그인 ID는 영문과 숫자 조합만 가능합니다.")
+@Column(name = "login_id", length = 20, nullable = false, unique = true)
+private String loginId;
+
+@NotBlank(message = "비밀번호는 필수입니다.")
+@Size(min = 8, max = 20, message = "비밀번호는 8~20자 이내로 입력해야 합니다.")
+@Pattern(regexp = "^(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[@#$%^&+=!]).*$", message = "비밀번호는 영문, 숫자, 특수문자를 각 1개 이상 포함해야 합니다.")
+@Column(name = "password", length = 20, nullable = false)
+private String password;
+
+@NotBlank(message = "이름은 필수입니다.")
+@Size(min = 2, max = 12, message = "이름은 2~12자 이내로 입력해야 합니다.")
+@Pattern(regexp = "^[가-힣a-zA-Z]+$", message = "이름은 한글과 영문만 가능합니다.")
+@Column(name = "user_name", length = 12, nullable = false)
+private String userName;
+
+@NotBlank(message = "전화번호는 필수입니다.")
+@Size(min = 9, max = 20, message = "유효한 전화번호를 입력해야 합니다.")
+@Pattern(regexp = "^010-\\d{4}-\\d{4}$", message = "전화번호 형식은 010-XXXX-XXXX 입니다.")
+@Column(name = "phone", length = 20, nullable = false, unique = true)
+private String phone;
+```
+
 #### 4.9.4 연관관계 매핑
+
+```java
+// N:1 - 여러 사용자 : 하나의 지역
+@ManyToOne(fetch = FetchType.LAZY)
+@JoinColumn(name = "area_id")
+private Area area;
+
+// 1:N 하나의 사용자 : 여러 상품
+@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+private List<Product> products = new ArrayList<>();
+
+// 1:N 하나의 사용자 : 여러 신고 내역
+@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+private List<Report> reports = new ArrayList<>();
+
+// 1:N 하나의 사용자 : 여러 (구매자로서 작성한) 리뷰
+@OneToMany(mappedBy = "buyer", cascade = CascadeType.ALL, orphanRemoval = true)
+private List<Review> buyerReviews = new ArrayList<>();
+
+// 1:N 하나의 사용자 : 여러 (판매자로서 작성된) 리뷰
+@OneToMany(mappedBy = "seller", cascade = CascadeType.ALL, orphanRemoval = true)
+private List<Review> sellerReviews = new ArrayList<>();
+
+// 1:N 하나의 사용자 : 여러 거래 예약 정보 (구매자로서)
+@OneToMany(mappedBy = "buyer", cascade = CascadeType.ALL, orphanRemoval = true)
+private List<Reservation> buyerReservations = new ArrayList<>();
+
+// 1:N 하나의 사용자 : 여러 거래 예약 정보 (판매자로서)
+@OneToMany(mappedBy = "seller", cascade = CascadeType.ALL, orphanRemoval = true)
+private List<Reservation> sellerReservations = new ArrayList<>();
+
+// 1:N 하나의 사용자 : 여러 채팅 (구매자로서)
+@OneToMany(mappedBy = "buyer", cascade = CascadeType.ALL, orphanRemoval = true)
+private List<Chat> buyerChats = new ArrayList<>();
+
+// 1:N 하나의 사용자 : 여러 채팅 (판매자로서)
+@OneToMany(mappedBy = "seller", cascade = CascadeType.ALL, orphanRemoval = true)
+private List<Chat> sellerChats = new ArrayList<>();
+
+// 1:N 하나의 사용자 : 여러 찜
+@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+private List<Dibs> dibsList = new ArrayList<>();
+
+// 1:N 하나의 사용자 : 여러 알림 내역
+@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+private List<Notification> notifications = new ArrayList<>();
+
+// 1:N 하나의 사용자 : 여러 제재 내역
+@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+private List<Ban> bans = new ArrayList<>();
+
+// 1:N 하나의 사용자 :여러 거래 완료 (구매자로서)
+@OneToMany(mappedBy = "buyer", cascade = CascadeType.ALL, orphanRemoval = true)
+private List<Complete> buyerCompletes = new ArrayList<>();
+
+// 1:N 하나의 사용자 : 여러 거래 완료 (판매자로서)
+@OneToMany(mappedBy = "seller", cascade = CascadeType.ALL, orphanRemoval = true)
+private List<Complete> sellerCompletes = new ArrayList<>();
+```
 
 #### 4.9.5 비즈니스 메서드
 
@@ -375,7 +581,25 @@ public class EntityName extends BaseEntity {
 
 #### 4.10.3 검증 어노테이션
 
+```java
+@Size(max = 50, message = "제재 사유는 최대 50자까지 가능합니다.")
+@Column(name = "ban_reason", length = 50)
+private String banReason;
+```
+
 #### 4.10.4 연관관계 매핑
+
+```java
+// N:1 - 여러 제재 내역 : 하나의 사용자
+@ManyToOne(fetch = FetchType.LAZY)
+@JoinColumn(name = "user_id")
+private User user;
+
+// N:1 - 여러 제재 내역 : 하나의 신고
+@ManyToOne(fetch = FetchType.LAZY)
+@JoinColumn(name = "report_id")
+private Report report;
+```
 
 #### 4.10.5 비즈니스 메서드
 
@@ -394,7 +618,20 @@ public class EntityName extends BaseEntity {
 
 #### 4.11.3 검증 어노테이션
 
+```java
+@NotBlank(message = "지역 이름은 필수입니다.")
+@Size(max = 50, message = "지역 이름은 최대 50자까지 가능합니다.")
+@Column(name = "area_name", length = 50)
+private String areaName;
+```
+
 #### 4.11.4 연관관계 매핑
+
+```java
+// 1:N 하나의 지역: 여러 사용자
+@OneToMany(mappedBy = "area", cascade = CascadeType.ALL, orphanRemoval = true)
+private List<User> users = new ArrayList<>();
+```
 
 #### 4.11.5 비즈니스 메서드
 
@@ -406,22 +643,55 @@ public class EntityName extends BaseEntity {
 
 #### 4.12.2 필드 상세 명세
 
-| 필드명           | 데이터 타입  | 컬럼명       | 제약조건 | 설명                            | 비즈니스 규칙                                                                          |
-| ---------------- | ------------ | ------------ | -------- | ------------------------------- | -------------------------------------------------------------------------------------- |
-| **product_id**   | BIGINT       | product_id   | NOT NULL | 게시물의 고유 식별자            | 기본키로 사용, 자동 증가 값 권장, 중복 불가                                            |
-| **category_id**  | INT          | category_id  | NULL     | 게시물이 속한 카테고리의 식별자 | 외래키로 사용, categories 테이블의 category_id 참조                                    |
-| **user_id**      | BIGINT       | user_id      | NULL     | 게시물 작성자의 식별자          | 외래키로 사용, users 테이블의 user_id 참조, NULL 허용 (익명 게시물 또는 탈퇴한 사용자) |
-| **title**        | VARCHAR(50)  | title        | NOT NULL | 게시물 제목                     | 최대 50자까지 입력 가능, 빈 문자열 허용하지 않음, 특수문자 포함 가능                   |
-| **content**      | VARCHAR(255) | content      | NOT NULL | 게시물 내용                     | 최대 255자까지 입력 가능, 빈 문자열 허용하지 않음, 특수문자, 줄바꿈 포함 가능          |
-| **price**        | INT          | price        | NULL     | 상품 가격                       | 원 단위로 저장, 음수 값 허용하지 않음, NULL 허용 (가격 협의 또는 무료 나눔)            |
-| **view_count**   | INT          | view_count   | NULL     | 게시물 조회수                   | 기본값: 0, 음수 값 허용하지 않음, NULL 허용 (조회수 미집계 상태)                       |
-| **is_bumped**    | BOOLEAN      | is_bumped    | NULL     | 게시물 끌어올리기 여부          | 기본값: FALSE, TRUE: 끌어올림, FALSE: 일반, NULL: 끌어올리기 상태 미확인               |
-| **is_reserved**  | BOOLEAN      | is_reserved  | NULL     | 게시물 예약 여부                | 기본값: FALSE, TRUE: 예약됨, FALSE: 예약 안됨, NULL: 예약 상태 미확인                  |
-| **is_completed** | BOOLEAN      | is_completed | NULL     | 게시물 완료 여부                | 기본값: FALSE, TRUE: 완료됨, FALSE: 진행중, NULL: 완료 상태 미확인                     |
+| 필드명           | 데이터 타입  | 컬럼명       | 제약조건 | 설명                          | 비즈니스 규칙                                                                        |
+| ---------------- | ------------ | ------------ | -------- | ----------------------------- | ------------------------------------------------------------------------------------ |
+| **product_id**   | BIGINT       | product_id   | NOT NULL | 상품의 고유 식별자            | 기본키로 사용, 자동 증가 값 권장, 중복 불가                                          |
+| **category_id**  | INT          | category_id  | NULL     | 상품이 속한 카테고리의 식별자 | 외래키로 사용, categories 테이블의 category_id 참조                                  |
+| **user_id**      | BIGINT       | user_id      | NULL     | 상품 작성자의 식별자          | 외래키로 사용, users 테이블의 user_id 참조, NULL 허용 (익명 상품 또는 탈퇴한 사용자) |
+| **title**        | VARCHAR(50)  | title        | NOT NULL | 상품 제목                     | 최대 50자까지 입력 가능, 빈 문자열 허용하지 않음, 특수문자 포함 가능                 |
+| **content**      | VARCHAR(255) | content      | NOT NULL | 상품 내용                     | 최대 255자까지 입력 가능, 빈 문자열 허용하지 않음, 특수문자, 줄바꿈 포함 가능        |
+| **price**        | INT          | price        | NULL     | 상품 상품 가격                | 원 단위로 저장, 음수 값 허용하지 않음, NULL 허용 (가격 협의 또는 무료 나눔)          |
+| **view_count**   | INT          | view_count   | NULL     | 상품 조회수                   | 기본값: 0, 음수 값 허용하지 않음, NULL 허용 (조회수 미집계 상태)                     |
+| **is_bumped**    | BOOLEAN      | is_bumped    | NULL     | 상품 끌어올리기 여부          | 기본값: FALSE, TRUE: 끌어올림, FALSE: 일반, NULL: 끌어올리기 상태 미확인             |
+| **is_reserved**  | BOOLEAN      | is_reserved  | NULL     | 상품 예약 여부                | 기본값: FALSE, TRUE: 예약됨, FALSE: 예약 안됨, NULL: 예약 상태 미확인                |
+| **is_completed** | BOOLEAN      | is_completed | NULL     | 상품 완료 여부                | 기본값: FALSE, TRUE: 완료됨, FALSE: 진행중, NULL: 완료 상태 미확인                   |
 
 #### 4.12.3 검증 어노테이션
 
+```java
+@NotBlank(message = "제목은 필수입니다.")
+@Size(max = 50, message = "제목은 최대 50자까지 가능합니다.")
+@Column(name = "title", length = 50, nullable = false)
+private String title;
+
+@NotBlank(message = "내용은 필수입니다.")
+@Size(max = 255, message = "내용은 최대 255자까지 가능합니다.")
+@Column(name = "content", length = 255, nullable = false)
+private String content;
+
+@NotNull(message = "가격은 필수입니다.")
+@Column(name = "price", nullable = false)
+private Integer price;
+
+@NotNull(message = "카테고리 ID는 필수입니다.")
+@ManyToOne(fetch = FetchType.LAZY)
+@JoinColumn(name = "category_id")
+private Category category;
+```
+
 #### 4.12.4 연관관계 매핑
+
+```java
+// N:1 - 여러 상품 : 하나의 카테고리
+@ManyToOne(fetch = FetchType.LAZY)
+@JoinColumn(name = "category_id")
+private Category category;
+
+// N:1 - 여러 상품 : 하나의 사용자
+@ManyToOne(fetch = FetchType.LAZY)
+@JoinColumn(name = "user_id")
+private User user;
+```
 
 #### 4.12.5 비즈니스 메서드
 
@@ -444,7 +714,35 @@ public class EntityName extends BaseEntity {
 
 #### 4.13.3 검증 어노테이션
 
+```java
+@Min(value = 1, message = "평점은 1점 이상이어야 합니다.")
+@Max(value = 5, message = "평점은 5점 이하여야 합니다.")
+@Column(name = "rating", nullable = false)
+private Integer rating;
+
+@Size(max = 255, message = "리뷰 내용은 최대 255자까지 가능합니다.")
+@Column(name = "content", length = 255)
+private String content;
+```
+
 #### 4.13.4 연관관계 매핑
+
+```java
+// 1:1 - 하나의 리뷰 : 하나의 거래 완료
+@OneToOne(fetch = FetchType.LAZY)
+@JoinColumn(name = "complete_id")
+private Complete complete;
+
+// N:1 - 여러 리뷰 : 하나의 사용자(구매자)
+@ManyToOne(fetch = FetchType.LAZY)
+@JoinColumn(name = "buyer_id")
+private User buyer;
+
+// N:1 - 여러 리뷰 : 하나의 사용자(판매자)
+@ManyToOne(fetch = FetchType.LAZY)
+@JoinColumn(name = "seller_id")
+private User seller;
+```
 
 #### 4.13.5 비즈니스 메서드
 
@@ -456,17 +754,34 @@ public class EntityName extends BaseEntity {
 
 #### 4.14.2 필드 상세 명세
 
-| 필드명           | 데이터 타입 | 컬럼명       | 제약조건 | 설명                        | 비즈니스 규칙                                                                                   |
-| ---------------- | ----------- | ------------ | -------- | --------------------------- | ----------------------------------------------------------------------------------------------- |
-| **complete_id**  | BIGINT      | complete_id  | NOT NULL | 완료된 거래의 고유 식별자   | 기본키로 사용, 자동 증가 값 권장, 중복 불가                                                     |
-| **product_id**   | BIGINT      | product_id   | NULL     | 거래 완료된 게시물의 식별자 | 외래키로 사용, products 테이블의 product_id 참조, NULL 허용 (게시물 삭제된 경우)                |
-| **buyer_id**     | BIGINT      | buyer_id     | NULL     | 구매자의 식별자             | 외래키로 사용, users 테이블의 user_id 참조, NULL 허용 (익명 거래 또는 탈퇴한 사용자)            |
-| **seller_id**    | BIGINT      | seller_id    | NULL     | 판매자의 식별자             | 외래키로 사용, users 테이블의 user_id 참조, NULL 허용 (익명 거래 또는 탈퇴한 사용자)            |
-| **completed_at** | TIMESTAMP   | completed_at | NULL     | 거래 완료 시각              | 거래 완료 시 자동으로 현재 시간 설정 권장, NULL 허용 (완료 시간 미기록), UTC 기준으로 저장 권장 |
+| 필드명           | 데이터 타입 | 컬럼명       | 제약조건 | 설명                      | 비즈니스 규칙                                                                                   |
+| ---------------- | ----------- | ------------ | -------- | ------------------------- | ----------------------------------------------------------------------------------------------- |
+| **complete_id**  | BIGINT      | complete_id  | NOT NULL | 완료된 거래의 고유 식별자 | 기본키로 사용, 자동 증가 값 권장, 중복 불가                                                     |
+| **product_id**   | BIGINT      | product_id   | NULL     | 거래 완료된 상품의 식별자 | 외래키로 사용, products 테이블의 product_id 참조, NULL 허용 (상품 삭제된 경우)                  |
+| **buyer_id**     | BIGINT      | buyer_id     | NULL     | 구매자의 식별자           | 외래키로 사용, users 테이블의 user_id 참조, NULL 허용 (익명 거래 또는 탈퇴한 사용자)            |
+| **seller_id**    | BIGINT      | seller_id    | NULL     | 판매자의 식별자           | 외래키로 사용, users 테이블의 user_id 참조, NULL 허용 (익명 거래 또는 탈퇴한 사용자)            |
+| **completed_at** | TIMESTAMP   | completed_at | NULL     | 거래 완료 시각            | 거래 완료 시 자동으로 현재 시간 설정 권장, NULL 허용 (완료 시간 미기록), UTC 기준으로 저장 권장 |
 
 #### 4.14.3 검증 어노테이션
 
 #### 4.14.4 연관관계 매핑
+
+```java
+// 1:1 - 하나의 거래 완료 : 하나의 상품
+@OneToOne(fetch = FetchType.LAZY)
+@JoinColumn(name = "product_id")
+private Product product;
+
+// N:1 - 하나의 거래 완료 : 하나의 사용자(구매자)
+@ManyToOne(fetch = FetchType.LAZY)
+@JoinColumn(name = "buyer_id")
+private User buyer;
+
+// N:1 - 하나의 거래 완료 : 하나의 사용자(판매자)
+@ManyToOne(fetch = FetchType.LAZY)
+@JoinColumn(name = "seller_id")
+private User seller;
+```
 
 #### 4.14.5 비즈니스 메서드
 
@@ -482,14 +797,31 @@ public class EntityName extends BaseEntity {
 | ------------------------- | ------------ | --------------------- | -------- | -------------------- | ----------------------------------------------------------------------------------------------- |
 | **cancelation_id**        | BIGINT       | reservation_id        | NOT NULL | 취소 식별자          | 기본키로 사용, 중복 불가                                                                        |
 | **reservation_id**        | BIGINT       | reservation_id        | NULL     | 취소된 예약의 식별자 | 외래키로 사용, reservations 테이블의 reservation_id 참조, 중복 불가                             |
-| **cancelation_reason_id** | INT          | cancelation_reason_id | NULL     | 취소 사유의 식별자   | 외래키로 사용, cancelation_reasons 테이블의 cancelation_reason_id 참조                          |
-| **canceler_id**           | BIGINT       | canceler_id           | NULL     | 취소 사유의 식별자   | 외래키로 사용, cancelation_reasons 테이블의 user_id 참조                                        |
-| **report_detail**         | VARCHAR(255) | report_detail         | NULL     | 취소 상세 내용       | 최대 255자까지 입력 가능, NULL 허용 (기본 취소 사유만 적용), 사용자가 직접 입력하는 상세 사유   |
+| **cancelation_reason_id** | INT          | cancelation_reason_id | NULL     | 취소사유의 식별자    | 외래키로 사용, cancelation_reasons 테이블의 cancelation_reason_id 참조                          |
+| **canceler_id**           | BIGINT       | canceler_id           | NULL     | 취소사유의 식별자    | 외래키로 사용, cancelation_reasons 테이블의 user_id 참조                                        |
+| **report_detail**         | VARCHAR(255) | report_detail         | NULL     | 취소 상세 내용       | 최대 255자까지 입력 가능, NULL 허용 (기본 취소사유만 적용), 사용자가 직접 입력하는 상세 사유    |
 | **canceled_at**           | TIMESTAMP    | canceled_at           | NULL     | 취소 처리 시각       | 취소 처리 시 자동으로 현재 시간 설정 권장, NULL 허용 (취소 시간 미기록), UTC 기준으로 저장 권장 |
 
 #### 4.15.3 검증 어노테이션
 
+```java
+@Size(max = 255, message = "취소 상세는 최대 255자까지 가능합니다.")
+private String cancelationDetail;
+```
+
 #### 4.15.4 연관관계 매핑
+
+```java
+// 1:1 - 하나의 거래 취소 : 하나의 거래 예약
+@OneToOne(fetch = FetchType.LAZY)
+@JoinColumn(name = "reservation_id")
+private Reservation reservation;
+
+// N:1 - 여러 거래 취소 : 하나의 취소사유
+@ManyToOne(fetch = FetchType.LAZY)
+@JoinColumn(name = "cancelation_reason_id")
+private CancelationReason cancelationReason;
+```
 
 #### 4.15.5 비즈니스 메서드
 
@@ -501,16 +833,33 @@ public class EntityName extends BaseEntity {
 
 #### 4.16.2 필드 상세 명세
 
-| 필드명         | 데이터 타입 | 컬럼명     | 제약조건 | 설명                      | 비즈니스 규칙                                                                        |
-| -------------- | ----------- | ---------- | -------- | ------------------------- | ------------------------------------------------------------------------------------ |
-| **chat_id**    | BIGINT      | chat_id    | NOT NULL | 채팅방의 고유 식별자      | 기본키로 사용<br>자동 증가 값 권장, 중복 불가                                        |
-| **buyer_id**   | BIGINT      | buyer_id   | NULL     | 구매자의 식별자           | 외래키로 사용, users 테이블의 user_id 참조, NULL 허용 (익명 채팅 또는 탈퇴한 사용자) |
-| **seller_id**  | BIGINT      | seller_id  | NULL     | 판매자의 식별자           | 외래키로 사용, users 테이블의 user_id 참조, NULL 허용 (익명 채팅 또는 탈퇴한 사용자) |
-| **product_id** | BIGINT      | product_id | NULL     | 채팅 관련 게시물의 식별자 | 외래키로 사용, products 테이블의 product_id 참조, NULL 허용 (게시물 삭제된 경우)     |
+| 필드명         | 데이터 타입 | 컬럼명     | 제약조건 | 설명                    | 비즈니스 규칙                                                                        |
+| -------------- | ----------- | ---------- | -------- | ----------------------- | ------------------------------------------------------------------------------------ |
+| **chat_id**    | BIGINT      | chat_id    | NOT NULL | 채팅방의 고유 식별자    | 기본키로 사용<br>자동 증가 값 권장, 중복 불가                                        |
+| **buyer_id**   | BIGINT      | buyer_id   | NULL     | 구매자의 식별자         | 외래키로 사용, users 테이블의 user_id 참조, NULL 허용 (익명 채팅 또는 탈퇴한 사용자) |
+| **seller_id**  | BIGINT      | seller_id  | NULL     | 판매자의 식별자         | 외래키로 사용, users 테이블의 user_id 참조, NULL 허용 (익명 채팅 또는 탈퇴한 사용자) |
+| **product_id** | BIGINT      | product_id | NULL     | 채팅 관련 상품의 식별자 | 외래키로 사용, products 테이블의 product_id 참조, NULL 허용 (상품 삭제된 경우)       |
 
 #### 4.16.3 검증 어노테이션
 
 #### 4.16.4 연관관계 매핑
+
+```java
+// N:1 - 여러 채팅 : 하나의 사용자(구매자)
+@ManyToOne(fetch = FetchType.LAZY)
+@JoinColumn(name = "buyer_id")
+private User buyer;
+
+// N:1 - 여러 채팅 : 하나의 사용자(판매자)
+@ManyToOne(fetch = FetchType.LAZY)
+@JoinColumn(name = "seller_id")
+private User seller;
+
+// N:1 - 여러 채팅 : 하나의 상품
+@ManyToOne(fetch = FetchType.LAZY)
+@JoinColumn(name = "product_id")
+private Product product;
+```
 
 #### 4.16.5 비즈니스 메서드
 
@@ -522,12 +871,18 @@ public class EntityName extends BaseEntity {
 
 #### 4.17.2 필드 상세 명세
 
-| 필드명                      | 데이터 타입 | 컬럼명                  | 제약조건 | 설명                    | 비즈니스 규칙                                                                                         |
-| --------------------------- | ----------- | ----------------------- | -------- | ----------------------- | ----------------------------------------------------------------------------------------------------- |
-| **cancelation_reason_id**   | INT         | cancelation_reason_id   | NOT NULL | 취소 사유의 고유 식별자 | 기본키로 사용, 자동 증가 값 권장, 중복 불가                                                           |
-| **cancelation_reason_type** | VARCHAR(50) | cancelation_reason_type | NULL     | 취소 사유 유형          | 최대 50자까지 입력 가능, NULL 허용 (기타 사유의 경우), 예: '단순 변심', '상품 불만족', '일정 변경' 등 |
+| 필드명                      | 데이터 타입 | 컬럼명                  | 제약조건 | 설명                   | 비즈니스 규칙                                                                                         |
+| --------------------------- | ----------- | ----------------------- | -------- | ---------------------- | ----------------------------------------------------------------------------------------------------- |
+| **cancelation_reason_id**   | INT         | cancelation_reason_id   | NOT NULL | 취소사유의 고유 식별자 | 기본키로 사용, 자동 증가 값 권장, 중복 불가                                                           |
+| **cancelation_reason_type** | VARCHAR(50) | cancelation_reason_type | NULL     | 취소사유 유형          | 최대 50자까지 입력 가능, NULL 허용 (기타 사유의 경우), 예: '단순 변심', '상품 불만족', '일정 변경' 등 |
 
 #### 4.17.3 검증 어노테이션
+
+```java
+@Size(max = 50, message = "취소사유 타입은 최대 50자까지 가능합니다.")
+@Column(name = "cancelation_reason_type", length = 50)
+private String cancelationReasonType;
+```
 
 #### 4.17.4 연관관계 매핑
 
@@ -541,14 +896,26 @@ public class EntityName extends BaseEntity {
 
 #### 4.18.2 필드 상세 명세
 
-| 필드명                 | 데이터 타입 | 컬럼명             | 제약조건 | 설명                    | 비즈니스 규칙                                                                                 |
-| ---------------------- | ----------- | ------------------ | -------- | ----------------------- | --------------------------------------------------------------------------------------------- |
-| **report_reason_id**   | INT         | report_reason_id   | NOT NULL | 신고 사유의 고유 식별자 | 기본키로 사용, 자동 증가 값 권장, 중복 불가                                                   |
-| **report_reason_type** | VARCHAR(50) | report_reason_type | NULL     | 신고 사유 유형          | 최대 50자까지 입력 가능, NULL 허용 (기타 사유의 경우), 예: '스팸', '욕설', '부적절한 내용' 등 |
+| 필드명                 | 데이터 타입 | 컬럼명             | 제약조건 | 설명                   | 비즈니스 규칙                                                                                 |
+| ---------------------- | ----------- | ------------------ | -------- | ---------------------- | --------------------------------------------------------------------------------------------- |
+| **report_reason_id**   | INT         | report_reason_id   | NOT NULL | 신고사유의 고유 식별자 | 기본키로 사용, 자동 증가 값 권장, 중복 불가                                                   |
+| **report_reason_type** | VARCHAR(50) | report_reason_type | NULL     | 신고사유 유형          | 최대 50자까지 입력 가능, NULL 허용 (기타 사유의 경우), 예: '스팸', '욕설', '부적절한 내용' 등 |
 
 #### 4.18.3 검증 어노테이션
 
+```java
+@Size(max = 50, message = "신고사유 타입은 최대 50자까지 가능합니다.")
+@Column(name = "report_reason_type", length = 50)
+private String reportReasonType;
+```
+
 #### 4.18.4 연관관계 매핑
+
+```java
+// N:1 - 여러 신고 내역 : 하나의 신고사유
+@OneToMany(mappedBy = "reportReason", cascade = CascadeType.ALL, orphanRemoval = true)
+private List<Report> reports = new ArrayList<>();
+```
 
 #### 4.18.5 비즈니스 메서드
 
@@ -827,53 +1194,98 @@ public class Book extends BaseEntity {
 ### 10.1 Entity 단위 테스트
 
 ```java
-@DisplayName("Member Entity 테스트")
-class MemberTest {
+@DisplayName("Product Entity Test")
+@DataJpaTest
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+public class ProductTest {
+
+    @Autowired
+    private EntityManager entityManager;
 
     @Test
-    @DisplayName("회원 생성 시 기본값이 올바르게 설정되어야 한다")
-    void createMember_ShouldSetDefaultValues() {
+    void createProduct() {
         // given
-        String name = "김철수";
-        String email = "kim@test.com";
-        String password = "password123";
+        Product product = Product.builder()
+                .title("테스트 상품")
+                .content("테스트 상품 내용")
+                .price(10000)
+                .viewCount(0)
+                .isBumped(false)
+                .isReserved(false)
+                .isCompleted(false)
+                .build();
 
         // when
-        Member member = Member.createMember(name, email, password, null, null, null);
+        entityManager.persist(product);
+        entityManager.flush();
+        entityManager.clear();
+        Product savedProduct = entityManager.find(Product.class, product.getProductId());
 
         // then
-        assertThat(member.getStatus()).isEqualTo(MemberStatus.ACTIVE);
-        assertThat(member.getMaxLoanCount()).isEqualTo(5);
-        assertThat(member.getMemberNumber()).startsWith("M");
-        assertThat(member.getMemberNumber()).hasSize(10);
+        assertThat(savedProduct).isNotNull();
+        assertThat(savedProduct.getProductId()).isNotNull();
+        assertThat(savedProduct.getTitle()).isEqualTo("테스트 상품");
+        assertThat(savedProduct.getPrice()).isEqualTo(10000);
+        assertThat(savedProduct.getIsCompleted()).isFalse();
     }
 
     @Test
-    @DisplayName("추가 대출 가능 여부를 올바르게 판단해야 한다")
-    void canLoanMore_ShouldReturnCorrectResult() {
+    void checkProductCategoryAssociation() {
         // given
-        Member member = createTestMember();
+        Category category = Category.builder()
+                .categoryName("디지털 기기")
+                .build();
+        entityManager.persist(category);
 
-        // 현재 5권 대출 중 (최대 대출 권수)
-        for (int i = 0; i < 5; i++) {
-            Loan loan = createActiveLoan(member);
-            member.getLoans().add(loan);
-        }
+        Product product = Product.builder()
+                .category(category)
+                .title("노트북")
+                .content("최신형 노트북 판매")
+                .price(1500000)
+                .build();
+        entityManager.persist(product);
 
-        // when & then
-        assertThat(member.canLoanMore()).isFalse();
+        entityManager.flush();
+        entityManager.clear();
+
+        // when
+        Product foundProduct = entityManager.find(Product.class, product.getProductId());
+
+        // then
+        assertThat(foundProduct).isNotNull();
+        assertThat(foundProduct.getCategory()).isNotNull();
+        assertThat(foundProduct.getCategory().getCategoryName()).isEqualTo("디지털 기기");
     }
 
     @Test
-    @DisplayName("연체 도서 보유 여부를 올바르게 판단해야 한다")
-    void hasOverdueLoans_ShouldReturnTrue_WhenOverdueLoansExist() {
+    void checkProductUserAssociation() {
         // given
-        Member member = createTestMember();
-        Loan overdueLoan = createOverdueLoan(member);
-        member.getLoans().add(overdueLoan);
+        User user = User.builder()
+                .loginId("seller")
+                .password("pwd")
+                .userName("판매자")
+                .phone("010-1234-5678")
+                .build();
+        entityManager.persist(user);
 
-        // when & then
-        assertThat(member.hasOverdueLoans()).isTrue();
+        Product product = Product.builder()
+                .user(user)
+                .title("의류")
+                .content("새 의류 판매합니다.")
+                .price(30000)
+                .build();
+        entityManager.persist(product);
+
+        entityManager.flush();
+        entityManager.clear();
+
+        // when
+        Product foundProduct = entityManager.find(Product.class, product.getProductId());
+
+        // then
+        assertThat(foundProduct).isNotNull();
+        assertThat(foundProduct.getUser()).isNotNull();
+        assertThat(foundProduct.getUser().getUserName()).isEqualTo("판매자");
     }
 }
 ```
@@ -881,147 +1293,784 @@ class MemberTest {
 ### 10.2 Repository 테스트
 
 ```java
+@DisplayName("Product Repository Test")
 @DataJpaTest
-public class MessageRepositoryTest {
+public class ProductRepositoryTest {
 
     @Autowired
-    private MessageRepository messageRepository;
+    private ProductRepository productRepository;
+
+    @Autowired
+    private CategoryRepository categoryRepository;
+
+    @Autowired
+    private UserRepository userRepository;
 
     @Autowired
     private TestEntityManager entityManager;
 
-    private User buyer1;
-    private User seller1;
-    private Chat chat1;
-    private Message message1;
-    private Message message2;
+    private Category testCategory;
+    private User testUser;
 
     @BeforeEach
     void setUp() {
-        buyer1 = User.builder()
-                .userName("구매자1")
-                .loginId("buyer1")
-                .password("password")
-                .phone("010-1234-1234")
+        // Given
+        testCategory = Category.builder()
+                .categoryName("Test Category")
                 .build();
-        entityManager.persist(buyer1);
+        testCategory = categoryRepository.save(testCategory);
 
-        seller1 = User.builder()
-                .userName("판매자1")
-                .loginId("seller1")
-                .password("password")
-                .phone("010-5678-5678")
+        testUser = User.builder()
+                .loginId("testId")
+                .password("testPassword")
+                .userName("Test User")
+                .phone("010-1234-5678")
                 .build();
-
-        entityManager.persist(seller1);
-
-        chat1 = Chat.builder()
-                .buyer(buyer1)
-                .seller(seller1)
-                .build();
-        entityManager.persist(chat1);
-        entityManager.flush();
-
-        message1 = Message.builder()
-                .chat(chat1)
-                .user(buyer1)
-                .content("안녕하세요!")
-                .sentAt(LocalDateTime.now())
-                .isRead(false)
-                .build();
-        entityManager.persist(message1);
-
-        message2 = Message.builder()
-                .chat(chat1)
-                .user(seller1)
-                .content("물건 상태는 어떤가요?")
-                .sentAt(LocalDateTime.now().plusMinutes(2))
-                .isRead(false)
-                .build();
-        entityManager.persist(message2);
-        entityManager.flush();
+        testUser = userRepository.save(testUser);
     }
 
     @Test
-    void saveMessage() {
-        Message newMessage = Message.builder()
-                .chat(chat1)
-                .user(buyer1)
-                .content("네, 깨끗합니다.")
-                .sentAt(LocalDateTime.now().plusMinutes(5))
-                .isRead(true)
+    void createProduct() {
+        // Given
+        Product product = Product.builder()
+                .category(testCategory)
+                .user(testUser)
+                .title("Test Product Title")
+                .content("Test Product Content")
+                .price(10000)
+                .viewCount(0)
+                .isBumped(false)
+                .isReserved(false)
+                .isCompleted(false)
                 .build();
-        Message savedMessage = messageRepository.save(newMessage);
 
-        Optional<Message> foundMessage = messageRepository.findById(savedMessage.getMessageId());
-        assertThat(foundMessage).isPresent();
-        assertThat(foundMessage.get().getContent()).isEqualTo("네, 깨끗합니다.");
-        assertThat(foundMessage.get().getChat().getChatId()).isEqualTo(chat1.getChatId());
-        assertThat(foundMessage.get().getSentAt()).isNotNull();
-        assertThat(foundMessage.get().getIsRead()).isTrue();
+        // When
+        Product savedProduct = productRepository.save(product);
+
+        // Then
+        assertThat(savedProduct.getProductId()).isNotNull();
+        assertThat(savedProduct.getTitle()).isEqualTo("Test Product Title");
     }
 
     @Test
-    void findByMessageId() {
-        Optional<Message> foundMessage = messageRepository.findById(message1.getMessageId());
-        assertThat(foundMessage).isPresent();
-        assertThat(foundMessage.get().getContent()).isEqualTo("안녕하세요!");
-        assertThat(foundMessage.get().getChat().getChatId()).isEqualTo(chat1.getChatId());
-    }
-
-    @Test
-    void findByChatId() {
-        List<Message> foundMessages = messageRepository.findByChat_ChatId(chat1.getChatId());
-        assertThat(foundMessages).hasSize(2);
-        assertThat(foundMessages).extracting(Message::getContent)
-                .containsExactlyInAnyOrder("안녕하세요!", "물건 상태는 어떤가요?");
-    }
-
-    @Test
-    void findByUserId() {
-        List<Message> foundMessages = messageRepository.findByUser_UserId(message1.getUser().getUserId());
-        assertThat(foundMessages.get(0).getUser().getUserId()).isEqualTo(1L);
-        assertThat(foundMessages.get(0).getUser().getUserName()).isEqualTo("구매자1");
-    }
-
-    @Test
-    void updateIsRead() {
-        Message unreadMessage = Message.builder()
-                .chat(chat1)
-                .user(buyer1)
-                .content("확인 부탁드립니다.")
-                .sentAt(LocalDateTime.now().plusMinutes(10))
-                .isRead(false)
+    void getProductById() {
+        // Given
+        Product product = Product.builder()
+                .category(testCategory)
+                .user(testUser)
+                .title("Test Product Title")
+                .content("Test Product Content")
+                .price(10000)
+                .viewCount(0)
+                .isBumped(false)
+                .isReserved(false)
+                .isCompleted(false)
                 .build();
-        Message savedUnreadMessage = entityManager.persist(unreadMessage);
-        entityManager.flush();
+        product = productRepository.save(product);
 
-        messageRepository.updateIsReadByMessageId(true, savedUnreadMessage.getMessageId());
-        entityManager.clear(); // 영속성 컨텍스트를 비워 다시 로드
+        // When
+        Product foundProduct = productRepository.findById(product.getProductId()).orElse(null);
 
-        Optional<Message> updatedMessage = messageRepository.findById(savedUnreadMessage.getMessageId());
-        assertThat(updatedMessage).isPresent();
-        assertThat(updatedMessage.get().getIsRead()).isTrue();
+        // Then
+        assertThat(foundProduct).isNotNull();
+        assertThat(foundProduct.getTitle()).isEqualTo("Test Product Title");
     }
 
     @Test
-    void findByIsRead() {
-        Message unreadMessage = Message.builder()
-                .chat(chat1)
-                .user(buyer1)
-                .content("읽음 여부로 조회 테스트용입니다")
-                .sentAt(LocalDateTime.now().plusMinutes(30))
-                .isRead(false)
+    void updateProduct() {
+        // Given
+        Product product = Product.builder()
+                .category(testCategory)
+                .user(testUser)
+                .title("Test Product Title")
+                .content("Test Product Content")
+                .price(10000)
+                .viewCount(0)
+                .isBumped(false)
+                .isReserved(false)
+                .isCompleted(false)
                 .build();
-        Message savedUnreadMessage = entityManager.persist(unreadMessage);
-        entityManager.flush();
-        assertThat(savedUnreadMessage.getIsRead()).isFalse();
+        product = productRepository.save(product);
 
-        // update 후 test
-        messageRepository.updateIsReadByMessageId(true, savedUnreadMessage.getMessageId());
-        entityManager.clear();
-        Optional<Message> updatedMessage = messageRepository.findById(savedUnreadMessage.getMessageId());
-        assertThat(updatedMessage.get().getIsRead()).isTrue();
+        // When
+        product.setTitle("Updated Product Title");
+        Product updatedProduct = productRepository.save(product);
+
+        // Then
+        assertThat(updatedProduct.getTitle()).isEqualTo("Updated Product Title");
+    }
+
+    @Test
+    void deleteProduct() {
+        // Given
+        Product product = Product.builder()
+                .category(testCategory)
+                .user(testUser)
+                .title("Test Product Title")
+                .content("Test Product Content")
+                .price(10000)
+                .viewCount(0)
+                .isBumped(false)
+                .isReserved(false)
+                .isCompleted(false)
+                .build();
+        product = productRepository.save(product);
+
+        // When
+        productRepository.delete(product);
+        Product deletedProduct = productRepository.findById(product.getProductId()).orElse(null);
+
+        // Then
+        assertThat(deletedProduct).isNull();
+    }
+
+    @Test
+    void findByCategory() {
+        // Given
+        Product product1 = Product.builder()
+                .category(testCategory)
+                .user(testUser)
+                .title("Test Product Title 1")
+                .content("Test Product Content 1")
+                .price(10000)
+                .viewCount(0)
+                .isBumped(false)
+                .isReserved(false)
+                .isCompleted(false)
+                .build();
+        productRepository.save(product1);
+
+        Product product2 = Product.builder()
+                .category(testCategory)
+                .user(testUser)
+                .title("Test Product Title 2")
+                .content("Test Product Content 2")
+                .price(10000)
+                .viewCount(0)
+                .isBumped(false)
+                .isReserved(false)
+                .isCompleted(false)
+                .build();
+        productRepository.save(product2);
+
+        // When
+        List<Product> products = productRepository.findByCategory(testCategory);
+
+        // Then
+        assertThat(products).hasSize(2);
+        assertThat(products.get(0).getTitle()).isEqualTo("Test Product Title 1");
+        assertThat(products.get(1).getTitle()).isEqualTo("Test Product Title 2");
+    }
+}
+```
+
+### 10.3 Service 테스트
+
+```java
+@DisplayName("Product Service Test")
+@ExtendWith(MockitoExtension.class)
+public class ProductServiceTest {
+
+    @Mock
+    private ProductRepository productRepository;
+    @Mock
+    private UserRepository userRepository;
+    @Mock
+    private CategoryRepository categoryRepository;
+    @Mock
+    private ImageRepository imageRepository;
+    @Mock
+    private DibsRepository dibsRepository;
+    @Mock
+    private BumpRepository bumpRepository;
+
+    @InjectMocks
+    private ProductService productService;
+
+    @Test
+    @DisplayName("상품 생성 성공 테스트")
+    void createProductSuccessTest() {
+        // Given
+        Long userId = 1L;
+        ProductDTO.Request requestDto = ProductDTO.Request.builder()
+                .title("테스트 상품")
+                .content("테스트 내용")
+                .price(10000)
+                .categoryId(1)
+                .images(List.of("url1", "url2"))
+                .build();
+        User user = User.builder().userId(userId).build();
+        Category category = Category.builder().categoryId(1).categoryName("전자기기").build();
+        Product savedProduct = Product.builder()
+                .productId(10L)
+                .user(user)
+                .category(category)
+                .title("테스트 상품")
+                .content("테스트 내용")
+                .price(10000)
+                .viewCount(0)
+                .isBumped(false)
+                .isReserved(false)
+                .isCompleted(false)
+                .createdAt(LocalDateTime.now())
+                .build();
+        Image image1 = Image.builder().imageId(100L).product(savedProduct).imageUrl("url1").build();
+        Image image2 = Image.builder().imageId(101L).product(savedProduct).imageUrl("url2").build();
+
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+        when(categoryRepository.findById(1)).thenReturn(Optional.of(category));
+        when(productRepository.save(any(Product.class))).thenReturn(savedProduct);
+        when(imageRepository.save(any(Image.class))).thenReturn(image1, image2);
+
+        // When
+        ProductDTO.Response response = productService.createProduct(requestDto, userId);
+
+        // Then
+        assertThat(response.getId()).isEqualTo(10L);
+        assertThat(response.getTitle()).isEqualTo("테스트 상품");
+        assertThat(response.getImages()).hasSize(2);
+        verify(userRepository, times(1)).findById(userId);
+        verify(categoryRepository, times(1)).findById(1);
+        verify(productRepository, times(1)).save(any(Product.class));
+        verify(imageRepository, times(2)).save(any(Image.class));
+    }
+
+    @Test
+    @DisplayName("상품 생성 실패 테스트 - 사용자 없음")
+    void createProductUserNotFoundFailTest() {
+        // Given
+        Long userId = 1L;
+        ProductDTO.Request requestDto = ProductDTO.Request.builder().categoryId(1).build();
+        when(userRepository.findById(userId)).thenReturn(Optional.empty());
+
+        // When & Then
+        assertThrows(EntityNotFoundException.class, () -> productService.createProduct(requestDto, userId));
+        verify(userRepository, times(1)).findById(userId);
+        verify(categoryRepository, never()).findById(anyInt());
+        verify(productRepository, never()).save(any());
+        verify(imageRepository, never()).save(any());
+    }
+
+    @Test
+    @DisplayName("상품 생성 실패 테스트 - 카테고리 없음")
+    void createProductCategoryNotFoundFailTest() {
+        // Given
+        Long userId = 1L;
+        ProductDTO.Request requestDto = ProductDTO.Request.builder().categoryId(1).build();
+        User user = User.builder().userId(userId).build();
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+        when(categoryRepository.findById(1)).thenReturn(Optional.empty());
+
+        // When & Then
+        assertThrows(EntityNotFoundException.class, () -> productService.createProduct(requestDto, userId));
+        verify(userRepository, times(1)).findById(userId);
+        verify(categoryRepository, times(1)).findById(1);
+        verify(productRepository, never()).save(any());
+        verify(imageRepository, never()).save(any());
+    }
+
+    @Test
+    @DisplayName("상품 ID로 조회 성공 테스트")
+    void getProductByIdSuccessTest() {
+        // Given
+        Long productId = 10L;
+        Long currentUserId = 2L;
+        User seller = User.builder().userId(1L).userName("판매자").build();
+        Category category = Category.builder().categoryId(1).categoryName("전자기기").build();
+        Product product = Product.builder()
+                .productId(productId)
+                .user(seller)
+                .category(category)
+                .title("테스트 상품")
+                .content("테스트 내용")
+                .price(10000)
+                .viewCount(0)
+                .createdAt(LocalDateTime.now())
+                .build();
+        Image image1 = Image.builder().imageId(100L).product(product).imageUrl("url1").build();
+        Image image2 = Image.builder().imageId(101L).product(product).imageUrl("url2").build();
+
+        when(productRepository.findById(productId)).thenReturn(Optional.of(product));
+        when(imageRepository.findByProduct_ProductId(productId)).thenReturn(List.of(image1, image2));
+        when(dibsRepository.findByProduct_ProductId(productId)).thenReturn(Collections.emptyList());
+        when(dibsRepository.existsByUser_UserIdAndProduct_ProductId(currentUserId, productId)).thenReturn(false);
+        when(productRepository.save(any(Product.class))).thenReturn(product); // 조회 시 viewCount 증가 후 저장
+
+        // When
+        ProductDTO.Response response = productService.getProductById(productId, currentUserId);
+
+        // Then
+        assertThat(response.getId()).isEqualTo(productId);
+        assertThat(response.getViewCount()).isEqualTo(1);
+        assertThat(response.getImages()).hasSize(2);
+        verify(productRepository, times(1)).findById(productId);
+        verify(imageRepository, times(1)).findByProduct_ProductId(productId);
+        verify(productRepository, times(1)).save(any(Product.class));
+    }
+
+    @Test
+    @DisplayName("상품 ID로 조회 실패 테스트 - 상품 없음")
+    void getProductByIdNotFoundFailTest() {
+        // Given
+        Long productId = 10L;
+        Long currentUserId = 2L;
+        when(productRepository.findById(productId)).thenReturn(Optional.empty());
+
+        // When & Then
+        assertThrows(EntityNotFoundException.class, () -> productService.getProductById(productId, currentUserId));
+        verify(productRepository, times(1)).findById(productId);
+        verify(imageRepository, never()).findByProduct_ProductId(anyLong());
+        verify(productRepository, never()).save(any());
+    }
+
+    @Test
+    @DisplayName("상품 수정 성공 테스트")
+    void updateProductSuccessTest() {
+        // Given
+        Long productId = 10L;
+        Long userId = 1L;
+        ProductDTO.UpdateRequest requestDto = ProductDTO.UpdateRequest.builder()
+                .title("수정된 제목")
+                .content("수정된 내용")
+                .price(20000)
+                .categoryId(2)
+                .images(List.of("updatedUrl1"))
+                .build();
+        User user = User.builder().userId(userId).build();
+        Category originalCategory = Category.builder().categoryId(1).categoryName("전자기기").build();
+        Category updatedCategory = Category.builder().categoryId(2).categoryName("의류").build();
+        Product originalProduct = Product.builder()
+                .productId(productId)
+                .user(user)
+                .category(originalCategory)
+                .title("테스트 상품")
+                .content("테스트 내용")
+                .price(10000)
+                .createdAt(LocalDateTime.now())
+                .build();
+        Image originalImage = Image.builder().imageId(100L).product(originalProduct).imageUrl("url1").build();
+        Image updatedImage = Image.builder().imageId(102L).product(originalProduct).imageUrl("updatedUrl1").build();
+
+        when(productRepository.findById(productId)).thenReturn(Optional.of(originalProduct));
+        when(categoryRepository.findById(2)).thenReturn(Optional.of(updatedCategory));
+        doNothing().when(imageRepository).deleteAll(anyList());
+        when(imageRepository.save(any(Image.class))).thenReturn(updatedImage);
+        when(productRepository.save(any(Product.class))).thenReturn(originalProduct); // 수정된 product 반환하도록
+
+        // When
+        ProductDTO.Response response = productService.updateProduct(productId, requestDto, userId);
+
+        // Then
+        assertThat(response.getId()).isEqualTo(productId);
+        assertThat(response.getTitle()).isEqualTo("수정된 제목");
+        assertThat(response.getContent()).isEqualTo("수정된 내용");
+        assertThat(response.getPrice()).isEqualTo(20000);
+        assertThat(response.getCategoryName()).isEqualTo("의류");
+        assertThat(response.getImages()).hasSize(1);
+        assertThat(response.getImages().get(0).getImageUrl()).isEqualTo("updatedUrl1");
+        verify(productRepository, times(1)).findById(productId);
+        verify(categoryRepository, times(1)).findById(2);
+        verify(imageRepository, times(1)).deleteAll(anyList());
+        verify(imageRepository, times(1)).save(any(Image.class));
+        verify(productRepository, times(1)).save(any(Product.class));
+    }
+
+    @Test
+    @DisplayName("상품 수정 실패 테스트 - 상품 없음")
+    void updateProductNotFoundFailTest() {
+        // Given
+        Long productId = 10L;
+        Long userId = 1L;
+        ProductDTO.UpdateRequest requestDto = ProductDTO.UpdateRequest.builder().title("수정").build();
+        when(productRepository.findById(productId)).thenReturn(Optional.empty());
+
+        // When & Then
+        assertThrows(EntityNotFoundException.class, () -> productService.updateProduct(productId, requestDto, userId));
+        verify(productRepository, times(1)).findById(productId);
+        verify(categoryRepository, never()).findById(anyInt());
+        verify(imageRepository, never()).deleteAll(anyList());
+        verify(imageRepository, never()).save(any());
+        verify(productRepository, never()).save(any());
+    }
+
+    @Test
+    @DisplayName("상품 수정 실패 테스트 - 권한 없음")
+    void updateProductNoPermissionFailTest() {
+        // Given
+        Long productId = 10L;
+        Long userId = 1L;
+        Long otherUserId = 2L;
+        ProductDTO.UpdateRequest requestDto = ProductDTO.UpdateRequest.builder().title("수정").build();
+        User user = User.builder().userId(otherUserId).build();
+        Product product = Product.builder().productId(productId).user(user).build();
+        when(productRepository.findById(productId)).thenReturn(Optional.of(product));
+
+        // When & Then
+        assertThrows(SecurityException.class, () -> productService.updateProduct(productId, requestDto, userId));
+        verify(productRepository, times(1)).findById(productId);
+        verify(categoryRepository, never()).findById(anyInt());
+        verify(imageRepository, never()).deleteAll(anyList());
+        verify(imageRepository, never()).save(any());
+        verify(productRepository, never()).save(any());
+    }
+
+    @Test
+    @DisplayName("상품 삭제 성공 테스트")
+    void deleteProductSuccessTest() {
+        // Given
+        Long productId = 10L;
+        Long userId = 1L;
+        User user = User.builder().userId(userId).build();
+        Product product = Product.builder().productId(productId).user(user).build();
+        when(productRepository.findById(productId)).thenReturn(Optional.of(product));
+        doNothing().when(imageRepository).deleteAll(anyList());
+        doNothing().when(dibsRepository).deleteAll(anyList());
+        doNothing().when(bumpRepository).deleteAll(anyList());
+        doNothing().when(productRepository).delete(product);
+
+        // When
+        productService.deleteProduct(productId, userId);
+
+        // Then
+        verify(productRepository, times(1)).findById(productId);
+        verify(imageRepository, times(1)).deleteAll(anyList());
+        verify(dibsRepository, times(1)).deleteAll(anyList());
+        verify(bumpRepository, times(1)).deleteAll(anyList());
+        verify(productRepository, times(1)).delete(product);
+    }
+
+    @Test
+    @DisplayName("상품 삭제 실패 테스트 - 상품 없음")
+    void deleteProductNotFoundFailTest() {
+        // Given
+        Long productId = 10L;
+        Long userId = 1L;
+        when(productRepository.findById(productId)).thenReturn(Optional.empty());
+
+        // When & Then
+        assertThrows(EntityNotFoundException.class, () -> productService.deleteProduct(productId, userId));
+        verify(productRepository, times(1)).findById(productId);
+        verify(imageRepository, never()).deleteAll(anyList());
+        verify(dibsRepository, never()).deleteAll(anyList());
+        verify(bumpRepository, never()).deleteAll(anyList());
+        verify(productRepository, never()).delete(any());
+    }
+
+    @Test
+    @DisplayName("상품 삭제 실패 테스트 - 권한 없음")
+    void deleteProductNoPermissionFailTest() {
+        // Given
+        Long productId = 10L;
+        Long userId = 1L;
+        Long otherUserId = 2L;
+        User user = User.builder().userId(otherUserId).build();
+        Product product = Product.builder().productId(productId).user(user).build();
+        when(productRepository.findById(productId)).thenReturn(Optional.of(product));
+
+        // When & Then
+        assertThrows(SecurityException.class, () -> productService.deleteProduct(productId, userId));
+        verify(productRepository, times(1)).findById(productId);
+        verify(imageRepository, never()).deleteAll(anyList());
+        verify(dibsRepository, never()).deleteAll(anyList());
+        verify(bumpRepository, never()).deleteAll(anyList());
+        verify(productRepository, never()).delete(any());
+    }
+
+    @Test
+    @DisplayName("모든 상품 조회 (페이징) 성공 테스트")
+    void getAllProductsSuccessTest() {
+        // Given
+        Long currentUserId = 1L;
+        User seller = User.builder().userId(2L).userName("판매자").build();
+        Category category = Category.builder().categoryId(1).categoryName("전자기기").build();
+        Product product1 = Product.builder().productId(10L).user(seller).category(category).title("상품1").price(1000).createdAt(LocalDateTime.now()).build();
+        Product product2 = Product.builder().productId(11L).user(seller).category(category).title("상품2").price(2000).createdAt(LocalDateTime.now().minusHours(1)).build();
+        List<Product> products = Arrays.asList(product1, product2);
+        Page<Product> productPage = new PageImpl<>(products, Pageable.ofSize(2), products.size());
+        Image image1 = Image.builder().imageId(100L).product(product1).imageUrl("url1").build();
+        Image image2 = Image.builder().imageId(100L).product(product2).imageUrl("url2").build();
+
+        when(productRepository.findAllByOrderByCreatedAtDesc(any(Pageable.class))).thenReturn(productPage);
+        when(imageRepository.findByProduct_ProductId(10L)).thenReturn(List.of(image1));
+        when(imageRepository.findByProduct_ProductId(11L)).thenReturn(List.of(image2));
+        when(dibsRepository.findByProduct_ProductId(10L)).thenReturn(Collections.emptyList());
+        when(dibsRepository.findByProduct_ProductId(11L)).thenReturn(Collections.emptyList());
+        when(dibsRepository.existsByUser_UserIdAndProduct_ProductId(currentUserId, 10L)).thenReturn(false);
+        when(dibsRepository.existsByUser_UserIdAndProduct_ProductId(currentUserId, 11L)).thenReturn(false);
+
+        // When
+        ProductDTO.ProductListData result = productService.getAllProducts(Pageable.ofSize(2), currentUserId);
+
+        // Then
+        assertThat(result.getContent()).hasSize(2);
+        assertThat(result.getPagination().getTotalElements()).isEqualTo(2);
+        verify(productRepository, times(1)).findAllByOrderByCreatedAtDesc(any(Pageable.class));
+        verify(imageRepository, times(1)).findByProduct_ProductId(10L);
+        verify(imageRepository, times(1)).findByProduct_ProductId(11L);
+        verify(dibsRepository, times(1)).findByProduct_ProductId(10L);
+        verify(dibsRepository, times(1)).findByProduct_ProductId(11L);
+        verify(dibsRepository, times(1)).existsByUser_UserIdAndProduct_ProductId(currentUserId, 10L);
+        verify(dibsRepository, times(1)).existsByUser_UserIdAndProduct_ProductId(currentUserId, 11L);
+    }
+
+    @Test
+    @DisplayName("카테고리별 상품 조회 (페이징) 성공 테스트")
+    void getProductsByCategorySuccessTest() {
+        // Given
+        int categoryId = 1;
+        Long currentUserId = 1L;
+        Category category = Category.builder().categoryId(categoryId).categoryName("전자기기").build();
+        User seller = User.builder().userId(2L).userName("판매자").build();
+        Product product1 = Product.builder().productId(10L).user(seller).category(category).title("상품1").price(1000).createdAt(LocalDateTime.now()).build();
+        Product product2 = Product.builder().productId(11L).user(seller).category(category).title("상품2").price(2000).createdAt(LocalDateTime.now().minusHours(1)).build();
+        List<Product> products = Arrays.asList(product1, product2);
+        Page<Product> productPage = new PageImpl<>(products, Pageable.ofSize(2), products.size());
+        Image image1 = Image.builder().imageId(100L).product(product1).imageUrl("url1").build();
+        Image image2 = Image.builder().imageId(101L).product(product2).imageUrl("url2").build();
+
+        when(categoryRepository.findById(categoryId)).thenReturn(Optional.of(category));
+        when(productRepository.findByCategory(eq(category), any(Pageable.class))).thenReturn(productPage);
+        when(imageRepository.findByProduct_ProductId(10L)).thenReturn(List.of(image1));
+        when(imageRepository.findByProduct_ProductId(11L)).thenReturn(List.of(image2));
+        when(dibsRepository.findByProduct_ProductId(10L)).thenReturn(Collections.emptyList());
+        when(dibsRepository.findByProduct_ProductId(11L)).thenReturn(Collections.emptyList());
+        when(dibsRepository.existsByUser_UserIdAndProduct_ProductId(currentUserId, 10L)).thenReturn(false);
+        when(dibsRepository.existsByUser_UserIdAndProduct_ProductId(currentUserId, 11L)).thenReturn(false);
+
+        // When
+        ProductDTO.ProductListData result = productService.getProductsByCategory(categoryId, Pageable.ofSize(2), currentUserId);
+
+        // Then
+        assertThat(result.getContent()).hasSize(2);
+        assertThat(result.getPagination().getTotalElements()).isEqualTo(2);
+        verify(categoryRepository, times(1)).findById(categoryId);
+        verify(productRepository, times(1)).findByCategory(eq(category), any(Pageable.class));
+        verify(imageRepository, times(1)).findByProduct_ProductId(10L);
+        verify(imageRepository, times(1)).findByProduct_ProductId(11L);
+        verify(dibsRepository, times(1)).findByProduct_ProductId(10L);
+        verify(dibsRepository, times(1)).findByProduct_ProductId(11L);
+        verify(dibsRepository, times(1)).existsByUser_UserIdAndProduct_ProductId(currentUserId, 10L);
+        verify(dibsRepository, times(1)).existsByUser_UserIdAndProduct_ProductId(currentUserId, 11L);
+    }
+
+    @Test
+    @DisplayName("카테고리별 상품 조회 실패 테스트 - 카테고리 없음")
+    void getProductsByCategoryNotFoundFailTest() {
+        // Given
+        int categoryId = 1;
+        Long currentUserId = 1L;
+        when(categoryRepository.findById(categoryId)).thenReturn(Optional.empty());
+
+        // When & Then
+        assertThrows(EntityNotFoundException.class, () -> productService.getProductsByCategory(categoryId, Pageable.ofSize(2), currentUserId));
+        verify(categoryRepository, times(1)).findById(categoryId);
+        verify(productRepository, never()).findByCategory(any(), any());
+        verify(imageRepository, never()).findByProduct_ProductId(anyLong());
+        verify(dibsRepository, never()).findByProduct_ProductId(anyLong());
+        verify(dibsRepository, never()).existsByUser_UserIdAndProduct_ProductId(anyLong(), anyLong());
+    }
+
+    @Test
+    @DisplayName("사용자별 상품 조회 (페이징) 성공 테스트")
+    void getProductsByUserSuccessTest() {
+        // Given
+        Long targetUserId = 2L;
+        Long currentUserId = 1L;
+        User seller = User.builder().userId(targetUserId).userName("판매자").build();
+        Category category = Category.builder().categoryId(1).categoryName("전자기기").build();
+        Product product1 = Product.builder().productId(10L).user(seller).category(category).title("상품1").price(1000).createdAt(LocalDateTime.now()).build();
+        Product product2 = Product.builder().productId(11L).user(seller).category(category).title("상품2").price(2000).createdAt(LocalDateTime.now().minusHours(1)).build();
+        List<Product> products = Arrays.asList(product1, product2);
+        Page<Product> productPage = new PageImpl<>(products, Pageable.ofSize(2), products.size());
+        Image image1 = Image.builder().imageId(100L).product(product1).imageUrl("url1").build();
+        Image image2 = Image.builder().imageId(101L).product(product2).imageUrl("url2").build();
+
+        when(userRepository.findById(targetUserId)).thenReturn(Optional.of(seller));
+        when(productRepository.findByUser(eq(seller), any(Pageable.class))).thenReturn(productPage);
+        when(imageRepository.findByProduct_ProductId(10L)).thenReturn(List.of(image1));
+        when(imageRepository.findByProduct_ProductId(11L)).thenReturn(List.of(image2));
+        when(dibsRepository.findByProduct_ProductId(10L)).thenReturn(Collections.emptyList());
+        when(dibsRepository.findByProduct_ProductId(11L)).thenReturn(Collections.emptyList());
+        when(dibsRepository.existsByUser_UserIdAndProduct_ProductId(currentUserId, 10L)).thenReturn(false);
+        when(dibsRepository.existsByUser_UserIdAndProduct_ProductId(currentUserId, 11L)).thenReturn(false);
+
+        // When
+        ProductDTO.ProductListData result = productService.getProductsByUser(targetUserId, Pageable.ofSize(2), currentUserId);
+
+        // Then
+        assertThat(result.getContent()).hasSize(2);
+        assertThat(result.getPagination().getTotalElements()).isEqualTo(2);
+        verify(userRepository, times(1)).findById(targetUserId);
+        verify(productRepository, times(1)).findByUser(eq(seller), any(Pageable.class));
+        verify(imageRepository, times(1)).findByProduct_ProductId(10L);
+        verify(imageRepository, times(1)).findByProduct_ProductId(11L);
+        verify(dibsRepository, times(1)).findByProduct_ProductId(10L);
+        verify(dibsRepository, times(1)).findByProduct_ProductId(11L);
+        verify(dibsRepository, times(1)).existsByUser_UserIdAndProduct_ProductId(currentUserId, 10L);
+        verify(dibsRepository, times(1)).existsByUser_UserIdAndProduct_ProductId(currentUserId, 11L);
+    }
+
+    @Test
+    @DisplayName("사용자별 상품 조회 실패 테스트 - 사용자 없음")
+    void getProductsByUserNotFoundFailTest() {
+        // Given
+        Long targetUserId = 2L;
+        Long currentUserId = 1L;
+        when(userRepository.findById(targetUserId)).thenReturn(Optional.empty());
+
+        // When & Then
+        assertThrows(EntityNotFoundException.class, () -> productService.getProductsByUser(targetUserId, Pageable.ofSize(2), currentUserId));
+        verify(userRepository, times(1)).findById(targetUserId);
+        verify(productRepository, never()).findByUser(any(), any());
+        verify(imageRepository, never()).findByProduct_ProductId(anyLong());
+        verify(dibsRepository, never()).findByProduct_ProductId(anyLong());
+        verify(dibsRepository, never()).existsByUser_UserIdAndProduct_ProductId(anyLong(), anyLong());
+    }
+
+    @Test
+    @DisplayName("제목으로 상품 검색 (페이징) 성공 테스트")
+    void searchProductsByTitleSuccessTest() {
+        // Given
+        String title = "테스트";
+        Long currentUserId = 1L;
+        User seller = User.builder().userId(2L).userName("판매자").build();
+        Category category = Category.builder().categoryId(1).categoryName("전자기기").build();
+        Product product1 = Product.builder().productId(10L).user(seller).category(category).title("테스트 상품1").price(1000).createdAt(LocalDateTime.now()).build();
+        Product product2 = Product.builder().productId(11L).user(seller).category(category).title("또 다른 테스트").price(2000).createdAt(LocalDateTime.now().minusHours(1)).build();
+        List<Product> products = Arrays.asList(product1, product2);
+        Page<Product> productPage = new PageImpl<>(products, Pageable.ofSize(2), products.size());
+        Image image1 = Image.builder().imageId(100L).product(product1).imageUrl("url1").build();
+        Image image2 = Image.builder().imageId(101L).product(product2).imageUrl("url2").build();
+
+        when(productRepository.findByTitleContainsIgnoreCase(title)).thenReturn(products);
+        when(imageRepository.findByProduct_ProductId(10L)).thenReturn(List.of(image1));
+        when(imageRepository.findByProduct_ProductId(11L)).thenReturn(List.of(image2));
+        when(dibsRepository.findByProduct_ProductId(10L)).thenReturn(Collections.emptyList());
+        when(dibsRepository.findByProduct_ProductId(11L)).thenReturn(Collections.emptyList());
+        when(dibsRepository.existsByUser_UserIdAndProduct_ProductId(currentUserId, 10L)).thenReturn(false);
+        when(dibsRepository.existsByUser_UserIdAndProduct_ProductId(currentUserId, 11L)).thenReturn(false);
+
+        // When
+        ProductDTO.ProductListData result = productService.searchProductsByTitle(title, Pageable.ofSize(2), currentUserId);
+
+        // Then
+        assertThat(result.getContent()).hasSize(2);
+        assertThat(result.getPagination().getTotalElements()).isEqualTo(2);
+        verify(productRepository, times(1)).findByTitleContainsIgnoreCase(title);
+        verify(imageRepository, times(1)).findByProduct_ProductId(10L);
+        verify(imageRepository, times(1)).findByProduct_ProductId(11L);
+        verify(dibsRepository, times(1)).findByProduct_ProductId(10L);
+        verify(dibsRepository, times(1)).findByProduct_ProductId(11L);
+        verify(dibsRepository, times(1)).existsByUser_UserIdAndProduct_ProductId(currentUserId, 10L);
+        verify(dibsRepository, times(1)).existsByUser_UserIdAndProduct_ProductId(currentUserId, 11L);
+    }
+
+    @Test
+    @DisplayName("키워드로 상품 검색 (페이징) 성공 테스트")
+    void searchProductsByKeywordSuccessTest() {
+        // Given
+        String keyword = "테스트";
+        Long currentUserId = 1L;
+        User seller = User.builder().userId(2L).userName("판매자").build();
+        Category category = Category.builder().categoryId(1).categoryName("전자기기").build();
+        Product product1 = Product.builder().productId(10L).user(seller).category(category).title("테스트 상품1").content("이것은 테스트입니다.").price(1000).createdAt(LocalDateTime.now()).build();
+        Product product2 = Product.builder().productId(11L).user(seller).category(category).title("다른 상품").content("테스트 내용 포함").price(2000).createdAt(LocalDateTime.now().minusHours(1)).build();
+        List<Product> products = Arrays.asList(product1, product2);
+        Page<Product> productPage = new PageImpl<>(products, Pageable.ofSize(2), products.size());
+        Image image1 = Image.builder().imageId(100L).product(product1).imageUrl("url1").build();
+        Image image2 = Image.builder().imageId(101L).product(product2).imageUrl("url2").build();
+
+        when(productRepository.findByTitleContainsIgnoreCaseOrContentContainsIgnoreCase(keyword, keyword)).thenReturn(products);
+        when(imageRepository.findByProduct_ProductId(10L)).thenReturn(List.of(image1));
+        when(imageRepository.findByProduct_ProductId(11L)).thenReturn(List.of(image2));
+        when(dibsRepository.findByProduct_ProductId(10L)).thenReturn(Collections.emptyList());
+        when(dibsRepository.findByProduct_ProductId(11L)).thenReturn(Collections.emptyList());
+        when(dibsRepository.existsByUser_UserIdAndProduct_ProductId(currentUserId, 10L)).thenReturn(false);
+        when(dibsRepository.existsByUser_UserIdAndProduct_ProductId(currentUserId, 11L)).thenReturn(false);
+
+        // When
+        ProductDTO.ProductListData result = productService.searchProductsByKeyword(keyword, Pageable.ofSize(2), currentUserId);
+
+        // Then
+        assertThat(result.getContent()).hasSize(2);
+        assertThat(result.getPagination().getTotalElements()).isEqualTo(2);
+        verify(productRepository, times(1)).findByTitleContainsIgnoreCaseOrContentContainsIgnoreCase(keyword, keyword);
+        verify(imageRepository, times(1)).findByProduct_ProductId(10L);
+        verify(imageRepository, times(1)).findByProduct_ProductId(11L);
+        verify(dibsRepository, times(1)).findByProduct_ProductId(10L);
+        verify(dibsRepository, times(1)).findByProduct_ProductId(11L);
+        verify(dibsRepository, times(1)).existsByUser_UserIdAndProduct_ProductId(currentUserId, 10L);
+        verify(dibsRepository, times(1)).existsByUser_UserIdAndProduct_ProductId(currentUserId, 11L);
+    }
+
+    @Test
+    @DisplayName("상품 상태 업데이트 성공 테스트 - 예약")
+    void updateProductStatusReserveSuccessTest() {
+        // Given
+        Long productId = 10L;
+        Long userId = 1L;
+        User seller = User.builder().userId(userId).build();
+        Product product = Product.builder().productId(productId).user(seller).isReserved(false).isCompleted(false).build();
+        when(productRepository.findById(productId)).thenReturn(Optional.of(product));
+        when(productRepository.save(any(Product.class))).thenReturn(product);
+
+        // When
+        productService.updateProductStatus(productId, true, null, userId);
+
+        // Then
+        assertThat(product.getIsReserved()).isTrue();
+        verify(productRepository, times(1)).findById(productId);
+        verify(productRepository, times(1)).save(product);
+    }
+
+    @Test
+    @DisplayName("상품 상태 업데이트 성공 테스트 - 완료")
+    void updateProductStatusCompleteSuccessTest() {
+        // Given
+        Long productId = 10L;
+        Long userId = 1L;
+        User seller = User.builder().userId(userId).build();
+        Product product = Product.builder().productId(productId).user(seller).isReserved(false).isCompleted(false).build();
+        when(productRepository.findById(productId)).thenReturn(Optional.of(product));
+        when(productRepository.save(any(Product.class))).thenReturn(product);
+
+        // When
+        productService.updateProductStatus(productId, null, true, userId);
+
+        // Then
+        assertThat(product.getIsCompleted()).isTrue();
+        verify(productRepository, times(1)).findById(productId);
+        verify(productRepository, times(1)).save(product);
+    }
+    @Test
+    @DisplayName("상품 상태 업데이트 실패 테스트 - 상품 없음")
+    void updateProductStatusNotFoundFailTest() {
+        // Given
+        Long productId = 10L;
+        Long userId = 1L;
+        when(productRepository.findById(productId)).thenReturn(Optional.empty());
+
+        // When & Then
+        assertThrows(EntityNotFoundException.class, () -> productService.updateProductStatus(productId, true, null, userId));
+        verify(productRepository, times(1)).findById(productId);
+        verify(productRepository, never()).save(any());
+    }
+
+    @Test
+    @DisplayName("상품 상태 업데이트 실패 테스트 - 권한 없음")
+    void updateProductStatusNoPermissionFailTest() {
+        // Given
+        Long productId = 10L;
+        Long userId = 1L;
+        Long otherUserId = 2L;
+        User seller = User.builder().userId(otherUserId).build();
+        Product product = Product.builder().productId(productId).user(seller).build();
+        when(productRepository.findById(productId)).thenReturn(Optional.of(product));
+
+        // When & Then
+        assertThrows(SecurityException.class, () -> productService.updateProductStatus(productId, true, null, userId));
+        verify(productRepository, times(1)).findById(productId);
+        verify(productRepository, never()).save(any());
     }
 }
 ```

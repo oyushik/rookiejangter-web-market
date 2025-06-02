@@ -21,7 +21,7 @@ public class Review extends BaseEntity {
     @Column(name = "review_id")
     private Long reviewId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "complete_id")
     private Complete complete;
 

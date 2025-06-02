@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 @Entity
 @Table(name = "cancelations")
@@ -20,7 +21,6 @@ public class Cancelation {
     private Long cancelationId;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @MapsId
     @JoinColumn(name = "reservation_id")
     private Reservation reservation;
 
@@ -49,8 +49,8 @@ public class Cancelation {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Cancelation cancelation = (Cancelation) o;
-        return reservation != null && reservation.getReservationId().equals(cancelation.getReservation().getReservationId());
+        Cancelation that = (Cancelation) o;
+        return Objects.equals(cancelationId, that.cancelationId);
     }
 
     @Override
