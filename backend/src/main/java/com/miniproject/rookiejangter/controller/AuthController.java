@@ -12,21 +12,32 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
-
+import org.springframework.web.bind.annotation.CrossOrigin;
 @RestController
 @RequestMapping("/api/auth")
+@CrossOrigin(origins = "http://localhost:3000")
 @RequiredArgsConstructor
 public class AuthController {
     private final UserService userService;
     private final AuthService authService;
 
     // 회원가입
+//    @PostMapping("/signup")
+//    public ResponseEntity<UserDTO.Response> registerUser(@Valid @RequestBody UserDTO.SignUpRequest request) {
+//        UserDTO.Response user = userService.createUser(request);
+//        return new ResponseEntity<>(user, HttpStatus.CREATED);
+//    }
     @PostMapping("/signup")
-    public ResponseEntity<UserDTO.Response> registerUser(@Valid @RequestBody UserDTO.SignUpRequest request) {
-        UserDTO.Response user = userService.createUser(request);
-        return new ResponseEntity<>(user, HttpStatus.CREATED);
+    public ResponseEntity<?> registerUser(@Valid @RequestBody UserDTO.SignUpRequest request) {
+        try {
+            UserDTO.Response user = userService.createUser(request);
+            return new ResponseEntity<>(user, HttpStatus.CREATED);
+        } catch (Exception e) {
+            e.printStackTrace(); // 서버 콘솔에 에러 출력
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("서버 에러: " + e.getMessage());
+        }
     }
-
     // 로그인
     @PostMapping("/login")
     public ResponseEntity<AuthService.LoginResponse> loginUser(@RequestBody UserDTO.LoginRequest request) {
