@@ -4,7 +4,11 @@
     <CLASSES>
       <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/io.netty/netty-common/4.1.121.Final/7a5252fc3543286abbd1642eac74e4df87f7235f/netty-common-4.1.121.Final.jar!/" />
     </CLASSES>
-    <JAVADOC />
-    <SOURCES />
+    <JAVADOC>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/io.netty/netty-common/4.1.121.Final/1cebfdcb8a80b83cd783cbb7e729e2d2e936ec3c/netty-common-4.1.121.Final-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/io.netty/netty-common/4.1.121.Final/e6b5d07dde8464029de2890032c95cf6dbc6e480/netty-common-4.1.121.Final-sources.jar!/" />
+    </SOURCES>
   </library>
 </component>
