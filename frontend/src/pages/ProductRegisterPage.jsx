@@ -33,10 +33,7 @@ const ProductRegisterPage = () => {
         images: [],
     });
     const [loading, setLoading] = useState(false);
-    const [userProfile, setUserProfile] = useState({
-        is_banned: "false",
-        userProductCount: 0,
-    });
+    const [userProfile, setUserProfile] = useState(false);
     const fileInputRef = useRef();
 
     // accessToken에서 userId 추출
