@@ -16,8 +16,12 @@ export const fetchVerificationResult = (identityVerificationId) =>
 export const signup = (userData) =>
     axios.post(`${BASE_URL}/signup`, userData);
 
-export const loginUser = (userData) =>
-    axios.post(`${BASE_URL}/login`, userData);
+export const loginUser = (userData) => {
+    console.log("loginUser 호출됨:", userData); // ✅ userData로 수정
+    return axios.post(`${BASE_URL}/login`, userData); // ✅ return 추가
+}
 
-export const logoutUser = () =>
+export const logoutUser = () => {
+    console.log("로그아웃 요청 중...");
     axios.post(`${BASE_URL}/logout`);
+}
