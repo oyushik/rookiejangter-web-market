@@ -5,6 +5,7 @@ import com.miniproject.rookiejangter.service.ProductService;
 import com.miniproject.rookiejangter.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import lombok.RequiredArgsConstructor;
@@ -14,28 +15,29 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
-    private final ProductService productService;
 
-    // 유저 상세 정보 조회
-    @GetMapping("/{id}/profile")
-    public ResponseEntity<UserDTO.Response> getUserById(@PathVariable Long id) {
-        UserDTO.Response users = userService.getUserById(id);
-        return ResponseEntity.ok(users);
+    // URL에서 ID 제거하고 토큰에서만 사용자 식별
+    @GetMapping("/profile")  // /{id} 제거
+    public ResponseEntity<UserDTO.Response> getCurrentUserProfile(Authentication authentication) {
+        String username = authentication.getName();
+        UserDTO.Response user = userService.getUserByUserName(username);
+        return ResponseEntity.ok(user);
     }
 
-    // 유저 상세 정보 수정
-    @PutMapping("/{id}/profile")
-    public ResponseEntity<UserDTO.Response> updateUserById(@PathVariable Long id, @Valid @RequestBody UserDTO.UpdateRequest request) {
-        UserDTO.Response users = userService.updateUser(id, request);
-        return ResponseEntity.ok(users);
+    @PutMapping("/profile")  // /{id} 제거
+    public ResponseEntity<UserDTO.Response> updateCurrentUserProfile(@Valid @RequestBody UserDTO.UpdateRequest request, Authentication authentication) {
+        String username = authentication.getName();
+        UserDTO.Response user = userService.updateUser(username, request);
+        return ResponseEntity.ok(user);
     }
 
-    // 유저 정보 삭제
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
-        userService.deleteUser(id);
+    @DeleteMapping("/profile")  // /{id} 제거
+    public ResponseEntity<Void> deleteCurrentUser(Authentication authentication) {
+        String username = authentication.getName();
+        userService.deleteUser(username);
         return ResponseEntity.noContent().build();
     }
+
 
 //    // 유저 상품 등록
 //    @PostMapping("/{user_id}/products") {

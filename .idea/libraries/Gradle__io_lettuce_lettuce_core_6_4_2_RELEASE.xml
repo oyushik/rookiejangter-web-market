@@ -4,7 +4,11 @@
     <CLASSES>
       <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/io.lettuce/lettuce-core/6.4.2.RELEASE/8969c20697c74b71288d4d5e69b0fec4047d3d6d/lettuce-core-6.4.2.RELEASE.jar!/" />
     </CLASSES>
-    <JAVADOC />
-    <SOURCES />
+    <JAVADOC>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/io.lettuce/lettuce-core/6.4.2.RELEASE/ce3b5ce4dfeb1028485d374a2c7dcc4aadb1dd2/lettuce-core-6.4.2.RELEASE-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/io.lettuce/lettuce-core/6.4.2.RELEASE/afa3f2d47ed9e7b14cb4421ae904def288179efc/lettuce-core-6.4.2.RELEASE-sources.jar!/" />
+    </SOURCES>
   </library>
 </component>

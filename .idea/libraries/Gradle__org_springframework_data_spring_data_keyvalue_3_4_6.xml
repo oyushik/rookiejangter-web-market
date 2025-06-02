@@ -4,7 +4,11 @@
     <CLASSES>
       <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.springframework.data/spring-data-keyvalue/3.4.6/20db46d47e095bb70918d5b3e3bbf74451f32fcb/spring-data-keyvalue-3.4.6.jar!/" />
     </CLASSES>
-    <JAVADOC />
-    <SOURCES />
+    <JAVADOC>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.springframework.data/spring-data-keyvalue/3.4.6/ea45eaa3c102aed1f8eca0dab3958b6a3ac63ed1/spring-data-keyvalue-3.4.6-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.springframework.data/spring-data-keyvalue/3.4.6/8101e6714da11efec5cfd93afb977b9d806be21e/spring-data-keyvalue-3.4.6-sources.jar!/" />
+    </SOURCES>
   </library>
 </component>

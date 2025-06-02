@@ -37,6 +37,21 @@ public class SecurityConfig {
 
                 // 인증/인가 설정
                 .authorizeHttpRequests((requests) -> requests
+                        // 기본 대시보드 페이지 접근 허용
+                        .requestMatchers(AntPathRequestMatcher.antMatcher("/")).permitAll()
+                        .requestMatchers(AntPathRequestMatcher.antMatcher("/index.html")).permitAll()
+                        // 정적 리소스 접근 허용
+                        .requestMatchers(AntPathRequestMatcher.antMatcher("/static/**")).permitAll()
+                        .requestMatchers(AntPathRequestMatcher.antMatcher("/css/**")).permitAll()
+                        .requestMatchers(AntPathRequestMatcher.antMatcher("/js/**")).permitAll()
+                        .requestMatchers(AntPathRequestMatcher.antMatcher("/images/**")).permitAll()
+                        .requestMatchers(AntPathRequestMatcher.antMatcher("/favicon.ico")).permitAll()
+                        // React 개발 환경 리소스 허용
+                        .requestMatchers(AntPathRequestMatcher.antMatcher("/src/**")).permitAll()
+                        .requestMatchers(AntPathRequestMatcher.antMatcher("/Users/**")).permitAll()
+                        // Vite 개발 서버 관련 파일들
+                        .requestMatchers(AntPathRequestMatcher.antMatcher("/@vite/**")).permitAll()
+                        .requestMatchers(AntPathRequestMatcher.antMatcher("/node_modules/**")).permitAll()
                         // H2 콘솔 접근 허용 (개발 환경)
                         .requestMatchers(AntPathRequestMatcher.antMatcher("/h2-console/**")).permitAll()
                         // 회원가입, 로그인 API 접근 허용
