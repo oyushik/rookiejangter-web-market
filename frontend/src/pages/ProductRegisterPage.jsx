@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import axios from "axios";
-import jwtDecode from "jwt-decode";
+import { jwtDecode } from "jwt-decode";
 import {
   Box,
   Button,
@@ -339,13 +339,12 @@ const ProductRegisterPage = () => {
                 value={form.category}
                 onChange={handleChange}
                 fullWidth
-                displayEmpty
                 SelectProps={{
-                displayEmpty: true,
-                renderValue: selected =>
-                    selected
-                    ? CATEGORY_OPTIONS.find(opt => opt.value === selected)?.label
-                    : "카테고리 선택",
+                    displayEmpty: true,
+                    renderValue: selected =>
+                        selected
+                        ? CATEGORY_OPTIONS.find(opt => opt.value === selected)?.label
+                        : "카테고리 선택",
                 }}
             >
                 <MenuItem value="" disabled>
