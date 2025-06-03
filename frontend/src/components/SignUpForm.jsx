@@ -154,7 +154,7 @@ const SignUpForm = ({ defaultName, defaultPhone }) => {
 
   const handleModalClose = () => {
     setModalOpen(false);
-    navigate('/');
+    navigate('/login');
   };
 
   const isFormValid = useMemo(() => {

@@ -1,52 +1,154 @@
-import React, { useState } from 'react';
-import { TextField, Button } from '@mui/material';
+import React, { useState, useMemo } from 'react';
+import { TextField, Button, Box, Typography } from '@mui/material';
 import { loginUser } from '../api/auth';
+import { useNavigate } from 'react-router-dom';
+import useAuthStore from '../store/authStore'; // Zustand 스토어 임포트
 
 const LoginForm = () => {
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
+  const [formData, setFormData] = useState({
+    loginId: '',
+    password: '',
+  });
 
-    const handleSubmit = async (e) => {
-        e.preventDefault(); // 폼 기본 제출 동작 방지
-        console.log("전송할 데이터:", { loginId: username, password: password });
-        try {
-            const res = await loginUser({ loginId: username, password });
-            // 응답에서 accessToken, refreshToken 추출
-            if (res.data && res.data.accessToken) {
-                localStorage.setItem("accessToken", res.data.accessToken);
-            }
-            if (res.data && res.data.refreshToken) {
-                localStorage.setItem("refreshToken", res.data.refreshToken);
-            }
-            alert('로그인 완료');
-        } catch (err) {
-            console.error(err);
-            alert('로그인 실패');
+  const [errors, setErrors] = useState({
+    loginId: '',
+    password: '',
+    submit: '',
+  });
+
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+  const { login } = useAuthStore(); // Zustand 스토어의 login 액션 사용
+
+  const validateField = (name, value) => {
+    let message = '';
+    switch (name) {
+      case 'loginId':
+        if (!value) {
+          message = '아이디를 입력해주세요.';
+        } else if (value.length < 4 || value.length > 20) {
+          message = '아이디는 4~20자 이내로 입력해야 합니다.';
+        } else if (!/^[a-zA-Z0-9]+$/.test(value)) {
+          message = '아이디는 영문과 숫자 조합만 가능합니다.';
         }
-    };
+        break;
+      case 'password':
+        if (!value) {
+          message = '비밀번호를 입력해주세요.';
+        } else if (value.length < 8 || value.length > 20) {
+          message = '비밀번호는 8~20자 이내로 입력해야 합니다.';
+        }
+        break;
+      default:
+        break;
+    }
+    return message;
+  };
 
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      [name]: validateField(name, value),
+      submit: '',
+    }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    let formHasErrors = false;
+    const newErrors = {};
+    for (const key in formData) {
+      const message = validateField(key, formData[key]);
+      if (message) {
+        newErrors[key] = message;
+        formHasErrors = true;
+      }
+    }
+
+    if (formHasErrors) {
+      setErrors(newErrors);
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const res = await loginUser({ loginId: formData.loginId, password: formData.password });
+      if (res.data && res.data.accessToken) {
+        // Zustand의 login 액션 호출
+        login(res.data.accessToken, res.data.userName);
+      }
+      alert('로그인 완료!');
+      navigate('/');
+    } catch (err) {
+      console.error(err);
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        submit: '아이디 또는 비밀번호가 일치하지 않습니다.',
+      }));
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const isFormValid = useMemo(() => {
     return (
-        <form onSubmit={handleSubmit}>
-            <TextField
-                label="아이디"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                fullWidth
-                margin="normal"
-            />
-            <TextField
-                label="비밀번호"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                fullWidth
-                margin="normal"
-            />
-            <Button type="submit" variant="contained">
-                로그인
-            </Button>
-        </form>
+      !errors.loginId && !errors.password && formData.loginId !== '' && formData.password !== ''
     );
+  }, [errors.loginId, errors.password, formData.loginId, formData.password]);
+
+  return (
+    <Box component="form" onSubmit={handleSubmit} sx={{ mt: 4 }}>
+      <TextField
+        label="아이디"
+        name="loginId"
+        value={formData.loginId}
+        onChange={handleChange}
+        fullWidth
+        margin="normal"
+        required
+        error={!!errors.loginId}
+        helperText={errors.loginId || '아이디를 입력해주세요.'}
+        FormHelperTextProps={{
+          style: { color: errors.loginId ? 'red' : 'grey' },
+        }}
+      />
+      <TextField
+        label="비밀번호"
+        type="password"
+        name="password"
+        value={formData.password}
+        onChange={handleChange}
+        fullWidth
+        margin="normal"
+        required
+        error={!!errors.password}
+        helperText={errors.password || '비밀번호를 입력해주세요.'}
+        FormHelperTextProps={{
+          style: { color: errors.password ? 'red' : 'grey' },
+        }}
+      />
+      <Button
+        type="submit"
+        variant="contained"
+        fullWidth
+        sx={{ mt: 2 }}
+        disabled={loading || !isFormValid}
+      >
+        {loading ? '로그인 중...' : '로그인'}
+      </Button>
+      {errors.submit && (
+        <Box sx={{ mt: 2, color: 'red' }}>
+          <Typography>{errors.submit}</Typography>
+        </Box>
+      )}
+    </Box>
+  );
 };
 
 export default LoginForm;
