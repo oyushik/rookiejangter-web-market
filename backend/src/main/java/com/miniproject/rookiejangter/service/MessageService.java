@@ -4,10 +4,11 @@ import com.miniproject.rookiejangter.controller.dto.MessageDTO;
 import com.miniproject.rookiejangter.entity.Chat;
 import com.miniproject.rookiejangter.entity.Message;
 import com.miniproject.rookiejangter.entity.User;
+import com.miniproject.rookiejangter.exception.BusinessException;
+import com.miniproject.rookiejangter.exception.ErrorCode;
 import com.miniproject.rookiejangter.repository.ChatRepository;
 import com.miniproject.rookiejangter.repository.MessageRepository;
 import com.miniproject.rookiejangter.repository.UserRepository;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,10 +35,10 @@ public class MessageService {
      */
     public MessageDTO.Response sendMessage(Long chatRoomId, MessageDTO.Request request, Long senderId) {
         Chat chat = chatRepository.findById(chatRoomId)
-                .orElseThrow(() -> new EntityNotFoundException("CHAT_NOT_FOUND"));
+                .orElseThrow(() -> new BusinessException(ErrorCode.CHATROOM_NOT_FOUND, chatRoomId));
 
         User sender = userRepository.findById(senderId)
-                .orElseThrow(() -> new EntityNotFoundException("USER_NOT_FOUND"));
+                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND, senderId));
 
         Message message = Message.builder()
                 .chat(chat)

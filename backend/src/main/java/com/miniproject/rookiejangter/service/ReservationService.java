@@ -4,10 +4,11 @@ import com.miniproject.rookiejangter.controller.dto.ReservationDTO;
 import com.miniproject.rookiejangter.entity.Product;
 import com.miniproject.rookiejangter.entity.Reservation;
 import com.miniproject.rookiejangter.entity.User;
+import com.miniproject.rookiejangter.exception.BusinessException;
+import com.miniproject.rookiejangter.exception.ErrorCode;
 import com.miniproject.rookiejangter.repository.ProductRepository;
 import com.miniproject.rookiejangter.repository.ReservationRepository;
 import com.miniproject.rookiejangter.repository.UserRepository;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,20 +28,20 @@ public class ReservationService {
     @Transactional
     public ReservationDTO.Response createReservation(Long buyerId, Long productId) {
         User buyer = userRepository.findById(buyerId)
-                .orElseThrow(() -> new EntityNotFoundException("구매자를 찾을 수 없습니다: " + buyerId));
+                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND, buyerId));
         Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new EntityNotFoundException("게시글을 찾을 수 없습니다: " + productId));
+                .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_NOT_FOUND, productId));
 
         if (product.getIsCompleted() || (product.getIsReserved() && !product.getUser().getUserId().equals(buyerId))) {
-            throw new IllegalStateException("이미 판매 완료되었거나 다른 사용자에 의해 예약된 게시글입니다.");
+            throw new BusinessException(ErrorCode.PRODUCT_NOT_RESERVABLE, "이미 판매 완료된 상품입니다.");
         }
 
         if (product.getUser().getUserId().equals(buyerId)) {
-            throw new IllegalArgumentException("자신의 게시글은 예약할 수 없습니다.");
+            throw new BusinessException(ErrorCode.CANNOT_RESERVE_OWN_PRODUCT);
         }
 
         if (reservationRepository.existsByBuyer_UserIdAndProduct_ProductId(buyerId, productId)) { //
-            throw new IllegalStateException("이미 해당 게시글에 대한 예약 요청이 존재합니다.");
+            throw new BusinessException(ErrorCode.RESERVATION_ALREADY_EXISTS, String.valueOf(productId));
         }
 
         User seller = product.getUser();
@@ -63,7 +64,7 @@ public class ReservationService {
     @Transactional(readOnly = true)
     public List<ReservationDTO.Response> getReservationsByBuyer(Long buyerId) {
         userRepository.findById(buyerId)
-                .orElseThrow(() -> new EntityNotFoundException("구매자를 찾을 수 없습니다: " + buyerId));
+                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND, buyerId));
         return reservationRepository.findByBuyer_UserId(buyerId).stream() //
                 .map(ReservationDTO.Response::fromEntity)
                 .collect(Collectors.toList());
@@ -72,7 +73,7 @@ public class ReservationService {
     @Transactional(readOnly = true)
     public List<ReservationDTO.Response> getReservationsBySeller(Long sellerId) {
         userRepository.findById(sellerId)
-                .orElseThrow(() -> new EntityNotFoundException("판매자를 찾을 수 없습니다: " + sellerId));
+                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND, sellerId));
         return reservationRepository.findBySeller_UserId(sellerId).stream() //
                 .map(ReservationDTO.Response::fromEntity)
                 .collect(Collectors.toList());
@@ -81,7 +82,7 @@ public class ReservationService {
     @Transactional(readOnly = true)
     public List<ReservationDTO.Response> getReservationsByProduct(Long productId) {
         productRepository.findById(productId)
-                .orElseThrow(() -> new EntityNotFoundException("게시글을 찾을 수 없습니다: " + productId));
+                .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_NOT_FOUND, productId));
         return reservationRepository.findByProduct_ProductId(productId).stream() //
                 .map(ReservationDTO.Response::fromEntity)
                 .collect(Collectors.toList());
@@ -90,7 +91,7 @@ public class ReservationService {
     @Transactional(readOnly = true)
     public ReservationDTO.Response getReservationById(Long reservationId) {
         Reservation reservation = reservationRepository.findById(reservationId)
-                .orElseThrow(() -> new EntityNotFoundException("예약 정보를 찾을 수 없습니다: " + reservationId));
+                .orElseThrow(() -> new BusinessException(ErrorCode.RESERVATION_NOT_FOUND, reservationId));
         return ReservationDTO.Response.fromEntity(reservation);
     }
 
@@ -98,10 +99,10 @@ public class ReservationService {
     @Transactional
     public ReservationDTO.Response updateReservationStatus(Long reservationId, Reservation.TradeStatus newStatus, Long currentUserId) {
         Reservation reservation = reservationRepository.findById(reservationId)
-                .orElseThrow(() -> new EntityNotFoundException("예약 정보를 찾을 수 없습니다: " + reservationId));
+                .orElseThrow(() -> new BusinessException(ErrorCode.RESERVATION_NOT_FOUND, reservationId));
 
         User currentUser = userRepository.findById(currentUserId)
-                .orElseThrow(() -> new EntityNotFoundException("사용자를 찾을 수 없습니다: " + currentUserId));
+                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND, currentUserId));
 
         boolean isSeller = reservation.getSeller().getUserId().equals(currentUserId);
         boolean isBuyer = reservation.getBuyer().getUserId().equals(currentUserId);
@@ -111,7 +112,7 @@ public class ReservationService {
         switch (newStatus) {
             case ACCEPTED:
                 if (!isSeller) {
-                    throw new SecurityException("예약 수락 권한이 없습니다.");
+                    throw new BusinessException(ErrorCode.RESERVATION_ACTION_FORBIDDEN, "수락");
                 }
                 reservation.setStatus(Reservation.TradeStatus.ACCEPTED); //
                 product.setIsReserved(true);
@@ -119,7 +120,7 @@ public class ReservationService {
                 break;
             case DECLINED:
                 if (!isSeller) {
-                    throw new SecurityException("예약 거절 권한이 없습니다.");
+                    throw new BusinessException(ErrorCode.RESERVATION_ACTION_FORBIDDEN, "거절");
                 }
                 reservation.setStatus(Reservation.TradeStatus.DECLINED); //
                 product.setIsReserved(false);
@@ -127,7 +128,7 @@ public class ReservationService {
                 break;
             case CANCELLED:
                 if (!isBuyer && !isSeller) {
-                    throw new SecurityException("예약 취소 권한이 없습니다.");
+                    throw new BusinessException(ErrorCode.RESERVATION_ACTION_FORBIDDEN, "취소");
                 }
                 // 구매자는 REQUESTED 또는 ACCEPTED 상태에서 취소 가능
                 // 판매자는 ACCEPTED 상태에서 취소 가능 (구매자와 합의 하에)
@@ -138,17 +139,17 @@ public class ReservationService {
                     reservation.setStatus(Reservation.TradeStatus.CANCELLED); //
                     reservation.setIsCanceled(true); //
                 } else {
-                    throw new IllegalStateException("현재 상태에서는 예약을 취소할 수 없습니다.");
+                    throw new BusinessException(ErrorCode.RESERVATION_INVALID_STATE_FOR_ACTION, currentUser.getUserId(), "취소");
                 }
                 product.setIsReserved(false);
                 productRepository.save(product);
                 break;
             case COMPLETED:
                 if (!isSeller) {
-                    throw new SecurityException("거래 완료 처리 권한이 없습니다.");
+                    throw new BusinessException(ErrorCode.RESERVATION_ACTION_FORBIDDEN, "완료");
                 }
                 if (reservation.getStatus() != Reservation.TradeStatus.ACCEPTED) {
-                    throw new IllegalStateException("수락된 예약만 완료 처리할 수 있습니다.");
+                    throw new BusinessException(ErrorCode.RESERVATION_INVALID_STATE_FOR_ACTION, currentUser.getUserId(), "완료");
                 }
                 reservation.setStatus(Reservation.TradeStatus.COMPLETED); //
                 product.setIsCompleted(true);
@@ -157,7 +158,7 @@ public class ReservationService {
                 // 여기에 CompleteService를 호출하여 거래 완료 기록 생성 로직 추가 가능
                 break;
             default:
-                throw new IllegalArgumentException("유효하지 않은 상태 변경 요청입니다: " + newStatus);
+                throw new BusinessException(ErrorCode.RESERVATION_INVALID_STATUS_TRANSITION, newStatus.name());
         }
 
         Reservation updatedReservation = reservationRepository.save(reservation);
@@ -167,15 +168,15 @@ public class ReservationService {
     @Transactional
     public void deleteReservation(Long reservationId, Long currentUserId) {
         Reservation reservation = reservationRepository.findById(reservationId)
-                .orElseThrow(() -> new EntityNotFoundException("예약 정보를 찾을 수 없습니다: " + reservationId));
+                .orElseThrow(() -> new BusinessException(ErrorCode.RESERVATION_NOT_FOUND, reservationId));
 
         User currentUser = userRepository.findById(currentUserId)
-                .orElseThrow(() -> new EntityNotFoundException("사용자를 찾을 수 없습니다: " + currentUserId));
+                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND, currentUserId));
 
         boolean isBuyer = reservation.getBuyer().getUserId().equals(currentUserId);
 
         if (!isBuyer) {
-            throw new SecurityException("예약 기록 삭제 권한이 없습니다. 본인이 요청한 예약만 삭제할 수 있습니다.");
+            throw new BusinessException(ErrorCode.RESERVATION_DELETE_CONDITIONS_NOT_MET, "본인이 요청한 예약이 아닙니다.");
         }
 
         // 일반적으로 예약 기록은 soft delete 하거나 상태 변경으로 관리하지만, 물리적 삭제가 필요하다면 아래 로직 사용
@@ -190,7 +191,7 @@ public class ReservationService {
             }
             reservationRepository.delete(reservation);
         } else {
-            throw new IllegalStateException("현재 상태의 예약은 삭제할 수 없습니다. 취소 후 시도해주세요.");
+            throw new BusinessException(ErrorCode.RESERVATION_DELETE_CONDITIONS_NOT_MET, "현재 상태(" + reservation.getStatus() + ")의 예약은 삭제할 수 없습니다.");
         }
     }
 }

@@ -3,9 +3,10 @@ package com.miniproject.rookiejangter.service;
 import com.miniproject.rookiejangter.controller.dto.ImageDTO;
 import com.miniproject.rookiejangter.entity.Image;
 import com.miniproject.rookiejangter.entity.Product;
+import com.miniproject.rookiejangter.exception.BusinessException;
+import com.miniproject.rookiejangter.exception.ErrorCode;
 import com.miniproject.rookiejangter.repository.ImageRepository;
 import com.miniproject.rookiejangter.repository.ProductRepository;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,7 +24,7 @@ public class ImageService {
     @Transactional
     public ImageDTO.Response createImage(Long productId, String imageUrl) {
         Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new EntityNotFoundException("게시글을 찾을 수 없습니다: " + productId));
+                .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_NOT_FOUND, productId));
 
         Image image = Image.builder()
                 .product(product)
@@ -36,7 +37,7 @@ public class ImageService {
     @Transactional(readOnly = true)
     public List<ImageDTO.Response> getImagesByProductId(Long productId) {
         if (!productRepository.existsById(productId)) {
-            throw new EntityNotFoundException("게시글을 찾을 수 없습니다: " + productId);
+            throw new BusinessException(ErrorCode.PRODUCT_NOT_FOUND, productId);
         }
         return imageRepository.findByProduct_ProductId(productId).stream()
                 .map(ImageDTO.Response::fromEntity)
@@ -46,14 +47,14 @@ public class ImageService {
     @Transactional
     public void deleteImage(Long imageId) {
         Image image = imageRepository.findById(imageId)
-                .orElseThrow(() -> new EntityNotFoundException("이미지를 찾을 수 없습니다: " + imageId));
+                .orElseThrow(() -> new BusinessException(ErrorCode.IMAGE_NOT_FOUND, imageId));
         imageRepository.delete(image);
     }
 
     @Transactional
     public void deleteImagesByProductId(Long productId) {
         if (!productRepository.existsById(productId)) {
-            throw new EntityNotFoundException("게시글을 찾을 수 없습니다: " + productId);
+            throw new BusinessException(ErrorCode.PRODUCT_NOT_FOUND, productId);
         }
         List<Image> images = imageRepository.findByProduct_ProductId(productId);
         imageRepository.deleteAll(images);
