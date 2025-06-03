@@ -253,7 +253,7 @@ const SignUpForm = ({ defaultName, defaultPhone }) => {
         >
           {areas.map((area) => (
             <MenuItem key={area?.areaId} value={area?.areaId}>
-              {area?.areaName}
+              <Typography align="left">{area?.areaName}</Typography>
             </MenuItem>
           ))}
         </Select>
