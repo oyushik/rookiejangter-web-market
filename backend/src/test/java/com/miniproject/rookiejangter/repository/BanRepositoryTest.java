@@ -41,6 +41,7 @@ public class BanRepositoryTest {
                 .isBanned(true)
                 .build();
         entityManager.persist(bannedUser1);
+        entityManager.flush();
 
         bannedUser2 = User.builder()
                 .userName("밴대상2")
@@ -50,6 +51,7 @@ public class BanRepositoryTest {
                 .isBanned(true)
                 .build();
         entityManager.persist(bannedUser2);
+        entityManager.flush();
 
         report1 = Report.builder()
                 .targetId(bannedUser1.getUserId())
@@ -57,6 +59,7 @@ public class BanRepositoryTest {
                 .isProcessed(true)
                 .build();
         entityManager.persist(report1);
+        entityManager.flush();
 
         report2 = Report.builder()
                 .targetId(bannedUser2.getUserId())
@@ -72,6 +75,7 @@ public class BanRepositoryTest {
                 .banReason("부적절한 활동")
                 .build();
         entityManager.persist(ban1);
+        entityManager.flush();
 
         ban2 = Ban.builder()
                 .user(bannedUser2)

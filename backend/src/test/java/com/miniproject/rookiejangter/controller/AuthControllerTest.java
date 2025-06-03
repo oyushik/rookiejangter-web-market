@@ -63,7 +63,7 @@ class AuthControllerTest {
         signUpRequest.setLoginId("testuser");
         signUpRequest.setPassword("Password123!");
         signUpRequest.setUserName("TestUser");
-        signUpRequest.setAreaId(1L);
+        signUpRequest.setAreaId(1);
         signUpRequest.setPhone("010-1234-5678");
 
         loginRequest = new UserDTO.LoginRequest();

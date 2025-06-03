@@ -1,9 +1,6 @@
 package com.miniproject.rookiejangter.repository;
 
-import com.miniproject.rookiejangter.entity.Complete;
-import com.miniproject.rookiejangter.entity.Product;
-import com.miniproject.rookiejangter.entity.Review;
-import com.miniproject.rookiejangter.entity.User;
+import com.miniproject.rookiejangter.entity.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,87 +21,108 @@ public class ReviewRepositoryTest {
     @Autowired
     private ReviewRepository reviewRepository;
 
+    private Category category;
     private Product product1;
     private Product product2;
     private Complete complete1;
     private Complete complete2;
-    private User user1;
-    private User user2;
-    private User user3;
+    private User buyer;
+    private User seller1;
+    private User seller2;
     private Review review1;
     private Review review2;
 
     @BeforeEach
     public void setUp() {
-        user1 = User.builder()
+        category = Category.builder()
+                .categoryName("Test Category")
+                .build();
+        entityManager.persist(category);
+        entityManager.flush();
+
+        buyer = User.builder()
                 .loginId("testuser1")
                 .password("password")
                 .userName("Test User1")
                 .phone("010-1234-5678")
                 .build();
-        entityManager.persist(user1);
+        entityManager.persist(buyer);
+        entityManager.flush();
 
-        user2 = User.builder()
+        seller1 = User.builder()
                 .loginId("testuser2")
                 .password("password")
                 .userName("Test User2")
                 .phone("010-3434-3434")
                 .build();
-        entityManager.persist(user2);
+        entityManager.persist(seller1);
+        entityManager.flush();
 
-        user3 = User.builder()
+        seller2 = User.builder()
                 .loginId("testuser3")
                 .password("password")
                 .userName("Test User3")
                 .phone("010-5656-5656")
                 .build();
-        entityManager.persist(user3);
+        entityManager.persist(seller2);
+        entityManager.flush();
 
         product1 = Product.builder()
+                .category(category)
+                .user(seller1)
                 .title("test title1")
                 .content("test content1")
                 .price(10000)
                 .build();
+        entityManager.persist(product1);
+        entityManager.flush();
 
         product2 = Product.builder()
+                .category(category)
+                .user(seller2)
                 .title("test title2")
                 .content("test content2")
                 .price(10000)
                 .build();
+        entityManager.persist(product2);
+        entityManager.flush();
 
         complete1 = Complete.builder()
                 .product(product1)
-                .buyer(user1)
-                .seller(user2)
+                .buyer(buyer)
+                .seller(seller1)
                 .build();
         entityManager.persist(complete1);
+        entityManager.flush();
 
         complete2 = Complete.builder()
                 .product(product2)
-                .buyer(user1)
-                .seller(user3)
+                .buyer(buyer)
+                .seller(seller2)
                 .build();
         entityManager.persist(complete2);
+        entityManager.flush();
 
         review1 = Review.builder()
                 .complete(complete1)
-                .buyer(user1)
-                .seller(user2)
+                .buyer(buyer)
+                .seller(seller1)
                 .rating(5)
                 .content("Excellent service!")
                 .build();
         entityManager.persist(review1);
+        entityManager.flush();
 
         review2 = Review.builder()
                 .complete(complete2)
-                .buyer(user1)
-                .seller(user3)
+                .buyer(buyer)
+                .seller(seller2)
                 .rating(4)
                 .content("Good product.")
                 .build();
         entityManager.persist(review2);
-
         entityManager.flush();
+
     }
 
     @Test
@@ -121,13 +139,13 @@ public class ReviewRepositoryTest {
 
     @Test
     public void findByBuyer_UserId() {
-        List<Review> foundReviews = reviewRepository.findByBuyer_UserId(user1.getUserId());
+        List<Review> foundReviews = reviewRepository.findByBuyer_UserId(buyer.getUserId());
         assertThat(foundReviews).hasSize(2).contains(review1, review2);
     }
 
     @Test
     public void findBySeller_UserId() {
-        List<Review> foundReviews = reviewRepository.findBySeller_UserId(user2.getUserId());
+        List<Review> foundReviews = reviewRepository.findBySeller_UserId(seller1.getUserId());
         assertThat(foundReviews).hasSize(1).contains(review1);
     }
 

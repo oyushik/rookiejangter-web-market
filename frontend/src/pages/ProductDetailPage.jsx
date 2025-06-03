@@ -1,25 +1,25 @@
-import { useParams, useNavigate } from "react-router-dom";
-import { products } from "../constants/ExpProductDB"; //예시 데이터베이스
+import { useParams, useNavigate } from 'react-router-dom';
+import { products } from '../constants/ExpProductDB'; //예시 데이터베이스
 // import axios from "axios";
-import { Box, Typography, Divider, Grid } from "@mui/material";
-import NotFound from "../err/NotFound";
-import { FormatTime } from "../utils/FormatTime";
-import React, { useState, useEffect } from "react";
-import ProductsList from "../components/ProductsList";
-import ProductImageSlider from "../components/ProductImageSlider";
-import ProductActions from "../components/ProductActions";
+import { Box, Typography, Divider, Grid } from '@mui/material';
+import NotFound from '../err/NotFound';
+import { FormatTime } from '../utils/FormatTime';
+import React, { useState, useEffect } from 'react';
+import ProductsList from '../components/ProductsList';
+import ProductImageSlider from '../components/ProductImageSlider';
+import ProductActions from '../components/ProductActions';
 
 const ProductDetailPage = () => {
   const { product_id } = useParams();
   const navigate = useNavigate();
-  const product = products.find(p => String(p.id) === String(product_id)); // 백엔드 연동 시 삭제
+  const product = products.find((p) => String(p.id) === String(product_id)); // 백엔드 연동 시 삭제
   // const [product, setProduct] = useState(null);
   const [imgIdx, setImgIdx] = useState(0);
 
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
-  // 백엔드 연결 시 아래 코드 사용용
+  // 백엔드 연결 시 아래 코드 사용
   // useEffect(() => {
   //   window.scrollTo(0, 0);
   //   // 백엔드에서 상품 정보 가져오기
@@ -46,22 +46,18 @@ const ProductDetailPage = () => {
 
   // 비슷한 상품 리스트 (같은 카테고리, 자기 자신 제외, 최근순 정렬, 5개 제한)
   const similarProducts = products
-    .filter(
-      p =>
-        p.category === product.category &&
-        p.id !== product.id
-    )
+    .filter((p) => p.category === product.category && p.id !== product.id)
     .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
     .slice(0, 5);
 
   const handlePrev = (e) => {
     e.stopPropagation();
-    setImgIdx(idx => idx > 0 ? idx - 1 : idx);
+    setImgIdx((idx) => (idx > 0 ? idx - 1 : idx));
   };
 
   const handleNext = (e) => {
     e.stopPropagation();
-    setImgIdx(idx => idx < images.length - 1 ? idx + 1 : idx);
+    setImgIdx((idx) => (idx < images.length - 1 ? idx + 1 : idx));
   };
 
   const handleReport = () => {
@@ -80,7 +76,7 @@ const ProductDetailPage = () => {
               alignItems: 'flex-start',
               gap: 4,
               minHeight: 400,
-              position: 'relative'
+              position: 'relative',
             }}
           >
             {/* 왼쪽: 이미지 영역 (컴포넌트 분리) */}
@@ -93,8 +89,13 @@ const ProductDetailPage = () => {
             />
             {/* 오른쪽: 상세 정보 */}
             <Box sx={{ flex: 1, textAlign: 'left', display: 'flex', flexDirection: 'column' }}>
-              <Typography variant="h4" sx={{ mb: 2 }}>{product.title}</Typography>
-              <Typography variant="subtitle1" sx={{ mb: 1, color: '#777', display: 'flex', alignItems: 'center', gap: 2 }}>
+              <Typography variant="h4" sx={{ mb: 2 }}>
+                {product.title}
+              </Typography>
+              <Typography
+                variant="subtitle1"
+                sx={{ mb: 1, color: '#777', display: 'flex', alignItems: 'center', gap: 2 }}
+              >
                 카테고리: {product.category}
                 <Divider orientation="vertical" flexItem sx={{ mx: 2 }} />
                 상태: {product.status}
@@ -106,7 +107,7 @@ const ProductDetailPage = () => {
                 {product.price.toLocaleString()}원
               </Typography>
               <Typography variant="subtitle2" sx={{ mb: 1 }}>
-                지역: {product.area || "지역정보 없음"}
+                지역: {product.area || '지역정보 없음'}
               </Typography>
             </Box>
             {/* 버튼 영역: 컴포넌트 분리 */}
@@ -122,12 +123,12 @@ const ProductDetailPage = () => {
             </Typography>
             <ProductsList
               products={similarProducts}
-              onProductClick={id => navigate(`/products/${id}`)}
+              onProductClick={(id) => navigate(`/products/${id}`)}
               formatTime={FormatTime}
             />
           </Box>
           <Box>
-            <Divider sx={{ mb: 2, width: 1120 , bgcolor: 'black' }} />
+            <Divider sx={{ mb: 2, width: 1120, bgcolor: 'black' }} />
             <Box sx={{ display: 'flex', gap: 4, alignItems: 'flex-start' }}>
               {/* 상품정보 */}
               <Box sx={{ flex: 2 }}>
@@ -140,16 +141,18 @@ const ProductDetailPage = () => {
                 </Typography>
               </Box>
               {/* 판매자 정보 */}
-              <Box sx={{
-                flex: 1,
-                minWidth: 280,
-                maxWidth: 340,
-                bgcolor: '#fff',
-                borderRadius: 2,
-                boxShadow: 1,
-                p: 3,
-                border: '1px solid #eee'
-              }}>
+              <Box
+                sx={{
+                  flex: 1,
+                  minWidth: 280,
+                  maxWidth: 340,
+                  bgcolor: '#fff',
+                  borderRadius: 2,
+                  boxShadow: 1,
+                  p: 3,
+                  border: '1px solid #eee',
+                }}
+              >
                 <Typography variant="h6" sx={{ fontWeight: 700, mb: 2 }}>
                   판매자 정보
                 </Typography>
@@ -163,9 +166,7 @@ const ProductDetailPage = () => {
                   <Typography sx={{ fontWeight: 600 }}>
                     {product.seller?.name || '판매자명'}
                   </Typography>
-                  <Typography sx={{ color: '#888', fontSize: 14 }}>
-                    평균 평점 | -
-                  </Typography>
+                  <Typography sx={{ color: '#888', fontSize: 14 }}>평균 평점 | -</Typography>
                   <button
                     style={{
                       marginTop: 40,
@@ -175,7 +176,7 @@ const ProductDetailPage = () => {
                       background: '#fff',
                       color: '#EA002C',
                       cursor: 'pointer',
-                      fontWeight: 600
+                      fontWeight: 600,
                     }}
                     onClick={handleReport}
                   >

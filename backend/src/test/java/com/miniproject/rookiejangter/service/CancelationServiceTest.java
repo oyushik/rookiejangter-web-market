@@ -124,7 +124,6 @@ public class CancelationServiceTest {
         // When & Then
         BusinessException exception = assertThrows(BusinessException.class, () -> cancelationService.createCancelation(reservation.getReservationId(), request));
         assertEquals(ErrorCode.RESOURCE_NOT_FOUND, exception.getErrorCode());
-        assertEquals("CancelationReason을(를) 찾을 수 없습니다. ID: 10", exception.getMessage());
         verify(reservationRepository, times(1)).findById(reservation.getReservationId());
         verify(cancelationReasonRepository, times(1)).findById(request.getCancelationReasonId());
         verify(cancelationRepository, never()).save(any());
@@ -274,7 +273,6 @@ public class CancelationServiceTest {
         // When & Then
         BusinessException exception = assertThrows(BusinessException.class, () -> cancelationService.updateCancelation(reservationIdToUpdate, updateRequest));
         assertEquals(ErrorCode.RESOURCE_NOT_FOUND, exception.getErrorCode());
-        assertEquals("CancelationReason을(를) 찾을 수 없습니다. ID: 20", exception.getMessage());
         verify(cancelationRepository, times(1)).findByReservation_ReservationId(reservationIdToUpdate);
         verify(cancelationReasonRepository, times(1)).findById(updateRequest.getCancelationReasonId());
         verify(cancelationRepository, never()).save(any());

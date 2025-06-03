@@ -1,16 +1,15 @@
 import { Typography, Box, Button } from '@mui/material';
-import { products as allProducts } from "../constants/ExpProductDB"; //예시 데이터베이스
-import { useEffect /*, useState*/ } from "react"; // 백엔드 연동 시 필요
+import { products as allProducts } from '../constants/ExpProductDB'; //예시 데이터베이스
+import { useEffect /*, useState*/ } from 'react'; // 백엔드 연동 시 필요
 // import axios from "axios"; // 백엔드 연동 시 필요
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from 'react-router-dom';
 import { FilterProducts } from '../utils/FilterProducts';
 import { FormatTime } from '../utils/FormatTime';
 import ProductsList from '../components/ProductsList';
 import PaginationBar from '../components/PaginationBar';
 
-
 const ProductsPage = () => {
-  // 백엔드 연동 시 아래 코드 활성화화
+  // 백엔드 연동 시 아래 코드 활성화
   // const [allProducts, setAllProducts] = useState([]);
   // useEffect(() => {
   //   axios.get("/api/products")
@@ -36,14 +35,19 @@ const ProductsPage = () => {
   const size = Number(params.get('size'));
 
   // 필터링: status가 SALE이고, 파라미터와 일치하는 값만
-  const filteredProducts = FilterProducts( allProducts,
-    { keyword, area, category, minPrice, maxPrice });
+  const filteredProducts = FilterProducts(allProducts, {
+    keyword,
+    area,
+    category,
+    minPrice,
+    maxPrice,
+  });
 
   // createdAt 기준 내림차순 정렬
-  const sortedProducts = filteredProducts.slice().sort(
-    (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-  );
-  console.log(sortedProducts.map(p => p.createdAt));
+  const sortedProducts = filteredProducts
+    .slice()
+    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+  console.log(sortedProducts.map((p) => p.createdAt));
 
   // 페이지네이션 적용
   const pagedProducts = sortedProducts.slice(page * size, (page + 1) * size);
@@ -58,19 +62,26 @@ const ProductsPage = () => {
 
   return (
     <Box sx={{ p: 0, pb: 10 }}>
-        <Box
-          sx={{
-            display: 'flex',
-            justifyContent: 'center',
-            width: 1200,
-            mx: 1,
-            p: 5,
-            position: 'relative',
-          }}
-        >
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'center',
+          width: 1200,
+          mx: 1,
+          p: 5,
+          position: 'relative',
+        }}
+      >
         {pagedProducts.length === 0 ? (
-          <Box sx={{ width: '100%', py: 10, display: 'flex', justifyContent: 'center',
-           alignItems: 'center' }}>
+          <Box
+            sx={{
+              width: '100%',
+              py: 10,
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}
+          >
             <Typography variant="h6" color="text.secondary">
               해당하는 상품을 찾을 수 없습니다.
             </Typography>

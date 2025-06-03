@@ -42,11 +42,12 @@ public class UserService {
         }
 
 
-//        Area area = areaRepository.findById(requestDto.getAreaId().intValue())        .orElseThrow(() -> new EntityNotFoundException("해당 지역을 찾을 수 없습니다: " + requestDto.getAreaId()));
+        Area area = areaRepository.findById(requestDto.getAreaId().intValue())
+                .orElseThrow(() -> new EntityNotFoundException("해당 지역을 찾을 수 없습니다: " + requestDto.getAreaId()));
         // (테스트)
-        Area area = new Area();
-        area.setAreaName("서울 특별시");
-        areaRepository.save(area);
+//        Area area = new Area();
+//        area.setAreaName("서울 특별시");
+//        areaRepository.save(area);
 
         User user = User.builder()
                 .loginId(requestDto.getLoginId())
