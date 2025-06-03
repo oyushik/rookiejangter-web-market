@@ -90,7 +90,9 @@ public class ChatServiceTest {
         when(productRepository.findById(1L)).thenReturn(Optional.empty());
 
         // When & Then
-        assertThrows(BusinessException.class, () -> chatService.createChat(request));
+        BusinessException exception = assertThrows(BusinessException.class, () -> chatService.createChat(request));
+        assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.PRODUCT_NOT_FOUND);
+        assertThat(exception.getMessage()).isEqualTo(ErrorCode.PRODUCT_NOT_FOUND.formatMessage(1L));
         verify(productRepository, times(1)).findById(1L);
         verify(userRepository, never()).findById(anyLong());
         verify(chatRepository, never()).save(any());
@@ -109,10 +111,11 @@ public class ChatServiceTest {
         when(userRepository.findById(2L)).thenReturn(Optional.empty());
 
         // When & Then
-        assertThrows(BusinessException.class, () -> chatService.createChat(request));
+        BusinessException exception = assertThrows(BusinessException.class, () -> chatService.createChat(request));
+        assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.USER_NOT_FOUND);
+        assertThat(exception.getMessage()).isEqualTo(ErrorCode.USER_NOT_FOUND.formatMessage(2L));
         verify(productRepository, times(1)).findById(1L);
         verify(userRepository, times(1)).findById(2L);
-        verify(userRepository, times(1)).findById(1L); // Seller 조회도 호출됨
         verify(chatRepository, never()).save(any());
     }
 
@@ -151,7 +154,9 @@ public class ChatServiceTest {
         when(chatRepository.findById(chatRoomId)).thenReturn(Optional.empty());
 
         // When & Then
-        assertThrows(BusinessException.class, () -> chatService.getChatById(chatRoomId));
+        BusinessException exception = assertThrows(BusinessException.class, () -> chatService.getChatById(chatRoomId));
+        assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.CHATROOM_NOT_FOUND);
+        assertThat(exception.getMessage()).isEqualTo(ErrorCode.CHATROOM_NOT_FOUND.formatMessage(chatRoomId));
         verify(chatRepository, times(1)).findById(chatRoomId);
     }
 

@@ -2,6 +2,8 @@ package com.miniproject.rookiejangter.service;
 
 import com.miniproject.rookiejangter.controller.dto.AreaDTO;
 import com.miniproject.rookiejangter.entity.Area;
+import com.miniproject.rookiejangter.exception.BusinessException;
+import com.miniproject.rookiejangter.exception.ErrorCode;
 import com.miniproject.rookiejangter.repository.AreaRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -29,7 +31,7 @@ public class AreaService {
     @Transactional(readOnly = true)
     public AreaDTO.Response getAreaById(Integer areaId) {
         Area area = areaRepository.findById(areaId)
-                .orElseThrow(() -> new EntityNotFoundException("ID에 해당하는 지역을 찾을 수 없습니다: " + areaId));
+                .orElseThrow(() -> new BusinessException(ErrorCode.AREA_NOT_FOUND, areaId));
         return AreaDTO.Response.fromEntity(area);
     }
 
@@ -43,7 +45,7 @@ public class AreaService {
     @Transactional
     public AreaDTO.Response updateArea(Integer areaId, String newAreaName) {
         Area area = areaRepository.findById(areaId)
-                .orElseThrow(() -> new EntityNotFoundException("ID에 해당하는 지역을 찾을 수 없습니다: " + areaId));
+                .orElseThrow(() -> new BusinessException(ErrorCode.AREA_NOT_FOUND, areaId));
 
         area.setAreaName(newAreaName);
         Area updatedArea = areaRepository.save(area);
@@ -53,7 +55,7 @@ public class AreaService {
     @Transactional
     public void deleteArea(Integer areaId) {
         Area area = areaRepository.findById(areaId)
-                .orElseThrow(() -> new EntityNotFoundException("ID에 해당하는 지역을 찾을 수 없습니다: " + areaId));
+                .orElseThrow(() -> new BusinessException(ErrorCode.AREA_NOT_FOUND, areaId));
         areaRepository.delete(area);
     }
 }

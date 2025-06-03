@@ -2,8 +2,9 @@ package com.miniproject.rookiejangter.service;
 
 import com.miniproject.rookiejangter.controller.dto.AreaDTO;
 import com.miniproject.rookiejangter.entity.Area;
+import com.miniproject.rookiejangter.exception.BusinessException;
+import com.miniproject.rookiejangter.exception.ErrorCode;
 import com.miniproject.rookiejangter.repository.AreaRepository;
-import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -72,14 +73,16 @@ public class AreaServiceTest {
     }
 
     @Test
-    @DisplayName("ID로 지역 조회 실패 테스트 (EntityNotFoundException 발생)")
+    @DisplayName("ID로 지역 조회 실패 테스트 (BusinessException 발생)")
     void getAreaByIdNotFoundTest() {
         // Given
         Integer invalidAreaId = 999;
         when(areaRepository.findById(invalidAreaId)).thenReturn(Optional.empty());
 
         // When & Then
-        assertThrows(EntityNotFoundException.class, () -> areaService.getAreaById(invalidAreaId));
+        BusinessException exception = assertThrows(BusinessException.class, () -> areaService.getAreaById(invalidAreaId));
+        assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.AREA_NOT_FOUND);
+        assertThat(exception.getMessage()).isEqualTo(ErrorCode.AREA_NOT_FOUND.formatMessage(invalidAreaId));
         verify(areaRepository, times(1)).findById(invalidAreaId);
     }
 
@@ -132,7 +135,7 @@ public class AreaServiceTest {
     }
 
     @Test
-    @DisplayName("지역 정보 수정 실패 테스트 (EntityNotFoundException 발생)")
+    @DisplayName("지역 정보 수정 실패 테스트 (BusinessException 발생)")
     void updateAreaNotFoundTest() {
         // Given
         Integer invalidAreaId = 999;
@@ -140,7 +143,9 @@ public class AreaServiceTest {
         when(areaRepository.findById(invalidAreaId)).thenReturn(Optional.empty());
 
         // When & Then
-        assertThrows(EntityNotFoundException.class, () -> areaService.updateArea(invalidAreaId, newAreaName));
+        BusinessException exception = assertThrows(BusinessException.class, () -> areaService.updateArea(invalidAreaId, newAreaName));
+        assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.AREA_NOT_FOUND);
+        assertThat(exception.getMessage()).isEqualTo(ErrorCode.AREA_NOT_FOUND.formatMessage(invalidAreaId));
         verify(areaRepository, times(1)).findById(invalidAreaId);
         verify(areaRepository, never()).save(any(Area.class));
     }
@@ -166,14 +171,16 @@ public class AreaServiceTest {
     }
 
     @Test
-    @DisplayName("지역 삭제 실패 테스트 (EntityNotFoundException 발생)")
+    @DisplayName("지역 삭제 실패 테스트 (BusinessException 발생)")
     void deleteAreaNotFoundTest() {
         // Given
         Integer invalidAreaId = 999;
         when(areaRepository.findById(invalidAreaId)).thenReturn(Optional.empty());
 
         // When & Then
-        assertThrows(EntityNotFoundException.class, () -> areaService.deleteArea(invalidAreaId));
+        BusinessException exception = assertThrows(BusinessException.class, () -> areaService.deleteArea(invalidAreaId));
+        assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.AREA_NOT_FOUND);
+        assertThat(exception.getMessage()).isEqualTo(ErrorCode.AREA_NOT_FOUND.formatMessage(invalidAreaId));
         verify(areaRepository, times(1)).findById(invalidAreaId);
         verify(areaRepository, never()).delete(any());
     }

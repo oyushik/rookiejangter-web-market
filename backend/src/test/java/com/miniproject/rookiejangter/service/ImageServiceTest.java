@@ -3,9 +3,10 @@ package com.miniproject.rookiejangter.service;
 import com.miniproject.rookiejangter.controller.dto.ImageDTO;
 import com.miniproject.rookiejangter.entity.Image;
 import com.miniproject.rookiejangter.entity.Product;
+import com.miniproject.rookiejangter.exception.BusinessException;
+import com.miniproject.rookiejangter.exception.ErrorCode;
 import com.miniproject.rookiejangter.repository.ImageRepository;
 import com.miniproject.rookiejangter.repository.ProductRepository;
-import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -70,7 +71,9 @@ public class ImageServiceTest {
         when(productRepository.findById(productId)).thenReturn(Optional.empty());
 
         // When & Then
-        assertThrows(EntityNotFoundException.class, () -> imageService.createImage(productId, imageUrl));
+        BusinessException exception = assertThrows(BusinessException.class, () -> imageService.createImage(productId, imageUrl));
+        assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.PRODUCT_NOT_FOUND);
+        assertThat(exception.getMessage()).isEqualTo(ErrorCode.PRODUCT_NOT_FOUND.formatMessage(productId));
         verify(productRepository, times(1)).findById(productId);
         verify(imageRepository, never()).save(any(Image.class));
     }
@@ -109,7 +112,9 @@ public class ImageServiceTest {
         when(productRepository.existsById(productId)).thenReturn(false);
 
         // When & Then
-        assertThrows(EntityNotFoundException.class, () -> imageService.getImagesByProductId(productId));
+        BusinessException exception = assertThrows(BusinessException.class, () -> imageService.getImagesByProductId(productId));
+        assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.PRODUCT_NOT_FOUND);
+        assertThat(exception.getMessage()).isEqualTo(ErrorCode.PRODUCT_NOT_FOUND.formatMessage(productId));
         verify(productRepository, times(1)).existsById(productId);
         verify(imageRepository, never()).findByProduct_ProductId(anyLong());
     }
@@ -139,7 +144,9 @@ public class ImageServiceTest {
         when(imageRepository.findById(invalidImageId)).thenReturn(Optional.empty());
 
         // When & Then
-        assertThrows(EntityNotFoundException.class, () -> imageService.deleteImage(invalidImageId));
+        BusinessException exception = assertThrows(BusinessException.class, () -> imageService.deleteImage(invalidImageId));
+        assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.IMAGE_NOT_FOUND);
+        assertThat(exception.getMessage()).isEqualTo(ErrorCode.IMAGE_NOT_FOUND.formatMessage(invalidImageId));
         verify(imageRepository, times(1)).findById(invalidImageId);
         verify(imageRepository, never()).delete(any());
     }
@@ -175,7 +182,9 @@ public class ImageServiceTest {
         when(productRepository.existsById(productId)).thenReturn(false);
 
         // When & Then
-        assertThrows(EntityNotFoundException.class, () -> imageService.deleteImagesByProductId(productId));
+        BusinessException exception = assertThrows(BusinessException.class, () -> imageService.deleteImagesByProductId(productId));
+        assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.PRODUCT_NOT_FOUND);
+        assertThat(exception.getMessage()).isEqualTo(ErrorCode.PRODUCT_NOT_FOUND.formatMessage(productId));
         verify(productRepository, times(1)).existsById(productId);
         verify(imageRepository, never()).findByProduct_ProductId(anyLong());
         verify(imageRepository, never()).deleteAll(any());
