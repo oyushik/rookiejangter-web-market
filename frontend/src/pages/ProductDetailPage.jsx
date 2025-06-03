@@ -1,5 +1,6 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { products } from "../constants/ExpProductDB"; //예시 데이터베이스
+// import axios from "axios";
 import { Box, Typography, Divider, Grid } from "@mui/material";
 import NotFound from "../err/NotFound";
 import { FormatTime } from "../utils/FormatTime";
@@ -11,12 +12,31 @@ import ProductActions from "../components/ProductActions";
 const ProductDetailPage = () => {
   const { product_id } = useParams();
   const navigate = useNavigate();
-  const product = products.find(p => String(p.id) === String(product_id));
+  const product = products.find(p => String(p.id) === String(product_id)); // 백엔드 연동 시 삭제
+  // const [product, setProduct] = useState(null);
   const [imgIdx, setImgIdx] = useState(0);
 
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
+  // 백엔드 연결 시 아래 코드 사용용
+  // useEffect(() => {
+  //   window.scrollTo(0, 0);
+  //   // 백엔드에서 상품 정보 가져오기
+  //   axios.get(`/api/products/${product_id}`)
+  //     .then(res => {
+  //       setProduct(res.data.data); // 백엔드 응답 구조에 따라 조정
+  //       setLoading(false);
+  //     })
+  //     .catch(err => {
+  //       setLoading(false);
+  //       if (err.response && err.response.status === 404) {
+  //         navigate("/err/NotFound");
+  //       }
+  //     });
+  // }, [product_id, navigate]);
+
+  // if (loading) return <div>로딩 중...</div>;
 
   if (!product) {
     return <NotFound />;

@@ -1,5 +1,5 @@
 import React from 'react';
-import PriceInput from './PriceInput';
+import { PriceInput } from '../utils/PriceInput';
 
 const PriceToggleButton = ({
   showPriceInputs,
@@ -47,16 +47,20 @@ const PriceToggleButton = ({
         zIndex: 10,
         boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
       }}>
-        <PriceInput
+        <input
+          type="text"
           value={minPrice}
-          onChange={setMinPrice}
+          onChange={e => setMinPrice(PriceInput(e.target.value))}
           placeholder="최소 가격"
+          style={{ width: 120, height: 30, border: 'solid 1px', borderRadius: 5 }}
         />
         ~
-        <PriceInput
+        <input
+          type="text"
           value={maxPrice}
-          onChange={setMaxPrice}
+          onChange={e => setMaxPrice(PriceInput(e.target.value))}
           placeholder="최대 가격"
+          style={{ width: 120, height: 30, border: 'solid 1px', borderRadius: 5 }}
         />
       </div>
     )}

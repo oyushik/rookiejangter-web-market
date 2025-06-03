@@ -10,7 +10,14 @@ const LoginForm = () => {
         e.preventDefault(); // 폼 기본 제출 동작 방지
         console.log("전송할 데이터:", { loginId: username, password: password });
         try {
-            await loginUser({ loginId: username, password });
+            const res = await loginUser({ loginId: username, password });
+            // 응답에서 accessToken, refreshToken 추출
+            if (res.data && res.data.accessToken) {
+                localStorage.setItem("accessToken", res.data.accessToken);
+            }
+            if (res.data && res.data.refreshToken) {
+                localStorage.setItem("refreshToken", res.data.refreshToken);
+            }
             alert('로그인 완료');
         } catch (err) {
             console.error(err);
