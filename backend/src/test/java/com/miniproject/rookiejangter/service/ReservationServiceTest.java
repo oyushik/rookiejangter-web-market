@@ -4,6 +4,7 @@ import com.miniproject.rookiejangter.controller.dto.ReservationDTO;
 import com.miniproject.rookiejangter.entity.Product;
 import com.miniproject.rookiejangter.entity.Reservation;
 import com.miniproject.rookiejangter.entity.User;
+import com.miniproject.rookiejangter.exception.BusinessException;
 import com.miniproject.rookiejangter.repository.ProductRepository;
 import com.miniproject.rookiejangter.repository.ReservationRepository;
 import com.miniproject.rookiejangter.repository.UserRepository;
@@ -90,7 +91,7 @@ public class ReservationServiceTest {
         when(userRepository.findById(buyerId)).thenReturn(Optional.empty());
 
         // When & Then
-        assertThrows(EntityNotFoundException.class, () -> reservationService.createReservation(buyerId, productId));
+        assertThrows(BusinessException.class, () -> reservationService.createReservation(buyerId, productId));
         verify(userRepository, times(1)).findById(buyerId);
         verify(productRepository, never()).findById(anyLong());
         verify(reservationRepository, never()).existsByBuyer_UserIdAndProduct_ProductId(anyLong(), anyLong());
@@ -109,7 +110,7 @@ public class ReservationServiceTest {
         when(productRepository.findById(productId)).thenReturn(Optional.empty());
 
         // When & Then
-        assertThrows(EntityNotFoundException.class, () -> reservationService.createReservation(buyerId, productId));
+        assertThrows(BusinessException.class, () -> reservationService.createReservation(buyerId, productId));
         verify(userRepository, times(1)).findById(buyerId);
         verify(productRepository, times(1)).findById(productId);
         verify(reservationRepository, never()).existsByBuyer_UserIdAndProduct_ProductId(anyLong(), anyLong());
@@ -130,7 +131,7 @@ public class ReservationServiceTest {
         when(productRepository.findById(productId)).thenReturn(Optional.of(product));
 
         // When & Then
-        assertThrows(IllegalStateException.class, () -> reservationService.createReservation(buyerId, productId));
+        assertThrows(BusinessException.class, () -> reservationService.createReservation(buyerId, productId));
         verify(userRepository, times(1)).findById(buyerId);
         verify(productRepository, times(1)).findById(productId);
         verify(reservationRepository, never()).existsByBuyer_UserIdAndProduct_ProductId(anyLong(), anyLong());
@@ -152,7 +153,7 @@ public class ReservationServiceTest {
         when(productRepository.findById(productId)).thenReturn(Optional.of(product));
 
         // When & Then
-        assertThrows(IllegalStateException.class, () -> reservationService.createReservation(buyerId, productId));
+        assertThrows(BusinessException.class, () -> reservationService.createReservation(buyerId, productId));
         verify(userRepository, times(1)).findById(buyerId);
         verify(productRepository, times(1)).findById(productId);
         verify(reservationRepository, never()).existsByBuyer_UserIdAndProduct_ProductId(anyLong(), anyLong());
@@ -172,7 +173,7 @@ public class ReservationServiceTest {
         when(productRepository.findById(productId)).thenReturn(Optional.of(product));
 
         // When & Then
-        assertThrows(IllegalArgumentException.class, () -> reservationService.createReservation(userId, productId));
+        assertThrows(BusinessException.class, () -> reservationService.createReservation(userId, productId));
         verify(userRepository, times(1)).findById(userId);
         verify(productRepository, times(1)).findById(productId);
         verify(reservationRepository, never()).existsByBuyer_UserIdAndProduct_ProductId(anyLong(), anyLong());
@@ -194,7 +195,7 @@ public class ReservationServiceTest {
         when(reservationRepository.existsByBuyer_UserIdAndProduct_ProductId(buyerId, productId)).thenReturn(true);
 
         // When & Then
-        assertThrows(IllegalStateException.class, () -> reservationService.createReservation(buyerId, productId));
+        assertThrows(BusinessException.class, () -> reservationService.createReservation(buyerId, productId));
         verify(userRepository, times(1)).findById(buyerId);
         verify(productRepository, times(1)).findById(productId);
         verify(reservationRepository, times(1)).existsByBuyer_UserIdAndProduct_ProductId(buyerId, productId);
@@ -237,7 +238,7 @@ public class ReservationServiceTest {
         when(userRepository.findById(buyerId)).thenReturn(Optional.empty());
 
         // When & Then
-        assertThrows(EntityNotFoundException.class, () -> reservationService.getReservationsByBuyer(buyerId));
+        assertThrows(BusinessException.class, () -> reservationService.getReservationsByBuyer(buyerId));
         verify(userRepository, times(1)).findById(buyerId);
         verify(reservationRepository, never()).findByBuyer_UserId(anyLong());
     }
@@ -278,7 +279,7 @@ public class ReservationServiceTest {
         when(userRepository.findById(sellerId)).thenReturn(Optional.empty());
 
         // When & Then
-        assertThrows(EntityNotFoundException.class, () -> reservationService.getReservationsBySeller(sellerId));
+        assertThrows(BusinessException.class, () -> reservationService.getReservationsBySeller(sellerId));
         verify(userRepository, times(1)).findById(sellerId);
         verify(reservationRepository, never()).findBySeller_UserId(anyLong());
     }
@@ -318,7 +319,7 @@ public class ReservationServiceTest {
         when(productRepository.findById(productId)).thenReturn(Optional.empty());
 
         // When & Then
-        assertThrows(EntityNotFoundException.class, () -> reservationService.getReservationsByProduct(productId));
+        assertThrows(BusinessException.class, () -> reservationService.getReservationsByProduct(productId));
         verify(productRepository, times(1)).findById(productId);
         verify(reservationRepository, never()).findByProduct_ProductId(anyLong());
     }
@@ -361,7 +362,7 @@ public class ReservationServiceTest {
         when(reservationRepository.findById(reservationId)).thenReturn(Optional.empty());
 
         // When & Then
-        assertThrows(EntityNotFoundException.class, () -> reservationService.getReservationById(reservationId));
+        assertThrows(BusinessException.class, () -> reservationService.getReservationById(reservationId));
         verify(reservationRepository, times(1)).findById(reservationId);
     }
 
@@ -427,7 +428,7 @@ public class ReservationServiceTest {
         when(userRepository.findById(buyerId)).thenReturn(Optional.of(buyer));
 
         // When & Then
-        assertThrows(SecurityException.class, () -> reservationService.updateReservationStatus(reservationId, Reservation.TradeStatus.ACCEPTED, buyerId));
+        assertThrows(BusinessException.class, () -> reservationService.updateReservationStatus(reservationId, Reservation.TradeStatus.ACCEPTED, buyerId));
         verify(reservationRepository, times(1)).findById(reservationId);
         verify(userRepository, times(1)).findById(buyerId);
         verify(reservationRepository, never()).save(any());
@@ -496,7 +497,7 @@ public class ReservationServiceTest {
         when(userRepository.findById(buyerId)).thenReturn(Optional.of(buyer));
 
         // When & Then
-        assertThrows(SecurityException.class, () -> reservationService.updateReservationStatus(reservationId, Reservation.TradeStatus.DECLINED, buyerId));
+        assertThrows(BusinessException.class, () -> reservationService.updateReservationStatus(reservationId, Reservation.TradeStatus.DECLINED, buyerId));
         verify(reservationRepository, times(1)).findById(reservationId);
         verify(userRepository, times(1)).findById(buyerId);
         verify(reservationRepository, never()).save(any());
@@ -657,7 +658,7 @@ public class ReservationServiceTest {
         when(userRepository.findById(otherUserId)).thenReturn(Optional.of(User.builder().userId(otherUserId).build()));
 
         // When & Then
-        assertThrows(SecurityException.class, () -> reservationService.updateReservationStatus(reservationId, Reservation.TradeStatus.CANCELLED, otherUserId));
+        assertThrows(BusinessException.class, () -> reservationService.updateReservationStatus(reservationId, Reservation.TradeStatus.CANCELLED, otherUserId));
         verify(reservationRepository, times(1)).findById(reservationId);
         verify(userRepository, times(1)).findById(otherUserId);
         verify(reservationRepository, never()).save(any());
@@ -686,7 +687,7 @@ public class ReservationServiceTest {
         when(userRepository.findById(buyerId)).thenReturn(Optional.of(buyer));
 
         // When & Then
-        assertThrows(IllegalStateException.class, () -> reservationService.updateReservationStatus(reservationId, Reservation.TradeStatus.CANCELLED, buyerId));
+        assertThrows(BusinessException.class, () -> reservationService.updateReservationStatus(reservationId, Reservation.TradeStatus.CANCELLED, buyerId));
         verify(reservationRepository, times(1)).findById(reservationId);
         verify(userRepository, times(1)).findById(buyerId);
         verify(reservationRepository, never()).save(any());
@@ -756,7 +757,7 @@ public class ReservationServiceTest {
         when(userRepository.findById(buyerId)).thenReturn(Optional.of(buyer));
 
         // When & Then
-        assertThrows(SecurityException.class, () -> reservationService.updateReservationStatus(reservationId, Reservation.TradeStatus.COMPLETED, buyerId));
+        assertThrows(BusinessException.class, () -> reservationService.updateReservationStatus(reservationId, Reservation.TradeStatus.COMPLETED, buyerId));
         verify(reservationRepository, times(1)).findById(reservationId);
         verify(userRepository, times(1)).findById(buyerId);
         verify(reservationRepository, never()).save(any());
@@ -784,7 +785,7 @@ public class ReservationServiceTest {
         when(userRepository.findById(sellerId)).thenReturn(Optional.of(seller));
 
         // When & Then
-        assertThrows(IllegalStateException.class, () -> reservationService.updateReservationStatus(reservationId, Reservation.TradeStatus.COMPLETED, sellerId));
+        assertThrows(BusinessException.class, () -> reservationService.updateReservationStatus(reservationId, Reservation.TradeStatus.COMPLETED, sellerId));
         verify(reservationRepository, times(1)).findById(reservationId);
         verify(userRepository, times(1)).findById(sellerId);
         verify(reservationRepository, never()).save(any());
@@ -893,7 +894,7 @@ public class ReservationServiceTest {
         when(reservationRepository.findById(reservationId)).thenReturn(Optional.empty());
 
         // When & Then
-        assertThrows(EntityNotFoundException.class, () -> reservationService.deleteReservation(reservationId, buyerId));
+        assertThrows(BusinessException.class, () -> reservationService.deleteReservation(reservationId, buyerId));
         verify(reservationRepository, times(1)).findById(reservationId);
         verify(reservationRepository, never()).delete(any());
     }
@@ -921,7 +922,7 @@ public class ReservationServiceTest {
         when(userRepository.findById(otherUserId)).thenReturn(Optional.of(User.builder().userId(otherUserId).build()));
 
         // When & Then
-        assertThrows(SecurityException.class, () -> reservationService.deleteReservation(reservationId, otherUserId));
+        assertThrows(BusinessException.class, () -> reservationService.deleteReservation(reservationId, otherUserId));
         verify(reservationRepository, times(1)).findById(reservationId);
         verify(userRepository, times(1)).findById(otherUserId);
         verify(reservationRepository, never()).delete(any());
@@ -949,7 +950,7 @@ public class ReservationServiceTest {
         when(userRepository.findById(buyerId)).thenReturn(Optional.of(buyer));
 
         // When & Then
-        assertThrows(IllegalStateException.class, () -> reservationService.deleteReservation(reservationId, buyerId));
+        assertThrows(BusinessException.class, () -> reservationService.deleteReservation(reservationId, buyerId));
         verify(reservationRepository, times(1)).findById(reservationId);
         verify(userRepository, times(1)).findById(buyerId);
         verify(reservationRepository, never()).delete(any());

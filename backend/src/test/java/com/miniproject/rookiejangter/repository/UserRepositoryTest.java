@@ -22,22 +22,23 @@ public class UserRepositoryTest {
     @Autowired
     private TestEntityManager entityManager;
 
-    private Area testArea;
+    private Area area;
 
     @BeforeEach
     void setUp() {
         // Given
-        testArea = Area.builder()
+        area = Area.builder()
                 .areaName("Test Area")
                 .build();
-        areaRepository.save(testArea); // Area 먼저 저장
+        areaRepository.save(area);
+        entityManager.persist(area);
     }
 
     @Test
     void createUser() {
         // Given
         User user = User.builder()
-                .area(testArea)
+                .area(area)
                 .loginId("testId")
                 .password("testPassword")
                 .userName("Test User")
@@ -57,7 +58,7 @@ public class UserRepositoryTest {
     void getUserById() {
         // Given
         User user = User.builder()
-                .area(testArea)
+                .area(area)
                 .loginId("testId")
                 .password("testPassword")
                 .userName("Test User")
@@ -80,7 +81,7 @@ public class UserRepositoryTest {
     void getUserByLoginId() {
         // Given
         User user = User.builder()
-                .area(testArea)
+                .area(area)
                 .loginId("testId")
                 .password("testPassword")
                 .userName("Test User")
@@ -102,7 +103,7 @@ public class UserRepositoryTest {
     void updateUser() {
         // Given
         User user = User.builder()
-                .area(testArea)
+                .area(area)
                 .loginId("testId")
                 .password("testPassword")
                 .userName("Test User")
@@ -126,7 +127,7 @@ public class UserRepositoryTest {
     void deleteUser() {
         // Given
         User user = User.builder()
-                .area(testArea)
+                .area(area)
                 .loginId("testId")
                 .password("testPassword")
                 .userName("Test User")

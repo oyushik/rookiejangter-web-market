@@ -29,6 +29,7 @@ public class AreaRepositoryTest {
                 .areaName("서울")
                 .build();
         entityManager.persist(area1);
+        entityManager.flush();
 
         area2 = Area.builder()
                 .areaName("부산")
