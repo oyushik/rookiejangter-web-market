@@ -135,9 +135,15 @@ public class AuthService {
                     .accessToken(newAccessToken)
                     .build();
 
-        } catch (TokenValidationException | AuthenticationException e) {
-            log.error("토큰 갱신 중 오류 발생: {}", e.getMessage());
-            throw e; // 커스텀 예외는 그대로 던짐
+//        } catch (TokenValidationException | AuthenticationException e) {
+//            log.error("토큰 갱신 중 오류 발생: {}", e.getMessage());
+//            throw e; // 커스텀 예외는 그대로 던짐
+        } catch (BusinessException e) { // BusinessException은 그대로 던지도록 수정
+            log.error("토큰 갱신 중 비즈니스 오류 발생: {}", e.getMessage());
+            throw e;
+        } catch (TokenValidationException | AuthenticationException e) { // 특정 예외는 여전히 처리
+            log.error("토큰 갱신 중 인증/토큰 유효성 오류 발생: {}", e.getMessage());
+            throw e;
         } catch (Exception e) {
             log.error("토큰 갱신 중 예상치 못한 오류 발생: {}", e.getMessage());
             throw new BusinessException(ErrorCode.AUTH_UNEXPECTED_ERROR, "토큰 갱신", e.getMessage());

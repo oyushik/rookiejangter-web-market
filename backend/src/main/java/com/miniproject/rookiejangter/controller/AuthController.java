@@ -66,6 +66,15 @@ public class AuthController {
         }
     }
 
+    @PostMapping("/logout/{userId}") // userId를 경로 변수로 받도록 수정
+    public ResponseEntity<?> logout(@RequestHeader("Authorization") String authorizationHeader,
+                                    @PathVariable Long userId) { // userId를 @PathVariable로 받음
+        // "Bearer " 접두사 제거
+        String accessToken = authorizationHeader.substring(7);
+        authService.logout(accessToken, userId); // 서비스 계층에 userId 전달
+        return ResponseEntity.ok().build();
+    }
+
     // 토큰 갱신
     @PostMapping("/refresh")
     public ResponseEntity<?> refreshToken(@RequestBody TokenRefreshRequest request) {

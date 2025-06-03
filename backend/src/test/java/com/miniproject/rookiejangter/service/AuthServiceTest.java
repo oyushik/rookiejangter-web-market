@@ -1,5 +1,6 @@
 package com.miniproject.rookiejangter.service;
 
+import com.miniproject.rookiejangter.config.PasswordEncoderConfig;
 import com.miniproject.rookiejangter.controller.dto.UserDTO;
 import com.miniproject.rookiejangter.entity.User;
 import com.miniproject.rookiejangter.exception.BusinessException;
@@ -35,7 +36,7 @@ class AuthServiceTest {
     private UserRepository userRepository;
 
     @Mock
-    private PasswordEncoder passwordEncoder;
+    private PasswordEncoderConfig passwordEncoderConfig;
 
     @Mock
     private JwtProvider jwtProvider;
@@ -45,6 +46,10 @@ class AuthServiceTest {
 
     @Mock
     private ValueOperations<String, String> valueOperations;
+
+    // PasswordEncoder 인터페이스의 Mock 객체를 별도로 준비합니다.
+    @Mock
+    private PasswordEncoder actualPasswordEncoder; // 실제 패스워드 인코더 목 객체
 
     private User testUser;
     private UserDTO.LoginRequest loginRequest;
@@ -65,6 +70,9 @@ class AuthServiceTest {
 
         // Redis Mock setup - lenient to prevent unnecessary stubbing warnings
         lenient().when(redisTemplate.opsForValue()).thenReturn(valueOperations);
+
+        // PasswordEncoderConfig의 passwordEncoder() 메서드가 실제 PasswordEncoder 목 객체를 반환하도록 설정
+        lenient().when(passwordEncoderConfig.passwordEncoder()).thenReturn(actualPasswordEncoder);
     }
 
     @Test
@@ -72,7 +80,8 @@ class AuthServiceTest {
     void loginSuccess() {
         // Given
         when(userRepository.findByLoginId("testuser")).thenReturn(Optional.of(testUser));
-        when(passwordEncoder.matches("password123", "encodedPassword")).thenReturn(true);
+        // 실제 PasswordEncoder 목 객체의 matches 메서드를 목킹합니다.
+        when(actualPasswordEncoder.matches("password123", "encodedPassword")).thenReturn(true);
         when(jwtProvider.createAccessToken(testUser)).thenReturn("accessToken123");
         when(jwtProvider.createRefreshToken(testUser)).thenReturn("refreshToken123");
         when(jwtProvider.getRefreshTokenExpireTime()).thenReturn(604800000L); // 7 days
@@ -108,7 +117,8 @@ class AuthServiceTest {
     void loginFailure_PasswordMismatch() {
         // Given
         when(userRepository.findByLoginId("testuser")).thenReturn(Optional.of(testUser));
-        when(passwordEncoder.matches("password123", "encodedPassword")).thenReturn(false);
+        // 실제 PasswordEncoder 목 객체의 matches 메서드를 목킹합니다.
+        when(actualPasswordEncoder.matches("password123", "encodedPassword")).thenReturn(false);
 
         // When & Then
         BusinessException exception = assertThrows(BusinessException.class, () -> authService.login(loginRequest));
@@ -127,6 +137,7 @@ class AuthServiceTest {
 
         when(jwtProvider.validateToken(accessToken)).thenReturn(true);
         when(jwtProvider.isTokenExpired(accessToken)).thenReturn(false);
+        // Claims::getExpiration 목킹은 그대로 유지합니다.
         when(jwtProvider.getClaimFromToken(eq(accessToken), any())).thenReturn(expirationDate);
 
         // When
