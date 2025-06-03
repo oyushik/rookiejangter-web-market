@@ -4,10 +4,11 @@ import com.miniproject.rookiejangter.controller.dto.DibsDTO;
 import com.miniproject.rookiejangter.entity.Dibs;
 import com.miniproject.rookiejangter.entity.Product;
 import com.miniproject.rookiejangter.entity.User;
+import com.miniproject.rookiejangter.exception.BusinessException;
+import com.miniproject.rookiejangter.exception.ErrorCode;
 import com.miniproject.rookiejangter.repository.DibsRepository;
 import com.miniproject.rookiejangter.repository.ProductRepository;
 import com.miniproject.rookiejangter.repository.UserRepository;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,13 +29,13 @@ public class DibsService {
     @Transactional
     public DibsDTO.Response addDibs(Long userId, Long productId) {
         if (dibsRepository.existsByUser_UserIdAndProduct_ProductId(userId, productId)) {
-            throw new IllegalStateException("이미 찜한 상품입니다.");
+            throw new BusinessException(ErrorCode.DIBS_ALREADY_EXISTS, userId, productId);
         }
 
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException("사용자를 찾을 수 없습니다: " + userId));
+                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND, userId));
         Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new EntityNotFoundException("게시글을 찾을 수 없습니다: " + productId));
+                .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_NOT_FOUND, productId));
 
         Dibs dibs = Dibs.builder()
                 .user(user)
@@ -48,7 +49,7 @@ public class DibsService {
     @Transactional
     public void removeDibs(Long userId, Long productId) {
         if (!dibsRepository.existsByUser_UserIdAndProduct_ProductId(userId, productId)) {
-            throw new EntityNotFoundException("찜한 내역을 찾을 수 없습니다.");
+            throw new BusinessException(ErrorCode.DIBS_NOT_FOUND, userId, productId);
         }
         dibsRepository.deleteByUser_UserIdAndProduct_ProductId(userId, productId);
     }
@@ -57,7 +58,7 @@ public class DibsService {
     public DibsDTO.Response getDibsStatus(Long userId, Long productId) {
         // 먼저 Product 존재 여부를 확인합니다.
         Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new EntityNotFoundException("게시글을 찾을 수 없습니다: " + productId));
+                .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_NOT_FOUND, productId));
 
         // Product가 존재할 경우에만 찜 상태를 확인합니다.
         boolean isLiked = dibsRepository.existsByUser_UserIdAndProduct_ProductId(userId, productId);
@@ -81,7 +82,7 @@ public class DibsService {
     @Transactional(readOnly = true)
     public List<DibsDTO.Response.DibbedProduct> getUserDibsList(Long userId) {
         userRepository.findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException("사용자를 찾을 수 없습니다: " + userId));
+                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND, userId));
 
         List<Dibs> dibsList = dibsRepository.findByUser_UserId(userId);
 
@@ -93,7 +94,7 @@ public class DibsService {
     @Transactional(readOnly = true)
     public long getDibsCountForProduct(Long productId) {
         productRepository.findById(productId)
-                .orElseThrow(() -> new EntityNotFoundException("게시글을 찾을 수 없습니다: " + productId));
+                .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_NOT_FOUND, productId));
         return dibsRepository.findByProduct_ProductId(productId).size();
     }
 }

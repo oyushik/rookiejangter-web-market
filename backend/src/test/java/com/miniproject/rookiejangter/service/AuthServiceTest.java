@@ -2,8 +2,8 @@ package com.miniproject.rookiejangter.service;
 
 import com.miniproject.rookiejangter.controller.dto.UserDTO;
 import com.miniproject.rookiejangter.entity.User;
-import com.miniproject.rookiejangter.exception.AuthenticationException;
-import com.miniproject.rookiejangter.exception.InvalidCredentialsException;
+import com.miniproject.rookiejangter.exception.BusinessException;
+import com.miniproject.rookiejangter.exception.ErrorCode;
 import com.miniproject.rookiejangter.provider.JwtProvider;
 import com.miniproject.rookiejangter.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,12 +15,12 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Date;
 import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
@@ -98,9 +98,9 @@ class AuthServiceTest {
         when(userRepository.findByLoginId("testuser")).thenReturn(Optional.empty());
 
         // When & Then
-        assertThrows(AuthenticationException.class, () -> {
-            authService.login(loginRequest);
-        });
+        BusinessException exception = assertThrows(BusinessException.class, () -> authService.login(loginRequest));
+        assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.USER_NOT_FOUND);
+        assertThat(exception.getMessage()).isEqualTo(ErrorCode.USER_NOT_FOUND.formatMessage("testuser"));
     }
 
     @Test
@@ -111,9 +111,8 @@ class AuthServiceTest {
         when(passwordEncoder.matches("password123", "encodedPassword")).thenReturn(false);
 
         // When & Then
-        assertThrows(InvalidCredentialsException.class, () -> {
-            authService.login(loginRequest);
-        });
+        BusinessException exception = assertThrows(BusinessException.class, () -> authService.login(loginRequest));
+        assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.PASSWORD_MISMATCH);
     }
 
     @Test
@@ -167,8 +166,7 @@ class AuthServiceTest {
         when(jwtProvider.validateToken(refreshToken)).thenReturn(false);
 
         // When & Then
-        assertThrows(BadCredentialsException.class, () -> {
-            authService.refreshToken(refreshToken);
-        });
+        BusinessException exception = assertThrows(BusinessException.class, () -> authService.refreshToken(refreshToken));
+        assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.INVALID_REFRESH_TOKEN_DETAIL);
     }
 }

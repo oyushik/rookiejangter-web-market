@@ -3,9 +3,10 @@ package com.miniproject.rookiejangter.service;
 import com.miniproject.rookiejangter.controller.dto.BumpDTO;
 import com.miniproject.rookiejangter.entity.Bump;
 import com.miniproject.rookiejangter.entity.Product;
+import com.miniproject.rookiejangter.exception.BusinessException;
+import com.miniproject.rookiejangter.exception.ErrorCode;
 import com.miniproject.rookiejangter.repository.BumpRepository;
 import com.miniproject.rookiejangter.repository.ProductRepository;
-import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -13,15 +14,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -116,7 +114,9 @@ public class BumpServiceTest {
         when(productRepository.findById(productId)).thenReturn(Optional.empty());
 
         // When & Then
-        assertThrows(EntityNotFoundException.class, () -> bumpService.bumpProduct(productId));
+        BusinessException exception = assertThrows(BusinessException.class, () -> bumpService.bumpProduct(productId));
+        assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.PRODUCT_NOT_FOUND);
+        assertThat(exception.getMessage()).isEqualTo(ErrorCode.PRODUCT_NOT_FOUND.formatMessage(productId));
         verify(productRepository, times(1)).findById(productId);
         verify(bumpRepository, never()).countByProduct_ProductIdAndBumpedAtBetween(anyLong(), any(), any());
         verify(bumpRepository, never()).findTopByProduct_ProductIdOrderByBumpedAtDesc(anyLong());
@@ -134,7 +134,8 @@ public class BumpServiceTest {
         when(bumpRepository.countByProduct_ProductIdAndBumpedAtBetween(eq(productId), any(LocalDateTime.class), any(LocalDateTime.class))).thenReturn((long) MAX_BUMPS_PER_DAY);
 
         // When & Then
-        assertThrows(IllegalStateException.class, () -> bumpService.bumpProduct(productId));
+        BusinessException exception = assertThrows(BusinessException.class, () -> bumpService.bumpProduct(productId));
+        assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.PRODUCT_CANNOT_BUMP);
         verify(productRepository, times(1)).findById(productId);
         verify(bumpRepository, times(1)).countByProduct_ProductIdAndBumpedAtBetween(eq(productId), any(LocalDateTime.class), any(LocalDateTime.class));
         verify(bumpRepository, never()).findTopByProduct_ProductIdOrderByBumpedAtDesc(anyLong());
@@ -215,7 +216,9 @@ public class BumpServiceTest {
         when(productRepository.existsById(productId)).thenReturn(false);
 
         // When & Then
-        assertThrows(EntityNotFoundException.class, () -> bumpService.getBumpsForProduct(productId));
+        BusinessException exception = assertThrows(BusinessException.class, () -> bumpService.getBumpsForProduct(productId));
+        assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.PRODUCT_NOT_FOUND);
+        assertThat(exception.getMessage()).isEqualTo(ErrorCode.PRODUCT_NOT_FOUND.formatMessage(productId));
         verify(productRepository, times(1)).existsById(productId);
         verify(bumpRepository, never()).findByProduct_ProductId(anyLong());
     }
@@ -245,7 +248,9 @@ public class BumpServiceTest {
         when(productRepository.existsById(productId)).thenReturn(false);
 
         // When & Then
-        assertThrows(EntityNotFoundException.class, () -> bumpService.getTodaysBumpCountForProduct(productId));
+        BusinessException exception = assertThrows(BusinessException.class, () -> bumpService.getTodaysBumpCountForProduct(productId));
+        assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.PRODUCT_NOT_FOUND);
+        assertThat(exception.getMessage()).isEqualTo(ErrorCode.PRODUCT_NOT_FOUND.formatMessage(productId));
         verify(productRepository, times(1)).existsById(productId);
         verify(bumpRepository, never()).countByProduct_ProductIdAndBumpedAtBetween(anyLong(), any(), any());
     }

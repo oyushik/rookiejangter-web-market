@@ -4,10 +4,11 @@ import com.miniproject.rookiejangter.controller.dto.MessageDTO;
 import com.miniproject.rookiejangter.entity.Chat;
 import com.miniproject.rookiejangter.entity.Message;
 import com.miniproject.rookiejangter.entity.User;
+import com.miniproject.rookiejangter.exception.BusinessException;
+import com.miniproject.rookiejangter.exception.ErrorCode;
 import com.miniproject.rookiejangter.repository.ChatRepository;
 import com.miniproject.rookiejangter.repository.MessageRepository;
 import com.miniproject.rookiejangter.repository.UserRepository;
-import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -89,7 +90,9 @@ public class MessageServiceTest {
         when(chatRepository.findById(chatRoomId)).thenReturn(Optional.empty());
 
         // When & Then
-        assertThrows(EntityNotFoundException.class, () -> messageService.sendMessage(chatRoomId, request, senderId));
+        BusinessException exception = assertThrows(BusinessException.class, () -> messageService.sendMessage(chatRoomId, request, senderId));
+        assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.CHATROOM_NOT_FOUND);
+        assertThat(exception.getMessage()).isEqualTo(ErrorCode.CHATROOM_NOT_FOUND.formatMessage(chatRoomId));
         verify(chatRepository, times(1)).findById(chatRoomId);
         verify(userRepository, never()).findById(anyLong());
         verify(messageRepository, never()).save(any());
@@ -107,7 +110,9 @@ public class MessageServiceTest {
         when(userRepository.findById(senderId)).thenReturn(Optional.empty());
 
         // When & Then
-        assertThrows(EntityNotFoundException.class, () -> messageService.sendMessage(chatRoomId, request, senderId));
+        BusinessException exception = assertThrows(BusinessException.class, () -> messageService.sendMessage(chatRoomId, request, senderId));
+        assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.USER_NOT_FOUND);
+        assertThat(exception.getMessage()).isEqualTo(ErrorCode.USER_NOT_FOUND.formatMessage(senderId));
         verify(chatRepository, times(1)).findById(chatRoomId);
         verify(userRepository, times(1)).findById(senderId);
         verify(messageRepository, never()).save(any());
