@@ -30,7 +30,7 @@ spring:
     locations: classpath:db/migration # 마이그레이션 스크립트가 위치할 경로
     enabled: true # Flyway 활성화
     baseline-on-migrate: true # 기존 DB에 테이블이 있을 경우 Flyway가 현재 상태를 기준으로 베이스라인을 설정
-#    clean-disabled: false  # 프로덕션 환경에서 flyway:clean 명령을 비활성화 (권장, default가 false)
+#    clean-disabled: false  # 프로덕션 환경에서는 비활성화 권장
 #    schemas: rookiejangter_db # 특정 스키마에서 작업할 경우 (선택 사항, default-schema와 유사)
 
 jwt:
