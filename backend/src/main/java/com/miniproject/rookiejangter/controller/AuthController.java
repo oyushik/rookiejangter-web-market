@@ -20,12 +20,6 @@ public class AuthController {
     private final UserService userService;
     private final AuthService authService;
 
-    // 회원가입
-//    @PostMapping("/signup")
-//    public ResponseEntity<UserDTO.Response> registerUser(@Valid @RequestBody UserDTO.SignUpRequest request) {
-//        UserDTO.Response user = userService.createUser(request);
-//        return new ResponseEntity<>(user, HttpStatus.CREATED);
-//    }
     @PostMapping("/signup")
     public ResponseEntity<?> registerUser(@Valid @RequestBody UserDTO.SignUpRequest request) {
         try {
@@ -64,15 +58,6 @@ public class AuthController {
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Error logging out");
         }
-    }
-
-    @PostMapping("/logout/{userId}") // userId를 경로 변수로 받도록 수정
-    public ResponseEntity<?> logout(@RequestHeader("Authorization") String authorizationHeader,
-                                    @PathVariable Long userId) { // userId를 @PathVariable로 받음
-        // "Bearer " 접두사 제거
-        String accessToken = authorizationHeader.substring(7);
-        authService.logout(accessToken, userId); // 서비스 계층에 userId 전달
-        return ResponseEntity.ok().build();
     }
 
     // 토큰 갱신

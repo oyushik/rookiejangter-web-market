@@ -175,4 +175,14 @@ public class ProductDTO {
         private OffsetDateTime timestamp = OffsetDateTime.now(ZoneOffset.UTC);
         private String requestId;
     }
+
+    @Data
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class StatusUpdateRequest {
+        private Boolean isReserved;  // 예약중 상태
+        private Boolean isCompleted; // 판매완료 상태
+    }
+
 }
