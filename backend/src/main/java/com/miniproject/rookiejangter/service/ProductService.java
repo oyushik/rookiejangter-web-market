@@ -86,7 +86,6 @@ public class ProductService {
         if (requestDto.getContent() != null) product.setContent(requestDto.getContent());
         if (requestDto.getPrice() != null) product.setPrice(requestDto.getPrice());
 
-
         if (requestDto.getCategoryId() != null) {
             Category category = categoryRepository.findById(requestDto.getCategoryId())
                     .orElseThrow(() -> new BusinessException(ErrorCode.CATEGORY_NOT_FOUND, requestDto.getCategoryId()));
@@ -125,13 +124,34 @@ public class ProductService {
         dibsRepository.deleteAll(dibsRepository.findByProduct_ProductId(productId));
         bumpRepository.deleteAll(bumpRepository.findByProduct_ProductId(productId));
 
-
         productRepository.delete(product);
     }
 
     @Transactional(readOnly = true)
+    public ProductDTO.ProductListData getProductsByUser(Long targetUserId, Pageable pageable, Long currentUserId) {
+        User user = userRepository.findById(targetUserId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND, targetUserId));
+        Page<Product> productPage = productRepository.findByUser(user, pageable);
+        return convertToProductListData(productPage, currentUserId);
+    }
+
+    @Transactional
+    public ProductDTO.Response getUserProductById(Long productId, Long userId) {
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_NOT_FOUND, productId));
+
+        // 해당 유저의 상품인지 확인
+        if (!product.getUser().getUserId().equals(userId)) {
+            throw new BusinessException(ErrorCode.PRODUCT_OPERATION_FORBIDDEN, "조회");
+        }
+
+        List<Image> images = imageRepository.findByProduct_ProductId(productId);
+        return mapToProductDTOResponse(product, images, userId);
+    }
+
+    @Transactional(readOnly = true)
     public ProductDTO.ProductListData getAllProducts(Pageable pageable, Long currentUserId) {
-        Page<Product> productPage = productRepository.findAllByOrderByCreatedAtDesc(pageable); //
+        Page<Product> productPage = productRepository.findAllByOrderByCreatedAtDesc(pageable);
         return convertToProductListData(productPage, currentUserId);
     }
 
@@ -139,22 +159,13 @@ public class ProductService {
     public ProductDTO.ProductListData getProductsByCategory(Integer categoryId, Pageable pageable, Long currentUserId) {
         Category category = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.CATEGORY_NOT_FOUND, categoryId));
-        Page<Product> productPage = productRepository.findByCategory(category, pageable); //
-        return convertToProductListData(productPage, currentUserId);
-    }
-
-    @Transactional(readOnly = true)
-    public ProductDTO.ProductListData getProductsByUser(Long targetUserId, Pageable pageable, Long currentUserId) {
-        User user = userRepository.findById(targetUserId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND, targetUserId));
-        Page<Product> productPage = productRepository.findByUser(user, pageable); //
+        Page<Product> productPage = productRepository.findByCategory(category, pageable);
         return convertToProductListData(productPage, currentUserId);
     }
 
     @Transactional(readOnly = true)
     public ProductDTO.ProductListData searchProductsByTitle(String title, Pageable pageable, Long currentUserId) {
-        List<Product> productList = productRepository.findByTitleContainsIgnoreCase(title); //
-
+        List<Product> productList = productRepository.findByTitleContainsIgnoreCase(title);
         Page<Product> productPage = paginateList(productList, pageable);
         return convertToProductListData(productPage, currentUserId);
     }
@@ -162,9 +173,25 @@ public class ProductService {
     @Transactional(readOnly = true)
     public ProductDTO.ProductListData searchProductsByKeyword(String keyword, Pageable pageable, Long currentUserId) {
         List<Product> productList = productRepository.findByTitleContainsIgnoreCaseOrContentContainsIgnoreCase(keyword, keyword);
-
         Page<Product> productPage = paginateList(productList, pageable);
         return convertToProductListData(productPage, currentUserId);
+    }
+
+    @Transactional
+    public void updateProductStatus(Long productId, Boolean isReserved, Boolean isCompleted, Long userId) {
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_NOT_FOUND, productId));
+
+        if (!product.getUser().getUserId().equals(userId)) {
+            throw new BusinessException(ErrorCode.PRODUCT_OPERATION_FORBIDDEN, "상태 변경");
+        }
+        if (isReserved != null) {
+            product.setIsReserved(isReserved);
+        }
+        if (isCompleted != null) {
+            product.setIsCompleted(isCompleted);
+        }
+        productRepository.save(product);
     }
 
     private Page<Product> paginateList(List<Product> list, Pageable pageable) {
@@ -210,7 +237,6 @@ public class ProductService {
         }
         long likeCount = dibsRepository.findByProduct_ProductId(product.getProductId()).size();
 
-
         return ProductDTO.Response.builder()
                 .id(product.getProductId())
                 .title(product.getTitle())
@@ -227,22 +253,5 @@ public class ProductService {
                 .likeCount((int) likeCount)
                 .isLiked(isLiked)
                 .build();
-    }
-
-    @Transactional
-    public void updateProductStatus(Long productId, Boolean isReserved, Boolean isCompleted, Long userId) {
-        Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_NOT_FOUND, productId));
-
-        if (!product.getUser().getUserId().equals(userId)) {
-            throw new BusinessException(ErrorCode.PRODUCT_OPERATION_FORBIDDEN, "상태 변경");
-        }
-        if (isReserved != null) {
-            product.setIsReserved(isReserved);
-        }
-        if (isCompleted != null) {
-            product.setIsCompleted(isCompleted);
-        }
-        productRepository.save(product);
     }
 }

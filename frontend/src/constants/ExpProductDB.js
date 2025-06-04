@@ -8,6 +8,11 @@ export const products = [
     status: "SALE",
     images: [],
     area: "경기도 안산시단원구 선부동",
+    seller: {
+      id: 1,
+      nickname: "홍길동",
+      profileImage: ""
+    },
     createdAt: "2025-05-29T10:12:00+09:00"
   },
   {

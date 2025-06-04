@@ -2,7 +2,7 @@ spring:
   application:
     name: Rookiejangter
   profiles:
-    active: test
+    active: prod
 
 # log file
 logging:

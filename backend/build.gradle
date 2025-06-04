@@ -34,8 +34,10 @@ dependencies {
 	implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 	implementation 'jakarta.annotation:jakarta.annotation-api:2.1.1'
-
 	implementation 'io.jsonwebtoken:jjwt-api:0.12.6'
+	implementation 'org.flywaydb:flyway-core'
+	implementation 'org.flywaydb:flyway-mysql'
+
 	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.6'
 	runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.6'
 	compileOnly 'org.projectlombok:lombok'
