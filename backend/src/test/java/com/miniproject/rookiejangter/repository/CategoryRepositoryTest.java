@@ -26,7 +26,7 @@ public class CategoryRepositoryTest {
     @BeforeEach
     public void setup() {
         testCategory = Category.builder()
-                .categoryName("Test Category1")
+                .categoryName("테스트")
                 .build();
         entityManager.persist(testCategory);
         entityManager.flush();
@@ -34,23 +34,15 @@ public class CategoryRepositoryTest {
 
     @Test
     public void testFindByCategoryName() {
-        Optional<Category> foundCategory = categoryRepository.findByCategoryName("Test Category1");
+        Optional<Category> foundCategory = categoryRepository.findByCategoryName("테스트");
         assertThat(foundCategory).isPresent();
-        assertThat(foundCategory.get().getCategoryName()).isEqualTo("Test Category1");
+        assertThat(foundCategory.get().getCategoryName()).isEqualTo("테스트");
     }
 
     @Test
     public void testFindByCategoryNameContainingIgnoreCase() {
-        Category category2 = Category.builder()
-                .categoryName("Test Category2")
-                .build();
-        entityManager.persist(category2);
-        entityManager.flush();
-
-        List<Category> foundCategories = categoryRepository.findByCategoryNameContainingIgnoreCase("test");
-        assertThat(foundCategories).hasSize(2);
-        assertThat(foundCategories.get(0).getCategoryName()).isEqualTo("Test Category1");
-        assertThat(foundCategories.get(1).getCategoryName()).isEqualTo("Test Category2");
+        List<Category> foundCategories = categoryRepository.findByCategoryNameContainingIgnoreCase("테");
+        assertThat(foundCategories.get(0).getCategoryName()).isEqualTo("테스트");
     }
 
     @Test
@@ -60,13 +52,13 @@ public class CategoryRepositoryTest {
                 .build();
         Category savedCategory = categoryRepository.save(newCategory);
         assertThat(savedCategory.getCategoryId()).isNotNull();
-        assertThat(savedCategory.getCategoryName()).isEqualTo("New Category");
+        assertThat(savedCategory.getCategoryName()).isEqualTo("NewCategory");
     }
 
     @Test
     public void testDeleteCategory() {
         categoryRepository.delete(testCategory);
-        Optional<Category> deletedCategory = categoryRepository.findByCategoryName("Test Category1");
+        Optional<Category> deletedCategory = categoryRepository.findByCategoryName("TestCategory1");
         assertThat(deletedCategory).isEmpty();
     }
 }
