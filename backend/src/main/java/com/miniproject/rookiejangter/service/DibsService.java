@@ -10,6 +10,10 @@ import com.miniproject.rookiejangter.repository.DibsRepository;
 import com.miniproject.rookiejangter.repository.ProductRepository;
 import com.miniproject.rookiejangter.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+
+//import org.springframework.boot.autoconfigure.data.web.SpringDataWebProperties.Pageable;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,33 +30,60 @@ public class DibsService {
     private final UserRepository userRepository;
     private final ProductRepository productRepository;
 
-    @Transactional
-    public DibsDTO.Response addDibs(Long userId, Long productId) {
-        if (dibsRepository.existsByUser_UserIdAndProduct_ProductId(userId, productId)) {
-            throw new BusinessException(ErrorCode.DIBS_ALREADY_EXISTS, userId, productId);
-        }
-
+    public DibsDTO.Response toggleDibs(Long userId, Long productId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND, userId));
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_NOT_FOUND, productId));
 
-        Dibs dibs = Dibs.builder()
-                .user(user)
-                .product(product)
-                .addedAt(LocalDateTime.now())
-                .build();
-        Dibs savedDibs = dibsRepository.save(dibs);
-        return DibsDTO.Response.fromEntity(savedDibs, true);
-    }
+        Optional<Dibs> existingDibs = dibsRepository.findByUser_UserIdAndProduct_ProductId(userId, productId);
 
-    @Transactional
-    public void removeDibs(Long userId, Long productId) {
-        if (!dibsRepository.existsByUser_UserIdAndProduct_ProductId(userId, productId)) {
-            throw new BusinessException(ErrorCode.DIBS_NOT_FOUND, userId, productId);
+        boolean isNowLiked;
+        if (existingDibs.isPresent()) {
+            dibsRepository.delete(existingDibs.get());
+            isNowLiked = false;
+        } else {
+            Dibs newDibs = Dibs.builder()
+                    .user(user)
+                    .product(product)
+                    .addedAt(LocalDateTime.now())
+                    .build();
+            dibsRepository.save(newDibs);
+            isNowLiked = true;
         }
-        dibsRepository.deleteByUser_UserIdAndProduct_ProductId(userId, productId);
+        return DibsDTO.Response.builder()
+                .productId(productId)
+                .isLiked(isNowLiked)
+                .build();
     }
+    
+    // @Transactional
+    // public DibsDTO.Response addDibs(Long userId, Long productId) {
+    //     if (dibsRepository.existsByUser_UserIdAndProduct_ProductId(userId, productId)) {
+    //         throw new BusinessException(ErrorCode.DIBS_ALREADY_EXISTS, userId, productId);
+    //     }
+
+    //     User user = userRepository.findById(userId)
+    //             .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND, userId));
+    //     Product product = productRepository.findById(productId)
+    //             .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_NOT_FOUND, productId));
+
+    //     Dibs dibs = Dibs.builder()
+    //             .user(user)
+    //             .product(product)
+    //             .addedAt(LocalDateTime.now())
+    //             .build();
+    //     Dibs savedDibs = dibsRepository.save(dibs);
+    //     return DibsDTO.Response.fromEntity(savedDibs, true);
+    // }
+
+    // @Transactional
+    // public void removeDibs(Long userId, Long productId) {
+    //     if (!dibsRepository.existsByUser_UserIdAndProduct_ProductId(userId, productId)) {
+    //         throw new BusinessException(ErrorCode.DIBS_NOT_FOUND, userId, productId);
+    //     }
+    //     dibsRepository.deleteByUser_UserIdAndProduct_ProductId(userId, productId);
+    // }
 
     @Transactional(readOnly = true)
     public DibsDTO.Response getDibsStatus(Long userId, Long productId) {
@@ -80,15 +111,12 @@ public class DibsService {
     }
 
     @Transactional(readOnly = true)
-    public List<DibsDTO.Response.DibbedProduct> getUserDibsList(Long userId) {
+    public DibsDTO.DibsListResponse getUserDibsList(Long userId, Pageable pageable) {
         userRepository.findById(userId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND, userId));
 
-        List<Dibs> dibsList = dibsRepository.findByUser_UserId(userId);
-
-        return dibsList.stream()
-                .map(DibsDTO.Response.DibbedProduct::fromEntity)
-                .collect(Collectors.toList());
+        Page<Dibs> dibsPage = dibsRepository.findByUser_UserId(userId, pageable);
+        return DibsDTO.DibsListResponse.fromPage(dibsPage);
     }
 
     @Transactional(readOnly = true)
