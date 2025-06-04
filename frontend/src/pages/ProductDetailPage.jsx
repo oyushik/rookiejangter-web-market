@@ -1,10 +1,11 @@
 import { useParams, useNavigate } from 'react-router-dom';
-import { products } from '../constants/ExpProductDB'; //예시 데이터베이스
+import { products } from '../constants/ExpProductDB'; // 예시 데이터베이스
 // import axios from "axios";
 import { Box, Typography, Divider, Grid } from '@mui/material';
 import NotFound from '../err/NotFound';
 import { FormatTime } from '../utils/FormatTime';
 import React, { useState, useEffect } from 'react';
+import { useSelector } from 'react-redux';
 import ProductsList from '../components/ProductsList';
 import ProductImageSlider from '../components/ProductImageSlider';
 import ProductActions from '../components/ProductActions';
@@ -12,20 +13,29 @@ import ProductActions from '../components/ProductActions';
 const ProductDetailPage = () => {
   const { product_id } = useParams();
   const navigate = useNavigate();
+  const currentUser = useSelector((state) => state.auth.identityInfo); // 로그인한 유저 정보
   const product = products.find((p) => String(p.id) === String(product_id)); // 백엔드 연동 시 삭제
-  // const [product, setProduct] = useState(null);
   const [imgIdx, setImgIdx] = useState(0);
+  const authState = useSelector((state) => state.auth);
+  console.log("🧪 auth state:", authState);
 
+  useEffect(() => {
+    console.log('🔍 currentUser:', currentUser);
+    console.log('🔍 currentUser.user_id:', currentUser?.user_id);
+    console.log('🔍 product.seller:', product?.seller);
+    console.log('🔍 product.seller.id:', product?.seller?.id);
+  }, [currentUser, product]);
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
-  // 백엔드 연결 시 아래 코드 사용
+
+  // 백엔드 연동 시:
+  // const [product, setProduct] = useState(null);
+  // const [loading, setLoading] = useState(true);
   // useEffect(() => {
-  //   window.scrollTo(0, 0);
-  //   // 백엔드에서 상품 정보 가져오기
   //   axios.get(`/api/products/${product_id}`)
   //     .then(res => {
-  //       setProduct(res.data.data); // 백엔드 응답 구조에 따라 조정
+  //       setProduct(res.data.data);
   //       setLoading(false);
   //     })
   //     .catch(err => {
@@ -37,14 +47,10 @@ const ProductDetailPage = () => {
   // }, [product_id, navigate]);
 
   // if (loading) return <div>로딩 중...</div>;
-
-  if (!product) {
-    return <NotFound />;
-  }
+  if (!product) return <NotFound />;
 
   const images = product.images || [];
 
-  // 비슷한 상품 리스트 (같은 카테고리, 자기 자신 제외, 최근순 정렬, 5개 제한)
   const similarProducts = products
     .filter((p) => p.category === product.category && p.id !== product.id)
     .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
@@ -64,10 +70,11 @@ const ProductDetailPage = () => {
     alert('신고 처리가 완료되었습니다.');
   };
 
+  const isOwner = currentUser?.user_id === product.seller?.id;
+
   return (
     <Box sx={{ px: 5, py: 4 }}>
       <Grid container spacing={4}>
-        {/* 이미지와 텍스트를 한 줄로 묶는 Box */}
         <Grid item xs={12}>
           <Box
             sx={{
@@ -79,7 +86,6 @@ const ProductDetailPage = () => {
               position: 'relative',
             }}
           >
-            {/* 왼쪽: 이미지 영역 (컴포넌트 분리) */}
             <ProductImageSlider
               images={images}
               imgIdx={imgIdx}
@@ -87,7 +93,6 @@ const ProductDetailPage = () => {
               onNext={handleNext}
               title={product.title}
             />
-            {/* 오른쪽: 상세 정보 */}
             <Box sx={{ flex: 1, textAlign: 'left', display: 'flex', flexDirection: 'column' }}>
               <Typography variant="h4" sx={{ mb: 2 }}>
                 {product.title}
@@ -110,13 +115,11 @@ const ProductDetailPage = () => {
                 지역: {product.area || '지역정보 없음'}
               </Typography>
             </Box>
-            {/* 버튼 영역: 컴포넌트 분리 */}
             <ProductActions />
           </Box>
         </Grid>
-        {/* 설명은 아래에 별도 Row로 */}
+
         <Grid item xs={12}>
-          {/* 비슷한 상품 추천 영역 */}
           <Box sx={{ mb: 4 }}>
             <Typography variant="h6" sx={{ fontWeight: 700, mb: 2, textAlign: 'left' }}>
               이 상품과 비슷해요
@@ -127,10 +130,10 @@ const ProductDetailPage = () => {
               formatTime={FormatTime}
             />
           </Box>
+
           <Box>
             <Divider sx={{ mb: 2, width: 1120, bgcolor: 'black' }} />
             <Box sx={{ display: 'flex', gap: 4, alignItems: 'flex-start' }}>
-              {/* 상품정보 */}
               <Box sx={{ flex: 2 }}>
                 <Typography variant="h6" sx={{ fontWeight: 700, mb: 2 }}>
                   상품정보
@@ -140,7 +143,7 @@ const ProductDetailPage = () => {
                   {product.description}
                 </Typography>
               </Box>
-              {/* 판매자 정보 */}
+
               <Box
                 sx={{
                   flex: 1,
@@ -167,21 +170,55 @@ const ProductDetailPage = () => {
                     {product.seller?.name || '판매자명'}
                   </Typography>
                   <Typography sx={{ color: '#888', fontSize: 14 }}>평균 평점 | -</Typography>
-                  <button
-                    style={{
-                      marginTop: 40,
-                      padding: '6px 18px',
-                      border: '1px solid #EA002C',
-                      borderRadius: 4,
-                      background: '#fff',
-                      color: '#EA002C',
-                      cursor: 'pointer',
-                      fontWeight: 600,
-                    }}
-                    onClick={handleReport}
-                  >
-                    신고하기
-                  </button>
+
+                  {isOwner ? (
+                    <Box sx={{ display: 'flex', gap: 2, mt: 4 }}>
+                      <button
+                        style={{
+                          padding: '6px 18px',
+                          border: '1px solid #1976d2',
+                          borderRadius: 4,
+                          background: '#1976d2',
+                          color: '#fff',
+                          cursor: 'pointer',
+                          fontWeight: 600,
+                        }}
+                        onClick={() => navigate(`/products/edit/${product.id}`)}
+                      >
+                        수정하기
+                      </button>
+                      <button
+                        style={{
+                          padding: '6px 18px',
+                          border: '1px solid #EA002C',
+                          borderRadius: 4,
+                          background: '#fff',
+                          color: '#EA002C',
+                          cursor: 'pointer',
+                          fontWeight: 600,
+                        }}
+                        onClick={handleReport}
+                      >
+                        신고하기
+                      </button>
+                    </Box>
+                  ) : (
+                    <button
+                      style={{
+                        marginTop: 40,
+                        padding: '6px 18px',
+                        border: '1px solid #EA002C',
+                        borderRadius: 4,
+                        background: '#fff',
+                        color: '#EA002C',
+                        cursor: 'pointer',
+                        fontWeight: 600,
+                      }}
+                      onClick={handleReport}
+                    >
+                      신고하기
+                    </button>
+                  )}
                 </Box>
               </Box>
             </Box>

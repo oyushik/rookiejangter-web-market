@@ -1,17 +1,17 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import App from './App.jsx'
+import App from './App.jsx';
 import { Provider } from "react-redux";
-import { BrowserRouter} from 'react-router-dom';
+import { BrowserRouter } from 'react-router-dom';
 import { user } from "./redux/user";
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
-import './index.css'
+import './index.css';
 
 const theme = createTheme({
   palette: {
     primary: {
-      main: '#FF6F0F', 
+      main: '#FF6F0F',
     },
     background: {
       default: '#f9f9f9',

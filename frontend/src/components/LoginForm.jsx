@@ -2,7 +2,8 @@ import React, { useState, useMemo } from 'react';
 import { TextField, Button, Box, Typography } from '@mui/material';
 import { loginUser } from '../api/auth';
 import { useNavigate } from 'react-router-dom';
-import useAuthStore from '../store/authStore'; // Zustand 스토어 임포트
+import useAuthStore from '../store/authStore'; // Zustand
+import axios from 'axios';
 
 const LoginForm = () => {
   const [formData, setFormData] = useState({
@@ -18,7 +19,7 @@ const LoginForm = () => {
 
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const { login } = useAuthStore(); // Zustand 스토어의 login 액션 사용
+  const { login } = useAuthStore(); // Zustand
 
   const validateField = (name, value) => {
     let message = '';
@@ -78,11 +79,19 @@ const LoginForm = () => {
 
     setLoading(true);
     try {
-      const res = await loginUser({ loginId: formData.loginId, password: formData.password });
+      const res = await loginUser({
+        loginId: formData.loginId,
+        password: formData.password,
+      });
+
       if (res.data && res.data.accessToken) {
-        // Zustand의 login 액션 호출
+        // ✅ Axios 기본 헤더에 토큰 설정
+        axios.defaults.headers.common['Authorization'] = `Bearer ${res.data.accessToken}`;
+
+        // Zustand에도 저장 (선택사항)
         login(res.data.accessToken, res.data.userName);
       }
+
       alert('로그인 완료!');
       navigate('/');
     } catch (err) {
