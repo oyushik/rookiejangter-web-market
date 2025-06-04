@@ -27,27 +27,31 @@ spring:
     username: sa
     password:
     driverClassName: org.h2.Driver
+    # H2에는 커넥션 초기화 SQL이 필요없음 (MySQL 전용)
+    # hikari:
+    #   connection-init-sql: SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci
 
   jpa:
     hibernate:
-      ddl-auto: none # <-- 테스트 환경에서도 Flyway가 DDL을 담당하므로 'none'으로 설정
+      ddl-auto: create-drop
     show-sql: true
     database-platform: org.hibernate.dialect.H2Dialect
+    # H2용 JPA 설정 (UTF-8 관련 MySQL 설정 제거)
     properties:
       hibernate:
         format_sql: true
+        # H2는 기본적으로 UTF-8을 지원하므로 별도 인코딩 설정 불필요
+        # connection 관련 MySQL 설정들 제거
 
-  sql:
-    init:
-      mode: never # <-- 스프링 부트의 내장 SQL 초기화 기능 비활성화
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
 
-  flyway: # <-- Flyway 설정 블록
-    locations: classpath:db/migration # 마이그레이션 스크립트가 위치할 경로
-    enabled: true # Flyway 활성화
-    clean-disabled: false # 테스트 환경에서는 flyway:clean을 허용 (기본값 false이므로 생략 가능)
-    # 테스트 환경에서는 매번 깨끗한 DB를 원할 때 clean을 사용하거나,
-    # @BeforeEach 등에서 flyway.clean()을 호출하는 방식으로 사용합니다.
-    # baseline-on-migrate: true # 테스트에서는 보통 필요 없지만, 필요하면 추가
+  data:
+    redis:
+      host: localhost
+      port: 6379
 
 jwt:
   secret: "64461f01e1af406da538b9c48d801ce59142452199ff112fb5404c8e7e98e3ff"
