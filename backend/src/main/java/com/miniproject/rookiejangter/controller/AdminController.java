@@ -18,6 +18,7 @@ public class AdminController {
     private final UserService userService;
 
     // 관리자의 유저 목록 조회
+    // 관리자인지 확인해야 함
     @GetMapping
     public ResponseEntity<UserDTO.UserListData> getAllUsers(@RequestParam Pageable pageable) {
         UserDTO.UserListData allUsers = userService.getAllUsers(pageable);
