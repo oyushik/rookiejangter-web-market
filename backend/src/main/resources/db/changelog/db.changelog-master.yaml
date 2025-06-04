@@ -1,6 +1,0 @@
-# src/main/resources/db/changelog/db.changelog-master.yaml
-
-databaseChangeLog:
-  - includeAll:
-      path: db/changelog/changes/
-      relativeToChangelogFile: true
