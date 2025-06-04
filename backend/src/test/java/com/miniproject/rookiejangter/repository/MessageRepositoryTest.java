@@ -115,7 +115,7 @@ public class MessageRepositoryTest {
     @Test
     void findByUserId() {
         List<Message> foundMessages = messageRepository.findByUser_UserId(message1.getUser().getUserId());
-        assertThat(foundMessages.get(0).getUser().getUserId()).isEqualTo(1L);
+        assertThat(foundMessages.get(0).getUser().getUserId()).isEqualTo(message1.getUser().getUserId());
         assertThat(foundMessages.get(0).getUser().getUserName()).isEqualTo("구매자1");
     }
 

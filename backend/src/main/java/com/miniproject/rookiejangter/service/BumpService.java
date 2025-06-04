@@ -3,9 +3,10 @@ package com.miniproject.rookiejangter.service;
 import com.miniproject.rookiejangter.controller.dto.BumpDTO;
 import com.miniproject.rookiejangter.entity.Bump;
 import com.miniproject.rookiejangter.entity.Product;
+import com.miniproject.rookiejangter.exception.BusinessException;
+import com.miniproject.rookiejangter.exception.ErrorCode;
 import com.miniproject.rookiejangter.repository.BumpRepository;
 import com.miniproject.rookiejangter.repository.ProductRepository;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,14 +29,14 @@ public class BumpService {
     @Transactional
     public BumpDTO.Response bumpProduct(Long productId) {
         Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new EntityNotFoundException("게시글을 찾을 수 없습니다: " + productId));
+                .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_NOT_FOUND, productId));
 
         LocalDateTime todayStart = LocalDateTime.of(LocalDate.now(), LocalTime.MIN);
         LocalDateTime todayEnd = LocalDateTime.of(LocalDate.now(), LocalTime.MAX);
 
         long bumpsToday = bumpRepository.countByProduct_ProductIdAndBumpedAtBetween(productId, todayStart, todayEnd); //
         if (bumpsToday >= MAX_BUMPS_PER_DAY) {
-            throw new IllegalStateException("오늘 해당 게시글의 끌어올리기 가능 횟수를 초과했습니다.");
+            throw new BusinessException(ErrorCode.PRODUCT_CANNOT_BUMP, "일일 최대 끌어올리기 횟수(" + MAX_BUMPS_PER_DAY + "회)를 초과했습니다.");
         }
 
         Optional<Bump> latestBumpOpt = bumpRepository.findTopByProduct_ProductIdOrderByBumpedAtDesc(productId); //
@@ -64,7 +65,7 @@ public class BumpService {
     @Transactional(readOnly = true)
     public List<BumpDTO.Response> getBumpsForProduct(Long productId) {
         if (!productRepository.existsById(productId)) {
-            throw new EntityNotFoundException("게시글을 찾을 수 없습니다: " + productId);
+            throw new BusinessException(ErrorCode.PRODUCT_NOT_FOUND, productId);
         }
         return bumpRepository.findByProduct_ProductId(productId).stream() //
                 .map(BumpDTO.Response::fromEntity)
@@ -74,7 +75,7 @@ public class BumpService {
     @Transactional(readOnly = true)
     public Long getTodaysBumpCountForProduct(Long productId) {
         if (!productRepository.existsById(productId)) {
-            throw new EntityNotFoundException("게시글을 찾을 수 없습니다: " + productId);
+            throw new BusinessException(ErrorCode.PRODUCT_NOT_FOUND, productId);
         }
         LocalDateTime todayStart = LocalDateTime.of(LocalDate.now(), LocalTime.MIN);
         LocalDateTime todayEnd = LocalDateTime.of(LocalDate.now(), LocalTime.MAX);

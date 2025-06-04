@@ -1,9 +1,10 @@
 package com.miniproject.rookiejangter.service;
 
+import com.miniproject.rookiejangter.config.PasswordEncoderConfig;
 import com.miniproject.rookiejangter.controller.dto.UserDTO;
 import com.miniproject.rookiejangter.entity.User;
-import com.miniproject.rookiejangter.exception.AuthenticationException;
-import com.miniproject.rookiejangter.exception.InvalidCredentialsException;
+import com.miniproject.rookiejangter.exception.BusinessException;
+import com.miniproject.rookiejangter.exception.ErrorCode;
 import com.miniproject.rookiejangter.provider.JwtProvider;
 import com.miniproject.rookiejangter.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,12 +16,12 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Date;
 import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
@@ -35,7 +36,7 @@ class AuthServiceTest {
     private UserRepository userRepository;
 
     @Mock
-    private PasswordEncoder passwordEncoder;
+    private PasswordEncoderConfig passwordEncoderConfig;
 
     @Mock
     private JwtProvider jwtProvider;
@@ -45,6 +46,10 @@ class AuthServiceTest {
 
     @Mock
     private ValueOperations<String, String> valueOperations;
+
+    // PasswordEncoder 인터페이스의 Mock 객체를 별도로 준비합니다.
+    @Mock
+    private PasswordEncoder actualPasswordEncoder; // 실제 패스워드 인코더 목 객체
 
     private User testUser;
     private UserDTO.LoginRequest loginRequest;
@@ -65,6 +70,9 @@ class AuthServiceTest {
 
         // Redis Mock setup - lenient to prevent unnecessary stubbing warnings
         lenient().when(redisTemplate.opsForValue()).thenReturn(valueOperations);
+
+        // PasswordEncoderConfig의 passwordEncoder() 메서드가 실제 PasswordEncoder 목 객체를 반환하도록 설정
+        lenient().when(passwordEncoderConfig.passwordEncoder()).thenReturn(actualPasswordEncoder);
     }
 
     @Test
@@ -72,7 +80,8 @@ class AuthServiceTest {
     void loginSuccess() {
         // Given
         when(userRepository.findByLoginId("testuser")).thenReturn(Optional.of(testUser));
-        when(passwordEncoder.matches("password123", "encodedPassword")).thenReturn(true);
+        // 실제 PasswordEncoder 목 객체의 matches 메서드를 목킹합니다.
+        when(actualPasswordEncoder.matches("password123", "encodedPassword")).thenReturn(true);
         when(jwtProvider.createAccessToken(testUser)).thenReturn("accessToken123");
         when(jwtProvider.createRefreshToken(testUser)).thenReturn("refreshToken123");
         when(jwtProvider.getRefreshTokenExpireTime()).thenReturn(604800000L); // 7 days
@@ -98,9 +107,9 @@ class AuthServiceTest {
         when(userRepository.findByLoginId("testuser")).thenReturn(Optional.empty());
 
         // When & Then
-        assertThrows(AuthenticationException.class, () -> {
-            authService.login(loginRequest);
-        });
+        BusinessException exception = assertThrows(BusinessException.class, () -> authService.login(loginRequest));
+        assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.USER_NOT_FOUND);
+        assertThat(exception.getMessage()).isEqualTo(ErrorCode.USER_NOT_FOUND.formatMessage("testuser"));
     }
 
     @Test
@@ -108,12 +117,12 @@ class AuthServiceTest {
     void loginFailure_PasswordMismatch() {
         // Given
         when(userRepository.findByLoginId("testuser")).thenReturn(Optional.of(testUser));
-        when(passwordEncoder.matches("password123", "encodedPassword")).thenReturn(false);
+        // 실제 PasswordEncoder 목 객체의 matches 메서드를 목킹합니다.
+        when(actualPasswordEncoder.matches("password123", "encodedPassword")).thenReturn(false);
 
         // When & Then
-        assertThrows(InvalidCredentialsException.class, () -> {
-            authService.login(loginRequest);
-        });
+        BusinessException exception = assertThrows(BusinessException.class, () -> authService.login(loginRequest));
+        assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.PASSWORD_MISMATCH);
     }
 
     @Test
@@ -128,6 +137,7 @@ class AuthServiceTest {
 
         when(jwtProvider.validateToken(accessToken)).thenReturn(true);
         when(jwtProvider.isTokenExpired(accessToken)).thenReturn(false);
+        // Claims::getExpiration 목킹은 그대로 유지합니다.
         when(jwtProvider.getClaimFromToken(eq(accessToken), any())).thenReturn(expirationDate);
 
         // When
@@ -167,8 +177,7 @@ class AuthServiceTest {
         when(jwtProvider.validateToken(refreshToken)).thenReturn(false);
 
         // When & Then
-        assertThrows(BadCredentialsException.class, () -> {
-            authService.refreshToken(refreshToken);
-        });
+        BusinessException exception = assertThrows(BusinessException.class, () -> authService.refreshToken(refreshToken));
+        assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.INVALID_REFRESH_TOKEN_DETAIL);
     }
 }

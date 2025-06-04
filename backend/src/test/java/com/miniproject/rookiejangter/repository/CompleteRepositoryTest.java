@@ -1,5 +1,6 @@
 package com.miniproject.rookiejangter.repository;
 
+import com.miniproject.rookiejangter.entity.Category;
 import com.miniproject.rookiejangter.entity.Complete;
 import com.miniproject.rookiejangter.entity.Product;
 import com.miniproject.rookiejangter.entity.User;
@@ -26,7 +27,9 @@ public class CompleteRepositoryTest {
 
     private User buyer;
     private User seller;
-    private Product product;
+    private Category category;
+    private Product product1;
+    private Product product2;
     private Complete complete;
 
     @BeforeEach
@@ -47,17 +50,34 @@ public class CompleteRepositoryTest {
                 .build();
         entityManager.persist(seller);
 
-        product = Product.builder()
+        category = Category.builder()
+                .categoryName("Test Category")
+                .build();
+        entityManager.persist(category);
+        entityManager.flush();
+
+        product1 = Product.builder()
+                .category(category)
                 .title("Test Product 1")
                 .content("Test Content 1")
                 .price(10000)
                 .user(seller)
                 .build();
-        entityManager.persist(product);
+        entityManager.persist(product1);
+        entityManager.flush(); // Product ID를 얻기 위해 flush
+
+        product2 = Product.builder()
+                .category(category)
+                .title("Test Product 2")
+                .content("Test Content 2")
+                .price(10000)
+                .user(seller)
+                .build();
+        entityManager.persist(product2);
         entityManager.flush(); // Product ID를 얻기 위해 flush
 
         complete = Complete.builder()
-                .product(product)
+                .product(product1)
                 .buyer(buyer)
                 .seller(seller)
                 .completedAt(LocalDateTime.now())
@@ -68,23 +88,14 @@ public class CompleteRepositoryTest {
 
     @Test
     void saveComplete() {
-        Product newProduct = Product.builder()
-                .title("New Test Product")
-                .content("New Test Content")
-                .price(20000)
-                .user(seller)
-                .build();
-        entityManager.persist(newProduct);
-        entityManager.flush();
-
         Complete savedComplete = completeRepository.save(Complete.builder()
-                .product(newProduct)
+                .product(product2)
                 .buyer(User.builder().userId(buyer.getUserId()).build())
                 .seller(User.builder().userId(seller.getUserId()).build())
                 .completedAt(LocalDateTime.now().plusHours(1))
                 .build());
 
-        Optional<Complete> foundComplete = completeRepository.findById(savedComplete.getProduct().getProductId());
+        Optional<Complete> foundComplete = completeRepository.findByProduct_ProductId(savedComplete.getProduct().getProductId());
         assertThat(foundComplete).isPresent();
         assertThat(foundComplete.get().getBuyer().getUserId()).isEqualTo(buyer.getUserId());
         assertThat(foundComplete.get().getSeller().getUserId()).isEqualTo(seller.getUserId());
@@ -99,7 +110,7 @@ public class CompleteRepositoryTest {
 
     @Test
     void findByProductId() {
-        Optional<Complete> foundComplete = completeRepository.findById(product.getProductId());
+        Optional<Complete> foundComplete = completeRepository.findByProduct_ProductId(product1.getProductId());
         assertThat(foundComplete).isPresent();
         assertThat(foundComplete.get().getBuyer().getUserId()).isEqualTo(buyer.getUserId());
         assertThat(foundComplete.get().getSeller().getUserId()).isEqualTo(seller.getUserId());
@@ -111,7 +122,7 @@ public class CompleteRepositoryTest {
         // 현재 Complete 엔티티 구조상 buyer 객체를 통해 접근해야 함
         List<Complete> foundComplete = completeRepository.findByBuyer_UserId(buyer.getUserId());
         assertThat(foundComplete).isNotNull();
-        assertThat(foundComplete.get(0).getProduct().getProductId()).isEqualTo(product.getProductId());
+        assertThat(foundComplete.get(0).getProduct().getProductId()).isEqualTo(product1.getProductId());
     }
 
     @Test
@@ -120,6 +131,6 @@ public class CompleteRepositoryTest {
         // 현재 Complete 엔티티 구조상 seller 객체를 통해 접근해야 함
         List<Complete> foundComplete = completeRepository.findBySeller_UserId(seller.getUserId());
         assertThat(foundComplete).isNotNull();
-        assertThat(foundComplete.get(0).getProduct().getProductId()).isEqualTo(product.getProductId());
+        assertThat(foundComplete.get(0).getProduct().getProductId()).isEqualTo(product1.getProductId());
     }
 }

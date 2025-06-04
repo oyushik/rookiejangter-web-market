@@ -4,10 +4,11 @@ import com.miniproject.rookiejangter.controller.dto.DibsDTO;
 import com.miniproject.rookiejangter.entity.Dibs;
 import com.miniproject.rookiejangter.entity.Product;
 import com.miniproject.rookiejangter.entity.User;
+import com.miniproject.rookiejangter.exception.BusinessException;
+import com.miniproject.rookiejangter.exception.ErrorCode;
 import com.miniproject.rookiejangter.repository.DibsRepository;
 import com.miniproject.rookiejangter.repository.ProductRepository;
 import com.miniproject.rookiejangter.repository.UserRepository;
-import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -21,7 +22,6 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -84,7 +84,8 @@ public class DibsServiceTest {
         when(dibsRepository.existsByUser_UserIdAndProduct_ProductId(userId, productId)).thenReturn(true);
 
         // When & Then
-        assertThrows(IllegalStateException.class, () -> dibsService.addDibs(userId, productId));
+        BusinessException exception = assertThrows(BusinessException.class, () -> dibsService.addDibs(userId, productId));
+        assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.DIBS_ALREADY_EXISTS);
         verify(dibsRepository, times(1)).existsByUser_UserIdAndProduct_ProductId(userId, productId);
         verify(userRepository, never()).findById(anyLong());
         verify(productRepository, never()).findById(anyLong());
@@ -101,7 +102,9 @@ public class DibsServiceTest {
         when(userRepository.findById(userId)).thenReturn(Optional.empty());
 
         // When & Then
-        assertThrows(EntityNotFoundException.class, () -> dibsService.addDibs(userId, productId));
+        BusinessException exception = assertThrows(BusinessException.class, () -> dibsService.addDibs(userId, productId));
+        assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.USER_NOT_FOUND);
+        assertThat(exception.getMessage()).isEqualTo(ErrorCode.USER_NOT_FOUND.formatMessage(userId));
         verify(dibsRepository, times(1)).existsByUser_UserIdAndProduct_ProductId(userId, productId);
         verify(userRepository, times(1)).findById(userId);
         verify(productRepository, never()).findById(anyLong());
@@ -120,7 +123,9 @@ public class DibsServiceTest {
         when(productRepository.findById(productId)).thenReturn(Optional.empty());
 
         // When & Then
-        assertThrows(EntityNotFoundException.class, () -> dibsService.addDibs(userId, productId));
+        BusinessException exception = assertThrows(BusinessException.class, () -> dibsService.addDibs(userId, productId));
+        assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.PRODUCT_NOT_FOUND);
+        assertThat(exception.getMessage()).isEqualTo(ErrorCode.PRODUCT_NOT_FOUND.formatMessage(productId));
         verify(dibsRepository, times(1)).existsByUser_UserIdAndProduct_ProductId(userId, productId);
         verify(userRepository, times(1)).findById(userId);
         verify(productRepository, times(1)).findById(productId);
@@ -153,7 +158,8 @@ public class DibsServiceTest {
         when(dibsRepository.existsByUser_UserIdAndProduct_ProductId(userId, productId)).thenReturn(false);
 
         // When & Then
-        assertThrows(EntityNotFoundException.class, () -> dibsService.removeDibs(userId, productId));
+        BusinessException exception = assertThrows(BusinessException.class, () -> dibsService.removeDibs(userId, productId));
+        assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.DIBS_NOT_FOUND);
         verify(dibsRepository, times(1)).existsByUser_UserIdAndProduct_ProductId(userId, productId);
         verify(dibsRepository, never()).deleteByUser_UserIdAndProduct_ProductId(anyLong(), anyLong());
     }
@@ -216,7 +222,9 @@ public class DibsServiceTest {
         when(productRepository.findById(productId)).thenReturn(Optional.empty());
 
         // When & Then
-        assertThrows(EntityNotFoundException.class, () -> dibsService.getDibsStatus(userId, productId));
+        BusinessException exception = assertThrows(BusinessException.class, () -> dibsService.getDibsStatus(userId, productId));
+        assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.PRODUCT_NOT_FOUND);
+        assertThat(exception.getMessage()).isEqualTo(ErrorCode.PRODUCT_NOT_FOUND.formatMessage(productId));
         verify(dibsRepository, never()).existsByUser_UserIdAndProduct_ProductId(anyLong(), anyLong());
         verify(productRepository, times(1)).findById(productId);
         verify(dibsRepository, never()).findByProduct_ProductId(anyLong());
@@ -257,7 +265,9 @@ public class DibsServiceTest {
         when(userRepository.findById(userId)).thenReturn(Optional.empty());
 
         // When & Then
-        assertThrows(EntityNotFoundException.class, () -> dibsService.getUserDibsList(userId));
+        BusinessException exception = assertThrows(BusinessException.class, () -> dibsService.getUserDibsList(userId));
+        assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.USER_NOT_FOUND);
+        assertThat(exception.getMessage()).isEqualTo(ErrorCode.USER_NOT_FOUND.formatMessage(userId));
         verify(userRepository, times(1)).findById(userId);
         verify(dibsRepository, never()).findByUser_UserId(anyLong());
     }
@@ -293,7 +303,9 @@ public class DibsServiceTest {
         when(productRepository.findById(productId)).thenReturn(Optional.empty());
 
         // When & Then
-        assertThrows(EntityNotFoundException.class, () -> dibsService.getDibsCountForProduct(productId));
+        BusinessException exception = assertThrows(BusinessException.class, () -> dibsService.getDibsCountForProduct(productId));
+        assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.PRODUCT_NOT_FOUND);
+        assertThat(exception.getMessage()).isEqualTo(ErrorCode.PRODUCT_NOT_FOUND.formatMessage(productId));
         verify(productRepository, times(1)).findById(productId);
         verify(dibsRepository, never()).findByProduct_ProductId(anyLong());
     }

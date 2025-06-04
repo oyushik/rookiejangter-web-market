@@ -4,6 +4,8 @@ import com.miniproject.rookiejangter.controller.dto.UserDTO;
 import com.miniproject.rookiejangter.entity.Area;
 import com.miniproject.rookiejangter.entity.Ban;
 import com.miniproject.rookiejangter.entity.User;
+import com.miniproject.rookiejangter.exception.BusinessException;
+import com.miniproject.rookiejangter.exception.ErrorCode;
 import com.miniproject.rookiejangter.repository.AreaRepository;
 import com.miniproject.rookiejangter.repository.BanRepository;
 import com.miniproject.rookiejangter.repository.UserRepository;
@@ -16,8 +18,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -34,19 +34,20 @@ public class UserService {
     public UserDTO.Response createUser(UserDTO.SignUpRequest requestDto) {
 
         if (userRepository.existsByLoginId(requestDto.getLoginId())) {
-            throw new IllegalArgumentException("이미 사용 중인 로그인 ID입니다: " + requestDto.getLoginId());
+            throw new BusinessException(ErrorCode.LOGIN_ID_ALREADY_EXISTS, requestDto.getLoginId());
         }
 
         if (userRepository.existsByPhone(requestDto.getPhone())) {
-            throw new IllegalArgumentException("이미 사용 중인 전화번호입니다: " + requestDto.getPhone());
+            throw new BusinessException(ErrorCode.PHONE_ALREADY_EXISTS, requestDto.getPhone());
         }
 
 
-//        Area area = areaRepository.findById(requestDto.getAreaId().intValue())        .orElseThrow(() -> new EntityNotFoundException("해당 지역을 찾을 수 없습니다: " + requestDto.getAreaId()));
+        Area area = areaRepository.findById(requestDto.getAreaId().intValue())
+                .orElseThrow(() -> new EntityNotFoundException("해당 지역을 찾을 수 없습니다: " + requestDto.getAreaId()));
         // (테스트)
-        Area area = new Area();
-        area.setAreaName("서울 특별시");
-        areaRepository.save(area);
+//        Area area = new Area();
+//        area.setAreaName("서울 특별시");
+//        areaRepository.save(area);
 
         User user = User.builder()
                 .loginId(requestDto.getLoginId())
@@ -66,29 +67,29 @@ public class UserService {
     @Transactional(readOnly = true)
     public UserDTO.Response getUserById(Long userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException("사용자를 찾을 수 없습니다: " + userId));
+                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND, String.valueOf(userId)));
         return UserDTO.Response.fromEntity(user);
     }
 
     @Transactional(readOnly = true)
     public UserDTO.Response getUserByUserName(String userName) {
         User user = userRepository.findByUserName(userName)
-                .orElseThrow(() -> new EntityNotFoundException("사용자를 찾을 수 없습니다: " + userName));
+                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND, userName));
         return UserDTO.Response.fromEntity(user);
     }
 
     @Transactional(readOnly = true)
     public UserDTO.Response getUserByLoginId(String loginId) {
         User user = userRepository.findByLoginId(loginId)
-                .orElseThrow(() -> new EntityNotFoundException("사용자를 찾을 수 없습니다: " + loginId));
+                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND, loginId));
         return UserDTO.Response.fromEntity(user);
     }
 
 
     @Transactional
-    public UserDTO.Response updateUser(String username, UserDTO.UpdateRequest requestDto) {
+    public UserDTO.Response updateUser( String username, UserDTO.UpdateRequest requestDto) {
         User user = userRepository.findByUserName(username)
-                .orElseThrow(() -> new EntityNotFoundException("사용자를 찾을 수 없습니다: " + username));
+                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND, username));
 
         if (requestDto.getUserName() != null && !requestDto.getUserName().isEmpty()) {
             user.setUserName(requestDto.getUserName());
@@ -97,7 +98,7 @@ public class UserService {
         if (requestDto.getPhone() != null && !requestDto.getPhone().isEmpty()) {
 
             if (!user.getPhone().equals(requestDto.getPhone()) && userRepository.existsByPhone(requestDto.getPhone())) {
-                throw new IllegalArgumentException("이미 사용 중인 전화번호입니다: " + requestDto.getPhone());
+                throw new BusinessException(ErrorCode.PHONE_ALREADY_EXISTS, requestDto.getPhone());
             }
             user.setPhone(requestDto.getPhone());
         }
@@ -114,7 +115,7 @@ public class UserService {
     @Transactional
     public UserDTO.Response updateUserStatus(Long userId, UserDTO.StatusUpdateRequest requestDto) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException("사용자를 찾을 수 없습니다: " + userId));
+                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND, String.valueOf(userId)));
 
         user.setIsBanned(requestDto.getIsBanned());
 
@@ -136,7 +137,7 @@ public class UserService {
     @Transactional
     public void deleteUser(String username) {
         User user = userRepository.findByUserName(username)
-                .orElseThrow(() -> new EntityNotFoundException("사용자를 찾을 수 없습니다: " + username));
+                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND, username));
         userRepository.delete(user);
     }
 

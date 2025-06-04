@@ -1,6 +1,8 @@
 package com.miniproject.rookiejangter.service;
 
 import com.miniproject.rookiejangter.entity.User;
+import com.miniproject.rookiejangter.exception.BusinessException;
+import com.miniproject.rookiejangter.exception.ErrorCode;
 import com.miniproject.rookiejangter.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -20,7 +22,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String userId) throws UsernameNotFoundException {
         User user = userRepository.findById(Long.parseLong(userId))
-                .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다: " + userId));
+                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND, userId));
 
         return org.springframework.security.core.userdetails.User.builder()
                 .username(String.valueOf(user.getUserId()))

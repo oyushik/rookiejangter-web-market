@@ -2,6 +2,7 @@ package com.miniproject.rookiejangter.service;
 
 import com.miniproject.rookiejangter.controller.dto.ProductDTO;
 import com.miniproject.rookiejangter.entity.*;
+import com.miniproject.rookiejangter.exception.BusinessException;
 import com.miniproject.rookiejangter.repository.*;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.DisplayName;
@@ -103,7 +104,7 @@ public class ProductServiceTest {
         when(userRepository.findById(userId)).thenReturn(Optional.empty());
 
         // When & Then
-        assertThrows(EntityNotFoundException.class, () -> productService.createProduct(requestDto, userId));
+        assertThrows(BusinessException.class, () -> productService.createProduct(requestDto, userId));
         verify(userRepository, times(1)).findById(userId);
         verify(categoryRepository, never()).findById(anyInt());
         verify(productRepository, never()).save(any());
@@ -121,7 +122,7 @@ public class ProductServiceTest {
         when(categoryRepository.findById(1)).thenReturn(Optional.empty());
 
         // When & Then
-        assertThrows(EntityNotFoundException.class, () -> productService.createProduct(requestDto, userId));
+        assertThrows(BusinessException.class, () -> productService.createProduct(requestDto, userId));
         verify(userRepository, times(1)).findById(userId);
         verify(categoryRepository, times(1)).findById(1);
         verify(productRepository, never()).save(any());
@@ -176,7 +177,7 @@ public class ProductServiceTest {
         when(productRepository.findById(productId)).thenReturn(Optional.empty());
 
         // When & Then
-        assertThrows(EntityNotFoundException.class, () -> productService.getProductById(productId, currentUserId));
+        assertThrows(BusinessException.class, () -> productService.getProductById(productId, currentUserId));
         verify(productRepository, times(1)).findById(productId);
         verify(imageRepository, never()).findByProduct_ProductId(anyLong());
         verify(productRepository, never()).save(any());
@@ -244,7 +245,7 @@ public class ProductServiceTest {
         when(productRepository.findById(productId)).thenReturn(Optional.empty());
 
         // When & Then
-        assertThrows(EntityNotFoundException.class, () -> productService.updateProduct(productId, requestDto, userId));
+        assertThrows(BusinessException.class, () -> productService.updateProduct(productId, requestDto, userId));
         verify(productRepository, times(1)).findById(productId);
         verify(categoryRepository, never()).findById(anyInt());
         verify(imageRepository, never()).deleteAll(anyList());
@@ -265,7 +266,7 @@ public class ProductServiceTest {
         when(productRepository.findById(productId)).thenReturn(Optional.of(product));
 
         // When & Then
-        assertThrows(SecurityException.class, () -> productService.updateProduct(productId, requestDto, userId));
+        assertThrows(BusinessException.class, () -> productService.updateProduct(productId, requestDto, userId));
         verify(productRepository, times(1)).findById(productId);
         verify(categoryRepository, never()).findById(anyInt());
         verify(imageRepository, never()).deleteAll(anyList());
@@ -307,7 +308,7 @@ public class ProductServiceTest {
         when(productRepository.findById(productId)).thenReturn(Optional.empty());
 
         // When & Then
-        assertThrows(EntityNotFoundException.class, () -> productService.deleteProduct(productId, userId));
+        assertThrows(BusinessException.class, () -> productService.deleteProduct(productId, userId));
         verify(productRepository, times(1)).findById(productId);
         verify(imageRepository, never()).deleteAll(anyList());
         verify(dibsRepository, never()).deleteAll(anyList());
@@ -327,7 +328,7 @@ public class ProductServiceTest {
         when(productRepository.findById(productId)).thenReturn(Optional.of(product));
 
         // When & Then
-        assertThrows(SecurityException.class, () -> productService.deleteProduct(productId, userId));
+        assertThrows(BusinessException.class, () -> productService.deleteProduct(productId, userId));
         verify(productRepository, times(1)).findById(productId);
         verify(imageRepository, never()).deleteAll(anyList());
         verify(dibsRepository, never()).deleteAll(anyList());
@@ -421,7 +422,7 @@ public class ProductServiceTest {
         when(categoryRepository.findById(categoryId)).thenReturn(Optional.empty());
 
         // When & Then
-        assertThrows(EntityNotFoundException.class, () -> productService.getProductsByCategory(categoryId, Pageable.ofSize(2), currentUserId));
+        assertThrows(BusinessException.class, () -> productService.getProductsByCategory(categoryId, Pageable.ofSize(2), currentUserId));
         verify(categoryRepository, times(1)).findById(categoryId);
         verify(productRepository, never()).findByCategory(any(), any());
         verify(imageRepository, never()).findByProduct_ProductId(anyLong());
@@ -478,7 +479,7 @@ public class ProductServiceTest {
         when(userRepository.findById(targetUserId)).thenReturn(Optional.empty());
 
         // When & Then
-        assertThrows(EntityNotFoundException.class, () -> productService.getProductsByUser(targetUserId, Pageable.ofSize(2), currentUserId));
+        assertThrows(BusinessException.class, () -> productService.getProductsByUser(targetUserId, Pageable.ofSize(2), currentUserId));
         verify(userRepository, times(1)).findById(targetUserId);
         verify(productRepository, never()).findByUser(any(), any());
         verify(imageRepository, never()).findByProduct_ProductId(anyLong());
@@ -610,7 +611,7 @@ public class ProductServiceTest {
         when(productRepository.findById(productId)).thenReturn(Optional.empty());
 
         // When & Then
-        assertThrows(EntityNotFoundException.class, () -> productService.updateProductStatus(productId, true, null, userId));
+        assertThrows(BusinessException.class, () -> productService.updateProductStatus(productId, true, null, userId));
         verify(productRepository, times(1)).findById(productId);
         verify(productRepository, never()).save(any());
     }
@@ -627,7 +628,7 @@ public class ProductServiceTest {
         when(productRepository.findById(productId)).thenReturn(Optional.of(product));
 
         // When & Then
-        assertThrows(SecurityException.class, () -> productService.updateProductStatus(productId, true, null, userId));
+        assertThrows(BusinessException.class, () -> productService.updateProductStatus(productId, true, null, userId));
         verify(productRepository, times(1)).findById(productId);
         verify(productRepository, never()).save(any());
     }

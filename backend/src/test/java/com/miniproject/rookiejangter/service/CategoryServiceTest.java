@@ -2,8 +2,9 @@ package com.miniproject.rookiejangter.service;
 
 import com.miniproject.rookiejangter.controller.dto.CategoryDTO;
 import com.miniproject.rookiejangter.entity.Category;
+import com.miniproject.rookiejangter.exception.BusinessException;
+import com.miniproject.rookiejangter.exception.ErrorCode;
 import com.miniproject.rookiejangter.repository.CategoryRepository;
-import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,7 +17,6 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -61,7 +61,9 @@ public class CategoryServiceTest {
         when(categoryRepository.findByCategoryName(categoryName)).thenReturn(Optional.of(new Category()));
 
         // When & Then
-        assertThrows(IllegalArgumentException.class, () -> categoryService.createCategory(categoryName));
+        BusinessException exception = assertThrows(BusinessException.class, () -> categoryService.createCategory(categoryName));
+        assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.CATEGORY_NAME_ALREADY_EXISTS);
+        assertThat(exception.getMessage()).isEqualTo(ErrorCode.CATEGORY_NAME_ALREADY_EXISTS.formatMessage(categoryName));
         verify(categoryRepository, times(1)).findByCategoryName(categoryName);
         verify(categoryRepository, never()).save(any(Category.class));
     }
@@ -88,14 +90,16 @@ public class CategoryServiceTest {
     }
 
     @Test
-    @DisplayName("ID로 카테고리 조회 실패 테스트 (EntityNotFoundException)")
+    @DisplayName("ID로 카테고리 조회 실패 테스트 (BusinessException)")
     void getCategoryByIdNotFoundTest() {
         // Given
         Integer invalidCategoryId = 999;
         when(categoryRepository.findById(invalidCategoryId)).thenReturn(Optional.empty());
 
         // When & Then
-        assertThrows(EntityNotFoundException.class, () -> categoryService.getCategoryById(invalidCategoryId));
+        BusinessException exception = assertThrows(BusinessException.class, () -> categoryService.getCategoryById(invalidCategoryId));
+        assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.CATEGORY_NOT_FOUND);
+        assertThat(exception.getMessage()).isEqualTo(ErrorCode.CATEGORY_NOT_FOUND.formatMessage(invalidCategoryId));
         verify(categoryRepository, times(1)).findById(invalidCategoryId);
     }
 
@@ -120,14 +124,16 @@ public class CategoryServiceTest {
     }
 
     @Test
-    @DisplayName("이름으로 카테고리 조회 실패 테스트 (EntityNotFoundException)")
+    @DisplayName("이름으로 카테고리 조회 실패 테스트 (BusinessException)")
     void getCategoryByNameNotFoundTest() {
         // Given
         String invalidCategoryName = "가구";
         when(categoryRepository.findByCategoryName(invalidCategoryName)).thenReturn(Optional.empty());
 
         // When & Then
-        assertThrows(EntityNotFoundException.class, () -> categoryService.getCategoryByName(invalidCategoryName));
+        BusinessException exception = assertThrows(BusinessException.class, () -> categoryService.getCategoryByName(invalidCategoryName));
+        assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.CATEGORY_NOT_FOUND);
+        assertThat(exception.getMessage()).isEqualTo(ErrorCode.CATEGORY_NOT_FOUND.formatMessage(invalidCategoryName));
         verify(categoryRepository, times(1)).findByCategoryName(invalidCategoryName);
     }
 
@@ -206,7 +212,9 @@ public class CategoryServiceTest {
         when(categoryRepository.findById(invalidCategoryId)).thenReturn(Optional.empty());
 
         // When & Then
-        assertThrows(EntityNotFoundException.class, () -> categoryService.updateCategory(invalidCategoryId, newName));
+        BusinessException exception = assertThrows(BusinessException.class, () -> categoryService.updateCategory(invalidCategoryId, newName));
+        assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.CATEGORY_NOT_FOUND);
+        assertThat(exception.getMessage()).isEqualTo(ErrorCode.CATEGORY_NOT_FOUND.formatMessage(invalidCategoryId));
         verify(categoryRepository, times(1)).findById(invalidCategoryId);
         verify(categoryRepository, never()).findByCategoryName(anyString());
         verify(categoryRepository, never()).save(any(Category.class));
@@ -224,7 +232,9 @@ public class CategoryServiceTest {
         when(categoryRepository.findByCategoryName(newName)).thenReturn(Optional.of(new Category()));
 
         // When & Then
-        assertThrows(IllegalArgumentException.class, () -> categoryService.updateCategory(categoryId, newName));
+        BusinessException exception = assertThrows(BusinessException.class, () -> categoryService.updateCategory(categoryId, newName));
+        assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.CATEGORY_NAME_ALREADY_EXISTS);
+        assertThat(exception.getMessage()).isEqualTo(ErrorCode.CATEGORY_NAME_ALREADY_EXISTS.formatMessage(newName));
         verify(categoryRepository, times(1)).findById(categoryId);
         verify(categoryRepository, times(1)).findByCategoryName(newName);
         verify(categoryRepository, never()).save(any(Category.class));
@@ -255,7 +265,9 @@ public class CategoryServiceTest {
         when(categoryRepository.findById(invalidCategoryId)).thenReturn(Optional.empty());
 
         // When & Then
-        assertThrows(EntityNotFoundException.class, () -> categoryService.deleteCategory(invalidCategoryId));
+        BusinessException exception = assertThrows(BusinessException.class, () -> categoryService.deleteCategory(invalidCategoryId));
+        assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.CATEGORY_NOT_FOUND);
+        assertThat(exception.getMessage()).isEqualTo(ErrorCode.CATEGORY_NOT_FOUND.formatMessage(invalidCategoryId));
         verify(categoryRepository, times(1)).findById(invalidCategoryId);
         verify(categoryRepository, never()).delete(any());
     }

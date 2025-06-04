@@ -38,7 +38,7 @@ public class UserDTO {
         private String phone;
 
         @NotNull(message = "지역 ID는 필수입니다.")
-        private Long areaId;
+        private Integer areaId;
     }
 
     @Data
@@ -66,7 +66,7 @@ public class UserDTO {
         @Pattern(regexp = "^010-\\d{4}-\\d{4}$", message = "전화번호 형식은 010-XXXX-XXXX 입니다.")
         private String phone;
 
-        private Long areaId;
+        private Integer areaId;
     }
 
     @Data

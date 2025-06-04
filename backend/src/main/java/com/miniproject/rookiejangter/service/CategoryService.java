@@ -2,8 +2,9 @@ package com.miniproject.rookiejangter.service;
 
 import com.miniproject.rookiejangter.controller.dto.CategoryDTO;
 import com.miniproject.rookiejangter.entity.Category;
+import com.miniproject.rookiejangter.exception.BusinessException;
+import com.miniproject.rookiejangter.exception.ErrorCode;
 import com.miniproject.rookiejangter.repository.CategoryRepository;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,7 +21,7 @@ public class CategoryService {
     @Transactional
     public CategoryDTO.Response createCategory(String categoryName) {
         if (categoryRepository.findByCategoryName(categoryName).isPresent()) {
-            throw new IllegalArgumentException("이미 존재하는 카테고리 이름입니다: " + categoryName);
+            throw new BusinessException(ErrorCode.CATEGORY_NAME_ALREADY_EXISTS, categoryName);
         }
         Category category = Category.builder()
                 .categoryName(categoryName)
@@ -32,14 +33,14 @@ public class CategoryService {
     @Transactional(readOnly = true)
     public CategoryDTO.Response getCategoryById(Integer categoryId) {
         Category category = categoryRepository.findById(categoryId)
-                .orElseThrow(() -> new EntityNotFoundException("ID에 해당하는 카테고리를 찾을 수 없습니다: " + categoryId));
+                .orElseThrow(() -> new BusinessException(ErrorCode.CATEGORY_NOT_FOUND, categoryId));
         return CategoryDTO.Response.fromEntity(category);
     }
 
     @Transactional(readOnly = true)
     public CategoryDTO.Response getCategoryByName(String categoryName) {
         Category category = categoryRepository.findByCategoryName(categoryName)
-                .orElseThrow(() -> new EntityNotFoundException("이름에 해당하는 카테고리를 찾을 수 없습니다: " + categoryName));
+                .orElseThrow(() -> new BusinessException(ErrorCode.CATEGORY_NOT_FOUND, categoryName));
         return CategoryDTO.Response.fromEntity(category);
     }
 
@@ -60,11 +61,11 @@ public class CategoryService {
     @Transactional
     public CategoryDTO.Response updateCategory(Integer categoryId, String newCategoryName) {
         Category category = categoryRepository.findById(categoryId)
-                .orElseThrow(() -> new EntityNotFoundException("ID에 해당하는 카테고리를 찾을 수 없습니다: " + categoryId));
+                .orElseThrow(() -> new BusinessException(ErrorCode.CATEGORY_NOT_FOUND, categoryId));
 
         if (!category.getCategoryName().equals(newCategoryName) &&
                 categoryRepository.findByCategoryName(newCategoryName).isPresent()) {
-            throw new IllegalArgumentException("이미 존재하는 카테고리 이름입니다: " + newCategoryName);
+            throw new BusinessException(ErrorCode.CATEGORY_NAME_ALREADY_EXISTS, newCategoryName);
         }
 
         category.setCategoryName(newCategoryName);
@@ -75,7 +76,7 @@ public class CategoryService {
     @Transactional
     public void deleteCategory(Integer categoryId) {
         Category category = categoryRepository.findById(categoryId)
-                .orElseThrow(() -> new EntityNotFoundException("ID에 해당하는 카테고리를 찾을 수 없습니다: " + categoryId));
+                .orElseThrow(() -> new BusinessException(ErrorCode.CATEGORY_NOT_FOUND, categoryId));
         categoryRepository.delete(category);
     }
 }

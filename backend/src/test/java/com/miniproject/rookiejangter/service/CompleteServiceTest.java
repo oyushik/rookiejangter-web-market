@@ -4,10 +4,11 @@ import com.miniproject.rookiejangter.controller.dto.CompleteDTO;
 import com.miniproject.rookiejangter.entity.Complete;
 import com.miniproject.rookiejangter.entity.Product;
 import com.miniproject.rookiejangter.entity.User;
+import com.miniproject.rookiejangter.exception.BusinessException;
+import com.miniproject.rookiejangter.exception.ErrorCode;
 import com.miniproject.rookiejangter.repository.CompleteRepository;
 import com.miniproject.rookiejangter.repository.ProductRepository;
 import com.miniproject.rookiejangter.repository.UserRepository;
-import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -21,7 +22,6 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -91,7 +91,9 @@ public class CompleteServiceTest {
         when(productRepository.findById(productId)).thenReturn(Optional.empty());
 
         // When & Then
-        assertThrows(EntityNotFoundException.class, () -> completeService.createComplete(productId, buyerId, sellerId));
+        BusinessException exception = assertThrows(BusinessException.class, () -> completeService.createComplete(productId, buyerId, sellerId));
+        assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.PRODUCT_NOT_FOUND);
+        assertThat(exception.getMessage()).isEqualTo(ErrorCode.PRODUCT_NOT_FOUND.formatMessage(productId));
         verify(productRepository, times(1)).findById(productId);
         verify(userRepository, never()).findById(anyLong());
         verify(completeRepository, never()).findByProduct_ProductId(anyLong());
@@ -110,7 +112,9 @@ public class CompleteServiceTest {
         when(userRepository.findById(buyerId)).thenReturn(Optional.empty());
 
         // When & Then
-        assertThrows(EntityNotFoundException.class, () -> completeService.createComplete(productId, buyerId, sellerId));
+        BusinessException exception = assertThrows(BusinessException.class, () -> completeService.createComplete(productId, buyerId, sellerId));
+        assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.USER_NOT_FOUND);
+        assertThat(exception.getMessage()).isEqualTo(ErrorCode.USER_NOT_FOUND.formatMessage(buyerId));
         verify(productRepository, times(1)).findById(productId);
         verify(userRepository, times(1)).findById(buyerId);
         verify(userRepository, never()).findById(sellerId);
@@ -132,7 +136,9 @@ public class CompleteServiceTest {
         when(userRepository.findById(sellerId)).thenReturn(Optional.empty());
 
         // When & Then
-        assertThrows(EntityNotFoundException.class, () -> completeService.createComplete(productId, buyerId, sellerId));
+        BusinessException exception = assertThrows(BusinessException.class, () -> completeService.createComplete(productId, buyerId, sellerId));
+        assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.USER_NOT_FOUND);
+        assertThat(exception.getMessage()).isEqualTo(ErrorCode.USER_NOT_FOUND.formatMessage(sellerId));
         verify(productRepository, times(1)).findById(productId);
         verify(userRepository, times(1)).findById(buyerId);
         verify(userRepository, times(1)).findById(sellerId);
@@ -157,7 +163,8 @@ public class CompleteServiceTest {
         when(completeRepository.findByProduct_ProductId(productId)).thenReturn(Optional.of(existingComplete));
 
         // When & Then
-        assertThrows(IllegalStateException.class, () -> completeService.createComplete(productId, buyerId, sellerId));
+        BusinessException exception = assertThrows(BusinessException.class, () -> completeService.createComplete(productId, buyerId, sellerId));
+        assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.PRODUCT_ALREADY_COMPLETED);
         verify(productRepository, times(1)).findById(productId);
         verify(userRepository, times(1)).findById(buyerId);
         verify(userRepository, times(1)).findById(sellerId);
@@ -201,7 +208,9 @@ public class CompleteServiceTest {
         when(completeRepository.findByProduct_ProductId(productId)).thenReturn(Optional.empty());
 
         // When & Then
-        assertThrows(EntityNotFoundException.class, () -> completeService.getCompleteByProductId(productId));
+        BusinessException exception = assertThrows(BusinessException.class, () -> completeService.getCompleteByProductId(productId));
+        assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.COMPLETE_RECORD_NOT_FOUND_BY_PRODUCT_ID);
+        assertThat(exception.getMessage()).isEqualTo(ErrorCode.COMPLETE_RECORD_NOT_FOUND_BY_PRODUCT_ID.formatMessage(productId));
         verify(completeRepository, times(1)).findByProduct_ProductId(productId);
     }
 

@@ -2,8 +2,9 @@ package com.miniproject.rookiejangter.service;
 
 import com.miniproject.rookiejangter.controller.dto.ProductDTO;
 import com.miniproject.rookiejangter.entity.*;
+import com.miniproject.rookiejangter.exception.BusinessException;
+import com.miniproject.rookiejangter.exception.ErrorCode;
 import com.miniproject.rookiejangter.repository.*;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -30,9 +31,9 @@ public class ProductService {
     @Transactional
     public ProductDTO.Response createProduct(ProductDTO.Request requestDto, Long userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException("사용자를 찾을 수 없습니다: " + userId));
+                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND, userId));
         Category category = categoryRepository.findById(requestDto.getCategoryId())
-                .orElseThrow(() -> new EntityNotFoundException("카테고리를 찾을 수 없습니다: " + requestDto.getCategoryId()));
+                .orElseThrow(() -> new BusinessException(ErrorCode.CATEGORY_NOT_FOUND, requestDto.getCategoryId()));
 
         Product product = Product.builder()
                 .user(user)
@@ -63,7 +64,7 @@ public class ProductService {
     @Transactional
     public ProductDTO.Response getProductById(Long productId, Long currentUserId) {
         Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new EntityNotFoundException("게시글을 찾을 수 없습니다: " + productId));
+                .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_NOT_FOUND, productId));
 
         product.setViewCount(product.getViewCount() + 1);
         productRepository.save(product);
@@ -75,10 +76,10 @@ public class ProductService {
     @Transactional
     public ProductDTO.Response updateProduct(Long productId, ProductDTO.UpdateRequest requestDto, Long userId) {
         Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new EntityNotFoundException("게시글을 찾을 수 없습니다: " + productId));
+                .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_NOT_FOUND, productId));
 
         if (!product.getUser().getUserId().equals(userId)) {
-            throw new SecurityException("게시글 수정 권한이 없습니다.");
+            throw new BusinessException(ErrorCode.PRODUCT_OPERATION_FORBIDDEN, "수정");
         }
 
         if (requestDto.getTitle() != null) product.setTitle(requestDto.getTitle());
@@ -88,7 +89,7 @@ public class ProductService {
 
         if (requestDto.getCategoryId() != null) {
             Category category = categoryRepository.findById(requestDto.getCategoryId())
-                    .orElseThrow(() -> new EntityNotFoundException("카테고리를 찾을 수 없습니다: " + requestDto.getCategoryId()));
+                    .orElseThrow(() -> new BusinessException(ErrorCode.CATEGORY_NOT_FOUND, requestDto.getCategoryId()));
             product.setCategory(category);
         }
 
@@ -114,10 +115,10 @@ public class ProductService {
     @Transactional
     public void deleteProduct(Long productId, Long userId) {
         Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new EntityNotFoundException("게시글을 찾을 수 없습니다: " + productId));
+                .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_NOT_FOUND, productId));
 
         if (!product.getUser().getUserId().equals(userId)) {
-            throw new SecurityException("게시글 삭제 권한이 없습니다.");
+            throw new BusinessException(ErrorCode.PRODUCT_OPERATION_FORBIDDEN, "삭제");
         }
 
         imageRepository.deleteAll(imageRepository.findByProduct_ProductId(productId));
@@ -137,7 +138,7 @@ public class ProductService {
     @Transactional(readOnly = true)
     public ProductDTO.ProductListData getProductsByCategory(Integer categoryId, Pageable pageable, Long currentUserId) {
         Category category = categoryRepository.findById(categoryId)
-                .orElseThrow(() -> new EntityNotFoundException("카테고리를 찾을 수 없습니다: " + categoryId));
+                .orElseThrow(() -> new BusinessException(ErrorCode.CATEGORY_NOT_FOUND, categoryId));
         Page<Product> productPage = productRepository.findByCategory(category, pageable); //
         return convertToProductListData(productPage, currentUserId);
     }
@@ -145,7 +146,7 @@ public class ProductService {
     @Transactional(readOnly = true)
     public ProductDTO.ProductListData getProductsByUser(Long targetUserId, Pageable pageable, Long currentUserId) {
         User user = userRepository.findById(targetUserId)
-                .orElseThrow(() -> new EntityNotFoundException("사용자를 찾을 수 없습니다: " + targetUserId));
+                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND, targetUserId));
         Page<Product> productPage = productRepository.findByUser(user, pageable); //
         return convertToProductListData(productPage, currentUserId);
     }
@@ -231,10 +232,10 @@ public class ProductService {
     @Transactional
     public void updateProductStatus(Long productId, Boolean isReserved, Boolean isCompleted, Long userId) {
         Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new EntityNotFoundException("게시글을 찾을 수 없습니다: " + productId));
+                .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_NOT_FOUND, productId));
 
         if (!product.getUser().getUserId().equals(userId)) {
-            throw new SecurityException("게시글 상태 변경 권한이 없습니다.");
+            throw new BusinessException(ErrorCode.PRODUCT_OPERATION_FORBIDDEN, "상태 변경");
         }
         if (isReserved != null) {
             product.setIsReserved(isReserved);

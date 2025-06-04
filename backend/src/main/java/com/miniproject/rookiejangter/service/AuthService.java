@@ -3,12 +3,7 @@ package com.miniproject.rookiejangter.service;
 import com.miniproject.rookiejangter.config.PasswordEncoderConfig;
 import com.miniproject.rookiejangter.controller.dto.UserDTO;
 import com.miniproject.rookiejangter.entity.User;
-import com.miniproject.rookiejangter.exception.AuthenticationException;
-import com.miniproject.rookiejangter.exception.InvalidCredentialsException;
-import com.miniproject.rookiejangter.exception.LogoutException;
-import com.miniproject.rookiejangter.exception.TokenRefreshException;
-import com.miniproject.rookiejangter.exception.TokenValidationException;
-import com.miniproject.rookiejangter.exception.SessionInvalidationException;
+import com.miniproject.rookiejangter.exception.*;
 import com.miniproject.rookiejangter.provider.JwtProvider;
 import com.miniproject.rookiejangter.repository.UserRepository;
 import io.jsonwebtoken.Claims;
@@ -17,7 +12,6 @@ import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -41,11 +35,11 @@ public class AuthService {
         try {
             // 1. 사용자 조회
             User user = userRepository.findByLoginId(request.getLoginId())
-                    .orElseThrow(() -> new AuthenticationException("존재하지 않는 사용자입니다."));
+                    .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND, request.getLoginId()));
 
             // 2. 비밀번호 검증
             if (!passwordEncoder.passwordEncoder().matches(request.getPassword(), user.getPassword())) {
-                throw new InvalidCredentialsException("비밀번호가 일치하지 않습니다.");
+                throw new BusinessException(ErrorCode.PASSWORD_MISMATCH);
             }
 
             // 3. JWT 토큰 생성
@@ -71,12 +65,15 @@ public class AuthService {
                     .userName(user.getUserName())
                     .build();
 
-        } catch (AuthenticationException | InvalidCredentialsException e) {
-            log.error("로그인 처리 중 오류 발생: {}", e.getMessage());
-            throw e; // 커스텀 예외는 그대로 던짐
+        } catch (BusinessException e) { // Catch BusinessException first
+            log.error("로그인 처리 중 비즈니스 오류 발생: {}", e.getMessage());
+            throw e;
+        } catch (AuthenticationException | InvalidCredentialsException e) { // Keep specific auth exceptions if needed by framework/advice
+            log.error("로그인 처리 중 인증 오류 발생: {}", e.getMessage());
+            throw e;
         } catch (Exception e) {
-            log.error("로그인 처리 중 예상치 못한 오류 발생: {}", e.getMessage());
-            throw new AuthenticationException("로그인 처리 중 오류가 발생했습니다." + e.getMessage());
+            log.error("로그인 처리 중 예상치 못한 오류 발생: {}", e.getMessage(), e);
+            throw new BusinessException(ErrorCode.AUTH_UNEXPECTED_ERROR, "로그인", e.getMessage());
         }
     }
 
@@ -104,7 +101,7 @@ public class AuthService {
 
         } catch (Exception e) {
             log.error("로그아웃 처리 중 오류 발생: {}", e.getMessage());
-            throw new LogoutException("로그아웃 처리 중 오류가 발생했습니다.", e);
+            throw new BusinessException(ErrorCode.AUTH_UNEXPECTED_ERROR, "로그아웃", e.getMessage());
         }
     }
 
@@ -113,7 +110,7 @@ public class AuthService {
         try {
             // 1. RefreshToken 유효성 검증
             if (!jwtProvider.validateToken(refreshToken) || jwtProvider.isTokenExpired(refreshToken)) {
-                throw new TokenValidationException("유효하지 않은 RefreshToken입니다.");
+                throw new BusinessException(ErrorCode.INVALID_REFRESH_TOKEN_DETAIL);
             }
 
             // 2. RefreshToken에서 사용자 ID 추출
@@ -122,12 +119,12 @@ public class AuthService {
             // 3. Redis에서 저장된 RefreshToken과 비교
             String storedRefreshToken = redisTemplate.opsForValue().get(REFRESH_TOKEN_PREFIX + userId);
             if (storedRefreshToken == null || !storedRefreshToken.equals(refreshToken)) {
-                throw new TokenValidationException("RefreshToken이 일치하지 않습니다.");
+                throw new BusinessException(ErrorCode.INVALID_TOKEN, "저장된 RefreshToken과 일치하지 않습니다."); // Or a more specific error code
             }
 
             // 4. 사용자 정보 조회
             User user = userRepository.findById(Long.parseLong(userId))
-                    .orElseThrow(() -> new AuthenticationException("사용자를 찾을 수 없습니다."));
+                    .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND, userId));
 
             // 5. 새로운 AccessToken 생성
             String newAccessToken = jwtProvider.createAccessToken(user);
@@ -138,12 +135,18 @@ public class AuthService {
                     .accessToken(newAccessToken)
                     .build();
 
-        } catch (TokenValidationException | AuthenticationException e) {
-            log.error("토큰 갱신 중 오류 발생: {}", e.getMessage());
-            throw e; // 커스텀 예외는 그대로 던짐
+//        } catch (TokenValidationException | AuthenticationException e) {
+//            log.error("토큰 갱신 중 오류 발생: {}", e.getMessage());
+//            throw e; // 커스텀 예외는 그대로 던짐
+        } catch (BusinessException e) { // BusinessException은 그대로 던지도록 수정
+            log.error("토큰 갱신 중 비즈니스 오류 발생: {}", e.getMessage());
+            throw e;
+        } catch (TokenValidationException | AuthenticationException e) { // 특정 예외는 여전히 처리
+            log.error("토큰 갱신 중 인증/토큰 유효성 오류 발생: {}", e.getMessage());
+            throw e;
         } catch (Exception e) {
             log.error("토큰 갱신 중 예상치 못한 오류 발생: {}", e.getMessage());
-            throw new TokenRefreshException("토큰 갱신 처리 중 오류가 발생했습니다.", e);
+            throw new BusinessException(ErrorCode.AUTH_UNEXPECTED_ERROR, "토큰 갱신", e.getMessage());
         }
     }
 
@@ -153,7 +156,7 @@ public class AuthService {
             return redisTemplate.hasKey(BLACKLIST_PREFIX + accessToken);
         } catch (Exception e) {
             log.error("토큰 블랙리스트 확인 중 오류 발생: {}", e.getMessage());
-            throw new TokenValidationException("토큰 블랙리스트 확인 중 오류가 발생했습니다.", e);
+            throw new BusinessException(ErrorCode.AUTH_UNEXPECTED_ERROR, "토큰 블랙리스트 확인", e.getMessage());
         }
     }
 
@@ -165,7 +168,7 @@ public class AuthService {
             log.info("사용자의 모든 세션 무효화 완료: userId={}", userId);
         } catch (Exception e) {
             log.error("세션 무효화 중 오류 발생: {}", e.getMessage());
-            throw new SessionInvalidationException("세션 무효화 처리 중 오류가 발생했습니다.", e);
+            throw new BusinessException(ErrorCode.AUTH_UNEXPECTED_ERROR, "세션 무효화", e.getMessage());
         }
     }
 
