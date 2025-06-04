@@ -1,18 +1,28 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Routes, Route } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { fetchIdentityInfo } from "./features/auth/authThunks";
+
 import HomePage from './pages/HomePage';
 import RegisterPage from './pages/RegisterPage';
 import ProductsPage from './pages/ProductsPage';
 import SignUpPage from './pages/SignUpPage';
 import LoginPage from './pages/LoginPage';
 import MyPage from './pages/MyPage';
-import './App.css';
-import Header from './components/Header';
-import { Box } from '@mui/material';
 import ProductDetailPage from './pages/ProductDetailPage';
 import ProductRegisterPage from './pages/ProductRegisterPage';
 
+import Header from './components/Header';
+import { Box } from '@mui/material';
+import './App.css';
+
 function App() {
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(fetchIdentityInfo());
+  }, [dispatch]);
+
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '1000vh' }}>
       <Header />
@@ -20,8 +30,8 @@ function App() {
         component="main"
         sx={{
           flexGrow: 1,
-          mt: '10px', // 헤더 두 개 합친 높이만큼 여백 줘야 내용이 가려지지 않음
-          px: 0, // 좌우 패딩(optional)
+          mt: '10px',
+          px: 0,
         }}
       >
         <Routes>
