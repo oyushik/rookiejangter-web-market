@@ -54,7 +54,7 @@ const ProductRegisterPage = () => {
         window.scrollTo(0, 0);
         if (userId) {
         axios
-            .get(`/api/users/${userId}/profile`, {
+            .get(`/api/users/profile`, {
             headers: {
                 Authorization: `Bearer ${token}`,
             },
@@ -150,13 +150,13 @@ const ProductRegisterPage = () => {
         });
 
         const res = await axios.post(
-            `/api/users/${userId}/products`,
+            `/api/users/products`,
             formData,
             {
-            headers: {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "multipart/form-data",
-            },
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    "Content-Type": "multipart/form-data",
+                },
             }
         );
         if (res.data?.success) {
@@ -383,7 +383,7 @@ const ProductRegisterPage = () => {
             </Typography>
             <TextField
                 name="price"
-                type="text"
+                type="number"
                 value={form.price}
                 onChange={e =>
                     setForm(prev => ({
