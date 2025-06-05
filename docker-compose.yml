@@ -9,7 +9,7 @@ services:
       - ./frontend/public:/app/public
     environment:
       - CHOKIDAR_USEPOLLING=true
-    # depends_on: # frontend가 backend에 의존하도록 설정
+    # depends_on:
     #   - backend 
 
   # backend:
@@ -20,11 +20,14 @@ services:
   #     SPRING_DATASOURCE_URL: jdbc:mariadb://mariadb:3306/rookiejangter_db?allowPublicKeyRetrieval=true&useSSL=false # MariaDB 컨테이너 이름 사용
   #     SPRING_DATASOURCE_USERNAME: rookiejangter
   #     SPRING_DATASOURCE_PASSWORD: rookiejangter
-  #     SPRING_REDIS_HOST: redis
-  #     SPRING_REDIS_PORT: 6379
+  #     SPRING_DATA_REDIS_HOST: redis
+  #     SPRING_DATA_REDIS_PORT: 6379
+  #     SPRING_DATA_REDIS_CLIENT_SSL_ENABLED: "false"
   #   depends_on:
-  #     - mariadb
-  #     - redis
+  #     mariadb:
+  #       condition: service_healthy # <-- 이 부분 추가!
+  #     redis:
+  #       condition: service_healthy # <-- 이 부분도 확인 (redis healthcheck 추가 필요)
   #   volumes:
   #     - ./backend/src:/app/src
   #     - ./backend/logs:/app/logs

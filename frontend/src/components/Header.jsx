@@ -10,7 +10,7 @@ const Header = () => {
 
   const handleLogout = () => {
     logout();
-    navigate('/');
+    navigate('/'); // 로그아웃 후 홈페이지로 이동 (원하는 경로로 변경 가능)
   };
 
   return (

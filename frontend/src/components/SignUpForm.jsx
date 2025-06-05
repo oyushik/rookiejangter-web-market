@@ -10,7 +10,8 @@ import {
   InputLabel,
 } from '@mui/material';
 import { signup } from '../api/auth';
-import { getAreas } from '../api/area';
+import { getAreas } from '../api/area'; // getAreas API 호출 함수 추가
+import SignupSuccessModal from './SignupSuccessModal';
 import { useNavigate } from 'react-router-dom';
 
 const SignUpForm = ({ defaultName, defaultPhone }) => {
@@ -35,6 +36,7 @@ const SignUpForm = ({ defaultName, defaultPhone }) => {
 
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
   const navigate = useNavigate();
 
   // 검증 로직
@@ -123,10 +125,8 @@ const SignUpForm = ({ defaultName, defaultPhone }) => {
     try {
       await signup(formData);
       setSuccess(true);
-      alert('회원가입이 완료되었습니다. 로그인 페이지로 이동합니다.');
-      navigate('/login');
+      setModalOpen(true);
     } catch (err) {
-      alert('회원가입에 실패했습니다. 기존 회원과 중복되는 정보가 있습니다.');
       let submitErrorMessage = '회원가입에 실패했습니다.';
       if (err.response?.data?.message) {
         const errorMessage = err.response.data.message;
@@ -150,6 +150,11 @@ const SignUpForm = ({ defaultName, defaultPhone }) => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleModalClose = () => {
+    setModalOpen(false);
+    navigate('/login');
   };
 
   const isFormValid = useMemo(() => {
@@ -264,6 +269,10 @@ const SignUpForm = ({ defaultName, defaultPhone }) => {
       </Button>
 
       {errors.submit && <Box sx={{ mt: 2, color: 'red' }}>{errors.submit}</Box>}
+
+      <SignupSuccessModal open={modalOpen} onClose={() => {}} onConfirm={handleModalClose}>
+        회원가입이 완료되었습니다!
+      </SignupSuccessModal>
     </Box>
   );
 };
