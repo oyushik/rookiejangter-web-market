@@ -103,7 +103,7 @@ public class DibsDTO {
         private int totalPages;
         private boolean first;
         private boolean last;
-        private List<DibbedProduct> content;
+        // private List<DibbedProduct> content;
     }
 
     @Data
