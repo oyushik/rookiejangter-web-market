@@ -92,6 +92,7 @@
 //                .build();
 //        return ResponseEntity.ok(response);
 //    }
+//
 //    @GetMapping("/{productId}/my-status")
 //    public ResponseEntity<ProductDTO.ApiResponseWrapper<DibsDTO.Response>> getMyDibsStatusForProduct(@PathVariable Long productId) {
 //        Long userId = getCurrentUserId();

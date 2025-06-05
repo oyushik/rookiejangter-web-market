@@ -31,6 +31,7 @@ public class AuthController {
                     .body("서버 에러: " + e.getMessage());
         }
     }
+
     // 로그인
     @PostMapping("/login")
     public ResponseEntity<AuthService.LoginResponse> loginUser(@RequestBody UserDTO.LoginRequest request) {
