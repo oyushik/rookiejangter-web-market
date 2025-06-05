@@ -1,13 +1,14 @@
-import React, { useState, useEffect } from 'react';
+// HomePage.jsx
+import React, { useState, useEffect } from 'react'; // useEffect 임포트
 import { useNavigate } from 'react-router-dom';
 import { Button, Container, Grid, Typography } from '@mui/material';
 import ProductCard from '../components/ProductCard';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import Layout from '../components/Layout';
 import axios from 'axios'; // axios 임포트
-import { FormatTime } from '../utils/FormatTime'; // 시간 포맷팅 유틸리티 임포트
+import { FormatTime } from '../utils/FormatTime'; // FormatTime 유틸리티 임포트
 
-// allProducts 더미 데이터는 이제 필요 없으므로 제거됩니다.
+// allProducts 더미 데이터는 제거합니다.
 // const allProducts = Array.from({ length: 100 }).map((_, i) => ({
 //   id: i + 1,
 //   title: `상품 ${i + 1}`,
@@ -33,25 +34,36 @@ const HomePage = () => {
     fetchMoreData(0); // 첫 페이지 데이터 불러오기
   }, []); // 의존성 배열을 비워 컴포넌트 마운트 시 한 번만 실행
 
+  // 상품 데이터를 페이지네이션으로 불러오는 함수
   const fetchMoreData = async (currentPage) => {
     try {
       const response = await axios.get(
         `/api/products?page=${currentPage}&size=12&sort=createdAt,desc`
       );
+      const { content, pagination } = response.data.data;
 
-      console.log('--- API Response Debug ---');
-      console.log('1. Full Response Object:', response);
-      console.log('2. response.data (Outer Data):', response.data);
-      // console.log('3. response.data.data (Inner Data):', response.data.data); // 이 라인에서 에러가 발생할 수 있으니, 주석 처리하거나 조건부로 찍어보세요.
-      console.log('--- End Debug ---');
+      console.log(`--- Fetching Page ${currentPage} Debug ---`);
+      console.log('Received Content:', content);
+      console.log('Current Products Before Update (Raw):', products); // 디버그용으로 Raw products 상태 로그
 
-      // 디버그 결과를 보고 아래 줄을 수정합니다.
-      // 만약 response.data가 이미 ProductListData라면:
-      // const { content, pagination } = response.data;
-      // 만약 response.data가 ApiResponseWrapper이고, 그 안에 data 필드가 ProductListData라면:
-      const { content, pagination } = response.data.data; // 현재 이 코드가 에러를 낸다고 하셨으니, 이 부분이 문제의 핵심입니다.
+      setProducts((prevProducts) => {
+        // 1. 기존 상품들을 Map에 추가하여 ID를 키로 매핑
+        const uniqueProductsMap = new Map(prevProducts.map((product) => [product.id, product]));
 
-      // ... (이하 동일)
+        // 2. 새로 받아온 상품들을 Map에 추가.
+        //    ID가 중복되면 새로운 상품 정보로 덮어씌워짐.
+        content.forEach((newProduct) => {
+          uniqueProductsMap.set(newProduct.id, newProduct);
+        });
+
+        // 3. Map의 값들만 다시 배열로 만들어 반환
+        const updatedProducts = Array.from(uniqueProductsMap.values());
+        console.log('Products After Duplicate Removal and Update:', updatedProducts); // 업데이트된 products 로그
+        return updatedProducts;
+      });
+
+      setHasMore(!pagination.last);
+      setPage(currentPage + 1);
     } catch (error) {
       console.error('상품 목록을 불러오는 데 실패했습니다.', error);
       setHasMore(false);
@@ -62,9 +74,7 @@ const HomePage = () => {
 
   // InfiniteScroll의 next prop으로 전달될 함수
   const handleLoadMore = () => {
-    // 현재 페이지를 next prop에 전달
     if (!loading && hasMore) {
-      // 로딩 중이 아니고, 더 불러올 데이터가 있을 때만 호출
       fetchMoreData(page);
     }
   };
@@ -85,15 +95,24 @@ const HomePage = () => {
         <Button variant="contained" color="success" sx={{ ml: 2 }} onClick={handleRegisterClick}>
           상품 등록
         </Button>
+        <Button
+          variant="contained"
+          color="primary"
+          sx={{ ml: 2 }}
+          onClick={() => navigate('/my-products')}
+        >
+          내가 올린 상품
+        </Button>
+
         <Typography variant="h5" sx={{ mt: 4, mb: 2 }}>
           오늘의 상품 추천
         </Typography>
-        {loading && products.length === 0 ? ( // 초기 로딩 중이고, 상품이 없을 때 로딩 메시지
+        {loading && products.length === 0 ? (
           <Typography sx={{ textAlign: 'center', mt: 4 }}>상품을 불러오는 중입니다...</Typography>
         ) : (
           <InfiniteScroll
             dataLength={products.length}
-            next={handleLoadMore} // 이제 page 상태를 직접 사용하지 않고, fetchMoreData가 내부적으로 관리하도록 함
+            next={handleLoadMore}
             hasMore={hasMore}
             loader={<Typography sx={{ textAlign: 'center', mt: 4 }}>로딩 중...</Typography>}
             endMessage={
@@ -105,18 +124,15 @@ const HomePage = () => {
             <Grid container spacing={2}>
               {products.map((product) => (
                 <Grid item key={product.id} xs={6} sm={4} md={3}>
-                  {/* formatTime prop을 ProductCard에 전달 */}
                   <ProductCard product={product} formatTime={FormatTime} />
                 </Grid>
               ))}
             </Grid>
           </InfiniteScroll>
         )}
-        {!loading &&
-          products.length === 0 &&
-          !hasMore && ( // 로딩이 끝났고, 상품이 없을 때 (데이터 없음)
-            <Typography sx={{ textAlign: 'center', mt: 4 }}>등록된 상품이 없습니다.</Typography>
-          )}
+        {!loading && products.length === 0 && !hasMore && (
+          <Typography sx={{ textAlign: 'center', mt: 4 }}>등록된 상품이 없습니다.</Typography>
+        )}
       </Container>
     </Layout>
   );

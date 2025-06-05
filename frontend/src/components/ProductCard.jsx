@@ -1,3 +1,4 @@
+// ProductCard.jsx
 import { Card, CardContent, Typography, Box, Chip, Divider } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 
@@ -112,8 +113,8 @@ const ProductCard = ({ product, onClick, formatTime }) => {
         {/* 위치정보 한 줄 추가 */}
         <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
           <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.75rem' }}>
-            {product.area || '지역정보 없음'}
-            {/* 주의! product.area가 아니라 product의 작성자 user의 area 정보를 가져오도록 수정해야 함 */}
+            {/* 이 부분을 수정합니다: product.seller.area.areaName */}
+            {product.seller && product.seller.area ? product.seller.area.areaName : '지역정보 없음'}
           </Typography>
         </Box>
       </CardContent>

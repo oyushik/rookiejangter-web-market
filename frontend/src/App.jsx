@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
-import { fetchIdentityInfo } from "./features/auth/authThunks";
+import { fetchIdentityInfo } from './features/auth/authThunks';
 
 import HomePage from './pages/HomePage';
 import RegisterPage from './pages/RegisterPage';
@@ -11,6 +11,8 @@ import LoginPage from './pages/LoginPage';
 import MyPage from './pages/MyPage';
 import ProductDetailPage from './pages/ProductDetailPage';
 import ProductRegisterPage from './pages/ProductRegisterPage';
+import MyProductsPage from './pages/MyProductsPage';
+import MyProductDetailPage from './pages/MyProductDetailPage';
 
 import Header from './components/Header';
 import { Box } from '@mui/material';
@@ -43,6 +45,9 @@ function App() {
           <Route path="/mypage" element={<MyPage />} />
           <Route path="/products/:product_id" element={<ProductDetailPage />} />
           <Route path="/products/register" element={<ProductRegisterPage />} />
+          <Route path="/my-products/:id/edit" element={<ProductRegisterPage editMode />} />
+          <Route path="/my-products" element={<MyProductsPage />} />
+          <Route path="/my-products/:productId" element={<MyProductDetailPage />} />
         </Routes>
       </Box>
     </Box>
