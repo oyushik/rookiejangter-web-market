@@ -11,6 +11,7 @@ import LoginPage from './pages/LoginPage';
 import MyPage from './pages/MyPage';
 import ProductDetailPage from './pages/ProductDetailPage';
 import ProductRegisterPage from './pages/ProductRegisterPage';
+import AdminUserPage from './pages/AdminUserPage';
 import ProtectedRoute from './components/ProtectedRoute';
 
 import Header from './components/Header';
@@ -46,6 +47,13 @@ function App() {
             element={
               <ProtectedRoute>
                 <ProductRegisterPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route path="/admin"
+            element={
+              <ProtectedRoute>
+                <AdminUserPage />
               </ProtectedRoute>
             }
           />

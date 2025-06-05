@@ -4,6 +4,8 @@ import { loginUser } from '../api/auth';
 import { useNavigate } from 'react-router-dom';
 import useAuthStore from '../store/authStore'; // Zustand
 import axios from 'axios';
+import { useDispatch } from 'react-redux';
+import { fetchIdentityInfo } from '../features/auth/authThunks'; // thunk 경로에 맞게 조정
 
 const LoginForm = () => {
   const [formData, setFormData] = useState({
@@ -18,7 +20,9 @@ const LoginForm = () => {
   });
 
   const [loading, setLoading] = useState(false);
+
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const { login } = useAuthStore(); // Zustand
 
   const validateField = (name, value) => {
@@ -85,15 +89,18 @@ const LoginForm = () => {
       });
 
       if (res.data && res.data.accessToken) {
-        // ✅ Axios 기본 헤더에 토큰 설정
+        // ✅ Axios 기본 헤더 설정
         axios.defaults.headers.common['Authorization'] = `Bearer ${res.data.accessToken}`;
 
-        // Zustand에도 저장 (선택사항)
+        // ✅ Zustand로 토큰 저장
         login(res.data.accessToken, res.data.userName);
-      }
 
-      alert('로그인 완료!');
-      navigate('/');
+        // ✅ Redux로 사용자 정보 요청
+        dispatch(fetchIdentityInfo());
+
+        alert('로그인 완료!');
+        navigate('/');
+      }
     } catch (err) {
       console.error(err);
       setErrors((prevErrors) => ({
