@@ -150,7 +150,7 @@ const ProductRegisterPage = () => {
         });
 
         const res = await axios.post(
-            `/api/users/products`,
+            `/api/users/${userId}/products`,
             formData,
             {
                 headers: {

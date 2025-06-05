@@ -32,12 +32,17 @@ public class ProductService {
     public ProductDTO.Response createProduct(ProductDTO.Request requestDto, Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND, userId));
-        Category category = categoryRepository.findById(requestDto.getCategoryId())
-                .orElseThrow(() -> new BusinessException(ErrorCode.CATEGORY_NOT_FOUND, requestDto.getCategoryId()));
+//        Category category = categoryRepository.findById(requestDto.getCategoryId())
+//                .orElseThrow(() -> new BusinessException(ErrorCode.CATEGORY_NOT_FOUND, requestDto.getCategoryId()));
+
+        Category category1 = new Category();
+        category1.setCategoryId(3);
+        category1.setCategoryName("test");
+        requestDto.setContent("test");
 
         Product product = Product.builder()
                 .user(user)
-                .category(category)
+                .category(category1)
                 .title(requestDto.getTitle())
                 .content(requestDto.getContent())
                 .price(requestDto.getPrice())
@@ -236,6 +241,7 @@ public class ProductService {
             isLiked = dibsRepository.existsByUser_UserIdAndProduct_ProductId(currentUserId, product.getProductId());
         }
         long likeCount = dibsRepository.findByProduct_ProductId(product.getProductId()).size();
+
 
         return ProductDTO.Response.builder()
                 .id(product.getProductId())

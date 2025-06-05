@@ -36,7 +36,7 @@ export const fetchIdentityInfo = createAsyncThunk(
       if (!token) throw new Error("Access token not found");
 
       const userId = 1; // 임시 ID
-      const response = await axios.get(`http://localhost:8080/api/users/${userId}/profile`, {
+      const response = await axios.get(`http://localhost:8080/api/users/profile`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -44,7 +44,7 @@ export const fetchIdentityInfo = createAsyncThunk(
 
       console.log("API 응답:", response.data);
 
-      return response.data.data;
+      return response.data;
     } catch (err) {
       console.error("유저 정보 요청 실패:", err);
       return rejectWithValue(err.response?.data || err.message);

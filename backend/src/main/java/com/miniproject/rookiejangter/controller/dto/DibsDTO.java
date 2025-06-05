@@ -53,14 +53,14 @@ public class DibsDTO {
         public static DibbedProduct fromEntity(Dibs dibs) {
             Product product = dibs.getProduct();
             String tn = null;
-            if (product != null) {
-                tn = product.getThumbnailUrl();
-            }
+//            if (product != null) {
+//                tn = product.getThumbnailUrl();
+//            }
             return DibbedProduct.builder()
                 .productId(product.getProductId())
                 .title(product.getTitle())
                 .price(product.getPrice())
-                .thumbnail(product.getThumbnailUrl()) // Product 엔티티에 thumbnail 필드가 없음
+//                .thumbnail(product.getThumbnailUrl()) // Product 엔티티에 thumbnail 필드가 없음
                 .likedAt(dibs.getAddedAt() != null ? dibs.getAddedAt().atOffset(ZoneOffset.UTC) : null)
                 .build();
         }

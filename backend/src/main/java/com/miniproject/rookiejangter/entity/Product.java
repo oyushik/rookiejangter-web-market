@@ -50,8 +50,8 @@ public class Product extends BaseEntity {
     @Column(name = "is_completed")
     private Boolean isCompleted;
 
-    @Column(name = "thumbnail_url", length = 2048)
-    private String thumbnailUrl;
+//    @Column(name = "thumbnail_url", length = 2048)
+//    private String thumbnailUrl;
 
     @Override
     public String toString() {

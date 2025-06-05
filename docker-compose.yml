@@ -30,11 +30,11 @@ services:
     volumes:
       - mariadb_data:/var/lib/mysql # 데이터를 영속적으로 저장할 볼륨 설정
     restart: always # Docker가 종료되거나 재시작될 때 항상 컨테이너를 재시작
-    # healthcheck: # 컨테이너의 상태를 확인하는 헬스체크 (선택 사항이지만 안정성 향상)
-    #   test: ["CMD", "mariadb-admin", "ping", "-h", "localhost", "-u", "root", "-p$$MARIADB_ROOT_PASSWORD"]
-    #   interval: 10s
-    #   timeout: 5s
-    #   retries: 5
+    healthcheck: # 컨테이너의 상태를 확인하는 헬스체크 (선택 사항이지만 안정성 향상)
+      test: ["CMD", "mariadb-admin", "ping", "-h", "localhost", "-u", "root", "-p$$MARIADB_ROOT_PASSWORD"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
 volumes:
   mariadb_data:
