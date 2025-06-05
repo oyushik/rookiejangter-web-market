@@ -7,6 +7,7 @@ import com.miniproject.rookiejangter.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -47,10 +48,11 @@ public class UserController {
     }
 
     // 상품 등록
-    @PostMapping("/products")
+    @PostMapping(value = "/products", consumes = MediaType.ALL_VALUE)
     public ResponseEntity<ProductDTO.Response> createProduct(
-            @Valid @RequestBody ProductDTO.Request request,
+            @Valid @ModelAttribute ProductDTO.Request request,
             Authentication authentication) {
+
         Long userId = Long.parseLong(authentication.getName());
         ProductDTO.Response response = productService.createProduct(request, userId);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
