@@ -1,26 +1,18 @@
-// HomePage.jsx
-import React, { useState, useEffect } from 'react'; // useEffect 임포트
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button, Container, Grid, Typography } from '@mui/material';
 import ProductCard from '../components/ProductCard';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import Layout from '../components/Layout';
-import axios from 'axios'; // axios 임포트
-import { FormatTime } from '../utils/FormatTime'; // FormatTime 유틸리티 임포트
-
-// allProducts 더미 데이터는 제거합니다.
-// const allProducts = Array.from({ length: 100 }).map((_, i) => ({
-//   id: i + 1,
-//   title: `상품 ${i + 1}`,
-//   price: Math.floor(Math.random() * 100000) + 10000,
-//   image: 'https://via.placeholder.com/200',
-// }));
+import axios from 'axios';
+import { FormatTime } from '../utils/FormatTime';
 
 const HomePage = () => {
-  const [products, setProducts] = useState([]); // 초기 상품 목록을 빈 배열로 시작
+  const [products, setProducts] = useState([]);
   const [hasMore, setHasMore] = useState(true);
   const [page, setPage] = useState(0); // 현재 페이지 번호
   const [loading, setLoading] = useState(true); // 초기 로딩 상태
+  const token = localStorage.getItem('accessToken');
 
   const navigate = useNavigate();
 
@@ -38,8 +30,14 @@ const HomePage = () => {
   const fetchMoreData = async (currentPage) => {
     try {
       const response = await axios.get(
-        `/api/products?page=${currentPage}&size=12&sort=createdAt,desc`
+        `http://localhost:8080/api/products?page=${currentPage}&size=12&sort=createdAt,desc`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
+
       const { content, pagination } = response.data.data;
 
       console.log(`--- Fetching Page ${currentPage} Debug ---`);
