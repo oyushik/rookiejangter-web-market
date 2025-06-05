@@ -54,7 +54,7 @@ const ProductRegisterPage = () => {
         window.scrollTo(0, 0);
         if (userId) {
         axios
-            .get(`/api/users/profile`, {
+            .get(`http://localhost8080/api/users/profile`, {
             headers: {
                 Authorization: `Bearer ${token}`,
             },
@@ -150,7 +150,7 @@ const ProductRegisterPage = () => {
         });
 
         const res = await axios.post(
-            `/api/users/${userId}/products`,
+            `http://localhost8080/api/users/products`,
             formData,
             {
                 headers: {
@@ -169,7 +169,7 @@ const ProductRegisterPage = () => {
             alert("상품 등록 중 오류가 발생했습니다.");
         }
         } finally {
-        setLoading(false);
+            setLoading(false);
         }
     };
 
