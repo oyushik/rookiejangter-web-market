@@ -24,14 +24,14 @@ public class ProductDTO {
         @Size(max = 50, message = "제목은 최대 50자까지 가능합니다.")
         private String title;
 
-        @NotBlank(message = "내용은 필수입니다.")
+        // @NotBlank(message = "내용은 필수입니다.")
         @Size(max = 255, message = "내용은 최대 255자까지 가능합니다.")
         private String content;
 
         @NotNull(message = "가격은 필수입니다.")
         private Integer price;
 
-        @NotNull(message = "카테고리 ID는 필수입니다.")
+        // @NotNull(message = "카테고리 ID는 필수입니다.")
         private Integer categoryId;
 
         private List<String> images; // 이미지 URL 목록 (요청 시)
