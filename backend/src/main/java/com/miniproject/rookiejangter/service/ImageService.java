@@ -35,6 +35,13 @@ public class ImageService {
     }
 
     @Transactional(readOnly = true)
+    public ImageDTO.Response getImageByImageId(Long imageId) {
+        Image image = imageRepository.findByImageId(imageId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.IMAGE_NOT_FOUND, imageId));
+        return ImageDTO.Response.fromEntity(image);
+    }
+
+    @Transactional(readOnly = true)
     public List<ImageDTO.Response> getImagesByProductId(Long productId) {
         if (!productRepository.existsById(productId)) {
             throw new BusinessException(ErrorCode.PRODUCT_NOT_FOUND, productId);

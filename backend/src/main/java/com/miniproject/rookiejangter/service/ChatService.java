@@ -26,11 +26,6 @@ public class ChatService {
     private final ProductRepository productRepository;
     private final UserRepository userRepository;
 
-    /**
-     * 채팅방 생성
-     * @param request
-     * @return
-     */
     public ChatDTO.Response createChat(ChatDTO.Request request) {
         Product product = productRepository.findById(request.getProductId())
                 .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_NOT_FOUND, request.getProductId()));
@@ -52,22 +47,12 @@ public class ChatService {
         return ChatDTO.Response.fromEntity(savedChat);
     }
 
-    /**
-     * 채팅방 ID로 조회
-     * @param chatRoomId
-     * @return
-     */
     public ChatDTO.Response getChatById(Long chatRoomId) {
         Chat chat = chatRepository.findById(chatRoomId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.CHATROOM_NOT_FOUND, chatRoomId));
         return ChatDTO.Response.fromEntity(chat);
     }
 
-    /**
-     * 유저 ID로 채팅방 리스트 조회
-     * @param userId
-     * @return
-     */
     public ChatDTO.ChatListResponse getChatsByUserId(Long userId) {
         List<Chat> buyerChats = chatRepository.findByBuyer_UserId(userId);
         List<Chat> sellerChats = chatRepository.findBySeller_UserId(userId);
@@ -89,10 +74,6 @@ public class ChatService {
                 .build();
     }
 
-    /**
-     * 채팅방 삭제
-     * @param chatRoomId
-     */
     public void deleteChat(Long chatRoomId) {
         chatRepository.deleteById(chatRoomId);
     }

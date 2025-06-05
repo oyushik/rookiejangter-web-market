@@ -113,6 +113,7 @@ const ProductCard = ({ product, onClick, formatTime }) => {
         <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
           <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.75rem' }}>
             {product.area || '지역정보 없음'}
+            {/* 주의! product.area가 아니라 product의 작성자 user의 area 정보를 가져오도록 수정해야 함 */}
           </Typography>
         </Box>
       </CardContent>

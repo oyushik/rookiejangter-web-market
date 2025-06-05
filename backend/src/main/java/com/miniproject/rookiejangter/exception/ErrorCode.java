@@ -148,6 +148,9 @@ public enum ErrorCode {
     INVALID_FILE_FORMAT(HttpStatus.BAD_REQUEST, "I003", "잘못된 파일 형식입니다."),
     FILE_UPLOAD_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "I004", "파일 업로드 중 오류가 발생했습니다."),
     MAX_UPLOAD_SIZE_EXCEEDED(HttpStatus.PAYLOAD_TOO_LARGE, "I005", "최대 업로드 파일 크기를 초과했습니다."),
+    FILE_EMPTY(HttpStatus.BAD_REQUEST, "I006","File cannot be empty."),
+    FILE_UPLOAD_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "I007","Failed to upload file."),
+    FILE_DELETE_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "I008","Failed to delete file."),
 
 
     // Cancelation

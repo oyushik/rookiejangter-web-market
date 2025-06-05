@@ -26,12 +26,6 @@ public class CancelationService {
     private final CancelationReasonRepository cancelationReasonRepository;
     private final ReservationRepository reservationRepository;
 
-    /**
-     * 취소 정보 생성
-     * @param reservationId
-     * @param request
-     * @return
-     */
     public CancelationDTO.Response createCancelation(Long reservationId, CancelationDTO.Request request) {
         Reservation reservation = reservationRepository.findById(reservationId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.TRADE_NOT_FOUND, reservationId));
@@ -50,11 +44,6 @@ public class CancelationService {
         return CancelationDTO.Response.fromEntity(savedCancelation);
     }
 
-    /**
-     * 예약 ID로 취소 정보 조회
-     * @param reservationId
-     * @return
-     */
     public CancelationDTO.Response getCancelationByReservationId(Long reservationId) {
         Cancelation cancelation = cancelationRepository.findByReservation_ReservationId(reservationId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.TRADE_NOT_FOUND, reservationId));
@@ -62,11 +51,6 @@ public class CancelationService {
         return CancelationDTO.Response.fromEntity(cancelation);
     }
 
-    /**
-     * 취소 사유 ID로 취소 정보 목록 조회
-     * @param cancelationReasonId
-     * @return
-     */
     public List<CancelationDTO.Response> getCancelationsByCancelationReasonId(Integer cancelationReasonId) {
         List<Cancelation> cancelations = cancelationRepository.findByCancelationReason_CancelationReasonId(cancelationReasonId);
 
@@ -75,12 +59,6 @@ public class CancelationService {
                 .collect(Collectors.toList());
     }
 
-    /**
-     * 취소 정보 수정
-     * @param reservationId
-     * @param request
-     * @return
-     */
     public CancelationDTO.Response updateCancelation(Long reservationId, CancelationDTO.Request request) {
         Cancelation cancelation = cancelationRepository.findByReservation_ReservationId(reservationId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.TRADE_NOT_FOUND, reservationId));
@@ -95,10 +73,6 @@ public class CancelationService {
         return CancelationDTO.Response.fromEntity(updatedCancelation);
     }
 
-    /**
-     * 취소 정보 삭제
-     * @param reservationId
-     */
     public void deleteCancelation(Long reservationId) {
         Cancelation cancelation = cancelationRepository.findByReservation_ReservationId(reservationId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.TRADE_NOT_FOUND, reservationId));

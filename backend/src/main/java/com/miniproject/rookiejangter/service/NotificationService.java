@@ -23,14 +23,6 @@ public class NotificationService {
     private final NotificationRepository notificationRepository;
     private final UserRepository userRepository;
 
-    /**
-     * 알림 생성
-     * @param userId
-     * @param entityId
-     * @param entityType
-     * @param message
-     * @return
-     */
     public NotificationDTO.Response createNotification(Long userId, Long entityId, String entityType, String message) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND, userId));
@@ -48,11 +40,6 @@ public class NotificationService {
         return NotificationDTO.Response.fromEntity(savedNotification);
     }
 
-    /**
-     * 알림 ID로 조회
-     * @param notificationId
-     * @return
-     */
     public NotificationDTO.Response getNotificationById(Long notificationId) {
         Notification notification = notificationRepository.findByNotificationId(notificationId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.RESOURCE_NOT_FOUND, "Notification", notificationId));
@@ -60,11 +47,6 @@ public class NotificationService {
         return NotificationDTO.Response.fromEntity(notification);
     }
 
-    /**
-     * 유저 ID로 알림 목록 조회
-     * @param userId
-     * @return
-     */
     public List<NotificationDTO.Response> getNotificationsByUserId(Long userId) {
         List<Notification> notifications = notificationRepository.findByUser_UserId(userId);
 
@@ -73,11 +55,6 @@ public class NotificationService {
                 .collect(Collectors.toList());
     }
 
-    /**
-     * 엔티티 ID로 알림 목록 조회
-     * @param entityId
-     * @return
-     */
     public List<NotificationDTO.Response> getNotificationsByEntityId(Long entityId) {
         List<Notification> notifications = notificationRepository.findByEntityId(entityId);
 
@@ -86,11 +63,6 @@ public class NotificationService {
                 .collect(Collectors.toList());
     }
 
-    /**
-     * 엔티티 타입으로 알림 목록 조회
-     * @param entityType
-     * @return
-     */
     public List<NotificationDTO.Response> getNotificationsByEntityType(String entityType) {
         List<Notification> notifications = notificationRepository.findByEntityType(entityType);
 
@@ -99,10 +71,6 @@ public class NotificationService {
                 .collect(Collectors.toList());
     }
 
-    /**
-     * 읽지 않은 알림 목록 조회
-     * @return
-     */
     public List<NotificationDTO.Response> getUnreadNotifications() {
         List<Notification> notifications = notificationRepository.findByIsRead(false);
 
@@ -111,10 +79,6 @@ public class NotificationService {
                 .collect(Collectors.toList());
     }
 
-    /**
-     * 알림 읽음 처리
-     * @param notificationId
-     */
     public void markAsRead(Long notificationId) {
         Notification notification = notificationRepository.findByNotificationId(notificationId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.RESOURCE_NOT_FOUND, "Notification", notificationId));
@@ -122,10 +86,6 @@ public class NotificationService {
         notification.setIsRead(true);
     }
 
-    /**
-     * 알림 삭제
-     * @param notificationId
-     */
     public void deleteNotification(Long notificationId) {
         Notification notification = notificationRepository.findByNotificationId(notificationId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.RESOURCE_NOT_FOUND, "Notification", notificationId));
