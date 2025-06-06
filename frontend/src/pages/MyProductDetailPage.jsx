@@ -1,5 +1,5 @@
 import { useParams, useNavigate } from 'react-router-dom';
-import axios from "axios";
+import axios from 'axios';
 import { Box, Typography, Divider, Grid, Button } from '@mui/material';
 import { FormatTime } from '../utils/FormatTime';
 import React, { useState, useEffect } from 'react';
@@ -11,7 +11,8 @@ const MyProductDetailPage = () => {
   const [imgIdx, setImgIdx] = useState(0);
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
-  const token = localStorage.getItem("accessToken");
+  const [images, setImages] = useState([]);
+  const token = localStorage.getItem('accessToken');
 
   useEffect(() => {
     axios
@@ -27,10 +28,29 @@ const MyProductDetailPage = () => {
       .catch(() => {
         setLoading(false);
         if (err.response && err.response.status === 404) {
-          navigate("/err/NotFound");
+          navigate('/err/NotFound');
         }
       });
   }, [productId, token, navigate]);
+
+  // 상품 이미지 별도 호출
+  useEffect(() => {
+    axios
+      .get(`http://localhost:8080/images/product/${productId}`)
+      .then((res) => {
+        // 204 No Content일 때 res.data가 undefined일 수 있음
+        const imgArr = Array.isArray(res.data)
+          ? res.data.map((img) =>
+              img.imageUrl.startsWith('http')
+                ? img.imageUrl.replace('http://localhost:3000', 'http://localhost:8080')
+                : `http://localhost:8080${img.imageUrl}`
+            )
+          : [];
+        setImages(imgArr);
+        console.log('이미지 URL:', imgArr); // 추가
+      })
+      .catch(() => setImages([]));
+  }, [productId]);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -38,8 +58,6 @@ const MyProductDetailPage = () => {
 
   if (loading) return <div>로딩 중...</div>;
   if (!product) return <div>상품 정보를 찾을 수 없습니다.</div>;
-
-  const images = product.images?.map(img => img.imageUrl) || [];
 
   const handlePrev = (e) => {
     e.stopPropagation();
@@ -108,7 +126,7 @@ const MyProductDetailPage = () => {
                   variant="contained"
                   color="info"
                   size="large"
-                  sx={{ px: 4, py: 1.5, fontSize: 22, fontWeight: 700 , color: 'white'}}
+                  sx={{ px: 4, py: 1.5, fontSize: 22, fontWeight: 700, color: 'white' }}
                   onClick={() => navigate(`/my-products/${productId}/edit`)}
                 >
                   상품 수정
@@ -117,9 +135,16 @@ const MyProductDetailPage = () => {
                   variant="contained"
                   color="error"
                   size="large"
-                  sx={{ px: 4, py: 1.5, fontSize: 22, fontWeight: 700, backgroundColor: '#d32f2f', '&:hover': { backgroundColor: '#b71c1c' } }}
+                  sx={{
+                    px: 4,
+                    py: 1.5,
+                    fontSize: 22,
+                    fontWeight: 700,
+                    backgroundColor: '#d32f2f',
+                    '&:hover': { backgroundColor: '#b71c1c' },
+                  }}
                   onClick={() => {
-                    if (window.confirm("정말로 이 상품을 삭제하시겠습니까?")) {
+                    if (window.confirm('정말로 이 상품을 삭제하시겠습니까?')) {
                       axios
                         .delete(`http://localhost:8080/api/users/products/${productId}`, {
                           headers: {
@@ -127,11 +152,11 @@ const MyProductDetailPage = () => {
                           },
                         })
                         .then(() => {
-                          alert("상품이 삭제되었습니다.");
-                          navigate("/my-products");
+                          alert('상품이 삭제되었습니다.');
+                          navigate('/my-products');
                         })
                         .catch(() => {
-                          alert("상품 삭제에 실패했습니다.");
+                          alert('상품 삭제에 실패했습니다.');
                         });
                     }
                   }}
@@ -153,7 +178,7 @@ const MyProductDetailPage = () => {
               {product.content}
             </Typography>
           </Box>
-          <Button variant="contained" onClick={() => navigate("/my-products")}>
+          <Button variant="contained" onClick={() => navigate('/my-products')}>
             목록으로
           </Button>
         </Grid>

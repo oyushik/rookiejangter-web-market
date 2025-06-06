@@ -1,5 +1,5 @@
-import { createSlice } from "@reduxjs/toolkit";
-import { fetchIdentityInfo } from "./authThunks";
+import { createSlice } from '@reduxjs/toolkit';
+import { fetchIdentityInfo } from './authThunks';
 
 const initialState = {
   identityInfo: null,
@@ -8,7 +8,7 @@ const initialState = {
 };
 
 const authSlice = createSlice({
-  name: "auth",
+  name: 'auth',
   initialState,
   reducers: {
     setIdentityInfo(state, action) {

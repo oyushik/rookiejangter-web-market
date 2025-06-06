@@ -87,6 +87,9 @@ public class ProductDTO {
         private OffsetDateTime updatedAt;
         private Integer viewCount;
         private Boolean isLiked;
+        private Boolean isBumped;
+        private Boolean isReserved;
+        private Boolean isCompleted;
 
         public static Response fromEntity(Product product) {
 
@@ -101,6 +104,9 @@ public class ProductDTO {
                     .updatedAt(product.getUpdatedAt() != null ? product.getUpdatedAt().atOffset(ZoneOffset.UTC) : null)
                     .viewCount(product.getViewCount())
                     .isLiked(false)
+                    .isBumped(false)
+                    .isReserved(false)
+                    .isCompleted(false)
                     .build();
         }
     }

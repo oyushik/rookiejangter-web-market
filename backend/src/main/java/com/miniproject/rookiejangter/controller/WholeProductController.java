@@ -10,7 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/products") // API 엔드포인트 경로
+@RequestMapping("/api/products")
 @RequiredArgsConstructor
 public class WholeProductController {
 
@@ -25,6 +25,18 @@ public class WholeProductController {
                 .success(true)
                 .data(productListData)
                 .message("모든 상품 목록이 성공적으로 조회되었습니다.")
+                .build());
+    }
+
+    @GetMapping ("/{product_id}")
+    public ResponseEntity<ProductDTO.ApiResponseWrapper<ProductDTO.Response>> getProductById(
+            @PathVariable("product_id") Long productId,
+            @RequestHeader(value = "X-USER-ID", required = false) Long currentUserId) {
+        ProductDTO.Response productResponse = productService.getProductById(productId, currentUserId);
+        return ResponseEntity.ok(ProductDTO.ApiResponseWrapper.<ProductDTO.Response>builder()
+                .success(true)
+                .data(productResponse)
+                .message("상품 상세 정보가 성공적으로 조회되었습니다.")
                 .build());
     }
 }

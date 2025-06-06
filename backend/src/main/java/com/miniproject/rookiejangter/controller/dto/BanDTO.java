@@ -1,6 +1,7 @@
 package com.miniproject.rookiejangter.controller.dto;
 
 import com.miniproject.rookiejangter.entity.Ban;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
@@ -14,6 +15,12 @@ public class BanDTO {
     @AllArgsConstructor
     @Builder
     public static class Request {
+
+        @NotNull(message = "제재할 사용자 ID는 필수입니다.")
+        private Long userId;
+        @NotNull(message = "근거가 되는 신고 ID는 필수입니다.")
+        private Long reportId;
+
         @Size(max = 50, message = "제재 사유는 최대 50자까지 가능합니다.")
         private String banReason;
     }

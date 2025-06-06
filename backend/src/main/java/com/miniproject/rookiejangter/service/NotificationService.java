@@ -8,6 +8,8 @@ import com.miniproject.rookiejangter.exception.ErrorCode;
 import com.miniproject.rookiejangter.repository.NotificationRepository;
 import com.miniproject.rookiejangter.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -47,12 +49,14 @@ public class NotificationService {
         return NotificationDTO.Response.fromEntity(notification);
     }
 
-    public List<NotificationDTO.Response> getNotificationsByUserId(Long userId) {
-        List<Notification> notifications = notificationRepository.findByUser_UserId(userId);
+    public Page<NotificationDTO.Response> getNotificationsByUserId(Long userId, Pageable pageable) {
+        Page<Notification> notificationsPage = notificationRepository.findByUser_UserId(userId, pageable);
+        // DTO로 변환
+        return notificationsPage.map(NotificationDTO.Response::fromEntity);
+    }
 
-        return notifications.stream()
-                .map(NotificationDTO.Response::fromEntity)
-                .collect(Collectors.toList());
+    public long countUnreadNotificationsByUserId(Long userId) {
+        return notificationRepository.countByUser_UserIdAndIsRead(userId, false);
     }
 
     public List<NotificationDTO.Response> getNotificationsByEntityId(Long entityId) {
