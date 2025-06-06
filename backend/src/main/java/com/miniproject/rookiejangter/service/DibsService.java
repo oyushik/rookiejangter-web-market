@@ -43,6 +43,10 @@ public class DibsService {
             dibsRepository.delete(existingDibs.get());
             isNowLiked = false;
         } else {
+
+            if (product.getUser() != null && product.getUser().getUserId().equals(userId)) {
+                throw new BusinessException("자신이 등록한 상품은 찜할 수 없습니다.");
+            }
             Dibs newDibs = Dibs.builder()
                     .user(user)
                     .product(product)
