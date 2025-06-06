@@ -19,9 +19,9 @@ const Header = () => {
   };
 
   // 로그인되어 있지만 사용자 정보가 아직 없을 때는 렌더링 일시 중단
-  if (isAuthenticated && !identityInfo && !loading) {
-    return null;
-  }
+  // if (isAuthenticated && !identityInfo && !loading) {
+  //   return null;
+  // }
 
   return (
     <>
