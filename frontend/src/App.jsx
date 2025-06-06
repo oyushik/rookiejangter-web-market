@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
-import { fetchIdentityInfo } from "./features/auth/authThunks";
+import { fetchIdentityInfo } from './features/auth/authThunks';
 
 import HomePage from './pages/HomePage';
 import RegisterPage from './pages/RegisterPage';
@@ -11,7 +11,8 @@ import LoginPage from './pages/LoginPage';
 import MyPage from './pages/MyPage';
 import ProductDetailPage from './pages/ProductDetailPage';
 import ProductRegisterPage from './pages/ProductRegisterPage';
-import AdminUserPage from './pages/AdminUserPage';
+import MyProductsPage from './pages/MyProductsPage';
+import MyProductDetailPage from './pages/MyProductDetailPage';
 import ProtectedRoute from './components/ProtectedRoute';
 
 import Header from './components/Header';
@@ -43,6 +44,9 @@ function App() {
             }
           />
           <Route path="/products/:product_id" element={<ProductDetailPage />} />
+          <Route path="/my-products/:id/edit" element={<ProductRegisterPage editMode />} />
+          <Route path="/my-products" element={<MyProductsPage />} />
+          <Route path="/my-products/:productId" element={<MyProductDetailPage />} />
           <Route path="/products/register"
             element={
               <ProtectedRoute>

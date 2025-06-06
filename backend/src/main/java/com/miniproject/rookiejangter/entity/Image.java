@@ -23,7 +23,6 @@ public class Image {
     @JoinColumn(name = "product_id")
     private Product product;
 
-    @NotBlank(message = "이미지 URL은 필수입니다.")
     @Size(max = 255, message = "이미지 URL은 최대 255자까지 가능합니다.")
     @Column(name = "image_url", length = 255, nullable = false)
     private String imageUrl;

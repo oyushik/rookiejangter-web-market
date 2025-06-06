@@ -22,12 +22,11 @@ import java.util.stream.Collectors;
 public class CompleteService {
 
     private final CompleteRepository completeRepository;
-    private final ProductRepository productRepository; // ProductRepository 주입 (가정)
-    private final UserRepository userRepository; // UserRepository 주입 (가정)
+    private final ProductRepository productRepository;
+    private final UserRepository userRepository;
 
     @Transactional
     public CompleteDTO.Response createComplete(Long productId, Long buyerId, Long sellerId) {
-        // 게시글(Product) 조회
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_NOT_FOUND, productId));
 

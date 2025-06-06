@@ -5,7 +5,15 @@ logging:
   level:
     com:
       miniproject:
-        joongo: info
+        joongo: INFO
+#    org:
+#      springframework:
+#        data:
+#          redis: DEBUG # 스프링 데이터 Redis의 모든 로그를 DEBUG 레벨로 올립니다.
+#        # Lettuce 드라이버 자체의 상세 로그를 보려면 다음도 추가합니다.
+#        lettuce: DEBUG # Lettuce 로그도 DEBUG 레벨로 올립니다.
+#    io: # Lettuce 코어 라이브러리 (Redis 클라이언트)
+#      lettuce: DEBUG
 
 spring:
   datasource:
@@ -32,6 +40,7 @@ spring:
     baseline-on-migrate: true # 기존 DB에 테이블이 있을 경우 Flyway가 현재 상태를 기준으로 베이스라인을 설정
 #    clean-disabled: false  # 프로덕션 환경에서는 비활성화 권장
 #    schemas: rookiejangter_db # 특정 스키마에서 작업할 경우 (선택 사항, default-schema와 유사)
-
-jwt:
-  secret: "64461f01e1af406da538b9c48d801ce59142452199ff112fb5404c8e7e98e3ff"
+  data:
+    redis:
+      host: redis
+      port: 6379

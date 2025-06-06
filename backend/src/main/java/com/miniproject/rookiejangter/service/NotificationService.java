@@ -40,11 +40,56 @@ public class NotificationService {
         return NotificationDTO.Response.fromEntity(savedNotification);
     }
 
+    public NotificationDTO.Response getNotificationById(Long notificationId) {
+        Notification notification = notificationRepository.findByNotificationId(notificationId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.RESOURCE_NOT_FOUND, "Notification", notificationId));
+
+        return NotificationDTO.Response.fromEntity(notification);
+    }
+
+    public List<NotificationDTO.Response> getNotificationsByUserId(Long userId) {
+        List<Notification> notifications = notificationRepository.findByUser_UserId(userId);
+
+        return notifications.stream()
+                .map(NotificationDTO.Response::fromEntity)
+                .collect(Collectors.toList());
+    }
+
+    public List<NotificationDTO.Response> getNotificationsByEntityId(Long entityId) {
+        List<Notification> notifications = notificationRepository.findByEntityId(entityId);
+
+        return notifications.stream()
+                .map(NotificationDTO.Response::fromEntity)
+                .collect(Collectors.toList());
+    }
+
+    public List<NotificationDTO.Response> getNotificationsByEntityType(String entityType) {
+        List<Notification> notifications = notificationRepository.findByEntityType(entityType);
+
+        return notifications.stream()
+                .map(NotificationDTO.Response::fromEntity)
+                .collect(Collectors.toList());
+    }
+
     public List<NotificationDTO.Response> getUnreadNotifications() {
         List<Notification> notifications = notificationRepository.findByIsRead(false);
 
         return notifications.stream()
                 .map(NotificationDTO.Response::fromEntity)
                 .collect(Collectors.toList());
+    }
+
+    public void markAsRead(Long notificationId) {
+        Notification notification = notificationRepository.findByNotificationId(notificationId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.RESOURCE_NOT_FOUND, "Notification", notificationId));
+
+        notification.setIsRead(true);
+    }
+
+    public void deleteNotification(Long notificationId) {
+        Notification notification = notificationRepository.findByNotificationId(notificationId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.RESOURCE_NOT_FOUND, "Notification", notificationId));
+
+        notificationRepository.delete(notification);
     }
 }

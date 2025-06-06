@@ -30,19 +30,14 @@ public class ProductService {
 
     @Transactional
     public ProductDTO.Response createProduct(ProductDTO.Request requestDto, Long userId) {
-        User user = userRepository.findById(userId)
+        User user = userRepository.findByUserId(userId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND, userId));
-//        Category category = categoryRepository.findById(requestDto.getCategoryId())
-//                .orElseThrow(() -> new BusinessException(ErrorCode.CATEGORY_NOT_FOUND, requestDto.getCategoryId()));
-
-        Category category1 = new Category();
-        category1.setCategoryId(3);
-        category1.setCategoryName("test");
-        requestDto.setContent("test");
+        Category category = categoryRepository.findByCategoryId(requestDto.getCategoryId())
+                .orElseThrow(() -> new BusinessException(ErrorCode.CATEGORY_NOT_FOUND, requestDto.getCategoryId()));
 
         Product product = Product.builder()
+                .category(category)
                 .user(user)
-                .category(category1)
                 .title(requestDto.getTitle())
                 .content(requestDto.getContent())
                 .price(requestDto.getPrice())
@@ -53,17 +48,7 @@ public class ProductService {
                 .build();
         Product savedProduct = productRepository.save(product);
 
-        List<Image> savedImages = new ArrayList<>();
-        if (requestDto.getImages() != null && !requestDto.getImages().isEmpty()) {
-            for (String imageUrl : requestDto.getImages()) {
-                Image image = Image.builder()
-                        .product(savedProduct)
-                        .imageUrl(imageUrl)
-                        .build();
-                savedImages.add(imageRepository.save(image));
-            }
-        }
-        return mapToProductDTOResponse(savedProduct, savedImages, userId);
+        return mapToProductDTOResponse(savedProduct, userId);
     }
 
     @Transactional
@@ -75,7 +60,7 @@ public class ProductService {
         productRepository.save(product);
 
         List<Image> images = imageRepository.findByProduct_ProductId(productId);
-        return mapToProductDTOResponse(product, images, currentUserId);
+        return mapToProductDTOResponse(product, currentUserId);
     }
 
     @Transactional
@@ -97,23 +82,8 @@ public class ProductService {
             product.setCategory(category);
         }
 
-        List<Image> updatedImages;
-        if (requestDto.getImages() != null) {
-            imageRepository.deleteAll(imageRepository.findByProduct_ProductId(productId));
-            updatedImages = new ArrayList<>();
-            for (String imageUrl : requestDto.getImages()) {
-                Image image = Image.builder()
-                        .product(product)
-                        .imageUrl(imageUrl)
-                        .build();
-                updatedImages.add(imageRepository.save(image));
-            }
-        } else {
-            updatedImages = imageRepository.findByProduct_ProductId(productId);
-        }
-
         Product updatedProduct = productRepository.save(product);
-        return mapToProductDTOResponse(updatedProduct, updatedImages, userId);
+        return mapToProductDTOResponse(updatedProduct, userId);
     }
 
     @Transactional
@@ -151,7 +121,7 @@ public class ProductService {
         }
 
         List<Image> images = imageRepository.findByProduct_ProductId(productId);
-        return mapToProductDTOResponse(product, images, userId);
+        return mapToProductDTOResponse(product, userId);
     }
 
     @Transactional(readOnly = true)
@@ -212,7 +182,7 @@ public class ProductService {
         List<ProductDTO.Response> productResponses = productPage.getContent().stream()
                 .map(product -> {
                     List<Image> images = imageRepository.findByProduct_ProductId(product.getProductId());
-                    return mapToProductDTOResponse(product, images, currentUserId);
+                    return mapToProductDTOResponse(product, currentUserId);
                 })
                 .collect(Collectors.toList());
 
@@ -231,10 +201,7 @@ public class ProductService {
                 .build();
     }
 
-    private ProductDTO.Response mapToProductDTOResponse(Product product, List<Image> images, Long currentUserId) {
-        List<ProductDTO.ImageResponse> imageResponses = images.stream()
-                .map(ProductDTO.ImageResponse::fromEntity)
-                .collect(Collectors.toList());
+    private ProductDTO.Response mapToProductDTOResponse(Product product, Long currentUserId) {
 
         boolean isLiked = false;
         if (currentUserId != null) {
@@ -249,14 +216,10 @@ public class ProductService {
                 .content(product.getContent())
                 .price(product.getPrice())
                 .categoryName(product.getCategory() != null ? product.getCategory().getCategoryName() : null)
-                .status(product.getIsCompleted() != null && product.getIsCompleted() ? "COMPLETED" :
-                        product.getIsReserved() != null && product.getIsReserved() ? "RESERVED" : "SALE")
-                .images(imageResponses)
                 .seller(ProductDTO.SellerInfo.fromEntity(product.getUser()))
                 .createdAt(product.getCreatedAt().atOffset(java.time.ZoneOffset.UTC))
                 .updatedAt(product.getUpdatedAt() != null ? product.getUpdatedAt().atOffset(java.time.ZoneOffset.UTC) : null)
                 .viewCount(product.getViewCount())
-                .likeCount((int) likeCount)
                 .isLiked(isLiked)
                 .build();
     }
