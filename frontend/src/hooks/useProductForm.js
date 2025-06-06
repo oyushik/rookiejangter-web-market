@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { PriceInput } from '../utils/PriceInput';
 
-const MAX_IMAGES = 10;
+const MAX_IMAGES = 3;
 const MAX_PRODUCTS = 5;
 const BANNED_WORDS = ['마약', '위조', '불법'];
 

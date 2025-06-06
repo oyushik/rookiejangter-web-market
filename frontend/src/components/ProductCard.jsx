@@ -1,13 +1,42 @@
 // ProductCard.jsx
 import { Card, CardContent, Typography, Box, Chip, Divider } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
 
 const CARD_WIDTH = 210;
 const CARD_HEIGHT = 284;
 const IMAGE_HEIGHT = 200;
 
 const ProductCard = ({ product, onClick, formatTime }) => {
+  // 상품이 예약/거래완료면 아무것도 렌더링하지 않음
+  // if (
+  //   product.isReserved === true || product.isReserved === 1 ||
+  //   product.isCompleted === true || product.isCompleted === 1
+  // ) {
+  //   return null;
+  // }
+
   const navigate = useNavigate();
+  const [imageUrl, setImageUrl] = useState(null);
+
+  useEffect(() => {
+    if (!product.id) return;
+    // 상품별 이미지 한 장만 가져오기
+    fetch(`http://localhost:8080/images/product/${product.id}`)
+      .then(res => res.json())
+      .then(data => {
+        let imgArr = Array.isArray(data)
+          ? data.map(img =>
+              img.imageUrl.startsWith('http')
+                ? img.imageUrl.replace('http://localhost:3000', 'http://localhost:8080')
+                : `http://localhost:8080${img.imageUrl}`
+            )
+          : [];
+        setImageUrl(imgArr[0] || null); // 한 장만 사용
+      })
+      .catch(() => setImageUrl(null));
+  }, [product.id]);
+
 
   const handleClick = () => {
     navigate(`/products/${product.id}`);
@@ -50,9 +79,9 @@ const ProductCard = ({ product, onClick, formatTime }) => {
             }}
           />
         )}
-        {product.images && product.images[0] ? (
+        {imageUrl ? (
           <img
-            src={product.images[0]}
+            src={imageUrl}
             alt={product.title}
             style={{
               width: '100%',
@@ -62,7 +91,7 @@ const ProductCard = ({ product, onClick, formatTime }) => {
           />
         ) : (
           <Typography variant="body2" color="text.secondary">
-            [이미지]
+            [이미지 없음]
           </Typography>
         )}
       </Box>

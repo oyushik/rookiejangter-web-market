@@ -11,6 +11,7 @@ const MyProductDetailPage = () => {
   const [imgIdx, setImgIdx] = useState(0);
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [images, setImages] = useState([]);
   const token = localStorage.getItem("accessToken");
 
   useEffect(() => {
@@ -32,14 +33,30 @@ const MyProductDetailPage = () => {
       });
   }, [productId, token, navigate]);
 
+  // 상품 이미지 별도 호출
+  useEffect(() => {
+    axios
+      .get(`http://localhost:8080/images/product/${productId}`)
+      .then((res) => {
+        // 204 No Content일 때 res.data가 undefined일 수 있음
+        const imgArr = Array.isArray(res.data)
+          ? res.data.map(img =>
+              img.imageUrl.startsWith('http')
+                ? img.imageUrl.replace('http://localhost:3000', 'http://localhost:8080')
+                : `http://localhost:8080${img.imageUrl}`
+            )
+        : [];
+        setImages(imgArr);
+      })
+      .catch(() => setImages([]));
+  }, [productId]);
+
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
 
   if (loading) return <div>로딩 중...</div>;
   if (!product) return <div>상품 정보를 찾을 수 없습니다.</div>;
-
-  const images = product.images?.map(img => img.imageUrl) || [];
 
   const handlePrev = (e) => {
     e.stopPropagation();
@@ -55,6 +72,15 @@ const MyProductDetailPage = () => {
     <Box sx={{ px: 5, py: 4 }}>
       <Grid container spacing={4}>
         <Grid item xs={12}>
+          <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+            <Button
+              variant="contained"
+              onClick={() => navigate("/my-products")}
+              sx={{ mr: 2 }}
+            >
+              목록으로
+            </Button>
+          </Box>
           <Box
             sx={{
               display: 'flex',
@@ -92,7 +118,8 @@ const MyProductDetailPage = () => {
               >
                 카테고리: {product.categoryName}
                 <Divider orientation="vertical" flexItem sx={{ mx: 2 }} />
-                상태: {product.status}
+                상태: &nbsp;
+                  {product.isCompleted ? 'SOLD' : product.isReserved ? 'RESERVED' : 'SALE'}
                 <Divider orientation="vertical" flexItem sx={{ mx: 2 }} />
                 등록일: {FormatTime(product.createdAt)}
               </Typography>
@@ -108,7 +135,15 @@ const MyProductDetailPage = () => {
                   variant="contained"
                   color="info"
                   size="large"
-                  sx={{ px: 4, py: 1.5, fontSize: 22, fontWeight: 700 , color: 'white'}}
+                  sx={{
+                    width: 200,
+                    height: 60,
+                    padding: '8px 20px',
+                    borderRadius: 0,
+                    fontSize: 22,
+                    fontWeight: 700,
+                    color: 'white',
+                  }}
                   onClick={() => navigate(`/my-products/${productId}/edit`)}
                 >
                   상품 수정
@@ -117,7 +152,16 @@ const MyProductDetailPage = () => {
                   variant="contained"
                   color="error"
                   size="large"
-                  sx={{ px: 4, py: 1.5, fontSize: 22, fontWeight: 700, backgroundColor: '#d32f2f', '&:hover': { backgroundColor: '#b71c1c' } }}
+                  sx={{
+                    width: 200,
+                    height: 60,
+                    padding: '8px 20px',
+                    borderRadius: 0,
+                    fontSize: 22,
+                    fontWeight: 700,
+                    backgroundColor: '#d32f2f',
+                    '&:hover': { backgroundColor: '#b71c1c' },
+                  }}
                   onClick={() => {
                     if (window.confirm("정말로 이 상품을 삭제하시겠습니까?")) {
                       axios
@@ -153,9 +197,6 @@ const MyProductDetailPage = () => {
               {product.content}
             </Typography>
           </Box>
-          <Button variant="contained" onClick={() => navigate("/my-products")}>
-            목록으로
-          </Button>
         </Grid>
       </Grid>
     </Box>

@@ -1,7 +1,9 @@
 import React, { useState } from "react";
-import axios from "axios";
-import { useNavigate } from "react-router-dom"; // 추가
 import { Button } from "@mui/material";
+import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
+import FavoriteIcon from '@mui/icons-material/Favorite';
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const buttonStyle = {
   width: 200,
@@ -15,10 +17,14 @@ const buttonStyle = {
 const ProductActions = ({ productId, isInitiallyLiked = false }) => {
   const [isLiked, setIsLiked] = useState(isInitiallyLiked);
   const [loading, setLoading] = useState(false);
+  const [iconBump, setIconBump] = useState(false);
   const navigate = useNavigate();
 
+  // 실제 서버 연동 코드(주석처리)
   const handleWishlist = async () => {
     setLoading(true);
+    setIconBump(true); // 아이콘 scale 효과 시작
+    setTimeout(() => setIconBump(false), 250); // 0.25초 후 원래 크기로
     try {
       const token = localStorage.getItem("accessToken");
       if (!token) {
@@ -39,7 +45,7 @@ const ProductActions = ({ productId, isInitiallyLiked = false }) => {
         setIsLiked(res.data.data.isLiked);
         alert("찜 목록에 추가되었습니다.");
       } else {
-          alert("찜 목록에서 제거되었습니다.");
+        alert("찜 목록에서 제거되었습니다.");
       }
     } catch (e) {
       if (e.response && e.response.status === 404) {
@@ -73,31 +79,40 @@ const ProductActions = ({ productId, isInitiallyLiked = false }) => {
         color={isLiked ? "error" : "inherit"}
         sx={{
           ...buttonStyle,
-          border: isLiked ? '1px solid #EA002C' : '1px solid #e0e0e0',
-          background: isLiked ? '#EA002C' : '#fff',
-          color: isLiked ? '#fff' : '#222',
+          border: '1.5px solid #e0e0e0',
+          background: '#fff',
+          color: '#222',
           opacity: loading ? 0.6 : 1,
           fontSize: 22,
           fontWeight: 700,
         }}
         onClick={handleWishlist}
         disabled={loading}
+        endIcon={
+          <span
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              transition: 'transform 0.25s cubic-bezier(.4,2,.6,1)',
+              transform: iconBump ? 'scale(1.4)' : 'scale(1)',
+            }}
+          >
+            {isLiked
+              ? <FavoriteIcon sx={{ color: '#EA002C', fontSize: '36px' }} />
+              : <FavoriteBorderIcon sx={{ color: '#222', fontSize: '36px' }} />
+            }
+          </span>
+        }
       >
         {isLiked ? "찜 취소" : "찜하기"}
       </Button>
-      <Button
-        variant="contained"
-        color="primary"
-        sx={{ ...buttonStyle, fontSize: 22, fontWeight: 700 }}
-      >
-        대화하기
-      </Button>
+
       <Button
         variant="contained"
         color="success"
         sx={{ ...buttonStyle, fontSize: 22, fontWeight: 700 }}
       >
-        바로구매
+        거래 신청
       </Button>
     </div>
   );

@@ -13,7 +13,8 @@ const ProductsPage = () => {
   useEffect(() => {
     axios.get("http://localhost:8080/api/products")
       .then(res => {
-        setAllProducts(Array.isArray(res.data.content) ? res.data.content : []);
+        console.log('백엔드 응답:', res.data);
+        setAllProducts(Array.isArray(res.data.data?.content) ? res.data.data.content : []);
       })
       .catch(err => console.error("상품 목록 불러오기 실패", err));
   }, []);
@@ -32,8 +33,8 @@ const ProductsPage = () => {
   const category = params.get('category');
   const minPrice = params.get('minPrice');
   const maxPrice = params.get('maxPrice');
-  const page = Number(params.get('page'));
-  const size = Number(params.get('size'));
+  const page = Number(params.get('page')) || 0;
+  const size = Number(params.get('size')) || 10;
 
   // 필터링: status가 SALE이고, 파라미터와 일치하는 값만
   const filteredProducts = FilterProducts(allProducts, {
@@ -53,6 +54,10 @@ const ProductsPage = () => {
   // 페이지네이션 적용
   const pagedProducts = sortedProducts.slice(page * size, (page + 1) * size);
   const totalPages = Math.ceil(sortedProducts.length / size);
+
+  console.log('allProducts:', allProducts);
+  console.log('filteredProducts:', filteredProducts);
+  console.log('pagedProducts:', pagedProducts);
 
   // 페이지 이동 함수
   const goToPage = (newPage) => {

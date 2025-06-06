@@ -14,6 +14,7 @@ import ProductRegisterPage from './pages/ProductRegisterPage';
 import MyProductsPage from './pages/MyProductsPage';
 import MyProductDetailPage from './pages/MyProductDetailPage';
 import ProtectedRoute from './components/ProtectedRoute';
+import AdminUserPage from './pages/AdminUserPage';
 
 import Header from './components/Header';
 import { Box } from '@mui/material';

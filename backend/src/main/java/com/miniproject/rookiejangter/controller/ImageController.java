@@ -37,72 +37,23 @@ public class ImageController {
             if (file.isEmpty()) {
                 continue;
             }
-            try {
-                // 1. 파일 저장 서비스 호출: BusinessException을 던질 수 있음
-                String imageUrl = fileStorageService.uploadFile(file);
-
-                // 2. ImageService 호출: BusinessException을 던질 수 있음
-                ImageDTO.Response imageResponse = imageService.createImage(productId, imageUrl);
-                uploadedImages.add(imageResponse);
-
-            } catch (BusinessException e) { // IOException 대신 BusinessException만 catch
-                System.err.println("Business Exception during image upload/creation: " + e.getMessage() + " Code: " + e.getErrorCode());
-                // 파일 업로드 실패 또는 DB 저장 실패 시 해당 에러 코드를 클라이언트에게 전달하거나 로그
-                // 개별 파일 처리 실패 시 uploadedImages에 추가하지 않고 다음 파일로 진행
-            } catch (Exception e) { // 예측 못한 다른 런타임 예외
-                System.err.println("Unexpected error during image processing: " + e.getMessage());
-                // 이 또한 처리 방식은 서비스 정책에 따라 달라집니다.
-            }
+            String imageUrl = fileStorageService.uploadFile(file);
+            uploadedImages.add(imageService.createImage(productId, imageUrl));
         }
-
-        if (uploadedImages.isEmpty() && !files.isEmpty()) {
-            // 파일을 받았지만, 모든 파일 처리에서 오류가 발생한 경우 (BusinessException 포함)
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ArrayList<>());
-        }
-
         return ResponseEntity.status(HttpStatus.CREATED).body(uploadedImages);
+    }
+
+    // 변경된 부분: /images/id/{imageId} 로 경로 변경
+    @GetMapping("/id/{imageId}")
+    public ResponseEntity<ImageDTO.Response> getImageByImageId(@PathVariable Long imageId) {
+        return ResponseEntity.ok(imageService.getImageByImageId(imageId));
     }
 
     @GetMapping("/product/{productId}")
     public ResponseEntity<List<ImageDTO.Response>> getImagesByProductId(@PathVariable Long productId) {
-        List<ImageDTO.Response> images = imageService.getImagesByProductId(productId);
-        if (images.isEmpty()) {
-            return ResponseEntity.noContent().build();
-        }
-        return ResponseEntity.ok(images);
-    }
-
-    @GetMapping("/{imageId}")
-    public ResponseEntity<ImageDTO.Response> getImageByImageId(@PathVariable Long imageId) {
-        // ImageService.getImageByImageId는 BusinessException을 던질 수 있음
-        ImageDTO.Response image = imageService.getImageByImageId(imageId);
-        return ResponseEntity.ok(image);
-    }
-
-    @DeleteMapping("/{imageId}")
-    public ResponseEntity<Void> deleteImage(@PathVariable Long imageId) {
-        try {
-            ImageDTO.Response imageToDelete = imageService.getImageByImageId(imageId);
-
-            // 실제 파일 저장소에서 파일 삭제 (BusinessException을 던질 수 있음)
-            fileStorageService.deleteFile(imageToDelete.getImageUrl());
-
-            // DB에서 이미지 정보 삭제
-            imageService.deleteImage(imageId);
-
-            return ResponseEntity.noContent().build();
-        } catch (BusinessException e) { // BusinessException만 catch
-            System.err.println("Business Exception during image deletion: " + e.getMessage() + " Code: " + e.getErrorCode());
-            if (e.getErrorCode() == ErrorCode.IMAGE_NOT_FOUND) {
-                return ResponseEntity.notFound().build();
-            } else if (e.getErrorCode() == ErrorCode.FILE_DELETE_FAILED) {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-            }
-            throw e; // 그 외 BusinessException은 Global Exception Handler로
-        } catch (Exception e) {
-            System.err.println("Unexpected error during image deletion: " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
+        // productRepository가 ImageController에 직접 정의되지 않았습니다.
+        // ImageService.getImagesByProductId에서 product 존재 여부를 확인하므로 여기서는 제거합니다.
+        return ResponseEntity.ok(imageService.getImagesByProductId(productId));
     }
 
     @DeleteMapping("/product/{productId}")
@@ -118,7 +69,6 @@ public class ImageController {
                     fileStorageService.deleteFile(image.getImageUrl());
                 } catch (BusinessException e) {
                     System.err.println("Failed to delete image file from storage: " + image.getImageUrl() + ", Error: " + e.getMessage() + " Code: " + e.getErrorCode());
-                    // 이미지 개별 삭제 실패는 전체 프로세스를 멈추지 않도록 처리
                 }
             }
 
