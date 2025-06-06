@@ -62,6 +62,22 @@ public class ReservationService {
     }
 
     @Transactional(readOnly = true)
+    public List<ReservationDTO.Response> getAllReservations(Long currentUserId) {
+        // 관리자 권한 확인 (필요시)
+        User currentUser = userRepository.findById(currentUserId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND, currentUserId));
+
+        // 관리자 권한 체크 로직 (User 엔티티에 role 필드가 있다고 가정)
+        // if (!currentUser.getRole().equals(UserRole.ADMIN)) {
+        //     throw new BusinessException(ErrorCode.ACCESS_DENIED, "관리자만 모든 예약을 조회할 수 있습니다.");
+        // }
+
+        return reservationRepository.findAll().stream()
+                .map(ReservationDTO.Response::fromEntity)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
     public List<ReservationDTO.Response> getReservationsByBuyer(Long buyerId) {
         userRepository.findById(buyerId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND, buyerId));

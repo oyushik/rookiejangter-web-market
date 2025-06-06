@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
@@ -29,9 +30,13 @@ public class JwtProvider {
         this.key = Keys.hmacShaKeyFor(secret.getBytes());
     }
 
-    // AccessToken 생성 (User 객체를 받는 public 메서드)
+    // AccessToken 생성 (User 객체를 받는 public 메서드) - 권한 정보 포함
     public String createAccessToken(User user) {
-        Map<String, Object> claims = Map.of("userName", user.getUserName());
+        String role = Boolean.TRUE.equals(user.getIsAdmin()) ? "ADMIN" : "USER";
+        Map<String, Object> claims = Map.of(
+                "userName", user.getUserName(),
+                "role", role  // isAdmin 필드를 기반으로 권한 정보 추가
+        );
         return createAccessToken(String.valueOf(user.getUserId()), claims);
     }
 
@@ -64,6 +69,16 @@ public class JwtProvider {
     // 토큰에서 사용자 ID 추출
     public String getUserIdFromToken(String token) {
         return getClaimFromToken(token, Claims::getSubject);
+    }
+
+    // 토큰에서 사용자 권한 추출
+    public String getRoleFromToken(String token) {
+        return getClaimFromToken(token, claims -> claims.get("role", String.class));
+    }
+
+    // 토큰에서 사용자 이름 추출
+    public String getUserNameFromToken(String token) {
+        return getClaimFromToken(token, claims -> claims.get("userName", String.class));
     }
 
     // 토큰에서 원하는 Claim 추출

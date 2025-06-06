@@ -37,6 +37,11 @@ public class AuthService {
             User user = userRepository.findByLoginId(request.getLoginId())
                     .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND, request.getLoginId()));
 
+            // 2. 밴 상태 확인
+            if (user.getIsBanned()) {
+                throw new BusinessException(ErrorCode.USER_ALREADY_BANNED);
+            }
+
             // 2. 비밀번호 검증
             if (!passwordEncoder.passwordEncoder().matches(request.getPassword(), user.getPassword())) {
                 throw new BusinessException(ErrorCode.PASSWORD_MISMATCH);
