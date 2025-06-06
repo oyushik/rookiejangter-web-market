@@ -9,7 +9,7 @@ import org.springframework.http.HttpStatus;
 public enum ErrorCode {
     // Common errors - 공통으로 사용할 수 있는 일반적인 에러 코드
 //    VALIDATION_ERROR("입력값 검증 실패: %s", HttpStatus.BAD_REQUEST),
-//    INVALID_CREDENTIALS("인증 정보 오류", HttpStatus.UNAUTHORIZED),
+    INVALID_CREDENTIALS(HttpStatus.UNAUTHORIZED,"C009","인증 정보 오류"),
 //    TOKEN_EXPIRED("토큰이 만료되었습니다", HttpStatus.UNAUTHORIZED),
 //    ACCESS_DENIED("권한이 없습니다", HttpStatus.FORBIDDEN),
 //    RESOURCE_NOT_FOUND("%s을(를) 찾을 수 없습니다. %s: %s", HttpStatus.NOT_FOUND),
@@ -69,11 +69,14 @@ public enum ErrorCode {
     ALREADY_LOGGED_OUT(HttpStatus.BAD_REQUEST, "U010", "이미 로그아웃된 사용자입니다."),
     LOGIN_ID_ALREADY_EXISTS(HttpStatus.CONFLICT, "U011", "이미 사용 중인 로그인 ID입니다: %s"), // New
     PHONE_ALREADY_EXISTS(HttpStatus.CONFLICT, "U012", "이미 사용 중인 전화번호입니다: %s"), // New
+    USER_NOT_FOUND_BY_LOGIN_ID(HttpStatus.NOT_FOUND, "U00X", "로그인 ID '%s'에 해당하는 사용자를 찾을 수 없습니다."), // USER_NOT_FOUND와 코드 구분
 
 
     // Auth specific (for previously non-BusinessException cases)
     AUTH_UNEXPECTED_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "AU001", "%s 처리 중 예상치 못한 오류가 발생했습니다."), // New
     INVALID_REFRESH_TOKEN_DETAIL(HttpStatus.UNAUTHORIZED, "AU002", "유효하지 않거나 만료된 RefreshToken입니다."), // New
+    UNAUTHORIZED_ACCESS(HttpStatus.UNAUTHORIZED, "AU003", "인증되지 않은 접근입니다."),
+    INVALID_AUTHENTICATION_PRINCIPAL(HttpStatus.INTERNAL_SERVER_ERROR, "AU004", "유효하지 않은 인증 주체입니다."),
 
 
     // Product
@@ -148,6 +151,9 @@ public enum ErrorCode {
     INVALID_FILE_FORMAT(HttpStatus.BAD_REQUEST, "I003", "잘못된 파일 형식입니다."),
     FILE_UPLOAD_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "I004", "파일 업로드 중 오류가 발생했습니다."),
     MAX_UPLOAD_SIZE_EXCEEDED(HttpStatus.PAYLOAD_TOO_LARGE, "I005", "최대 업로드 파일 크기를 초과했습니다."),
+    FILE_EMPTY(HttpStatus.BAD_REQUEST, "I006","File cannot be empty."),
+    FILE_UPLOAD_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "I007","Failed to upload file."),
+    FILE_DELETE_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "I008","Failed to delete file."),
 
 
     // Cancelation

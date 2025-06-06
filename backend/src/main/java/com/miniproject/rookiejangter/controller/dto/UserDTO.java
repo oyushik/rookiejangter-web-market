@@ -77,6 +77,7 @@ public class UserDTO {
         @NotNull(message = "밴 여부 설정은 필수입니다.")
         private Boolean isBanned;
         private String banReason;
+        private Boolean isAdmin;
     }
 
     @Data
@@ -96,6 +97,15 @@ public class UserDTO {
                     .areaName(area.getAreaName())
                     .build();
         }
+    }
+
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class DeleteRequest {
+        @NotBlank(message = "비밀번호는 필수입니다.")
+        private String password;
     }
 
     @Data

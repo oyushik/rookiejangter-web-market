@@ -25,18 +25,6 @@ public class ReviewService {
     private final CompleteRepository completeRepository;
     private final UserRepository userRepository;
 
-    /**
-     * 리뷰 생성
-     * 거래 완료 후 구매자가 판매자에 대한 리뷰를 작성
-     * @param completeId 거래 완료 ID
-     * @param userId     리뷰를 작성하는 사용자 ID (구매자)
-     * @param request
-     * @return 생성된 리뷰 정보
-     * @throws BusinessException
-     * - ErrorCode.TRADE_NOT_FOUND: 거래 정보 없음
-     * - ErrorCode.USER_NOT_FOUND: 사용자 정보 없음
-     * - ErrorCode.DUPLICATE_REVIEW: 이미 리뷰를 작성한 경우
-     */
     @Transactional
     public ReviewDTO.Response createReview(Long completeId, Long userId, ReviewDTO.Request request) {
         // 1. 해당 거래가 완료되었는지 확인
@@ -67,16 +55,6 @@ public class ReviewService {
         return ReviewDTO.Response.fromEntity(savedReview);
     }
 
-    /**
-     * 리뷰 수정
-     * @param reviewId 수정할 리뷰 ID
-     * @param userId   수정하는 사용자 ID
-     * @param request
-     * @return 수정된 리뷰 정보
-     * @throws BusinessException
-     * - ErrorCode.REVIEW_NOT_FOUND: 리뷰 정보 없음
-     * - ErrorCode.TRADE_UNAUTHORIZED: 리뷰 수정 권한 없음 (작성자 != 수정자)
-     */
     @Transactional
     public ReviewDTO.Response updateReview(Long reviewId, Long userId, ReviewDTO.Request request) {
         // 1. 수정할 리뷰가 있는지 확인
@@ -95,14 +73,6 @@ public class ReviewService {
         return ReviewDTO.Response.fromEntity(review);
     }
 
-    /**
-     * 리뷰 삭제
-     * @param reviewId 삭제할 리뷰 ID
-     * @param userId   삭제 요청 사용자 ID
-     * @throws BusinessException
-     * - ErrorCode.REVIEW_NOT_FOUND: 리뷰 정보 없음
-     * - ErrorCode.TRADE_UNAUTHORIZED: 리뷰 삭제 권한 없음 (작성자 != 삭제자)
-     */
     @Transactional
     public void deleteReview(Long reviewId, Long userId) {
         // 1. 삭제할 리뷰가 있는지 확인
@@ -118,23 +88,12 @@ public class ReviewService {
         reviewRepository.delete(review);
     }
 
-    /**
-     * 리뷰 ID로 조회
-     * @param reviewId
-     * @return 해당 ID에 매핑된 리뷰
-     */
     public ReviewDTO.Response getReviewById(Long reviewId) {
         Review review = reviewRepository.findByReviewId(reviewId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.REVIEW_NOT_FOUND, reviewId));
         return ReviewDTO.Response.fromEntity(review);
     }
 
-    /**
-     * 특정 사용자가 받은 리뷰 목록 조회 (판매자에게 달린 리뷰)
-     * @param userId 조회할 사용자 ID (판매자)
-     * @return 해당 사용자가 받은 리뷰 목록
-     * @throws BusinessException ErrorCode.REVIEW_NOT_FOUND 해당 판매자에게 리뷰가 없을 경우
-     */
     public List<ReviewDTO.Response> getReviewsBySellerId(Long userId) {
         List<Review> reviews = reviewRepository.findBySeller_UserId(userId);
         if (reviews.isEmpty()) {
@@ -145,12 +104,6 @@ public class ReviewService {
                 .collect(Collectors.toList());
     }
 
-    /**
-     * 특정 거래에 대한 리뷰 조회
-     * @param completeId 거래 완료 ID
-     * @return 해당 거래에 대한 리뷰 (있을 경우)
-     * @throws BusinessException ErrorCode.REVIEW_NOT_FOUND 해당 거래에 리뷰가 없을 경우
-     */
     public ReviewDTO.Response getReviewByCompleteId(Long completeId) {
         Optional<Review> reviewOptional = reviewRepository.findByComplete_CompleteId(completeId);
         return reviewOptional.map(ReviewDTO.Response::fromEntity)

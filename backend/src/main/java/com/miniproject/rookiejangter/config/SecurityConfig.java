@@ -43,7 +43,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(requests -> requests
                         // 기본 페이지 및 정적 리소스 허용
                         .requestMatchers("/", "/index.html").permitAll()
-                        .requestMatchers("/static/**", "/css/**", "/js/**", "/images/**", "/favicon.ico", "/areas/**").permitAll()
+                        .requestMatchers("/static/**", "/css/**", "/js/**", "/images/**", "/favicon.ico", "/areas/**", "/categories/**", "/api/products/**").permitAll()
                         
                         // 개발 환경 리소스 허용
                         .requestMatchers("/src/**", "/Users/**", "/@vite/**", "/node_modules/**").permitAll()

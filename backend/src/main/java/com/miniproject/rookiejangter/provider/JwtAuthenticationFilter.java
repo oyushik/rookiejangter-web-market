@@ -9,9 +9,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -19,6 +18,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 @Slf4j
@@ -27,20 +27,19 @@ import java.util.List;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtProvider jwtProvider;
-    private final UserDetailsService userDetailsService;
     private final AuthService authService;
 
     // 인증을 건너뛸 경로들
     private static final List<String> EXCLUDED_PATHS = Arrays.asList(
             "/api/auth/login",
-            "/api/auth/signup", 
+            "/api/auth/signup",
             "/api/auth/refresh",
             "/h2-console"
     );
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, 
-                                    HttpServletResponse response, 
+    protected void doFilterInternal(HttpServletRequest request,
+                                    HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
 
         try {
@@ -55,7 +54,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             // 3. 토큰이 있고 유효한 경우 인증 처리
             if (StringUtils.hasText(jwt) && jwtProvider.validateToken(jwt)) {
-                
+
                 // 4. 토큰이 블랙리스트에 있는지 확인
                 if (authService.isTokenBlacklisted(jwt)) {
                     log.warn("블랙리스트에 등록된 토큰으로 접근 시도: {}", jwt.substring(0, 20) + "...");
@@ -64,19 +63,21 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     return;
                 }
 
-                // 5. 토큰에서 사용자 ID 추출
+                // 5. 토큰에서 사용자 정보 추출
                 String userId = jwtProvider.getUserIdFromToken(jwt);
+                String role = jwtProvider.getRoleFromToken(jwt);
 
-                // 6. UserDetailsService를 통해 사용자 정보 로드
-                UserDetails userDetails = userDetailsService.loadUserByUsername(userId);
+                // 6. 권한 객체 생성 (ROLE_ 접두사 확인 후 추가)
+                String authority = role.startsWith("ROLE_") ? role : "ROLE_" + role;
+                SimpleGrantedAuthority grantedAuthority = new SimpleGrantedAuthority(authority);
 
                 // 7. 인증 객체 생성
-                UsernamePasswordAuthenticationToken authentication = 
-                    new UsernamePasswordAuthenticationToken(
-                        userDetails.getUsername(), // principal에 userId 저장
-                        null, // credentials는 null (이미 검증됨)
-                        userDetails.getAuthorities() // 권한 정보
-                    );
+                UsernamePasswordAuthenticationToken authentication =
+                        new UsernamePasswordAuthenticationToken(
+                                userId, // principal에 userId 저장
+                                null, // credentials는 null (이미 검증됨)
+                                Collections.singletonList(grantedAuthority) // JWT에서 추출한 권한 정보
+                        );
 
                 // 8. 요청 세부정보 설정
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
@@ -84,7 +85,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 // 9. SecurityContext에 인증 정보 설정
                 SecurityContextHolder.getContext().setAuthentication(authentication);
 
-                log.debug("사용자 인증 완료: userId={}", userId);
+                log.debug("사용자 인증 완료: userId={}, role={}", userId, authority);
             }
 
         } catch (Exception e) {

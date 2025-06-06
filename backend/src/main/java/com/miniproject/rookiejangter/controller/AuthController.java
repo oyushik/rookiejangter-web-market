@@ -31,6 +31,7 @@ public class AuthController {
                     .body("서버 에러: " + e.getMessage());
         }
     }
+
     // 로그인
     @PostMapping("/login")
     public ResponseEntity<AuthService.LoginResponse> loginUser(@RequestBody UserDTO.LoginRequest request) {
@@ -58,6 +59,16 @@ public class AuthController {
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Error logging out");
         }
+    }
+
+    // 계정 탈퇴
+    @DeleteMapping("/delete")
+    public ResponseEntity<Void> deleteCurrentUserWithPassword(
+            @Valid @RequestBody UserDTO.DeleteRequest request,
+            Authentication authentication) {
+        Long userId = Long.parseLong(authentication.getName());
+        userService.deleteUserWithPassword(userId, request.getPassword());
+        return ResponseEntity.noContent().build();
     }
 
     // 토큰 갱신

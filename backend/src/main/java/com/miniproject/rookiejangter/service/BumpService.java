@@ -24,7 +24,7 @@ public class BumpService {
 
     private final BumpRepository bumpRepository;
     private final ProductRepository productRepository;
-    private static final int MAX_BUMPS_PER_DAY = 5; // 일일 최대 끌어올리기 횟수 (예시)
+    private static final int MAX_BUMPS_PER_DAY = 3; // 일일 최대 끌어올리기 횟수
 
     @Transactional
     public BumpDTO.Response bumpProduct(Long productId) {
@@ -50,7 +50,6 @@ public class BumpService {
         Bump savedBump = bumpRepository.save(newBump);
 
         product.setIsBumped(true);
-        // product.setLastBumpedAt(savedBump.getBumpedAt()); // Product 엔티티에 lastBumpedAt 필드가 있다면 설정
         productRepository.save(product);
 
         return BumpDTO.Response.fromEntity(savedBump);

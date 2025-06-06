@@ -3,22 +3,29 @@ import { AppBar, Toolbar, Typography, Button, Box } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import useAuthStore from '../store/authStore';
 import ProductSearch from './ProductSearch';
+import { useSelector } from 'react-redux';
 
 const Header = () => {
   const navigate = useNavigate();
   const { isAuthenticated, logout } = useAuthStore();
 
+  // Redux에서 사용자 정보 및 로딩 상태 가져오기
+  const identityInfo = useSelector(state => state.auth.identityInfo);
+  const loading = useSelector(state => state.auth.loading);
+
   const handleLogout = () => {
     logout();
-    navigate('/'); // 로그아웃 후 홈페이지로 이동 (원하는 경로로 변경 가능)
+    navigate('/');
   };
+
+  // 로그인되어 있지만 사용자 정보가 아직 없을 때는 렌더링 일시 중단
+  if (isAuthenticated && !identityInfo && !loading) {
+    return null;
+  }
 
   return (
     <>
-      {/* 최상단 바: 비움 */}
       <AppBar position="static" color="default" elevation={0} sx={{ height: 0 }} />
-
-      {/* 고정 헤더 */}
       <AppBar
         position="sticky"
         color="primary"
@@ -53,9 +60,15 @@ const Header = () => {
                 <Button color="inherit" onClick={handleLogout}>
                   로그아웃
                 </Button>
-                <Button color="inherit" onClick={() => navigate('/mypage')}>
-                  마이페이지
-                </Button>
+                {identityInfo?.isAdmin ? (
+                  <Button color="inherit" onClick={() => navigate('/admin')}>
+                    관리자 페이지
+                  </Button>
+                ) : (
+                  <Button color="inherit" onClick={() => navigate('/users/profile')}>
+                    마이페이지
+                  </Button>
+                )}
               </>
             ) : (
               <>

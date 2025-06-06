@@ -19,11 +19,6 @@ public class ReportReasonService {
 
     private final ReportReasonRepository reportReasonRepository;
 
-    /**
-     * 신고 사유 생성
-     * @param request
-     * @return
-     */
     public ReportReasonDTO.Response createReportReason(ReportReasonDTO.Request request) {
         ReportReason reportReason = ReportReason.builder()
                 .reportReasonType(request.getReportReasonType())
@@ -33,11 +28,6 @@ public class ReportReasonService {
         return ReportReasonDTO.Response.fromEntity(savedReportReason);
     }
 
-    /**
-     * 신고 사유 ID로 조회
-     * @param reportReasonId
-     * @return
-     */
     public ReportReasonDTO.Response getReportReasonById(Integer reportReasonId) {
         ReportReason reportReason = reportReasonRepository.findByReportReasonId(reportReasonId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.RESOURCE_NOT_FOUND, "ReportReason", reportReasonId, ""));
@@ -45,10 +35,6 @@ public class ReportReasonService {
         return ReportReasonDTO.Response.fromEntity(reportReason);
     }
 
-    /**
-     * 모든 신고 사유 목록 조회
-     * @return
-     */
     public List<ReportReasonDTO.Response> getAllReportReasons() {
         List<ReportReason> reportReasons = reportReasonRepository.findAll();
 
@@ -57,12 +43,6 @@ public class ReportReasonService {
                 .collect(Collectors.toList());
     }
 
-    /**
-     * 신고 사유 수정
-     * @param reportReasonId
-     * @param request
-     * @return
-     */
     public ReportReasonDTO.Response updateReportReason(Integer reportReasonId, ReportReasonDTO.Request request) {
         ReportReason reportReason = reportReasonRepository.findByReportReasonId(reportReasonId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.RESOURCE_NOT_FOUND, "ReportReason", reportReasonId, ""));
@@ -73,10 +53,6 @@ public class ReportReasonService {
         return ReportReasonDTO.Response.fromEntity(updatedReportReason);
     }
 
-    /**
-     * 신고 사유 삭제
-     * @param reportReasonId
-     */
     public void deleteReportReason(Integer reportReasonId) {
         ReportReason reportReason = reportReasonRepository.findByReportReasonId(reportReasonId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.RESOURCE_NOT_FOUND, "ReportReason", reportReasonId, ""));

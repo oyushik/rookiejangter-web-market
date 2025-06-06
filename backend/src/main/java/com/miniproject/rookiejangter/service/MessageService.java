@@ -26,13 +26,6 @@ public class MessageService {
     private final ChatRepository chatRepository;
     private final UserRepository userRepository;
 
-    /**
-     * 메시지 전송
-     * @param chatRoomId
-     * @param request
-     * @param senderId
-     * @return
-     */
     public MessageDTO.Response sendMessage(Long chatRoomId, MessageDTO.Request request, Long senderId) {
         Chat chat = chatRepository.findById(chatRoomId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.CHATROOM_NOT_FOUND, chatRoomId));
@@ -52,11 +45,6 @@ public class MessageService {
         return MessageDTO.Response.fromEntity(savedMessage, chatRoomId);
     }
 
-    /**
-     * 메시지 조회
-     * @param chatRoomId
-     * @return
-     */
     public MessageDTO.MessageListResponse getMessagesByChatId(Long chatRoomId) {
         List<Message> messages = messageRepository.findByChat_ChatId(chatRoomId);
 
@@ -76,19 +64,10 @@ public class MessageService {
                 .build();
     }
 
-    /**
-     * 메시지 읽음 처리
-     * @param messageId
-     */
     public void markMessageAsRead(Long messageId) {
         messageRepository.updateIsReadByMessageId(true, messageId);
     }
 
-    /**
-     * 채팅방 메시지 모두 읽음 처리
-     * @param chatRoomId
-     * @param userId
-     */
     public void markAllMessagesAsRead(Long chatRoomId, Long userId) {
         List<Message> messages = messageRepository.findByChat_ChatId(chatRoomId);
         messages.stream()

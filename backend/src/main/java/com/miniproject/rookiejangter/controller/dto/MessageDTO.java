@@ -17,7 +17,7 @@ public class MessageDTO {
     public static class Request {
         @NotBlank(message = "내용은 필수입니다.")
         @Size(max = 255, message = "내용은 최대 255자까지 가능합니다.")
-        private String content; // 메시지 전송 API 요청 바디
+        private String content;
     }
 
     @Data

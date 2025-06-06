@@ -26,13 +26,6 @@ public class BanService {
     private final UserRepository userRepository;
     private final ReportRepository reportRepository;
 
-    /**
-     * 유저 제재
-     * @param userId
-     * @param reportId
-     * @param banReason
-     * @return
-     */
     public BanDTO.Response banUser(Long userId, Long reportId, String banReason) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND, userId));
@@ -53,10 +46,6 @@ public class BanService {
         return BanDTO.Response.fromEntity(savedBan);
     }
 
-    /**
-     * 유저 제재 해제
-     * @param userId
-     */
     public void unbanUser(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND, userId));
@@ -64,11 +53,6 @@ public class BanService {
         user.setIsBanned(false); // User 엔티티의 isBanned 필드를 false로 설정
     }
 
-    /**
-     * 제재 ID로 조회
-     * @param banId
-     * @return
-     */
     public BanDTO.Response getBanById(Long banId) {
         Ban ban = banRepository.findByBanId(banId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.RESOURCE_NOT_FOUND, "Ban", banId));
@@ -76,11 +60,7 @@ public class BanService {
         return BanDTO.Response.fromEntity(ban);
     }
 
-    /**
-     * 유저 ID로 제재 목록 조회
-     * @param userId
-     * @return
-     */
+
     public List<BanDTO.Response> getBansByUserId(Long userId) {
         List<Ban> bans = banRepository.findByUser_UserId(userId);
 
@@ -89,11 +69,6 @@ public class BanService {
                 .collect(Collectors.toList());
     }
 
-    /**
-     * 신고 ID로 제재 조회
-     * @param reportId
-     * @return
-     */
     public BanDTO.Response getBanByReportId(Long reportId) {
         Ban ban = banRepository.findByReport_ReportId(reportId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.RESOURCE_NOT_FOUND, "Report", reportId));
@@ -101,11 +76,6 @@ public class BanService {
         return BanDTO.Response.fromEntity(ban);
     }
 
-    /**
-     * 제재 사유로 제재 목록 조회
-     * @param banReason
-     * @return
-     */
     public List<BanDTO.Response> getBansByBanReason(String banReason) {
         List<Ban> bans = banRepository.findByBanReason(banReason);
 
@@ -114,10 +84,6 @@ public class BanService {
                 .collect(Collectors.toList());
     }
 
-    /**
-     * 제재 삭제
-     * @param banId
-     */
     public void deleteBan(Long banId) {
         Ban ban = banRepository.findByBanId(banId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.RESOURCE_NOT_FOUND, "Ban", banId));
