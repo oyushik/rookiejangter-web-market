@@ -14,7 +14,6 @@ import MyProductsPage from './pages/MyProductsPage';
 import AdminUserPage from './pages/AdminUserPage';
 import MyProductDetailPage from './pages/MyProductDetailPage';
 import ProtectedRoute from './components/ProtectedRoute';
-import AdminUserPage from './pages/AdminUserPage';
 
 import Header from './components/Header';
 import NotificationList from './components/NotificationList';
