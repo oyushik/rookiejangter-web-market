@@ -34,7 +34,7 @@ public class ReservationService {
                 .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_NOT_FOUND, productId));
 
         if (product.getIsCompleted() || (product.getIsReserved() && !product.getUser().getUserId().equals(buyerId))) {
-            throw new BusinessException(ErrorCode.PRODUCT_NOT_RESERVABLE, "이미 판매 완료된 상품입니다.");
+            throw new BusinessException(ErrorCode.PRODUCT_NOT_RESERVABLE, "이미 거래 예정이거나, 판매가 완료된 상품입니다.");
         }
 
         if (product.getUser().getUserId().equals(buyerId)) {
@@ -215,7 +215,7 @@ public class ReservationService {
         notificationService.createNotification(
                 targetUserId,
                 reservation.getReservationId(),
-                "Reservation",
+                "Answer",
                 notificationMessage
         );
 
