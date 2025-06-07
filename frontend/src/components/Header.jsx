@@ -7,6 +7,7 @@ import { useSelector } from 'react-redux';
 import { getUnreadNotificationsCount } from '../api/notificationService';
 import { useEffect, useState } from 'react';
 
+
 const Header = () => {
   const navigate = useNavigate();
   const { isAuthenticated, logout } = useAuthStore();
@@ -50,7 +51,6 @@ const Header = () => {
     navigate('/');
   };
   // 로그인되어 있지만 사용자 정보가 아직 없을 때는 렌더링 일시 중단
-
   // if (isAuthenticated && !identityInfo && !loading) {
   //   return null;
   // }
@@ -92,7 +92,7 @@ const Header = () => {
         position="sticky"
         color="primary"
         elevation={1}
-        sx={{ top: 0, zIndex: (theme) => theme.zIndex.appBar }}
+        sx={{ top: 0, zIndex: (theme) => theme.zIndex.appBar, whiteSpace: 'nowrap' }}
       >
         <Toolbar sx={{ justifyContent: 'space-between' }}>
           <Typography

@@ -3,7 +3,7 @@ import { Box, Paper, Typography, IconButton } from "@mui/material";
 import AddPhotoAlternateIcon from "@mui/icons-material/AddPhotoAlternate";
 import CloseIcon from "@mui/icons-material/Close";
 
-const MAX_IMAGES = 10;
+const MAX_IMAGES = 3;
 
 /**
  * ProductImageUploader
@@ -123,7 +123,7 @@ const ProductImageUploader = ({ images, onChange }) => {
             )}
             <Box
               component="img"
-              src={img.url}
+              src={img.file ? URL.createObjectURL(img.file) : img.url}
               alt={`상품이미지${idx + 1}`}
               sx={{
                 width: "100%",

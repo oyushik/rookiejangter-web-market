@@ -4,9 +4,9 @@ import { loginUser } from '../api/auth';
 import { useNavigate } from 'react-router-dom';
 import useAuthStore from '../store/authStore'; // Zustand
 import axios from 'axios';
-
+import FormErrorSnackbar from "./FormErrorSnackbar";
 import { useDispatch } from 'react-redux';
-import { fetchIdentityInfo } from '../features/auth/authThunks'; // thunk 경로에 맞게 조정
+import { fetchIdentityInfo } from '../features/auth/authThunks';
 
 
 const LoginForm = () => {

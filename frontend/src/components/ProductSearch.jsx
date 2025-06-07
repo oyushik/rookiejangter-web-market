@@ -54,11 +54,9 @@ const ProductSearch = () => {
     params.set('page', 0);
     params.set('size', 10);
     params.set('sort', 'createdAt,desc');
-    if (selected)
-      params.set(
-        'area',
-        [selected.시도명, selected.시군구명, selected.읍면동명].filter(Boolean).join(' ')
-      );
+    if (selected && selected.areaName) {
+      params.set('area', selected.areaName);
+    }
     if (keyword) params.set('keyword', keyword);
     if (category) params.set('category', category);
     if (minPrice) params.set('minPrice', minPrice);
@@ -86,8 +84,7 @@ const ProductSearch = () => {
       <CategorySelect
         value={category}
         onChange={(e) => setCategory(e.target.value)}
-        // 여기서 cat.name 대신 cat.categoryName을 사용하도록 수정합니다.
-        options={categories.map((cat) => ({ value: cat.categoryId, label: cat.categoryName }))}
+        options={categories.map((cat) => ({ value: cat.categoryName, label: cat.categoryName }))}
       />
       {/* 지역 선택 버튼 */}
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
@@ -108,7 +105,7 @@ const ProductSearch = () => {
           }}
         >
           <LocationOnIcon sx={{ color: '#EA002C', fontSize: 26, ml: -1 }} />
-          {selected ? selected.읍면동명 : '지역 선택'}
+          {selected && selected.areaName ? selected.areaName : '지역 선택'}
         </Button>
       </Box>
       {/* 검색 입력 영역 */}
