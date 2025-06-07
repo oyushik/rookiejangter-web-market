@@ -29,7 +29,7 @@ public class ReservationDTO {
     @AllArgsConstructor
     @Builder
     public static class Response {
-        private Long tradeId;
+        private Long reservationId;
         private Long productId;
         private Long buyerId;
         private Long sellerId;
@@ -39,7 +39,7 @@ public class ReservationDTO {
 
         public static Response fromEntity(Reservation reservation) {
             return Response.builder()
-                    .tradeId(reservation.getReservationId())
+                    .reservationId(reservation.getReservationId())
                     .productId(reservation.getProduct().getProductId())
                     .buyerId(reservation.getBuyer().getUserId())
                     .sellerId(reservation.getSeller().getUserId())
