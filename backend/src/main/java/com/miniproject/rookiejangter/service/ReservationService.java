@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -32,8 +33,12 @@ public class ReservationService {
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND, buyerId));
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_NOT_FOUND, productId));
+        List<Reservation.TradeStatus> blockingStatuses = Arrays.asList(
+                Reservation.TradeStatus.ACCEPTED,
+                Reservation.TradeStatus.COMPLETED
+        );
 
-        if (product.getIsCompleted() || (product.getIsReserved() && !product.getUser().getUserId().equals(buyerId))) {
+        if ((product.getIsReserved() && !product.getUser().getUserId().equals(buyerId))) {
             throw new BusinessException(ErrorCode.PRODUCT_NOT_RESERVABLE, "이미 거래 예정이거나, 판매가 완료된 상품입니다.");
         }
 
@@ -41,7 +46,7 @@ public class ReservationService {
             throw new BusinessException(ErrorCode.CANNOT_RESERVE_OWN_PRODUCT);
         }
 
-        if (reservationRepository.existsByBuyer_UserIdAndProduct_ProductId(buyerId, productId)) {
+        if (reservationRepository.existsByBuyer_UserIdAndProduct_ProductIdAndStatusIn(buyerId, productId, blockingStatuses)) {
             throw new BusinessException(ErrorCode.RESERVATION_ALREADY_EXISTS, String.valueOf(productId));
         }
 
@@ -56,7 +61,7 @@ public class ReservationService {
                 .build();
         Reservation savedReservation = reservationRepository.save(reservation);
 
-        productService.updateProductStatus(productId, true, null, seller.getUserId());
+        productService.updateProductStatus(productId, true, false, seller.getUserId());
         // 알림 생성 로직 추가
         String notificationMessage = buyer.getUserName() + "님께서 '" + product.getTitle() + "' 상품에 거래 요청을 보냈습니다.";
         notificationService.createNotification(
@@ -128,8 +133,8 @@ public class ReservationService {
         User currentUser = userRepository.findById(currentUserId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND, currentUserId));
 
-        boolean isSeller = reservation.getSeller().getUserId().equals(currentUserId);
-        boolean isBuyer = reservation.getBuyer().getUserId().equals(currentUserId);
+        Boolean isSeller = reservation.getSeller().getUserId().equals(currentUserId);
+        Boolean isBuyer = reservation.getBuyer().getUserId().equals(currentUserId);
 
         Product product = reservation.getProduct();
 
@@ -230,7 +235,7 @@ public class ReservationService {
         User currentUser = userRepository.findById(currentUserId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND, currentUserId));
 
-        boolean isBuyer = reservation.getBuyer().getUserId().equals(currentUserId);
+        Boolean isBuyer = reservation.getBuyer().getUserId().equals(currentUserId);
 
         if (!isBuyer) {
             throw new BusinessException(ErrorCode.RESERVATION_DELETE_CONDITIONS_NOT_MET, "본인이 요청한 예약이 아닙니다.");

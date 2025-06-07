@@ -8,7 +8,7 @@ import LocationOnIcon from '@mui/icons-material/LocationOn';
 import PriceToggleButton from './PriceToggleButton';
 import SearchIcon from '@mui/icons-material/Search';
 import { Box, Button, IconButton, Paper, useTheme } from '@mui/material';
-import FormSnackbar from './FormSnackbar';
+import FormSnackbar from './FormSnackbar'; // 추가
 
 const ProductSearch = () => {
   const [modalOpen, setModalOpen] = useState(false);

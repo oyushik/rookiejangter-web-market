@@ -18,7 +18,6 @@ public class ReservationController {
 
     private final ReservationService reservationService;
 
-
     // 현재 로그인 중인 사용자가 buyerId로 설정된 모든 reservations를 목록으로 보여줌
     @GetMapping("/buyer")
     public ResponseEntity<ProductDTO.ApiResponseWrapper<List<ReservationDTO.Response>>> getReservationsByBuyer(
