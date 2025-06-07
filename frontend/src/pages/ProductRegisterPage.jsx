@@ -151,6 +151,20 @@ const ProductRegisterPage = ({ editMode }) => {
             'Content-Type': 'application/json',
           },
         });
+        // 이미지가 있으면 별도 업로드
+        if (form.images && form.images.length > 0 && form.images.some(img => img.file)) {
+          const imageFormData = new FormData();
+          imageFormData.append('productId', product_id);
+          form.images.forEach((img) => {
+            if (img.file) imageFormData.append('images', img.file);
+          });
+          await axios.post('http://localhost:8080/images', imageFormData, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              'Content-Type': 'multipart/form-data',
+            },
+          });
+        }
         alert('상품이 수정되었습니다.');
         navigate(`/my-products/${product_id}`);
       } else {
@@ -159,18 +173,31 @@ const ProductRegisterPage = ({ editMode }) => {
         formData.append('content', form.content);
         formData.append('price', parseInt(form.price.replace(/,/g, ''), 10));
         formData.append('categoryId', String(form.category));
-        form.images.forEach((img) => {
-          if (img.file) {
-            formData.append('images', img.file);
-          }
-        });
         const res = await axios.post(`http://localhost:8080/api/users/products`, formData, {
           headers: {
             Authorization: `Bearer ${token}`,
             'Content-Type': 'multipart/form-data',
           },
         });
+        // 상품 등록 성공 후 이미지가 있으면 별도 업로드
         if (res.data && res.data.id) {
+          if (form.images && form.images.length > 0 && form.images.some(img => img.file)) {
+          const imageFormData = new FormData();
+          imageFormData.append('productId', res.data.id);
+          form.images.forEach((img) => {
+            if (img.file) imageFormData.append('images', img.file);
+          });
+          // FormData 내용 확인
+          for (let pair of imageFormData.entries()) {
+            console.log(pair[0], pair[1]);
+          }
+          await axios.post('http://localhost:8080/images', imageFormData, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              'Content-Type': 'multipart/form-data',
+            },
+          });
+        }
           alert('성공적으로 등록되었습니다.');
           navigate('/my-products');
         }

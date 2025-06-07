@@ -4,7 +4,9 @@ import { loginUser } from '../api/auth';
 import { useNavigate } from 'react-router-dom';
 import useAuthStore from '../store/authStore'; // Zustand
 import axios from 'axios';
-import FormErrorSnackbar from "./FormErrorSnackbar";
+import FormErrorSnackbar from './FormErrorSnackbar';
+import { useDispatch } from 'react-redux';
+import { fetchIdentityInfo } from '../features/auth/authThunks'; // Redux
 
 const LoginForm = () => {
   const [formData, setFormData] = useState({
@@ -95,7 +97,7 @@ const LoginForm = () => {
         try {
           const profileRes = await axios.get('http://localhost:8080/api/users/profile');
           if (profileRes.data && profileRes.data.isBanned) {
-            setErrors(prev => ({ ...prev, submit: '해당 계정은 잠금된 상태입니다.' }));
+            setErrors((prev) => ({ ...prev, submit: '해당 계정은 잠금된 상태입니다.' }));
             setOpenError(true);
             setLoading(false);
             return;

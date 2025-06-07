@@ -35,7 +35,6 @@ public class AdminController {
             if (!userRepository.existsByLoginId("admin")) {
                 User admin = User.builder()
                         .userName("관리자")
-                        .userId(1L)
                         .loginId("admin")
                         .phone("undefined")
                         .isBanned(false)

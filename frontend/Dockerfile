@@ -9,9 +9,8 @@ COPY package*.json ./
 
 # 의존성 설치
 RUN npm install
-
-# zustand 설치
 RUN npm install zustand
+RUN npm install date-fns
 
 # 소스 코드 복사
 COPY . .

@@ -28,8 +28,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
-    private final ProductService productService;
-    private final NotificationService notificationService;
     private final ReservationService reservationService;
 
     // 현재 사용자 프로필 조회
@@ -66,10 +64,10 @@ public class UserController {
         return ResponseEntity.ok(allReservations);
     }
 
-    @GetMapping("/notify")
-    public ResponseEntity<List<NotificationDTO.Response>> getUserNotify(Authentication authentication) {
-        Long userId = Long.parseLong(authentication.getName());
-        List<NotificationDTO.Response> unreadNotifications = notificationService.getUnreadNotifications();
-        return ResponseEntity.ok(unreadNotifications);
-    }
+//    @GetMapping("/notify")
+//    public ResponseEntity<List<NotificationDTO.Response>> getUserNotify(Authentication authentication) {
+//        Long userId = Long.parseLong(authentication.getName());
+//        List<NotificationDTO.Response> notifications = notificationService.getNotificationsByUserId(userId);
+//        return ResponseEntity.ok(notifications);
+//    }
 }

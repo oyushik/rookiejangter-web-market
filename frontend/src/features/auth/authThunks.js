@@ -1,6 +1,6 @@
-import { createAsyncThunk } from "@reduxjs/toolkit";
+import { createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
-import { fetchVerificationResult } from "../../api/auth";
+import { fetchVerificationResult } from '../../api/auth';
 
 const BASE_URL = 'http://localhost:8080/api/auth';
 const USER_ID = 1;
@@ -20,7 +20,7 @@ export const fetchVerificationData = createAsyncThunk(
 //   'auth/fetchIdentityInfo',
 //   async (_, { rejectWithValue }) => {
 //     try {
-//       const response = await axios.get(`http://localhost:8080/api/users/1/profile `); 
+//       const response = await axios.get(`http://localhost:8080/api/users/1/profile `);
 //       return response.data;
 //     } catch (error) {
 //       return rejectWithValue(error.response?.data || error.message);
@@ -28,12 +28,12 @@ export const fetchVerificationData = createAsyncThunk(
 //   }
 // );
 export const fetchIdentityInfo = createAsyncThunk(
-  "auth/fetchIdentityInfo",
+  'auth/fetchIdentityInfo',
   async (_, { rejectWithValue }) => {
     try {
-      const token = localStorage.getItem("accessToken");
-      console.log("로컬 accessToken:", token);
-      if (!token) throw new Error("Access token not found");
+      const token = localStorage.getItem('accessToken');
+      console.log('로컬 accessToken:', token);
+      if (!token) throw new Error('Access token not found');
 
       const userId = 1; // 임시 ID
       const response = await axios.get(`http://localhost:8080/api/users/profile`, {
@@ -42,11 +42,11 @@ export const fetchIdentityInfo = createAsyncThunk(
         },
       });
 
-      console.log("API 응답:", response.data);
+      console.log('API 응답:', response.data);
 
       return response.data;
     } catch (err) {
-      console.error("유저 정보 요청 실패:", err);
+      console.error('유저 정보 요청 실패:', err);
       return rejectWithValue(err.response?.data || err.message);
     }
   }
