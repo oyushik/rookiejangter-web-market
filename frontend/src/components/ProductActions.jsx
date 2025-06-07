@@ -1,9 +1,9 @@
-import React, { useState } from "react";
-import { Button } from "@mui/material";
+import React, { useState } from 'react';
+import { Button } from '@mui/material';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import FavoriteIcon from '@mui/icons-material/Favorite';
-import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 const buttonStyle = {
   width: 200,
@@ -26,9 +26,9 @@ const ProductActions = ({ productId, isInitiallyLiked = false }) => {
     setIconBump(true); // 아이콘 scale 효과 시작
     setTimeout(() => setIconBump(false), 250); // 0.25초 후 원래 크기로
     try {
-      const token = localStorage.getItem("accessToken");
+      const token = localStorage.getItem('accessToken');
       if (!token) {
-        alert("먼저 로그인을 진행해주세요!");
+        alert('먼저 로그인을 진행해주세요!');
         setLoading(false);
         return;
       }
@@ -43,15 +43,15 @@ const ProductActions = ({ productId, isInitiallyLiked = false }) => {
       );
       if (res.data?.success) {
         setIsLiked(res.data.data.isLiked);
-        alert("찜 목록에 추가되었습니다.");
+        alert('찜 목록에 추가되었습니다.');
       } else {
-        alert("찜 목록에서 제거되었습니다.");
+        alert('찜 목록에서 제거되었습니다.');
       }
     } catch (e) {
       if (e.response && e.response.status === 404) {
-        navigate("/err/NotFound");
+        navigate('/err/NotFound');
       } else {
-        alert("찜하기 처리 중 오류가 발생했습니다.");
+        alert('찜하기 처리 중 오류가 발생했습니다.');
       }
     } finally {
       setLoading(false);
@@ -75,8 +75,8 @@ const ProductActions = ({ productId, isInitiallyLiked = false }) => {
       }}
     >
       <Button
-        variant={isLiked ? "contained" : "outlined"}
-        color={isLiked ? "error" : "inherit"}
+        variant={isLiked ? 'contained' : 'outlined'}
+        color={isLiked ? 'error' : 'inherit'}
         sx={{
           ...buttonStyle,
           border: '1.5px solid #e0e0e0',
@@ -97,14 +97,15 @@ const ProductActions = ({ productId, isInitiallyLiked = false }) => {
               transform: iconBump ? 'scale(1.4)' : 'scale(1)',
             }}
           >
-            {isLiked
-              ? <FavoriteIcon sx={{ color: '#EA002C', fontSize: '36px' }} />
-              : <FavoriteBorderIcon sx={{ color: '#222', fontSize: '36px' }} />
-            }
+            {isLiked ? (
+              <FavoriteIcon sx={{ color: '#EA002C', fontSize: '36px' }} />
+            ) : (
+              <FavoriteBorderIcon sx={{ color: '#222', fontSize: '36px' }} />
+            )}
           </span>
         }
       >
-        {isLiked ? "찜 취소" : "찜하기"}
+        {isLiked ? '찜 취소' : '찜하기'}
       </Button>
 
       <Button

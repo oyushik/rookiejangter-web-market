@@ -1,5 +1,5 @@
 import { useParams, useNavigate } from 'react-router-dom';
-import axios from "axios";
+import axios from 'axios';
 import { Box, Typography, Divider, Grid, Button } from '@mui/material';
 import NotFound from '../err/NotFound';
 import { FormatTime } from '../utils/FormatTime';
@@ -20,7 +20,7 @@ const ProductDetailPage = () => {
   const [reportOpen, setReportOpen] = useState(false);
   const [similarProducts, setSimilarProducts] = useState([]);
 
-  console.log("🧪 auth state:", authState);
+  console.log('🧪 auth state:', authState);
 
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -38,13 +38,14 @@ const ProductDetailPage = () => {
 
   // 백엔드 연동 시:
   useEffect(() => {
-    axios.get(`http://localhost:8080/api/products/${product_id}`)
-      .then(res => {
+    axios
+      .get(`http://localhost:8080/api/products/${product_id}`)
+      .then((res) => {
         console.log('상품 상세 응답:', res.data); // 응답 콘솔 출력
         setProduct(res.data.data);
         setLoading(false);
       })
-      .catch(err => {
+      .catch((err) => {
         setLoading(false);
         if (err.response && err.response.status === 404) {
           setError('notfound');
@@ -61,7 +62,7 @@ const ProductDetailPage = () => {
       .get(`http://localhost:8080/images/product/${product.id}`)
       .then((res) => {
         const imgArr = Array.isArray(res.data)
-          ? res.data.map(img =>
+          ? res.data.map((img) =>
               img.imageUrl.startsWith('http')
                 ? img.imageUrl.replace('http://localhost:3000', 'http://localhost:8080')
                 : `http://localhost:8080${img.imageUrl}`
@@ -76,11 +77,15 @@ const ProductDetailPage = () => {
   useEffect(() => {
     if (!product?.categoryName || !product?.id) return;
     axios
-      .get(`http://localhost:8080/api/products?categoryName=${encodeURIComponent(product.categoryName)}`)
-      .then(res => {
+      .get(
+        `http://localhost:8080/api/products?categoryName=${encodeURIComponent(
+          product.categoryName
+        )}`
+      )
+      .then((res) => {
         const arr = Array.isArray(res.data.data?.content) ? res.data.data.content : [];
         const filtered = arr.filter(
-          p => p.id !== product.id && p.categoryName === product.categoryName
+          (p) => p.id !== product.id && p.categoryName === product.categoryName
         );
         setSimilarProducts(filtered);
       })
@@ -160,7 +165,7 @@ const ProductDetailPage = () => {
                 카테고리: {product.categoryName}
                 <Divider orientation="vertical" flexItem sx={{ mx: 2 }} />
                 상태: &nbsp;
-                  {product.isCompleted ? 'SOLD' : product.isReserved ? 'RESERVED' : 'SALE'}
+                {product.isCompleted ? 'SOLD' : product.isReserved ? 'RESERVED' : 'SALE'}
                 <Divider orientation="vertical" flexItem sx={{ mx: 2 }} />
                 등록일: {FormatTime(product.createdAt)}
               </Typography>
@@ -169,7 +174,8 @@ const ProductDetailPage = () => {
                 {product.price?.toLocaleString()}원
               </Typography>
               <Typography variant="subtitle2" sx={{ mb: 1 }}>
-                지역: {product.seller?.area?.areaName || product.seller?.areaName || '지역정보 없음'}
+                지역:{' '}
+                {product.seller?.area?.areaName || product.seller?.areaName || '지역정보 없음'}
               </Typography>
             </Box>
             <ProductActions />
@@ -220,14 +226,23 @@ const ProductDetailPage = () => {
                   <Box
                     sx={{
                       width: 64,
-                      height: 64,     
+                      height: 64,
                       borderRadius: '50%',
                       mb: 1,
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
                       background: (() => {
-                        const colors = ['#FFB6C1', '#FFD700', '#87CEFA', '#90EE90', '#FFA07A', '#B39DDB', '#FFCC80', '#80CBC4'];
+                        const colors = [
+                          '#FFB6C1',
+                          '#FFD700',
+                          '#87CEFA',
+                          '#90EE90',
+                          '#FFA07A',
+                          '#B39DDB',
+                          '#FFCC80',
+                          '#80CBC4',
+                        ];
                         if (!product.seller?.userName) return '#ccc';
                         const idx = product.seller.userName.charCodeAt(0) % colors.length;
                         return colors[idx];
@@ -262,9 +277,7 @@ const ProductDetailPage = () => {
                       },
                     }}
                     onClick={
-                      isOwner
-                        ? () => navigate(`/my-products/${product.id}/edit`)
-                        : handleReport
+                      isOwner ? () => navigate(`/my-products/${product.id}/edit`) : handleReport
                     }
                   >
                     {isOwner ? '상품 수정' : '신고하기'}
@@ -276,11 +289,7 @@ const ProductDetailPage = () => {
         </Grid>
       </Grid>
       {/* 신고 모달 */}
-      <ReportModal
-        open={reportOpen}
-        onClose={handleReportClose}
-        onSubmit={handleReportSubmit}
-      />
+      <ReportModal open={reportOpen} onClose={handleReportClose} onSubmit={handleReportSubmit} />
     </Box>
   );
 };

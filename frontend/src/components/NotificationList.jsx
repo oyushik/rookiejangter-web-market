@@ -16,11 +16,10 @@ import {
 } from '@mui/material';
 import {
   getNotifications,
-  getUnreadNotificationsCount,
   markNotificationAsRead,
   deleteNotification,
-  updateReservationStatus,
-} from '../api/notificationService'; // notificationService 임포트
+} from '../api/notificationService';
+import { createReservation, updateReservationStatus } from '../api/reservationService';
 import { formatDistanceToNow, parseISO } from 'date-fns';
 import { ko } from 'date-fns/locale';
 
