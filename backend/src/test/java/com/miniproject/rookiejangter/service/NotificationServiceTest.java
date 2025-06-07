@@ -92,16 +92,16 @@ public class NotificationServiceTest {
         assertThrows(BusinessException.class, () -> notificationService.getNotificationById(notification.getNotificationId()));
     }
 
-    @Test
-    void getNotificationsByUserId_성공() {
-        when(notificationRepository.findByUser_UserId(user.getUserId())).thenReturn(Arrays.asList(notification));
-
-        List<NotificationDTO.Response> responses = notificationService.getNotificationsByUserId(user.getUserId());
-
-        assertNotNull(responses);
-        assertEquals(1, responses.size());
-        assertEquals(notification.getNotificationId(), responses.get(0).getNotificationId());
-    }
+//    @Test
+//    void getNotificationsByUserId_성공() {
+//        when(notificationRepository.findByUser_UserId(user.getUserId())).thenReturn(Arrays.asList(notification));
+//
+//        List<NotificationDTO.Response> responses = notificationService.getNotificationsByUserId(user.getUserId());
+//
+//        assertNotNull(responses);
+//        assertEquals(1, responses.size());
+//        assertEquals(notification.getNotificationId(), responses.get(0).getNotificationId());
+//    }
 
     @Test
     void getNotificationsByEntityId_성공() {

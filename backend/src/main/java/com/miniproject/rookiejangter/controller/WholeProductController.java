@@ -10,7 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/products") // API 엔드포인트 경로
+@RequestMapping("/api/products")
 @RequiredArgsConstructor
 public class WholeProductController {
 

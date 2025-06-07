@@ -10,6 +10,7 @@ import com.miniproject.rookiejangter.repository.ProductRepository;
 import com.miniproject.rookiejangter.repository.ReservationRepository;
 import com.miniproject.rookiejangter.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import com.miniproject.rookiejangter.service.NotificationService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,6 +25,7 @@ public class ReservationService {
     private final UserRepository userRepository;
     private final ProductRepository productRepository;
     private final ProductService productService;
+    private final NotificationService notificationService;
 
     @Transactional
     public ReservationDTO.Response createReservation(Long buyerId, Long productId) {
@@ -40,7 +42,7 @@ public class ReservationService {
             throw new BusinessException(ErrorCode.CANNOT_RESERVE_OWN_PRODUCT);
         }
 
-        if (reservationRepository.existsByBuyer_UserIdAndProduct_ProductId(buyerId, productId)) { //
+        if (reservationRepository.existsByBuyer_UserIdAndProduct_ProductId(buyerId, productId)) {
             throw new BusinessException(ErrorCode.RESERVATION_ALREADY_EXISTS, String.valueOf(productId));
         }
 
@@ -50,12 +52,21 @@ public class ReservationService {
                 .buyer(buyer)
                 .seller(seller)
                 .product(product)
-                .status(Reservation.TradeStatus.REQUESTED) //
+                .status(Reservation.TradeStatus.REQUESTED)
                 .isCanceled(false)
                 .build();
         Reservation savedReservation = reservationRepository.save(reservation);
 
         productService.updateProductStatus(productId, true, null, seller.getUserId());
+        // 알림 생성 로직 추가
+        String notificationMessage = buyer.getUserName() + "님께서 '" + product.getTitle() + "' 상품에 거래 요청을 보냈습니다.";
+        notificationService.createNotification(
+                seller.getUserId(),
+                product.getProductId(),
+                "Product",
+                notificationMessage
+        );
+
 
 
         return ReservationDTO.Response.fromEntity(savedReservation);
@@ -63,14 +74,12 @@ public class ReservationService {
 
     @Transactional(readOnly = true)
     public List<ReservationDTO.Response> getAllReservations(Long currentUserId) {
-        // 관리자 권한 확인 (필요시)
         User currentUser = userRepository.findById(currentUserId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND, currentUserId));
 
-        // 관리자 권한 체크 로직 (User 엔티티에 role 필드가 있다고 가정)
-        // if (!currentUser.getRole().equals(UserRole.ADMIN)) {
-        //     throw new BusinessException(ErrorCode.ACCESS_DENIED, "관리자만 모든 예약을 조회할 수 있습니다.");
-        // }
+         if (!currentUser.getIsAdmin().equals(true)) {
+             throw new BusinessException(ErrorCode.ACCESS_DENIED, "관리자만 모든 예약을 조회할 수 있습니다.");
+         }
 
         return reservationRepository.findAll().stream()
                 .map(ReservationDTO.Response::fromEntity)
@@ -81,7 +90,7 @@ public class ReservationService {
     public List<ReservationDTO.Response> getReservationsByBuyer(Long buyerId) {
         userRepository.findById(buyerId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND, buyerId));
-        return reservationRepository.findByBuyer_UserId(buyerId).stream() //
+        return reservationRepository.findByBuyer_UserId(buyerId).stream()
                 .map(ReservationDTO.Response::fromEntity)
                 .collect(Collectors.toList());
     }
@@ -90,7 +99,7 @@ public class ReservationService {
     public List<ReservationDTO.Response> getReservationsBySeller(Long sellerId) {
         userRepository.findById(sellerId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND, sellerId));
-        return reservationRepository.findBySeller_UserId(sellerId).stream() //
+        return reservationRepository.findBySeller_UserId(sellerId).stream()
                 .map(ReservationDTO.Response::fromEntity)
                 .collect(Collectors.toList());
     }
@@ -99,7 +108,7 @@ public class ReservationService {
     public List<ReservationDTO.Response> getReservationsByProduct(Long productId) {
         productRepository.findById(productId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_NOT_FOUND, productId));
-        return reservationRepository.findByProduct_ProductId(productId).stream() //
+        return reservationRepository.findByProduct_ProductId(productId).stream()
                 .map(ReservationDTO.Response::fromEntity)
                 .collect(Collectors.toList());
     }
@@ -130,7 +139,7 @@ public class ReservationService {
                 if (!isSeller) {
                     throw new BusinessException(ErrorCode.RESERVATION_ACTION_FORBIDDEN, "수락");
                 }
-                reservation.setStatus(Reservation.TradeStatus.ACCEPTED); //
+                reservation.setStatus(Reservation.TradeStatus.ACCEPTED);
                 product.setIsReserved(true);
                 productRepository.save(product);
                 break;
@@ -138,7 +147,7 @@ public class ReservationService {
                 if (!isSeller) {
                     throw new BusinessException(ErrorCode.RESERVATION_ACTION_FORBIDDEN, "거절");
                 }
-                reservation.setStatus(Reservation.TradeStatus.DECLINED); //
+                reservation.setStatus(Reservation.TradeStatus.DECLINED);
                 product.setIsReserved(false);
                 productRepository.save(product);
                 break;
@@ -149,11 +158,11 @@ public class ReservationService {
                 // 구매자는 REQUESTED 또는 ACCEPTED 상태에서 취소 가능
                 // 판매자는 ACCEPTED 상태에서 취소 가능 (구매자와 합의 하에)
                 if (isBuyer && (reservation.getStatus() == Reservation.TradeStatus.REQUESTED || reservation.getStatus() == Reservation.TradeStatus.ACCEPTED)) {
-                    reservation.setStatus(Reservation.TradeStatus.CANCELLED); //
-                    reservation.setIsCanceled(true); //
+                    reservation.setStatus(Reservation.TradeStatus.CANCELLED);
+                    reservation.setIsCanceled(true);
                 } else if (isSeller && reservation.getStatus() == Reservation.TradeStatus.ACCEPTED) {
-                    reservation.setStatus(Reservation.TradeStatus.CANCELLED); //
-                    reservation.setIsCanceled(true); //
+                    reservation.setStatus(Reservation.TradeStatus.CANCELLED);
+                    reservation.setIsCanceled(true);
                 } else {
                     throw new BusinessException(ErrorCode.RESERVATION_INVALID_STATE_FOR_ACTION, currentUser.getUserId(), "취소");
                 }
@@ -167,7 +176,7 @@ public class ReservationService {
                 if (reservation.getStatus() != Reservation.TradeStatus.ACCEPTED) {
                     throw new BusinessException(ErrorCode.RESERVATION_INVALID_STATE_FOR_ACTION, currentUser.getUserId(), "완료");
                 }
-                reservation.setStatus(Reservation.TradeStatus.COMPLETED); //
+                reservation.setStatus(Reservation.TradeStatus.COMPLETED);
                 product.setIsCompleted(true);
                 product.setIsReserved(false); // 예약 상태 해제
                 productRepository.save(product);
@@ -178,6 +187,39 @@ public class ReservationService {
         }
 
         Reservation updatedReservation = reservationRepository.save(reservation);
+
+        // 알림 생성 (상태 변경 시)
+        String notificationMessage;
+        Long targetUserId;
+        if (newStatus == Reservation.TradeStatus.ACCEPTED) {
+            notificationMessage = reservation.getSeller().getUserName() + "님께서 '" + reservation.getProduct().getTitle() + "' 상품의 예약 요청을 수락했습니다.";
+            targetUserId = reservation.getBuyer().getUserId();
+        } else if (newStatus == Reservation.TradeStatus.DECLINED) {
+            notificationMessage = reservation.getSeller().getUserName() + "님께서 '" + reservation.getProduct().getTitle() + "' 상품의 예약 요청을 거절했습니다.";
+            targetUserId = reservation.getBuyer().getUserId();
+        } else if (newStatus == Reservation.TradeStatus.CANCELLED) {
+            if (isBuyer) {
+                notificationMessage = reservation.getBuyer().getUserName() + "님께서 '" + reservation.getProduct().getTitle() + "' 상품의 예약 요청을 취소했습니다.";
+                targetUserId = reservation.getSeller().getUserId();
+            } else { // isSeller
+                notificationMessage = reservation.getSeller().getUserName() + "님께서 '" + reservation.getProduct().getTitle() + "' 상품의 예약을 취소했습니다.";
+                targetUserId = reservation.getBuyer().getUserId();
+            }
+        } else if (newStatus == Reservation.TradeStatus.COMPLETED) {
+            notificationMessage = reservation.getSeller().getUserName() + "님께서 '" + reservation.getProduct().getTitle() + "' 상품 거래를 완료 처리했습니다.";
+            targetUserId = reservation.getBuyer().getUserId();
+        } else {
+            notificationMessage = "예약 상태가 변경되었습니다: " + newStatus.name();
+            targetUserId = isBuyer ? reservation.getSeller().getUserId() : reservation.getBuyer().getUserId(); // 반대편 유저에게 알림
+        }
+
+        notificationService.createNotification(
+                targetUserId,
+                reservation.getProduct().getProductId(),
+                "Product",
+                notificationMessage
+        );
+
         return ReservationDTO.Response.fromEntity(updatedReservation);
     }
 

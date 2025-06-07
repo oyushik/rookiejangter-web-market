@@ -1,6 +1,6 @@
 import { Typography, Box, Button } from '@mui/material';
-import { useEffect , useState } from 'react'; // 백엔드 연동 시 필요
-import axios from "axios"; // 백엔드 연동 시 필요
+import { useEffect, useState } from 'react'; // 백엔드 연동 시 필요
+import axios from 'axios'; // 백엔드 연동 시 필요
 import { useLocation, useNavigate } from 'react-router-dom';
 import { FilterProducts } from '../utils/FilterProducts';
 import { FormatTime } from '../utils/FormatTime';
@@ -16,7 +16,7 @@ const ProductsPage = () => {
         console.log('백엔드 응답:', res.data);
         setAllProducts(Array.isArray(res.data.data?.content) ? res.data.data.content : []);
       })
-      .catch(err => console.error("상품 목록 불러오기 실패", err));
+      .catch((err) => console.error('상품 목록 불러오기 실패', err));
   }, []);
 
   const location = useLocation();

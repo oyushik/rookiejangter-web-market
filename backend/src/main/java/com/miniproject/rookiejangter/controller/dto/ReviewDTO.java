@@ -30,7 +30,7 @@ public class ReviewDTO {
     @Builder
     public static class Response {
         private Long reviewId;
-        private Long tradeId;
+        private Long completeId;
         private Long buyerId;
         private Long sellerId;
         private Integer rating;
@@ -40,7 +40,7 @@ public class ReviewDTO {
         public static Response fromEntity(Review review) {
             return Response.builder()
                     .reviewId(review.getReviewId())
-                    .tradeId(review.getComplete().getCompleteId()) // Complete ID를 tradeId로 사용
+                    .completeId(review.getComplete().getCompleteId())
                     .buyerId(review.getComplete().getBuyer().getUserId())
                     .sellerId(review.getComplete().getSeller().getUserId())
                     .rating(review.getRating())

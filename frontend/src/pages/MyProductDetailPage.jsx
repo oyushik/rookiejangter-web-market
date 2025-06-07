@@ -1,5 +1,5 @@
 import { useParams, useNavigate } from 'react-router-dom';
-import axios from "axios";
+import axios from 'axios';
 import { Box, Typography, Divider, Grid, Button } from '@mui/material';
 import { FormatTime } from '../utils/FormatTime';
 import React, { useState, useEffect } from 'react';
@@ -12,7 +12,9 @@ const MyProductDetailPage = () => {
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [images, setImages] = useState([]);
+
   const token = localStorage.getItem("accessToken");
+
 
   useEffect(() => {
     axios
@@ -28,7 +30,7 @@ const MyProductDetailPage = () => {
       .catch(() => {
         setLoading(false);
         if (err.response && err.response.status === 404) {
-          navigate("/err/NotFound");
+          navigate('/err/NotFound');
         }
       });
   }, [productId, token, navigate]);
@@ -47,6 +49,7 @@ const MyProductDetailPage = () => {
             )
         : [];
         setImages(imgArr);
+
       })
       .catch(() => setImages([]));
   }, [productId]);
@@ -163,7 +166,7 @@ const MyProductDetailPage = () => {
                     '&:hover': { backgroundColor: '#b71c1c' },
                   }}
                   onClick={() => {
-                    if (window.confirm("정말로 이 상품을 삭제하시겠습니까?")) {
+                    if (window.confirm('정말로 이 상품을 삭제하시겠습니까?')) {
                       axios
                         .delete(`http://localhost:8080/api/users/products/${productId}`, {
                           headers: {
@@ -171,11 +174,11 @@ const MyProductDetailPage = () => {
                           },
                         })
                         .then(() => {
-                          alert("상품이 삭제되었습니다.");
-                          navigate("/my-products");
+                          alert('상품이 삭제되었습니다.');
+                          navigate('/my-products');
                         })
                         .catch(() => {
-                          alert("상품 삭제에 실패했습니다.");
+                          alert('상품 삭제에 실패했습니다.');
                         });
                     }
                   }}

@@ -33,6 +33,10 @@ const MyPage = () => {
   const [password, setPassword] = useState('');
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
+  const [trades, setTrades] = useState([]);
+  const [wishlist, setWishlist] = useState([]);
+  const [notifications, setNotifications] = useState([]);
+
   useEffect(() => {
     const fetchProfile = async () => {
       try {
@@ -64,6 +68,20 @@ const MyPage = () => {
 
     fetchProfile();
     fetchAreas();
+
+    // 임시 mock 데이터 (API 연동 전용)
+    setTrades([
+      { id: 1, title: '맥북 중고 거래', status: '진행중' },
+      { id: 2, title: '의자 판매 거래', status: '배송중' },
+    ]);
+    setWishlist([
+      { id: 1, title: '에어팟 프로 2세대' },
+      { id: 2, title: '갤럭시 워치 6' },
+    ]);
+    setNotifications([
+      { id: 1, message: '새로운 댓글이 달렸습니다.', date: '2025-06-05' },
+      { id: 2, message: '거래가 완료되었습니다.', date: '2025-06-03' },
+    ]);
   }, [dispatch]);
 
   const validateField = (name, value) => {
@@ -231,7 +249,7 @@ const MyPage = () => {
         </>
       )}
 
-      <hr style={{ margin: '20px 0' }} />
+      <hr style={{ margin: '30px 0' }} />
 
       {!showDeleteConfirm ? (
         <Button onClick={() => setShowDeleteConfirm(true)} color="error">
@@ -253,6 +271,60 @@ const MyPage = () => {
           </Button>{' '}
           <Button onClick={() => setShowDeleteConfirm(false)}>취소</Button>
         </Box>
+      )}
+
+      <hr style={{ margin: '30px 0' }} />
+
+      {/* 현재 진행 중인 거래 */}
+      <Typography variant="h5" gutterBottom>
+        현재 진행 중인 거래
+      </Typography>
+      {trades.length > 0 ? (
+        trades.map((trade) => (
+          <Box key={trade.id} sx={{ mb: 1, p: 1, border: '1px solid #ccc', borderRadius: 2 }}>
+            <Typography>{trade.title}</Typography>
+            <Typography variant="caption" color="text.secondary">
+              상태: {trade.status}
+            </Typography>
+          </Box>
+        ))
+      ) : (
+        <Typography color="text.secondary">진행 중인 거래가 없습니다.</Typography>
+      )}
+
+      <hr style={{ margin: '30px 0' }} />
+
+      {/* 찜 목록 */}
+      <Typography variant="h5" gutterBottom>
+        찜 목록
+      </Typography>
+      {wishlist.length > 0 ? (
+        wishlist.map((item) => (
+          <Box key={item.id} sx={{ mb: 1, p: 1, border: '1px solid #ccc', borderRadius: 2 }}>
+            <Typography>{item.title}</Typography>
+          </Box>
+        ))
+      ) : (
+        <Typography color="text.secondary">찜한 항목이 없습니다.</Typography>
+      )}
+
+      <hr style={{ margin: '30px 0' }} />
+
+      {/* 알림 리스트 */}
+      <Typography variant="h5" gutterBottom>
+        알림 리스트
+      </Typography>
+      {notifications.length > 0 ? (
+        notifications.map((noti) => (
+          <Box key={noti.id} sx={{ mb: 1, p: 1, border: '1px solid #ccc', borderRadius: 2 }}>
+            <Typography>{noti.message}</Typography>
+            <Typography variant="caption" color="text.secondary">
+              {noti.date}
+            </Typography>
+          </Box>
+        ))
+      ) : (
+        <Typography color="text.secondary">알림이 없습니다.</Typography>
       )}
     </Box>
   );
