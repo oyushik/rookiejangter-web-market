@@ -71,7 +71,7 @@ public class ReservationServiceTest {
         ReservationDTO.Response response = reservationService.createReservation(buyerId, productId);
 
         // Then
-        assertThat(response.getTradeId()).isEqualTo(100L);
+        assertThat(response.getReservationId()).isEqualTo(100L);
         assertThat(response.getBuyerId()).isEqualTo(buyerId);
         assertThat(response.getProductId()).isEqualTo(productId);
         assertThat(response.getStatus()).isEqualTo(Reservation.TradeStatus.REQUESTED);
@@ -347,7 +347,7 @@ public class ReservationServiceTest {
         ReservationDTO.Response response = reservationService.getReservationById(reservationId);
 
         // Then
-        assertThat(response.getTradeId()).isEqualTo(reservationId);
+        assertThat(response.getReservationId()).isEqualTo(reservationId);
         assertThat(response.getBuyerId()).isEqualTo(buyer.getUserId());
         assertThat(response.getProductId()).isEqualTo(product.getProductId());
         assertThat(response.getStatus()).isEqualTo(Reservation.TradeStatus.REQUESTED);
