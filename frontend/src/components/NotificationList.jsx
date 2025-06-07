@@ -18,10 +18,9 @@ import {
   getNotifications,
   markNotificationAsRead,
   deleteNotification,
-} from '../api/notificationService';
-import { createReservation, updateReservationStatus } from '../api/reservationService';
-import { formatDistanceToNow, parseISO } from 'date-fns';
-import { ko } from 'date-fns/locale';
+  updateReservationStatus,
+} from '../api/notificationService'; // notificationService 임포트
+import { FormatTime } from '../utils/FormatTime';
 
 const NotificationList = () => {
   const [notifications, setNotifications] = useState([]);
@@ -239,15 +238,12 @@ const NotificationList = () => {
                     }
                     secondary={
                       <Typography
-                        sx={{ display: 'inline' }}
+                        sx={{ display: 'inline', ml: 2}}
                         component="span"
                         variant="body2"
                         color="text.secondary"
                       >
-                        {formatDistanceToNow(parseISO(notification.sentAt), {
-                          addSuffix: true,
-                          locale: ko,
-                        })}
+                        {notification.sentAt ? FormatTime(notification.sentAt) : ''}
                       </Typography>
                     }
                   />

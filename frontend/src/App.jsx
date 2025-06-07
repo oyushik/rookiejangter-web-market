@@ -12,7 +12,6 @@ import ProductDetailPage from './pages/ProductDetailPage';
 import ProductRegisterPage from './pages/ProductRegisterPage';
 import MyProductsPage from './pages/MyProductsPage';
 import AdminUserPage from './pages/AdminUserPage';
-import MyProductDetailPage from './pages/MyProductDetailPage';
 import ProtectedRoute from './components/ProtectedRoute';
 
 import Header from './components/Header';
@@ -50,7 +49,6 @@ function App() {
           <Route path="/products/:product_id" element={<ProductDetailPage />} />
           <Route path="/my-products/:id/edit" element={<ProductRegisterPage editMode />} />
           <Route path="/my-products" element={<MyProductsPage />} />
-          <Route path="/my-products/:productId" element={<MyProductDetailPage />} />
           <Route
             path="/products/register"
             element={
