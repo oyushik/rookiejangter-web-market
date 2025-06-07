@@ -190,7 +190,7 @@ const NotificationList = () => {
   }
 
   return (
-    <Box sx={{ maxWidth: 600, mx: 'auto', mt: 4, p: 2 }}>
+    <Box sx={{ maxWidth: 1000, mx: 'auto', mt: 4, p: 2 }}>
       <Typography variant="h4" component="h1" gutterBottom align="center">
         알림 목록
       </Typography>

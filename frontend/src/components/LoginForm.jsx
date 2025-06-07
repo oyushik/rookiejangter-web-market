@@ -4,10 +4,9 @@ import { loginUser } from '../api/auth';
 import { useNavigate } from 'react-router-dom';
 import useAuthStore from '../store/authStore'; // Zustand
 import axios from 'axios';
-import FormErrorSnackbar from "./FormErrorSnackbar";
+import FormErrorSnackbar from './FormErrorSnackbar';
 import { useDispatch } from 'react-redux';
 import { fetchIdentityInfo } from '../features/auth/authThunks';
-
 
 const LoginForm = () => {
   const [formData, setFormData] = useState({
@@ -151,13 +150,7 @@ const LoginForm = () => {
           style: { color: errors.password ? 'red' : 'grey' },
         }}
       />
-      <Button
-        type="submit"
-        variant="contained"
-        fullWidth
-        sx={{ mt: 2 }}
-        disabled={loading || !isFormValid}
-      >
+      <Button type="submit" variant="contained" sx={{ mt: 2 }} disabled={loading || !isFormValid}>
         {loading ? '로그인 중...' : '로그인'}
       </Button>
       {errors.submit && (
