@@ -8,7 +8,6 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "completes")
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder

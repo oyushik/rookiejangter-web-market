@@ -55,7 +55,7 @@ public class ProductService {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_NOT_FOUND, productId));
 
-        product.setViewCount(product.getViewCount() + 1);
+        product.incrementViewCount();
         productRepository.save(product);
 
         List<Image> images = imageRepository.findByProduct_ProductId(productId);

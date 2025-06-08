@@ -46,7 +46,6 @@ public class CompleteService {
                 .seller(seller)
                 .completedAt(LocalDateTime.now())
                 .build();
-        complete.setCompleteId(product.getProductId()); // Complete.java의 정의에 따라 직접 설정
 
         Complete savedComplete = completeRepository.save(complete);
         return CompleteDTO.Response.fromEntity(savedComplete);

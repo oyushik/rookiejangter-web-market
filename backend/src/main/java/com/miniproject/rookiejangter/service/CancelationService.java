@@ -66,11 +66,8 @@ public class CancelationService {
         CancelationReason cancelationReason = cancelationReasonRepository.findById(request.getCancelationReasonId())
                 .orElseThrow(() -> new BusinessException(ErrorCode.RESOURCE_NOT_FOUND, "CancelationReason", "ID", request.getCancelationReasonId()));
 
-        cancelation.setCancelationReason(cancelationReason);
-        cancelation.setCancelationDetail(request.getCancelationDetail());
-
-        Cancelation updatedCancelation = cancelationRepository.save(cancelation);
-        return CancelationDTO.Response.fromEntity(updatedCancelation);
+        cancelation.updateCancelationInfo(cancelationReason, request.getCancelationDetail());
+        return CancelationDTO.Response.fromEntity(cancelation);
     }
 
     public void deleteCancelation(Long reservationId) {

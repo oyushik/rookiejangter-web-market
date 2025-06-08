@@ -1,5 +1,7 @@
 package com.miniproject.rookiejangter.entity;
 
+import com.miniproject.rookiejangter.exception.BusinessException;
+import com.miniproject.rookiejangter.exception.ErrorCode;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -11,7 +13,6 @@ import java.util.List;
 @Entity
 @Table(name = "areas")
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -32,4 +33,14 @@ public class Area {
     @OneToMany(mappedBy = "area", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<User> users = new ArrayList<>();
 
+    // 비즈니스 메서드: 지역 이름 변경
+    public void changeAreaName(String newAreaName) {
+        if (newAreaName == null || newAreaName.trim().isEmpty()) {
+            throw new BusinessException(ErrorCode.AREA_NAME_EMPTY);
+        }
+        if (newAreaName.length() > 50) {
+            throw new BusinessException(ErrorCode.AREA_NAME_TOO_LONG);
+        }
+        this.areaName = newAreaName;
+    }
 }

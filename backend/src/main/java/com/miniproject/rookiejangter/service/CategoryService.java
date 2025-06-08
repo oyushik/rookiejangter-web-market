@@ -67,10 +67,9 @@ public class CategoryService {
                 categoryRepository.findByCategoryName(newCategoryName).isPresent()) {
             throw new BusinessException(ErrorCode.CATEGORY_NAME_ALREADY_EXISTS, newCategoryName);
         }
+        category.changeCategoryName(newCategoryName);
 
-        category.setCategoryName(newCategoryName);
-        Category updatedCategory = categoryRepository.save(category);
-        return CategoryDTO.Response.fromEntity(updatedCategory);
+        return CategoryDTO.Response.fromEntity(category);
     }
 
     @Transactional

@@ -46,12 +46,11 @@ public class CancelationReasonService {
     public CancelationReasonDTO.Response updateCancelationReason(Integer cancelationReasonId, CancelationReasonDTO.Request request) {
         CancelationReason cancelationReason = cancelationReasonRepository.findById(cancelationReasonId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.RESOURCE_NOT_FOUND, "CancelationReason", cancelationReasonId));
-
-        cancelationReason.setCancelationReasonType(request.getCancelationReasonType());
-
-        CancelationReason updatedCancelationReason = cancelationReasonRepository.save(cancelationReason);
-        return CancelationReasonDTO.Response.fromEntity(updatedCancelationReason);
+        cancelationReason.changeReasonType(request.getCancelationReasonType());
+        
+        return CancelationReasonDTO.Response.fromEntity(cancelationReason);
     }
+
 
     public void deleteCancelationReason(Integer cancelationReasonId) {
         CancelationReason cancelationReason = cancelationReasonRepository.findById(cancelationReasonId)

@@ -45,10 +45,8 @@ public class AreaService {
     public AreaDTO.Response updateArea(Integer areaId, String newAreaName) {
         Area area = areaRepository.findById(areaId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.AREA_NOT_FOUND, areaId));
-
-        area.setAreaName(newAreaName);
-        Area updatedArea = areaRepository.save(area);
-        return AreaDTO.Response.fromEntity(updatedArea);
+        area.changeAreaName(newAreaName);
+        return AreaDTO.Response.fromEntity(area);
     }
 
     @Transactional

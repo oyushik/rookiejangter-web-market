@@ -1,5 +1,7 @@
 package com.miniproject.rookiejangter.entity;
 
+import com.miniproject.rookiejangter.exception.BusinessException;
+import com.miniproject.rookiejangter.exception.ErrorCode;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -9,7 +11,6 @@ import java.util.Objects;
 @Entity
 @Table(name = "cancelations")
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -36,4 +37,17 @@ public class Cancelation {
     @Column(name = "canceled_at")
     private LocalDateTime canceledAt;
 
+
+    // 비즈니스 메서드: 취소 정보 업데이트
+    public void updateCancelationInfo(CancelationReason newCancelationReason, String newCancelationDetail) {
+        if (newCancelationReason == null) {
+            throw new BusinessException(ErrorCode.CANCELATION_REASON_EMPTY);
+        }
+        if (newCancelationDetail != null && newCancelationDetail.length() > 255) {
+            throw new BusinessException(ErrorCode.CANCELATION_REASON_TOO_LONG);
+        }
+
+        this.cancelationReason = newCancelationReason;
+        this.cancelationDetail = newCancelationDetail;
+    }
 }

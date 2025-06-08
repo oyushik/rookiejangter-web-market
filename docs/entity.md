@@ -19,6 +19,7 @@
 > 비즈니스 도메인을 코드로 표현하여 유지보수가 용이한 시스템을 구축
 
 ### 1.2 설계 원칙
+
 - **단일 책임 원칙**: 하나의 Entity는 하나의 비즈니스 개념만 표현
 - **캡슐화**: 비즈니스 로직을 Entity 내부에 구현
 - **불변성**: 가능한 한 불변 객체로 설계
@@ -152,12 +153,12 @@ public class EntityName extends BaseEntity {
 
 #### 4.1.2 필드 상세 명세
 
-| 필드명             | 데이터 타입   | 컬럼명          | 제약조건           | 설명                  | 비즈니스 규칙                       |
-| ------------------ | ------------- | --------------- | ------------------ | --------------------- | ----------------------------------- |
-| **notificationId** | Long          | notification_id | NOT NULL, PK       | 알림 고유 식별자      | 시스템에서 자동 생성되는 고유값     |
-| **userId**         | Long          | user_id         | NULL, FK           | 알림 수신자 사용자 ID | 반드시 존재하는 사용자여야 함       |
-| **entityId**       | Long          | entity_id       | NULL               | 연관된 엔티티의 ID    | 특정 객체와 연관된 알림인 경우 사용 |
-| **entityType**     | String        | entity_type     | VARCHAR(10), NULL  | 연관된 엔티티 타입    | PRODUCT, COMMENT, USER 등의 값      |
+| 필드명             | 데이터 타입 | 컬럼명          | 제약조건          | 설명                  | 비즈니스 규칙                       |
+| ------------------ | ----------- | --------------- | ----------------- | --------------------- | ----------------------------------- |
+| **notificationId** | Long        | notification_id | NOT NULL, PK      | 알림 고유 식별자      | 시스템에서 자동 생성되는 고유값     |
+| **userId**         | Long        | user_id         | NULL, FK          | 알림 수신자 사용자 ID | 반드시 존재하는 사용자여야 함       |
+| **entityId**       | Long        | entity_id       | NULL              | 연관된 엔티티의 ID    | 특정 객체와 연관된 알림인 경우 사용 |
+| **entityType**     | String      | entity_type     | VARCHAR(10), NULL | 연관된 엔티티 타입    | PRODUCT, COMMENT, USER 등의 값      |
 
 #### 4.1.3 검증 어노테이션
 
@@ -181,6 +182,7 @@ private User user;
 ```
 
 #### 4.1.5 비즈니스 메서드
+
     public NotificationDTO.Response getNotificationById(Long notificationId) {
         Notification notification = notificationRepository.findByNotificationId(notificationId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.RESOURCE_NOT_FOUND, "Notification", notificationId));
@@ -233,7 +235,9 @@ private User user;
 
         notificationRepository.delete(notification);
     }
+
 #### 4.1.6 생성자 및 팩토리 메서드
+
     public NotificationDTO.Response createNotification(Long userId, Long entityId, String entityType, String message) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND, userId));
@@ -280,6 +284,7 @@ private List<Product> products = new ArrayList<>();
 ```
 
 #### 4.2.5 비즈니스 메서드
+
     @Transactional(readOnly = true)
     public CategoryDTO.Response getCategoryById(Integer categoryId) {
         Category category = categoryRepository.findById(categoryId)
@@ -329,7 +334,9 @@ private List<Product> products = new ArrayList<>();
                 .orElseThrow(() -> new BusinessException(ErrorCode.CATEGORY_NOT_FOUND, categoryId));
         categoryRepository.delete(category);
     }
+
 #### 4.2.6 생성자 및 팩토리 메서드
+
     @Transactional
     public CategoryDTO.Response createCategory(String categoryName) {
         if (categoryRepository.findByCategoryName(categoryName).isPresent()) {
@@ -341,6 +348,7 @@ private List<Product> products = new ArrayList<>();
         Category savedCategory = categoryRepository.save(category);
         return CategoryDTO.Response.fromEntity(savedCategory);
     }
+
 ### 4.3 Reports Entity
 
 #### 4.3.1 기본 정보
@@ -384,6 +392,7 @@ private User user;
 ```
 
 #### 4.3.5 비즈니스 메서드
+
     public ReportReasonDTO.Response getReportReasonById(Integer reportReasonId) {
         ReportReason reportReason = reportReasonRepository.findByReportReasonId(reportReasonId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.RESOURCE_NOT_FOUND, "ReportReason", reportReasonId, ""));
@@ -415,7 +424,9 @@ private User user;
 
         reportReasonRepository.deleteById(reportReasonId);
     }
+
 #### 4.3.6 생성자 및 팩토리 메서드
+
     public ReportReasonDTO.Response createReportReason(ReportReasonDTO.Request request) {
         ReportReason reportReason = ReportReason.builder()
                 .reportReasonType(request.getReportReasonType())
@@ -424,6 +435,7 @@ private User user;
         ReportReason savedReportReason = reportReasonRepository.save(reportReason);
         return ReportReasonDTO.Response.fromEntity(savedReportReason);
     }
+
 ### 4.4 Dibs Entity
 
 #### 4.4.1 기본 정보
@@ -454,6 +466,7 @@ private Product product;
 ```
 
 #### 4.4.5 비즈니스 메서드
+
     @Transactional(readOnly = true)
     public DibsDTO.Response getDibsStatus(Long userId, Long productId) {
         // 먼저 Product 존재 여부를 확인합니다.
@@ -494,7 +507,9 @@ private Product product;
                 .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_NOT_FOUND, productId));
         return dibsRepository.findByProduct_ProductId(productId).size();
     }
+
 #### 4.4.6 생성자 및 팩토리 메서드
+
     public DibsDTO.Response toggleDibs(Long userId, Long productId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND, userId));
@@ -525,6 +540,7 @@ private Product product;
                 .isLiked(isNowLiked)
                 .build();
     }
+
 ### 4.5 Reservations Entity
 
 #### 4.5.1 기본 정보
@@ -561,6 +577,7 @@ private Product product;
 ```
 
 #### 4.5.5 비즈니스 메서드
+
     @Transactional(readOnly = true)
     public List<ReservationDTO.Response> getAllReservations(Long currentUserId) {
         // 관리자 권한 확인 (필요시)
@@ -710,7 +727,9 @@ private Product product;
             throw new BusinessException(ErrorCode.RESERVATION_DELETE_CONDITIONS_NOT_MET, "현재 상태(" + reservation.getStatus() + ")의 예약은 삭제할 수 없습니다.");
         }
     }
+
 #### 4.5.6 생성자 및 팩토리 메서드
+
     @Transactional
     public ReservationDTO.Response createReservation(Long buyerId, Long productId) {
         User buyer = userRepository.findById(buyerId)
@@ -746,6 +765,7 @@ private Product product;
 
         return ReservationDTO.Response.fromEntity(savedReservation);
     }
+
 ### 4.7 Images Entity
 
 #### 4.7.1 기본 정보
@@ -777,6 +797,7 @@ private Product product;
 ```
 
 #### 4.7.5 비즈니스 메서드
+
     @Transactional(readOnly = true)
     public ImageDTO.Response getImageByImageId(Long imageId) {
         Image image = imageRepository.findByImageId(imageId)
@@ -809,7 +830,9 @@ private Product product;
         List<Image> images = imageRepository.findByProduct_ProductId(productId);
         imageRepository.deleteAll(images);
     }
+
 #### 4.7.6 생성자 및 팩토리 메서드
+
     @Transactional
     public ImageDTO.Response createImage(Long productId, String imageUrl) {
         Product product = productRepository.findById(productId)
@@ -822,6 +845,7 @@ private Product product;
         Image savedImage = imageRepository.save(image);
         return ImageDTO.Response.fromEntity(savedImage);
     }
+
 ### 4.8 Users Entity
 
 #### 4.8.1 기본 정보
@@ -929,6 +953,7 @@ private List<Complete> sellerCompletes = new ArrayList<>();
 ```
 
 #### 4.8.5 비즈니스 메서드
+
     @Transactional(readOnly = true)
     public UserDTO.Response getUserById(Long userId) {
         User user = userRepository.findById(userId)
@@ -1093,7 +1118,9 @@ private List<Complete> sellerCompletes = new ArrayList<>();
     public boolean isPhoneAvailable(String phone) {
         return !userRepository.existsByPhone(phone);
     }
+
 #### 4.8.6 생성자 및 팩토리 메서드
+
     @Transactional
     public UserDTO.Response createUser(UserDTO.SignUpRequest requestDto) {
 
@@ -1121,6 +1148,7 @@ private List<Complete> sellerCompletes = new ArrayList<>();
         User savedUser = userRepository.save(user);
         return UserDTO.Response.fromEntity(savedUser);
     }
+
 ### 4.9 Bans Entity
 
 #### 4.9.1 기본 정보
@@ -1157,6 +1185,7 @@ private Report report;
 ```
 
 #### 4.9.5 비즈니스 메서드
+
     public void unbanUser(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND, userId));
@@ -1201,7 +1230,9 @@ private Report report;
 
         banRepository.delete(ban);
     }
+
 #### 4.9.6 생성자 및 팩토리 메서드
+
     public BanDTO.Response banUser(Long userId, Long reportId, String banReason) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND, userId));
@@ -1221,6 +1252,7 @@ private Report report;
 
         return BanDTO.Response.fromEntity(savedBan);
     }
+
 ### 4.10 areas Entity
 
 #### 4.10.1 기본 정보
@@ -1250,6 +1282,7 @@ private List<User> users = new ArrayList<>();
 ```
 
 #### 4.10.5 비즈니스 메서드
+
     @Transactional(readOnly = true)
     public AreaDTO.Response getAreaById(Integer areaId) {
         Area area = areaRepository.findById(areaId)
@@ -1280,7 +1313,9 @@ private List<User> users = new ArrayList<>();
                 .orElseThrow(() -> new BusinessException(ErrorCode.AREA_NOT_FOUND, areaId));
         areaRepository.delete(area);
     }
+
 #### 4.10.6 생성자 및 팩토리 메서드
+
     @Transactional
     public AreaDTO.Response createArea(String areaName) {
         Area area = Area.builder()
@@ -1289,6 +1324,7 @@ private List<User> users = new ArrayList<>();
         Area savedArea = areaRepository.save(area);
         return AreaDTO.Response.fromEntity(savedArea);
     }
+
 ### 4.11 Products Entity
 
 #### 4.11.1 기본 정보
@@ -1346,133 +1382,19 @@ private User user;
 ```
 
 #### 4.11.5 비즈니스 메서드
-    @Transactional
-    public ProductDTO.Response getProductById(Long productId, Long currentUserId) {
-        Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_NOT_FOUND, productId));
 
-        product.setViewCount(product.getViewCount() + 1);
-        productRepository.save(product);
-
-        List<Image> images = imageRepository.findByProduct_ProductId(productId);
-        return mapToProductDTOResponse(product, currentUserId);
-    }
-
-    @Transactional
-    public ProductDTO.Response updateProduct(Long productId, ProductDTO.UpdateRequest requestDto, Long userId) {
-        Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_NOT_FOUND, productId));
-
-        if (!product.getUser().getUserId().equals(userId)) {
-            throw new BusinessException(ErrorCode.PRODUCT_OPERATION_FORBIDDEN, "수정");
+```java
+    public void incrementViewCount() {
+        // null 체크: viewCount가 초기화되지 않은 경우를 대비 (DB 기본값 0이 아닌 경우)
+        if (this.viewCount == null) {
+            this.viewCount = 0;
         }
-
-        if (requestDto.getTitle() != null) product.setTitle(requestDto.getTitle());
-        if (requestDto.getContent() != null) product.setContent(requestDto.getContent());
-        if (requestDto.getPrice() != null) product.setPrice(requestDto.getPrice());
-
-        if (requestDto.getCategoryId() != null) {
-            Category category = categoryRepository.findById(requestDto.getCategoryId())
-                    .orElseThrow(() -> new BusinessException(ErrorCode.CATEGORY_NOT_FOUND, requestDto.getCategoryId()));
-            product.setCategory(category);
-        }
-
-        Product updatedProduct = productRepository.save(product);
-        return mapToProductDTOResponse(updatedProduct, userId);
+        this.viewCount++;
     }
+```
 
-    @Transactional
-    public void deleteProduct(Long productId, Long userId) {
-        Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_NOT_FOUND, productId));
-
-        if (!product.getUser().getUserId().equals(userId)) {
-            throw new BusinessException(ErrorCode.PRODUCT_OPERATION_FORBIDDEN, "삭제");
-        }
-
-        imageRepository.deleteAll(imageRepository.findByProduct_ProductId(productId));
-        dibsRepository.deleteAll(dibsRepository.findByProduct_ProductId(productId));
-        bumpRepository.deleteAll(bumpRepository.findByProduct_ProductId(productId));
-
-        productRepository.delete(product);
-    }
-
-    @Transactional(readOnly = true)
-    public ProductDTO.ProductListData getProductsByUser(Long targetUserId, Pageable pageable, Long currentUserId) {
-        User user = userRepository.findById(targetUserId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND, targetUserId));
-        Page<Product> productPage = productRepository.findByUser(user, pageable);
-        return convertToProductListData(productPage, currentUserId);
-    }
-
-    @Transactional
-    public ProductDTO.Response getUserProductById(Long productId, Long userId) {
-        Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_NOT_FOUND, productId));
-
-        // 해당 유저의 상품인지 확인
-        if (!product.getUser().getUserId().equals(userId)) {
-            throw new BusinessException(ErrorCode.PRODUCT_OPERATION_FORBIDDEN, "조회");
-        }
-
-        List<Image> images = imageRepository.findByProduct_ProductId(productId);
-        return mapToProductDTOResponse(product, userId);
-    }
-
-    @Transactional(readOnly = true)
-    public ProductDTO.ProductListData getAllProducts(Pageable pageable, Long currentUserId) {
-        Page<Product> productPage = productRepository.findAllByOrderByCreatedAtDesc(pageable);
-        return convertToProductListData(productPage, currentUserId);
-    }
-
-    @Transactional(readOnly = true)
-    public ProductDTO.ProductListData getProductsByCategory(Integer categoryId, Pageable pageable, Long currentUserId) {
-        Category category = categoryRepository.findById(categoryId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.CATEGORY_NOT_FOUND, categoryId));
-        Page<Product> productPage = productRepository.findByCategory(category, pageable);
-        return convertToProductListData(productPage, currentUserId);
-    }
-
-    @Transactional(readOnly = true)
-    public ProductDTO.ProductListData searchProductsByTitle(String title, Pageable pageable, Long currentUserId) {
-        List<Product> productList = productRepository.findByTitleContainsIgnoreCase(title);
-        Page<Product> productPage = paginateList(productList, pageable);
-        return convertToProductListData(productPage, currentUserId);
-    }
-
-    @Transactional(readOnly = true)
-    public ProductDTO.ProductListData searchProductsByKeyword(String keyword, Pageable pageable, Long currentUserId) {
-        List<Product> productList = productRepository.findByTitleContainsIgnoreCaseOrContentContainsIgnoreCase(keyword, keyword);
-        Page<Product> productPage = paginateList(productList, pageable);
-        return convertToProductListData(productPage, currentUserId);
-    }
-
-    @Transactional
-    public void updateProductStatus(Long productId, Boolean isReserved, Boolean isCompleted, Long userId) {
-        Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_NOT_FOUND, productId));
-
-        if (!product.getUser().getUserId().equals(userId)) {
-            throw new BusinessException(ErrorCode.PRODUCT_OPERATION_FORBIDDEN, "상태 변경");
-        }
-        if (isReserved != null) {
-            product.setIsReserved(isReserved);
-        }
-        if (isCompleted != null) {
-            product.setIsCompleted(isCompleted);
-        }
-        productRepository.save(product);
-    }
-
-    private Page<Product> paginateList(List<Product> list, Pageable pageable) {
-        int start = (int) pageable.getOffset();
-        int end = Math.min((start + pageable.getPageSize()), list.size());
-        if (start > end) {
-            return new PageImpl<>(Collections.emptyList(), pageable, list.size());
-        }
-        return new PageImpl<>(list.subList(start, end), pageable, list.size());
-    }
 #### 4.11.6 생성자 및 팩토리 메서드
+
     @Transactional
     public ProductDTO.Response createProduct(ProductDTO.Request requestDto, Long userId) {
         User user = userRepository.findByUserId(userId)
@@ -1540,6 +1462,7 @@ private User user;
                 .isLiked(isLiked)
                 .build();
     }
+
 ### 4.12 Completes Entity
 
 #### 4.12.1 기본 정보
@@ -1616,6 +1539,7 @@ private CancelationReason cancelationReason;
 ```
 
 #### 4.13.5 비즈니스 메서드
+
     public CancelationDTO.Response getCancelationByReservationId(Long reservationId) {
         Cancelation cancelation = cancelationRepository.findByReservation_ReservationId(reservationId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.TRADE_NOT_FOUND, reservationId));
@@ -1660,6 +1584,7 @@ private CancelationReason cancelationReason;
     }
 
 #### 4.13.6 생성자 및 팩토리 메서드
+
     public CancelationDTO.Response createCancelation(Long reservationId, CancelationDTO.Request request) {
         Reservation reservation = reservationRepository.findById(reservationId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.TRADE_NOT_FOUND, reservationId));
@@ -1677,6 +1602,7 @@ private CancelationReason cancelationReason;
         Cancelation savedCancelation = cancelationRepository.save(cancelation);
         return CancelationDTO.Response.fromEntity(savedCancelation);
     }
+
 ### 4.14 Cancelation_reasons Entity
 
 #### 4.14.1 기본 정보
@@ -1699,6 +1625,7 @@ private String cancelationReasonType;
 #### 4.14.4 연관관계 매핑
 
 #### 4.14.5 비즈니스 메서드
+
     public CancelationReasonDTO.Response getCancelationReasonById(Integer cancelationReasonId) {
         CancelationReason cancelationReason = cancelationReasonRepository.findById(cancelationReasonId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.RESOURCE_NOT_FOUND, "CancelationReason", cancelationReasonId));
@@ -1730,7 +1657,9 @@ private String cancelationReasonType;
 
         cancelationReasonRepository.delete(cancelationReason);
     }
+
 #### 4.14.6 생성자 및 팩토리 메서드
+
     public CancelationReasonDTO.Response createCancelationReason(CancelationReasonDTO.Request request) {
         CancelationReason cancelationReason = CancelationReason.builder()
                 .cancelationReasonType(request.getCancelationReasonType())
@@ -1739,6 +1668,7 @@ private String cancelationReasonType;
         CancelationReason savedCancelationReason = cancelationReasonRepository.save(cancelationReason);
         return CancelationReasonDTO.Response.fromEntity(savedCancelationReason);
     }
+
 ### 4.17 Report_reasons Entity
 
 #### 4.17.1 기본 정보
@@ -1767,6 +1697,7 @@ private List<Report> reports = new ArrayList<>();
 ```
 
 #### 4.17.5 비즈니스 메서드
+
     public ReportReasonDTO.Response getReportReasonById(Integer reportReasonId) {
         ReportReason reportReason = reportReasonRepository.findByReportReasonId(reportReasonId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.RESOURCE_NOT_FOUND, "ReportReason", reportReasonId, ""));
@@ -1798,7 +1729,9 @@ private List<Report> reports = new ArrayList<>();
 
         reportReasonRepository.deleteById(reportReasonId);
     }
+
 #### 4.17.6 생성자 및 팩토리 메서드
+
     public ReportReasonDTO.Response createReportReason(ReportReasonDTO.Request request) {
         ReportReason reportReason = ReportReason.builder()
                 .reportReasonType(request.getReportReasonType())
@@ -1807,7 +1740,9 @@ private List<Report> reports = new ArrayList<>();
         ReportReason savedReportReason = reportReasonRepository.save(reportReason);
         return ReportReasonDTO.Response.fromEntity(savedReportReason);
     }
+
 ## 5. Enum 타입 정의
+
 ---
 
 ## 6. 연관관계 매핑 전략
@@ -1924,21 +1859,24 @@ public class RookiejangterApplication {
 효율적인 데이터 검색과 성능 향상을 위해 아래와 같은 인덱스 설계 전략을 적용한다.
 
 #### 기본 전략
+
 - **기본키(PK)** : 모든 Entity에 기본키 인덱스 자동 생성
 - **외래키(FK)** : 외래키 컬럼에 인덱스 자동 생성 (JPA에서 ManyToOne 관계 기본 적용됨)
 - **유니크 인덱스**: 중복을 방지해야 하는 컬럼에 유니크 인덱스 적용
 
 #### 주요 인덱스 설계 예시
-| 테이블명       | 인덱스 대상 컬럼                  | 인덱스 유형 |
-|----------------|---------------------------------|-------------|
-| users          | login_id, phone                  | UNIQUE      |
-| products       | category_id, user_id, title      | NORMAL      |
-| dibs           | user_id + product_id (복합 인덱스)| UNIQUE      |
-| reservations   | buyer_id, seller_id, product_id  | NORMAL      |
-| notifications  | user_id, entity_type, is_read    | NORMAL      |
-| reports        | user_id, target_id + target_type | NORMAL      |
+
+| 테이블명      | 인덱스 대상 컬럼                   | 인덱스 유형 |
+| ------------- | ---------------------------------- | ----------- |
+| users         | login_id, phone                    | UNIQUE      |
+| products      | category_id, user_id, title        | NORMAL      |
+| dibs          | user_id + product_id (복합 인덱스) | UNIQUE      |
+| reservations  | buyer_id, seller_id, product_id    | NORMAL      |
+| notifications | user_id, entity_type, is_read      | NORMAL      |
+| reports       | user_id, target_id + target_type   | NORMAL      |
 
 #### 인덱스 설계 시 유의사항
+
 - **읽기 빈도**가 높은 컬럼에 인덱스를 우선 적용
 - **데이터 변경(INSERT/UPDATE/DELETE)** 가 빈번한 컬럼은 인덱스 최소화 (과도한 인덱스는 쓰기 성능 저하 유발)
 - **복합 인덱스** 사용 시 WHERE 절 조건 순서를 고려하여 설계
@@ -1950,26 +1888,34 @@ public class RookiejangterApplication {
 JPA 사용 시 **지연 로딩(LAZY)** 설정으로 인해 N+1 문제가 발생할 수 있다.
 
 #### 발생 원인
+
 - 연관 엔티티 조회 시 `@ManyToOne`, `@OneToMany` 기본 설정(LAZY)로 인해 반복적으로 select 쿼리 발생
 
 #### 해결 방법
+
 1. **Fetch Join 사용**
-``` java
+
+```java
 @Query("SELECT p FROM Product p JOIN FETCH p.user WHERE p.productId = :productId")
 Optional<Product> findWithUserByProductId(@Param("productId") Long productId);
 ```
 
 2. **EntityGraph 사용**
-``` java
+
+```java
 @EntityGraph(attributePaths = {"user", "category"})
 @Query("SELECT p FROM Product p WHERE p.productId = :productId")
 Optional<Product> findProductWithUserAndCategory(@Param("productId") Long productId);
 ```
+
 3. **Batch Size 조정**
-``` properties
+
+```properties
 spring.jpa.properties.hibernate.default_batch_fetch_size=100
 ```
+
 ### 8.3 쿼리 최적화
+
 일반 원칙
 필요한 필드만 조회: select new dto() 또는 프로젝션 사용
 
@@ -1983,7 +1929,8 @@ Product 리스트 조회 시 이미지, 찜 여부 등은 별도 쿼리로 처�
 검색 쿼리는 인덱스 기반 검색 유도 (LIKE 사용 시 %prefix 고정 권장)
 
 카운트 쿼리 최적화 (COUNT DISTINCT 최소화)
-``` java
+
+```java
 @Query("SELECT new com.rookiemarket.dto.ProductSummaryDTO(p.productId, p.title, p.price) FROM Product p WHERE p.category.categoryId = :categoryId")
 Page<ProductSummaryDTO> findProductSummariesByCategory(@Param("categoryId") Integer categoryId, Pageable pageable);
 ```
@@ -1993,15 +1940,16 @@ Page<ProductSummaryDTO> findProductSummariesByCategory(@Param("categoryId") Inte
 ## 9. 검증 및 제약조건
 
 ### 9.1 Bean Validation 어노테이션
-| 어노테이션       | 사용 목적                 |
-| ----------- | --------------------- |
-| @NotNull    | NULL 금지               |
+
+| 어노테이션  | 사용 목적                      |
+| ----------- | ------------------------------ |
+| @NotNull    | NULL 금지                      |
 | @NotBlank   | 공백 문자열 금지 (String 전용) |
-| @Size       | 길이(문자열, 컬렉션 등) 제약     |
-| @Pattern    | 정규식 패턴 제약             |
+| @Size       | 길이(문자열, 컬렉션 등) 제약   |
+| @Pattern    | 정규식 패턴 제약               |
 | @Min / @Max | 숫자 최소/최대값 제약          |
-| @Positive   | 양수 제약                 |
-| @Email      | 이메일 형식 제약             |
+| @Positive   | 양수 제약                      |
+| @Email      | 이메일 형식 제약               |
 
 ```java
 @NotBlank(message = "로그인 ID는 필수입니다.")
@@ -2012,14 +1960,15 @@ private String loginId;
 ```
 
 ### 9.2 데이터베이스 제약조건
+
 기본 원칙
-    데이터 무결성을 보장하기 위한 제약조건 명확 적용
-| 제약조건        | 적용 대상 컬럼                                                     |
+데이터 무결성을 보장하기 위한 제약조건 명확 적용
+| 제약조건 | 적용 대상 컬럼 |
 | ----------- | ------------------------------------------------------------ |
-| PRIMARY KEY | 모든 Entity 기본키                                                |
-| FOREIGN KEY | 모든 연관관계 필드                                                   |
-| UNIQUE      | login\_id(users), phone(users), dibs(user\_id + product\_id) |
-| NOT NULL    | 비즈니스상 필수 입력값 (e.g. title, content, price 등)                  |
+| PRIMARY KEY | 모든 Entity 기본키 |
+| FOREIGN KEY | 모든 연관관계 필드 |
+| UNIQUE | login_id(users), phone(users), dibs(user_id + product_id) |
+| NOT NULL | 비즈니스상 필수 입력값 (e.g. title, content, price 등) |
 
 ```java
 @Column(name = "is_reserved", nullable = false)

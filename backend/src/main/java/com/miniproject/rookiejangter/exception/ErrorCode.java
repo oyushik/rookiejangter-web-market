@@ -9,6 +9,8 @@ import org.springframework.http.HttpStatus;
 public enum ErrorCode {
     // Area
     AREA_NOT_FOUND(HttpStatus.NOT_FOUND, "A001", "존재하지 않는 지역입니다. (ID: %s)"),
+    AREA_NAME_EMPTY(HttpStatus.BAD_REQUEST, "A002", "지역 이름은 비어 있을 수 없습니다."),
+    AREA_NAME_TOO_LONG(HttpStatus.BAD_REQUEST, "A003", "지역 이름은 최대 50자까지 가능합니다."),
 
     // Auth
     AUTH_UNEXPECTED_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "AU001", "%s 처리 중 예상치 못한 오류가 발생했습니다."), // New
@@ -27,10 +29,14 @@ public enum ErrorCode {
     CANCELATION_REASON_NOT_FOUND(HttpStatus.NOT_FOUND, "CN001", "존재하지 않는 취소 사유입니다."),
     CANCELATION_NOT_FOUND(HttpStatus.NOT_FOUND, "CN002", "존재하지 않는 취소 기록입니다."),
     TRADE_NOT_FOUND(HttpStatus.NOT_FOUND, "CN003", "거래 정보를 찾을 수 없습니다. ID: %s"),
+    CANCELATION_REASON_EMPTY(HttpStatus.BAD_REQUEST, "CN004", "취소 사유는 필수입니다."),
+    CANCELATION_REASON_TOO_LONG(HttpStatus.BAD_REQUEST, "CN005", "취소 사유는 최대 255자까지 가능합니다."),
 
     // Category
     CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, "CT001", "존재하지 않는 카테고리입니다. (식별자: %s)"), // Modified
     CATEGORY_NAME_ALREADY_EXISTS(HttpStatus.CONFLICT, "CT002", "이미 존재하는 카테고리 이름입니다: %s"), // New
+    CATEGORY_NAME_EMPTY(HttpStatus.BAD_REQUEST, "CT003", "카테고리 이름은 비어 있을 수 없습니다."),
+    CATEGORY_NAME_TOO_LONG(HttpStatus.BAD_REQUEST, "CT004", "카테고리 이름은 최대 50자까지 가능합니다."),
 
     // Chat
     CHATROOM_NOT_FOUND(HttpStatus.NOT_FOUND, "CH001", "존재하지 않는 채팅방입니다. (ID: %s)"), // Modified
