@@ -373,6 +373,7 @@ const ProductDetailPage = () => {
         open={reportOpen}
         onClose={handleReportClose}
         onSubmit={handleReportSubmit}
+        targetUserId={product.seller?.id} // seller의 id를 targetUserId로 전달
       />
       <FormSnackbar
         open={snackbarOpen}

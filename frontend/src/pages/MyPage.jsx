@@ -81,15 +81,8 @@ const MyPage = () => {
     fetchProfile();
     fetchAreas();
 
-    // 임시 mock 데이터 (API 연동 전용)
-    setTrades([
-      { id: 1, title: '맥북 중고 거래', status: '진행중' },
-      { id: 2, title: '의자 판매 거래', status: '배송중' },
-    ]);
-    setNotifications([
-      { id: 1, message: '새로운 댓글이 달렸습니다.', date: '2025-06-05' },
-      { id: 2, message: '거래가 완료되었습니다.', date: '2025-06-03' },
-    ]);
+    setTrades([]);
+    setNotifications([]);
   }, [dispatch]);
 
   const validateField = (name, value) => {

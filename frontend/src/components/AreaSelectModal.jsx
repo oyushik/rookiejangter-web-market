@@ -248,7 +248,7 @@ const AreaSelectModal = ({ onSelect, onClose, onReset }) => {
           {(area.trim().length > 0 ? suggestions : sidoList).map((s, idx) => (
             <ListItem
               key={s.areaId || idx}
-              button
+              button={true}
               selected={hoveredIdx === idx}
               onMouseEnter={() => setHoveredIdx(idx)}
               onMouseLeave={() => setHoveredIdx(-1)}
