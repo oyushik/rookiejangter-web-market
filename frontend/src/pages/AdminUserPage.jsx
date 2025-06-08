@@ -30,6 +30,10 @@ const AdminUserPage = () => {
   const [reportUserMap, setReportUserMap] = useState({});
   const [reportLoading, setReportLoading] = useState(false);
 
+  // 신고 상세 다이얼로그 state
+  const [selectedReport, setSelectedReport] = useState(null);
+  const [reportDetailLoading, setReportDetailLoading] = useState(false);
+
   // snackbar 상태 추가
   const [snackbar, setSnackbar] = useState({
     open: false,
@@ -141,6 +145,13 @@ const AdminUserPage = () => {
     }
   };
 
+  // 신고 상세정보 불러오기
+  const handleViewReport = async (report) => {
+    setReportDetailLoading(true);
+    setSelectedReport(report);
+    setReportDetailLoading(false);
+  };
+
   return (
     <Box sx={{ p: 3 }}>
       <Typography variant="h4" gutterBottom>
@@ -212,7 +223,7 @@ const AdminUserPage = () => {
       )}
 
       {/* 신고 관리 테이블 */}
-      <Typography variant="h5" gutterBottom sx={{ mt: 6 }}>
+      <Typography variant="h4" gutterBottom sx={{ mt: 6 }}>
         신고 관리
       </Typography>
       {reportLoading ? (
@@ -228,9 +239,8 @@ const AdminUserPage = () => {
                 <TableCell>신고사유</TableCell>
                 <TableCell>신고자</TableCell>
                 <TableCell>대상</TableCell>
-                <TableCell>상세내용</TableCell>
-                <TableCell>처리여부</TableCell>
                 <TableCell>신고일시</TableCell>
+                <TableCell>상세 내용</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -240,16 +250,17 @@ const AdminUserPage = () => {
                     <TableCell>{report.reportId}</TableCell>
                     <TableCell>{report.reportReasonType}</TableCell>
                     <TableCell>
-                      {report.reporterId}
-                      {reportUserMap[report.reporterId] && ` (${reportUserMap[report.reporterId]})`}
+                      {reportUserMap[report.reporterId]} (ID={report.reporterId})
                     </TableCell>
                     <TableCell>
-                      {report.targetId ?? '없음'}
-                      {report.targetId && reportUserMap[report.targetId] && ` (${reportUserMap[report.targetId]})`}
+                      {reportUserMap[report.targetId]} (ID={report.targetId})
                     </TableCell>
-                    <TableCell>{report.reportDetail}</TableCell>
-                    <TableCell>{report.isProcessed ? '처리됨' : '미처리'}</TableCell>
                     <TableCell>{new Date(report.createdAt).toLocaleString()}</TableCell>
+                    <TableCell>
+                      <Button size="small" onClick={() => handleViewReport(report)}>
+                        보기
+                      </Button>
+                    </TableCell>
                   </TableRow>
                 ))
               ) : (
@@ -263,6 +274,48 @@ const AdminUserPage = () => {
           </Table>
         </Paper>
       )}
+
+      {/* 신고 상세 다이얼로그 */}
+      <Dialog
+        open={!!selectedReport}
+        onClose={() => {
+          setSelectedReport(null);
+          setSelectedReportUser({ reporter: null, target: null });
+        }}
+        maxWidth="sm"
+        fullWidth
+      >
+        <DialogTitle>신고 상세 내용</DialogTitle>
+        <DialogContent dividers>
+          {reportDetailLoading ? (
+            <Box sx={{ textAlign: 'center', p: 3 }}>
+              <CircularProgress />
+            </Box>
+          ) : selectedReport ? (
+            <>
+              <Typography>
+                <strong>신고 사유:</strong> {selectedReport.reportReasonType}
+              </Typography>
+              <Typography
+                sx={{
+                  mt: 2,
+                  whiteSpace: 'pre-line',
+                  wordBreak: 'break-all',
+                  overflowWrap: 'break-word',
+                }}
+              >
+                <strong>신고 상세 이유:</strong> {selectedReport.reportDetail}
+              </Typography>
+            </>
+          ) : null}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => {
+            setSelectedReport(null);
+            setSelectedReportUser({ reporter: null, target: null });
+          }}>닫기</Button>
+        </DialogActions>
+      </Dialog>
 
       {/* 유저 상세 다이얼로그 */}
       <Dialog

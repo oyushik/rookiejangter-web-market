@@ -17,7 +17,7 @@ import {
 import { getAreas } from '../api/area'; // 추가
 
 
-const KAKAO_REST_API_KEY = import.meta.env.VITE_KAKAO_REST_API_KEY;
+const KAKAO_REST_API_KEY = '0c05c2535d138f2bc1a762d5b75e77b4';
 
 const REGION_TO_AREANAME = {
   '서울': '서울특별시',
@@ -248,7 +248,7 @@ const AreaSelectModal = ({ onSelect, onClose, onReset }) => {
           {(area.trim().length > 0 ? suggestions : sidoList).map((s, idx) => (
             <ListItem
               key={s.areaId || idx}
-              button={true}
+              button
               selected={hoveredIdx === idx}
               onMouseEnter={() => setHoveredIdx(idx)}
               onMouseLeave={() => setHoveredIdx(-1)}
