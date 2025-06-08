@@ -1,6 +1,6 @@
 package com.miniproject.rookiejangter.controller;
 
-import com.miniproject.rookiejangter.controller.dto.CategoryDTO;
+import com.miniproject.rookiejangter.dto.CategoryDTO;
 import com.miniproject.rookiejangter.service.CategoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

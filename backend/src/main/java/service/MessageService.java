@@ -1,6 +1,6 @@
 package service;
 
-import com.miniproject.rookiejangter.controller.dto.MessageDTO;
+import com.miniproject.rookiejangter.dto.MessageDTO;
 import com.miniproject.rookiejangter.entity.Chat;
 import com.miniproject.rookiejangter.entity.Message;
 import com.miniproject.rookiejangter.entity.User;

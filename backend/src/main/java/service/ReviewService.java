@@ -1,6 +1,6 @@
 package service;
 
-import com.miniproject.rookiejangter.controller.dto.ReviewDTO;
+import com.miniproject.rookiejangter.dto.ReviewDTO;
 import com.miniproject.rookiejangter.entity.Complete;
 import com.miniproject.rookiejangter.entity.Review;
 import com.miniproject.rookiejangter.entity.User;

@@ -1,12 +1,11 @@
 package com.miniproject.rookiejangter.service;
 
-import com.miniproject.rookiejangter.controller.dto.NotificationDTO;
+import com.miniproject.rookiejangter.dto.NotificationDTO;
 import com.miniproject.rookiejangter.entity.Notification;
 import com.miniproject.rookiejangter.entity.User;
 import com.miniproject.rookiejangter.exception.BusinessException;
 import com.miniproject.rookiejangter.repository.NotificationRepository;
 import com.miniproject.rookiejangter.repository.UserRepository;
-import com.miniproject.rookiejangter.service.NotificationService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

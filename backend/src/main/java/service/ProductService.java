@@ -1,6 +1,6 @@
 package service;
 
-import com.miniproject.rookiejangter.controller.dto.ProductDTO;
+import com.miniproject.rookiejangter.dto.ProductDTO;
 import com.miniproject.rookiejangter.entity.*;
 import com.miniproject.rookiejangter.exception.BusinessException;
 import com.miniproject.rookiejangter.exception.ErrorCode;

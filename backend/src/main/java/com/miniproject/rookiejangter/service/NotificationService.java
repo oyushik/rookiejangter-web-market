@@ -1,6 +1,6 @@
 package com.miniproject.rookiejangter.service;
 
-import com.miniproject.rookiejangter.controller.dto.NotificationDTO;
+import com.miniproject.rookiejangter.dto.NotificationDTO;
 import com.miniproject.rookiejangter.entity.Notification;
 import com.miniproject.rookiejangter.entity.User;
 import com.miniproject.rookiejangter.exception.BusinessException;

@@ -1,7 +1,7 @@
 package com.miniproject.rookiejangter.controller;
 
-import com.miniproject.rookiejangter.controller.dto.ProductDTO;
-import com.miniproject.rookiejangter.controller.dto.ReservationDTO;
+import com.miniproject.rookiejangter.dto.ProductDTO;
+import com.miniproject.rookiejangter.dto.ReservationDTO;
 import com.miniproject.rookiejangter.service.ReservationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

@@ -1,6 +1,6 @@
 package com.miniproject.rookiejangter.controller;
 
-import com.miniproject.rookiejangter.controller.dto.NotificationDTO;
+import com.miniproject.rookiejangter.dto.NotificationDTO;
 import com.miniproject.rookiejangter.service.NotificationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;

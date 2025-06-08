@@ -1,6 +1,6 @@
 package com.miniproject.rookiejangter.controller;
 
-import com.miniproject.rookiejangter.controller.dto.ProductDTO;
+import com.miniproject.rookiejangter.dto.ProductDTO;
 import com.miniproject.rookiejangter.service.ProductService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

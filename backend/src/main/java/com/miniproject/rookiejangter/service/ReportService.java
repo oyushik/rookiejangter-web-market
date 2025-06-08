@@ -1,6 +1,6 @@
 package com.miniproject.rookiejangter.service;
 
-import com.miniproject.rookiejangter.controller.dto.ReportDTO;
+import com.miniproject.rookiejangter.dto.ReportDTO;
 import com.miniproject.rookiejangter.entity.Report;
 import com.miniproject.rookiejangter.entity.ReportReason;
 import com.miniproject.rookiejangter.entity.User;

@@ -1,6 +1,6 @@
 package com.miniproject.rookiejangter.controller;
 
-import com.miniproject.rookiejangter.controller.dto.UserDTO;
+import com.miniproject.rookiejangter.dto.UserDTO;
 import com.miniproject.rookiejangter.service.AuthService;
 import com.miniproject.rookiejangter.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;

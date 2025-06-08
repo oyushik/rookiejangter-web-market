@@ -1,7 +1,7 @@
 package com.miniproject.rookiejangter.controller;
 
-import com.miniproject.rookiejangter.controller.dto.BanDTO;
-import com.miniproject.rookiejangter.controller.dto.ReportDTO;
+import com.miniproject.rookiejangter.dto.BanDTO;
+import com.miniproject.rookiejangter.dto.ReportDTO;
 import com.miniproject.rookiejangter.service.BanService;
 import com.miniproject.rookiejangter.service.ReportService;
 import jakarta.validation.Valid;

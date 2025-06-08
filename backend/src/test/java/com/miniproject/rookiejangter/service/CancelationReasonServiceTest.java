@@ -1,9 +1,8 @@
 package com.miniproject.rookiejangter.service;
 
-import com.miniproject.rookiejangter.controller.dto.CancelationReasonDTO;
+import com.miniproject.rookiejangter.dto.CancelationReasonDTO;
 import com.miniproject.rookiejangter.entity.CancelationReason;
 import com.miniproject.rookiejangter.exception.BusinessException;
-import com.miniproject.rookiejangter.exception.ErrorCode;
 import com.miniproject.rookiejangter.repository.CancelationReasonRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

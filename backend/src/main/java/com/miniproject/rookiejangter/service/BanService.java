@@ -1,6 +1,6 @@
 package com.miniproject.rookiejangter.service;
 
-import com.miniproject.rookiejangter.controller.dto.BanDTO;
+import com.miniproject.rookiejangter.dto.BanDTO;
 import com.miniproject.rookiejangter.entity.Ban;
 import com.miniproject.rookiejangter.entity.Report;
 import com.miniproject.rookiejangter.entity.User;

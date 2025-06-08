@@ -1,6 +1,6 @@
 package com.miniproject.rookiejangter.service;
 
-import com.miniproject.rookiejangter.controller.dto.ReservationDTO;
+import com.miniproject.rookiejangter.dto.ReservationDTO;
 import com.miniproject.rookiejangter.entity.Product;
 import com.miniproject.rookiejangter.entity.Reservation;
 import com.miniproject.rookiejangter.entity.User;

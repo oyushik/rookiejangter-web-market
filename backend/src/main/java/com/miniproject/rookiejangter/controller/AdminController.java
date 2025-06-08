@@ -1,6 +1,6 @@
 package com.miniproject.rookiejangter.controller;
 
-import com.miniproject.rookiejangter.controller.dto.UserDTO;
+import com.miniproject.rookiejangter.dto.UserDTO;
 import com.miniproject.rookiejangter.entity.User;
 import com.miniproject.rookiejangter.repository.UserRepository;
 import com.miniproject.rookiejangter.service.UserService;

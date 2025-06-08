@@ -1,6 +1,6 @@
 package com.miniproject.rookiejangter.controller;
 
-import com.miniproject.rookiejangter.controller.dto.ReviewDTO;
+import com.miniproject.rookiejangter.dto.ReviewDTO;
 import com.miniproject.rookiejangter.service.ProductService;
 import com.miniproject.rookiejangter.service.ReviewService;
 import jakarta.validation.Valid;

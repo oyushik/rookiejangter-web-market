@@ -1,11 +1,10 @@
 package com.miniproject.rookiejangter.service;
 
-import com.miniproject.rookiejangter.controller.dto.ReportDTO;
+import com.miniproject.rookiejangter.dto.ReportDTO;
 import com.miniproject.rookiejangter.entity.Report;
 import com.miniproject.rookiejangter.entity.ReportReason;
 import com.miniproject.rookiejangter.entity.User;
 import com.miniproject.rookiejangter.exception.BusinessException;
-import com.miniproject.rookiejangter.exception.ErrorCode;
 import com.miniproject.rookiejangter.repository.ReportReasonRepository;
 import com.miniproject.rookiejangter.repository.ReportRepository;
 import com.miniproject.rookiejangter.repository.UserRepository;

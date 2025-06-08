@@ -1,6 +1,6 @@
 package com.miniproject.rookiejangter.service;
 
-import com.miniproject.rookiejangter.controller.dto.CancelationDTO;
+import com.miniproject.rookiejangter.dto.CancelationDTO;
 import com.miniproject.rookiejangter.entity.Cancelation;
 import com.miniproject.rookiejangter.entity.CancelationReason;
 import com.miniproject.rookiejangter.entity.Reservation;

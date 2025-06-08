@@ -1,6 +1,6 @@
 package service;
 
-import com.miniproject.rookiejangter.controller.dto.AreaDTO;
+import com.miniproject.rookiejangter.dto.AreaDTO;
 import com.miniproject.rookiejangter.entity.Area;
 import com.miniproject.rookiejangter.exception.BusinessException;
 import com.miniproject.rookiejangter.exception.ErrorCode;

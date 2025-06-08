@@ -1,6 +1,6 @@
 package com.miniproject.rookiejangter.service;
 
-import com.miniproject.rookiejangter.controller.dto.DibsDTO;
+import com.miniproject.rookiejangter.dto.DibsDTO;
 import com.miniproject.rookiejangter.entity.Dibs;
 import com.miniproject.rookiejangter.entity.Product;
 import com.miniproject.rookiejangter.entity.User;

@@ -1,7 +1,7 @@
 package com.miniproject.rookiejangter.controller;
 
-import com.miniproject.rookiejangter.controller.dto.DibsDTO;
-import com.miniproject.rookiejangter.controller.dto.ProductDTO;
+import com.miniproject.rookiejangter.dto.DibsDTO;
+import com.miniproject.rookiejangter.dto.ProductDTO;
 import com.miniproject.rookiejangter.service.DibsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;

@@ -1,7 +1,7 @@
 package com.miniproject.rookiejangter.service;
 
 import com.miniproject.rookiejangter.config.PasswordEncoderConfig;
-import com.miniproject.rookiejangter.controller.dto.UserDTO;
+import com.miniproject.rookiejangter.dto.UserDTO;
 import com.miniproject.rookiejangter.entity.User;
 import com.miniproject.rookiejangter.exception.*;
 import com.miniproject.rookiejangter.provider.JwtProvider;

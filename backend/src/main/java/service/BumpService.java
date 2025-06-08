@@ -1,6 +1,6 @@
 package service;
 
-import com.miniproject.rookiejangter.controller.dto.BumpDTO;
+import com.miniproject.rookiejangter.dto.BumpDTO;
 import com.miniproject.rookiejangter.entity.Bump;
 import com.miniproject.rookiejangter.entity.Product;
 import com.miniproject.rookiejangter.exception.BusinessException;
