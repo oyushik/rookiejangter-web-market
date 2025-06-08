@@ -199,13 +199,6 @@ public class ProductService {
 
     private ProductDTO.Response mapToProductDTOResponse(Product product, Long currentUserId) {
 
-        boolean isLiked = false;
-        if (currentUserId != null) {
-            isLiked = dibsRepository.existsByUser_UserIdAndProduct_ProductId(currentUserId, product.getProductId());
-        }
-        long likeCount = dibsRepository.findByProduct_ProductId(product.getProductId()).size();
-
-
         return ProductDTO.Response.builder()
                 .id(product.getProductId())
                 .title(product.getTitle())
@@ -216,9 +209,9 @@ public class ProductService {
                 .createdAt(product.getCreatedAt().atOffset(java.time.ZoneOffset.UTC))
                 .updatedAt(product.getUpdatedAt() != null ? product.getUpdatedAt().atOffset(java.time.ZoneOffset.UTC) : null)
                 .viewCount(product.getViewCount())
-                .isBumped(product.getIsBumped())
-                .isReserved(product.getIsReserved())
-                .isCompleted(product.getIsCompleted())
+                .isBumped(product.getIsBumped() != null ? product.getIsBumped() : false)
+                .isReserved(product.getIsReserved() != null ? product.getIsReserved() : false)
+                .isCompleted(product.getIsCompleted() != null ? product.getIsCompleted() : false)
                 .build();
     }
 }
