@@ -1,8 +1,8 @@
 # React 컴포넌트 설계 문서 템플릿
 ## 문서 정보
 - **작성자**: [안태경, 김우준]
-- **작성일**: [2025-06-07]
-- **버전**: [v1.1]
+- **작성일**: [2025-06-08]
+- **버전**: [v1.2]
 - **검토자**: [안태경, 김우준]
 ---
 
@@ -26,20 +26,21 @@
 - [x] Zustand 스토어에서 인증 상태 및 로그아웃 액션 사용
 - [x] 로그인 중 사용자 정보 로딩 시 헤더 숨김
 - [x] 로그아웃 버튼 클릭 시 Zustand 로그아웃 액션 호출 및 홈으로 이동
+- [x] 알림 개수 (읽지 않은 알림 수) 실시간 표시
 
 
 ## 컴포넌트 구조 설계
 
 ### 컴포넌트 분류
 - **타입**: [ ] 페이지 컴포넌트 [x] 레이아웃 컴포넌트 [ ] 기능 컴포넌트 [ ] 공통 컴포넌트
-- **복잡도**: [ ] 단순 (50줄 이하) [x] 보통 (50-100줄) [ ] 복합 (100줄 이상)
+- **복잡도**: [ ] 단순 (50줄 이하) [    ] 보통 (50-100줄) [x] 복합 (100줄 이상)
 - **상태 관리**: [ ] 로컬 상태만 [x] Redux(Zustand) 연결 [ ] 상태 없음
 
 ### 파일 구조
 ```
 src/
 ├── components/
-│   └── Header.jsx            
+│   ├── Header.jsx            
 │   └── ProductSearch.jsx      
 ├── store/
 │   └── authStore.js         
@@ -54,7 +55,7 @@ src/
 ### Redux 상태
 | 액션 타입 | Payload | 설명 |
 |-----------|---------|------|
-| [auth/identityInfo] | object | [사용자 상세 정보 (isAdmin 여부 포함)] |
+| [identityInfo] | object | [사용자 상세 정보 (isAdmin 여부 포함)] |
 
 ### Zustand 상태
 | 상태명 | 설명 |
@@ -75,14 +76,16 @@ src/
 | API 엔드포인트 | 메서드 | 용도 | 호출 시점 |
 |----------------|--------|------|-----------|
 | [/me] | GET | 사용자 정보 확인 | 로그인 후 fetchIdentityInfo 실행 시 |
+| [/notifications/unread-count] | GET | 읽지 않은 알림 수 조회 | Header 마운트 or 1분 주기 |
 
 ### 성능 최적화
-
-- [x] 상태 분리 최적화 (Zustand + Redux 조합 사용)
+- [x] useEffect로 인증 여부 변화 시 알림 개수 갱신
+- [x] 알림 인터벌 주석 처리되어 있음 → 향후 setInterval 사용 고려 가능
+- [x] MUI AppBar 2개 구조로 알림 영역과 메인 헤더 분리 구성
 
 ### 외부 의존성
 - **라이브러리**: [@mui/material, react-redux, react-router-dom, zustand]
-- **API**: [/me]
+- **API**: [/me, /notifications/unread-count]
 
 ---
 ## 2. **[HomePage]** 
@@ -181,7 +184,7 @@ src/
 ### 컴포넌트 분류
 - **타입**: [ ] 페이지 컴포넌트 [ ] 레이아웃 컴포넌트 [x] 기능 컴포넌트 [ ] 공통 컴포넌트
 - **복잡도**: [x] 단순 (50줄 이하) [ ] 보통 (50-100줄) [ ] 복합 (100줄 이상)
-- **상태 관리**: [ ] 로컬 상태만 [ ] Redux(Zustand) 연결 [x] 상태 없음
+- **상태 관리**: [x] 로컬 상태만 [ ] Redux(Zustand) 연결 [ ] 상태 없음
 
 ### 파일 구조
 ```
@@ -327,7 +330,7 @@ src/
 - [x] 본인인증 팝업 호출 및 결과 처리
 - [x] 서버에 imp_uid 전달 후 사용자 인증 결과 수신
 - [x] 인증 완료 여부 시각적 표시 (체크박스)
-- [x] 인증 실패 또는 거부 시 오류 메시지 출력
+- [x] 오류 및 서버 메시지에 대한 스낵바(Alert) 제공
 
 ## 컴포넌트 구조 설계
 
@@ -340,10 +343,12 @@ src/
 ```
 src/
 ├── components/
-│   ├── PhoneVerification.jsx     # 본인인증 컴포넌트
-│   └── FormSnackbar.jsx          # 결과 팝업
+│   └── PhoneVerification.jsx      # 본인인증 컴포넌트
+│   └── FormSnackbar.jsx           # 커스텀 스낵바 컴포넌트
 ├── utils/
-│   └── portone.js                # 환경 변수 및 포트원 관련 상수
+│   └── portone.js                 # 포트원 관련 상수
+├── api/
+│   └── userApi.js                 # 사용자 관련 API (예: verify_phone)
 ```
 
 ## React 컴포넌트 Props 설계
@@ -361,7 +366,8 @@ src/
 | 상태명 | 타입 | 초기값 | 용도 |
 |--------|------|--------|------|
 | [verified] | boolean | false | [인증 완료 여부를 저장. 인증 시 체크박스 활성화] |
-| [serverMessage] | string/null | null | [서버에서 받은 인증 실패 사유 또는 에러 메시지를 표시] |
+| [serverMessage] | string | null | [서버에서 받은 인증 실패 사유 또는 에러 메시지를 표시] |
+| [snackbar] | object | {} | [스낵바 메시지 상태 (오류 메시지 등 표시용)] |
 
 ---
 
@@ -371,8 +377,7 @@ src/
 | 컴포넌트명 | 위치 | 역할 | 재사용성 |
 |------------|------|------|----------|
 | [PhoneVerification] | components/ | 본인인증 로직 수행 | 낮음 |
-| [Alert] | MUI 라이브러리 | 에러 메시지 표시 | 높음 |
-| [Checkbox, Button] | MUI 라이브러리 | UI 요소 | 높음 |
+| [FormSnackbar] | components/ | 알림 메시지 표시 컴포넌트 | 높음 |
 
 ### API 연동
 | API 엔드포인트 | 메서드 | 용도 | 호출 시점 |
@@ -599,7 +604,7 @@ src/
 | 상태명 | 타입 | 초기값 | 용도 |
 |--------|------|--------|------|
 | [formData] | object | { loginId: '', password: '' } | [입력값] |
-| [staerrorste2] | object | { loginId: '', password: '', submit: '' } | [유효성 검사 및 API 에러 메시지] |
+| [errors] | object | { loginId: '', password: '', submit: '' } | [유효성 검사 및 API 에러 메시지] |
 | [loading] | boolean | false | [로그인 요청 중 상태] |
 
 ### Redux 상태 
@@ -885,7 +890,8 @@ src/
 │   ├── ProductImageSlider.jsx  # 이미지 슬라이더
 │   ├── ProductActions.jsx      # 액션 버튼
 │   ├── ProductsList.jsx        # 비슷한 상품 목록
-│   └── FormSnackbar.jsx        # 결과를 알려주는 팝업
+│   ├── FormSnackbar.jsx        # 결과를 알려주는 팝업
+│   └── ReportModal.jsx        # 상품 신고  
 ├── utils/
 │   └── FormatTime.js     
 ```
@@ -899,8 +905,16 @@ src/
 | 상태명 | 타입 | 초기값 | 용도 |
 |--------|------|--------|------|
 | [imgIdx] | number | 0 | [현재 표시 중인 이미지 인덱스] |
+| [images] | string[] | [] | [상품 이미지 목록] |
 | [product] | object | null | [API로부터 받아온 상품 상세 객체] |
 | [loading] | boolean | true | [로딩 상태] |
+| [error] | string | null | [에러 상태] |
+| [isLiked] | boolean | false | [현재 로그인 유저가 찜한 상품인지 여부] |
+| [reportOpen] | boolean | false | [신고 모달 오픈 여부] |
+| [similarProducts] | object[] | [] | [유사 상품 리스트] |
+| [snackbarOpen] | boolean | false | [Snackbar 오픈 여부] |
+| [snackbarMsg] | string | '' | [Snackbar 메시지] |
+| [snackbarSeverity] | string | 'error' | [Snackbar 유형] |
 
 ### Redux 상태 (해당시)
 | 액션 타입 | Payload | 설명 |
@@ -920,6 +934,7 @@ src/
 | [ProductActions] | components/ | 찜, 채팅, 거래 관련 액션 버튼 | 보통 |
 | [ProductsList] | components/ | 유사 상품 리스트 | 보통 |
 | [FormSnackbar] | components/ | 결과 팝업 | 높음 |
+| [ReportModal] | components/ | 상품 신고 | 높음 |
 
 ### API 연동
 | API 엔드포인트 | 메서드 | 용도 | 호출 시점 |
@@ -994,7 +1009,6 @@ src/
 ### 기능 요구사항
 - [x] 찜하기/찜 취소 기능 (API 연동 및 상태 변경)
 - [x] 찜 상태에 따른 버튼 스타일 변경
-- [x] "대화하기", "바로구매" 버튼 제공
 - [X] "상품 수정", "상품 삭제" 버튼 제공
 - [x] 인증되지 않은 사용자의 찜 시도 시 알림 제공
 - [x] 찜 처리 중 로딩 상태 관리
@@ -1025,8 +1039,8 @@ src/
 | [productId] | string | 필수 | - | [찜 API 호출 시 사용되는 상품 ID] |
 | [isInitiallyLiked] | boolean | 선택 | false | [초깃값으로 전달되는 찜 상태] |
 | [isOwner] | boolean | 필수 | false | [상품 수정, 삭제 버튼 혹은 찜하기, 거래신청 버튼을 보여주는 기준] |
-| [onEdit] | string | 선택 | - | [상품 수정 함수 호출]
-| [onDelete] | string | 선택 | - | [상품 삭제 함수 호출]
+| [onEdit] | function | 선택 | - | [상품 수정 함수]
+| [onDelete] | function | 선택 | - | [상품 삭제 함수]
 ---
 
 ## 상태 관리 설계
@@ -1100,8 +1114,6 @@ src/
 │   ├── CategorySelect.jsx           # 카테고리 드롭다운
 │   ├── ProductImageUploader.jsx     # 이미지 업로더
 │   └── FormSnackbar.jsx             # 결과 스낵바
-├── constants/
-│   └── CategoryOptions.js           # 카테고리 옵션 등 상수
 ```
 
 ## React 컴포넌트 Props 설계
@@ -1233,7 +1245,7 @@ src/
 
 ### 컴포넌트 분류
 - **타입**: [ ] 페이지 컴포넌트 [ ] 레이아웃 컴포넌트 [x] 기능 컴포넌트 [ ] 공통 컴포넌트
-- **복잡도**: [ ] 단순 (50줄 이하) [ ] 보통 (50-100줄) [x] 복합 (100줄 이상)
+- **복잡도**: [ ] 단순 (50줄 이하) [x] 보통 (50-100줄) [ ] 복합 (100줄 이상)
 - **상태 관리**: [x] 로컬 상태만 [ ] Redux(Zustand) 연결 [ ] 상태 없음
 
 ### 파일 구조
@@ -1249,7 +1261,7 @@ src/
 | Props명 | 타입 | 필수여부 | 기본값 | 설명 |
 |---------|------|----------|--------|------|
 | [images] | array | 필수 | - | [업로드된 이미지 배열 ({ file, url, imageId? }) 형태] |
-| [onChange] | function | 필수 | 0 | [이미지 배열 변경 시 호출되는 콜백 함수] |
+| [onChange] | function | 필수 | - | [이미지 배열 변경 시 호출되는 콜백 함수] |
 
 
 ---
@@ -1259,7 +1271,7 @@ src/
 ### 주요 컴포넌트 목록
 | 컴포넌트명 | 위치 | 역할 | 재사용성 |
 |------------|------|------|----------|
-| [ProductImageUploader] | components/ | 이미지 업로드/삭제 기능 제공 | 보통 |
+| [ProductImageUploader] | components/ | 이미지 업로드/삭제 기능 제공 | 높음     |
 
 
 
@@ -1399,12 +1411,13 @@ src/
 - [x] 가격 필터 입력창 토글 및 입력 기능
 - [x] URL 파라미터 기반 초기값 세팅 기능
 - [x] 검색 버튼 클릭 또는 엔터 입력 시 검색 실행
+- [x] 가격 범위 유효성 검사 및 에러 메시지 출력
 
 
 ## 컴포넌트 구조 설계
 
 ### 컴포넌트 분류
-- **타입**: [ ] 페이지 컴포넌트 [ ] 레이아웃 컴포넌트 [x] 기능 컴포넌트 [ ] 공통 컴포넌트
+- **타입**: [ ] 페이지 컴포넌트 [x] 레이아웃 컴포넌트 [x] 기능 컴포넌트 [ ] 공통 컴포넌트
 - **복잡도**: [ ] 단순 (50줄 이하) [ ] 보통 (50-100줄) [x] 복합 (100줄 이상)
 - **상태 관리**: [x] 로컬 상태만 [ ] Redux(Zustand) 연결 [ ] 상태 없음
 
@@ -1433,7 +1446,7 @@ src/
 | [modalOpen] | boolean | false | [지역 선택 모달 토글] |
 | [selected] | object | null | [선택된 지역 정보] |
 | [keyword] | string | "" | [검색 키워드] |
-| [category] | string | "" | [선택된 카테고리 ID] |
+| [category] | string | "" | [선택된 카테고리 명] |
 | [minPrice] | string | "" | [최소 가격 필터] |
 | [maxPrice] | string | "" | [최대 가격 필터] |
 | [showPriceInputs] | boolean | false | [가격 입력 필드 표시 여부] |
@@ -1477,7 +1490,6 @@ src/
 ### 기능 요구사항
 - [x] 행정구역 검색 시 자동완성 목록 제공
 - [x] 선택된 지역 정보를 부모 컴포넌트로 전달
-- [x] 페이지네이션으로 검색 결과 목록 탐색
 - [x] 현재 위치 기반 주소 자동 선택
 - [x] 지역 선택 초기화 버튼 제공
 - [x] 모달 외부 클릭 시 닫기 기능
@@ -1517,13 +1529,12 @@ src/
 |--------|------|--------|------|
 | [area] | string | "" | [입력창에 표시되는 문자열] |
 | [suggestions] | array | [] | [필터링된 지역 목록] |
-| [showSuggestions] | boolean | false | [자동완성 목록 표시 여부] |
-| [page] | number | 0 | [현재 페이지 번호] |
 | [myLocation] | object | null | [Geolocation + Kakao API로 얻은 내 위치 객체] |
 | [locLoading] | boolean | false | [위치 탐색 로딩 플래그] |
 | [locError] | string | "" | [위치 탐색 실패 메시지] |
-| [resetHover] | boolean | false | [초기화 버튼 Hover 여부] |
 | [hoveredIdx] | number | -1 | [자동완성 항목 Hover 인덱스] |
+| [fetchError] | boolean | false | [행정구역 목록(fetch 실패 여부)] |
+| [sidoList] | array | [] | [전체 시도 목록] |
 
 
 ---
@@ -1533,7 +1544,7 @@ src/
 ### 주요 컴포넌트 목록
 | 컴포넌트명 | 위치 | 역할 | 재사용성 |
 |------------|------|------|----------|
-| [AreaSelectModal] | components/ | 지역 선택 모달창 | 낮음 |
+| [AreaSelectModal] | components/ | 지역 선택 모달창 | 보통통 |
 | [FormSnackbar] | components/ | 결과 팝업 | 높음 |
 
 ### API 연동
@@ -1543,7 +1554,7 @@ src/
 
 
 ### 외부 의존성
-- **라이브러리**: [axios, @mui/icons-material]
+- **라이브러리**: [axios, @mui/icons-material, @mui/material]
 - **API**: [https://dapi.kakao.com/v2/local/geo/coord2address.json]
 - **유틸리티**: [브라우저(navigator.geolocation)]
 
@@ -1860,5 +1871,140 @@ src/
 | [ProtectedRoute] | components/ | 인증 여부 확인 및 라우팅 제어 | 높음 |
 
 
+### 외부 의존성- **라이브러리**: [react-router-dom]
+
+---
+
+## 30. **[ReportModal]**
+
+### 목적 및 역할
+- **주요 목적**: 사용자로부터 신고 사유와 상세 내용을 입력받아 신고 요청을 처리하는 모달 대화상자 UI를 제공한다.
+
+
+### 기능 요구사항
+- [x] 신고 사유 선택 기능 (드롭다운)
+- [x] 신고 사유별 상세 내용 입력 기능 (멀티라인 텍스트 필드)
+- [x] 신고 제출 시 입력값 전달
+- [x] 모달 열기/닫기 기능 및 상태 초기화
+- [x] 취소 버튼으로 모달 닫기 기능
+
+## 컴포넌트 구조 설계
+
+### 컴포넌트 분류
+- **타입**: [ ] 페이지 컴포넌트 [ ] 레이아웃 컴포넌트 [x] 기능 컴포넌트 [ ] 공통 컴포넌트
+- **복잡도**: [ ] 단순 (50줄 이하) [x] 보통 (50-100줄) [ ] 복합 (100줄 이상)
+- **상태 관리**: [x] 로컬 상태만 [ ] Redux(Zustand) 연결 [ ] 상태 없음
+
+### 파일 구조
+```
+src/
+├── components/
+│   └── ReportModal.jsx       # 인증 보호 라우트 기능 컴포넌트
+```
+
+---
+
+## React 컴포넌트 Props 설계
+
+### Props 인터페이스
+| Props명 | 타입 | 필수여부 | 기본값 | 설명 |
+|---------|------|----------|--------|------|
+| [open] | boolean | 필수 | - | [모달 열림 여부] |
+| [onClose] | function | 필수 | - | [모달 닫기 이벤트 핸들러] |
+| [onSubmit] | function | 필수 | - | [신고 내용 제출 이벤트 핸들러] |
+
+## 상태 관리 설계
+
+### 로컬 상태 (useState)
+| 상태명 | 타입 | 초기값 | 용도 |
+|--------|------|--------|------|
+| [reason] | string | '불쾌한 언어 사용' | [선택된 신고 사유 저장] |
+| [detail] | string | '' | [신고 상세 내용 텍스트 저장] |
+
+
+---
+
+## 구현 세부사항
+
+### 주요 컴포넌트 목록
+| 컴포넌트명 | 위치 | 역할 | 재사용성 |
+|------------|------|------|----------|
+| [ReportModal] | components/ | 신고 모달 UI 제공 및 입력 처리 | 보통 |
+
+
+### 외부 의존성- **라이브러리**: [@mui/material]
+
+---
+
+## 31. **[NotificationList]** 
+
+### 목적 및 역할
+- **주요 목적**: 사용자에게 다양한 알림(일반 알림 및 예약 관련 알림)을 무한 스크롤 형태로 제공하고, 읽음 처리, 삭제, 예약 수락/거절 등의 상호작용을 제공합니다.
+
+
+### 기능 요구사항
+- [x] 무한 스크롤 기반 알림 목록 조회
+- [x] 알림 읽음 처리
+- [x] 알림 삭제
+- [x] 예약 알림 수락 및 거절 처리
+- [x] 처리 결과에 따른 스낵바 알림 표시
+- [x] 오류 메시지 표시
+
+
+## 컴포넌트 구조 설계
+
+### 컴포넌트 분류
+- **타입**: [x] 페이지 컴포넌트 [ ] 레이아웃 컴포넌트 [ ] 기능 컴포넌트 [ ] 공통 컴포넌트
+- **복잡도**: [ ] 단순 (50줄 이하) [ ] 보통 (50-100줄) [x] 복합 (100줄 이상)
+- **상태 관리**: [x] 로컬 상태만 [ ] Redux(Zustand) 연결 [ ] 상태 없음
+
+### 파일 구조
+```
+src/
+├── components/
+│   └── NotificationList.jsx       # 알림 목록 컴포넌트
+├── api/
+│   └── notificationService.js     # 알림 관련 API 서비스
+├── utils/
+│   └── FormatTime.js              # 시간 포맷 유틸
+```
+
+---
+
+## 상태 관리 설계
+
+### 로컬 상태 (useState)
+| 상태명 | 타입 | 초기값 | 용도 |
+|--------|------|--------|------|
+| notifications | array | [] | [불러온 알림 목록 저장] |
+| loading | boolean | true | [알림 불러오기 중 여부] |
+| error | string | null | [에러 메시지 저장] |
+| hasMore | boolean | true | [다음 페이지 존재 여부] |
+| page | number | 0 | [현재 페이지 번호] |
+| snackbarOpen | boolean | false | [스낵바 표시 여부] |
+| snackbarMessage | string | "" | [스낵바 메시지 텍스트] |
+
+
+---
+
+## 구현 세부사항
+
+### 주요 컴포넌트 목록
+| 컴포넌트명 | 위치 | 역할 | 재사용성 |
+|------------|------|------|----------|
+| [NotificationList] | components/ | 알림 페이지 렌더링 및 상호작용 처리 | 낮음 |
+
+### API 연동
+| API 엔드포인트 | 메서드 | 용도 | 호출 시점 |
+|----------------|--------|------|-----------|
+| [/notifications?page={page}] | GET | 알림 목록 조회 | 초기 로딩 및 무한 스크롤 시 |
+| [/notifications/:id/read] | POST | 알림 읽음 처리 | 읽음 버튼 클릭 시 |
+| [/notifications/:id] | DELETE | 알림 삭제 | 삭제 버튼 클릭 시 |
+| [/reservations/:id/status] | PUT | 예약 상태 변경 | 수락/거절 버튼 클릭 시 |
+
+
 ### 외부 의존성
-- **라이브러리**: [react-router-dom]
+- **라이브러리**: [@mui/material, react]
+- **유틸리티**: [FormatTime]
+
+---
