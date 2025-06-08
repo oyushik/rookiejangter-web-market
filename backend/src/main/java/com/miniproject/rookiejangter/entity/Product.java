@@ -1,6 +1,8 @@
 package com.miniproject.rookiejangter.entity;
 
 import com.miniproject.rookiejangter.dto.ProductDTO;
+import com.miniproject.rookiejangter.exception.BusinessException;
+import com.miniproject.rookiejangter.exception.ErrorCode;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -8,10 +10,11 @@ import jakarta.validation.constraints.Size;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Table(name = "products")
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
@@ -53,26 +56,53 @@ public class Product extends BaseEntity {
     @Column(name = "is_completed")
     private Boolean isCompleted;
 
-    // Product 업데이트를 위한 메서드
-    public Product update(ProductDTO.UpdateRequest requestDto, Category category) {
-        ProductBuilder builder = Product.builder()
-                .productId(this.productId) // 기존 ID 유지
-                .user(this.user); // 기존 User 유지
+    // 비즈니스 메서드: 상품 정보 업데이트
+    public void updateProductInfo(Category newCategory, String newTitle, String newContent, Integer newPrice) {
+        if (newCategory == null) {
+            throw new BusinessException(ErrorCode.CATEGORY_NOT_FOUND, "카테고리 정보가 필요합니다.");
+        }
+        if (newTitle == null || newTitle.trim().isEmpty()) {
+            throw new BusinessException(ErrorCode.PRODUCT_NAME_EMPTY);
+        }
+        if (newTitle.length() > 50) {
+            throw new BusinessException(ErrorCode.PRODUCT_NAME_TOO_LONG);
+        }
+        if (newContent == null || newContent.trim().isEmpty()) {
+            throw new BusinessException(ErrorCode.PRODUCT_CONTENT_EMPTY);
+        }
+        if (newContent.length() > 255) {
+            throw new BusinessException(ErrorCode.PRODUCT_CONTENT_TOO_LONG);
+        }
+        if (newPrice == null || newPrice < 0) { // 가격은 0 이상이어야 함
+            throw new BusinessException(ErrorCode.PRODUCT_PRICE_NEGATIVE);
+        }
 
-        // 각 필드에 대해 requestDto의 값이 null이 아니면 업데이트, 아니면 기존 값 유지
-        builder.title(requestDto.getTitle() != null ? requestDto.getTitle() : this.title)
-                .content(requestDto.getContent() != null ? requestDto.getContent() : this.content)
-                .price(requestDto.getPrice() != null ? requestDto.getPrice() : this.price)
-                .category(category != null ? category : this.category);
-
-        return builder.build();
+        this.category = newCategory;
+        this.title = newTitle;
+        this.content = newContent;
+        this.price = newPrice;
     }
 
+    // 비즈니스 메서드: 조회수 증가
     public void incrementViewCount() {
-        // null 체크: viewCount가 초기화되지 않은 경우를 대비 (DB 기본값 0이 아닌 경우)
         if (this.viewCount == null) {
             this.viewCount = 0;
         }
         this.viewCount++;
+    }
+
+    // 비즈니스 메서드: 끌어올리기 상태 변경
+    public void markAsBumped(boolean isBumped) {
+        this.isBumped = isBumped;
+    }
+
+    // 비즈니스 메서드: 예약 상태 변경
+    public void markAsReserved(boolean isReserved) {
+        this.isReserved = isReserved;
+    }
+
+    // 비즈니스 메서드: 거래 완료 상태 변경
+    public void markAsCompleted(boolean isCompleted) {
+        this.isCompleted = isCompleted;
     }
 }

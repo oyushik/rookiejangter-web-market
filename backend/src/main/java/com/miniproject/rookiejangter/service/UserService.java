@@ -84,22 +84,19 @@ public class UserService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND, String.valueOf(userId)));
 
-        if (requestDto.getUserName() != null && !requestDto.getUserName().isEmpty()) {
-            user.setUserName(requestDto.getUserName());
-        }
-
-        if (requestDto.getPhone() != null && !requestDto.getPhone().isEmpty()) {
-            if (!user.getPhone().equals(requestDto.getPhone()) && userRepository.existsByPhone(requestDto.getPhone())) {
-                throw new BusinessException(ErrorCode.PHONE_ALREADY_EXISTS, requestDto.getPhone());
-            }
-            user.setPhone(requestDto.getPhone());
-        }
-
+        Area newArea = null;
         if (requestDto.getAreaId() != null) {
-            Area area = areaRepository.findById(requestDto.getAreaId().intValue())
-                    .orElseThrow(() -> new EntityNotFoundException("해당 지역을 찾을 수 없습니다: " + requestDto.getAreaId()));
-            user.setArea(area);
+            newArea = areaRepository.findById(requestDto.getAreaId())
+                    .orElseThrow(() -> new BusinessException(ErrorCode.AREA_NOT_FOUND, requestDto.getAreaId()));
+        } else {
+            newArea = user.getArea(); // 지역 정보가 업데이트되지 않으면 기존 지역 유지
         }
+
+        user.updateUserInfo(
+                newArea,
+                requestDto.getUserName() != null ? requestDto.getUserName() : user.getUserName(),
+                requestDto.getPhone() != null ? requestDto.getPhone() : user.getPhone()
+        );
 
         User updatedUser = userRepository.save(user);
         return UserDTO.Response.fromEntity(updatedUser);
@@ -111,22 +108,19 @@ public class UserService {
         User user = userRepository.findByUserName(username)
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND, username));
 
-        if (requestDto.getUserName() != null && !requestDto.getUserName().isEmpty()) {
-            user.setUserName(requestDto.getUserName());
-        }
-
-        if (requestDto.getPhone() != null && !requestDto.getPhone().isEmpty()) {
-            if (!user.getPhone().equals(requestDto.getPhone()) && userRepository.existsByPhone(requestDto.getPhone())) {
-                throw new BusinessException(ErrorCode.PHONE_ALREADY_EXISTS, requestDto.getPhone());
-            }
-            user.setPhone(requestDto.getPhone());
-        }
-
+        Area newArea = null;
         if (requestDto.getAreaId() != null) {
-            Area area = areaRepository.findById(requestDto.getAreaId().intValue())
-                    .orElseThrow(() -> new EntityNotFoundException("해당 지역을 찾을 수 없습니다: " + requestDto.getAreaId()));
-            user.setArea(area);
+            newArea = areaRepository.findById(requestDto.getAreaId())
+                    .orElseThrow(() -> new BusinessException(ErrorCode.AREA_NOT_FOUND, requestDto.getAreaId()));
+        } else {
+            newArea = user.getArea(); // 지역 정보가 업데이트되지 않으면 기존 지역 유지
         }
+
+        user.updateUserInfo(
+                newArea,
+                requestDto.getUserName() != null ? requestDto.getUserName() : user.getUserName(),
+                requestDto.getPhone() != null ? requestDto.getPhone() : user.getPhone()
+                );
 
         User updatedUser = userRepository.save(user);
         return UserDTO.Response.fromEntity(updatedUser);
@@ -137,7 +131,7 @@ public class UserService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND, String.valueOf(userId)));
 
-        user.setIsBanned(requestDto.getIsBanned());
+        user.changeBanStatus(requestDto.getIsBanned());
 
         if (requestDto.getIsBanned()) {
             Ban ban = Ban.builder()

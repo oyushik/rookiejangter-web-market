@@ -144,7 +144,7 @@ public class ReservationService {
                     throw new BusinessException(ErrorCode.RESERVATION_ACTION_FORBIDDEN, "수락");
                 }
                 reservation.setStatus(Reservation.TradeStatus.ACCEPTED);
-                product.setIsReserved(true);
+                product.markAsReserved(true);
                 productRepository.save(product);
                 break;
             case DECLINED:
@@ -152,7 +152,7 @@ public class ReservationService {
                     throw new BusinessException(ErrorCode.RESERVATION_ACTION_FORBIDDEN, "거절");
                 }
                 reservation.setStatus(Reservation.TradeStatus.DECLINED);
-                product.setIsReserved(false);
+                product.markAsReserved(false);
                 productRepository.save(product);
                 break;
             case CANCELLED:
@@ -170,7 +170,7 @@ public class ReservationService {
                 } else {
                     throw new BusinessException(ErrorCode.RESERVATION_INVALID_STATE_FOR_ACTION, currentUser.getUserId(), "취소");
                 }
-                product.setIsReserved(false);
+                product.markAsReserved(false); // 예약 상태 해제
                 productRepository.save(product);
                 break;
             case COMPLETED:
@@ -181,8 +181,8 @@ public class ReservationService {
                     throw new BusinessException(ErrorCode.RESERVATION_INVALID_STATE_FOR_ACTION, currentUser.getUserId(), "완료");
                 }
                 reservation.setStatus(Reservation.TradeStatus.COMPLETED);
-                product.setIsCompleted(true);
-                product.setIsReserved(false); // 예약 상태 해제
+                product.markAsCompleted(true);
+                product.markAsReserved(false); // 예약 상태 해제
                 productRepository.save(product);
                 // 여기에 CompleteService를 호출하여 거래 완료 기록 생성 로직 추가 가능
                 break;

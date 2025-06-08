@@ -51,7 +51,6 @@ public class NotificationService {
 
     public Page<NotificationDTO.Response> getNotificationsByUserId(Long userId, Pageable pageable) {
         Page<Notification> notificationsPage = notificationRepository.findByUser_UserId(userId, pageable);
-        // DTO로 변환
         return notificationsPage.map(NotificationDTO.Response::fromEntity);
     }
 
@@ -86,8 +85,8 @@ public class NotificationService {
     public void markAsRead(Long notificationId) {
         Notification notification = notificationRepository.findByNotificationId(notificationId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.RESOURCE_NOT_FOUND, "Notification", notificationId));
-
-        notification.setIsRead(true);
+        
+        notification.markAsRead();
     }
 
     public void deleteNotification(Long notificationId) {

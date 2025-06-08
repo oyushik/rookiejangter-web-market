@@ -67,22 +67,24 @@ public class ProductService {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_NOT_FOUND, productId));
 
-        if (!product.getUser().getUserId().equals(userId)) {
-            throw new BusinessException(ErrorCode.PRODUCT_OPERATION_FORBIDDEN, "수정");
-        }
-
-        if (requestDto.getTitle() != null) product.setTitle(requestDto.getTitle());
-        if (requestDto.getContent() != null) product.setContent(requestDto.getContent());
-        if (requestDto.getPrice() != null) product.setPrice(requestDto.getPrice());
-
+        Category newCategory = null;
         if (requestDto.getCategoryId() != null) {
-            Category category = categoryRepository.findById(requestDto.getCategoryId())
+            newCategory = categoryRepository.findByCategoryId(requestDto.getCategoryId())
                     .orElseThrow(() -> new BusinessException(ErrorCode.CATEGORY_NOT_FOUND, requestDto.getCategoryId()));
-            product.setCategory(category);
+        } else {
+            newCategory = product.getCategory(); // 카테고리가 업데이트되지 않으면 기존 카테고리 유지
         }
 
-        Product updatedProduct = productRepository.save(product);
-        return mapToProductDTOResponse(updatedProduct, userId);
+        // 엔티티의 비즈니스 메서드를 호출하여 상태를 변경합니다.
+        product.updateProductInfo(
+                newCategory,
+                requestDto.getTitle() != null ? requestDto.getTitle() : product.getTitle(),
+                requestDto.getContent() != null ? requestDto.getContent() : product.getContent(),
+                requestDto.getPrice() != null ? requestDto.getPrice() : product.getPrice()
+        );
+        // Product updatedProduct = productRepository.save(product); // 필요에 따라 호출
+
+        return mapToProductDTOResponse(product, userId);
     }
 
     @Transactional
@@ -159,8 +161,8 @@ public class ProductService {
         if (!product.getUser().getUserId().equals(userId)) {
             throw new BusinessException(ErrorCode.PRODUCT_OPERATION_FORBIDDEN, "상태 변경");
         }
-            product.setIsReserved(isReserved);
-            product.setIsCompleted(isCompleted);
+            product.markAsReserved(isReserved);
+            product.markAsCompleted(isCompleted);
         productRepository.save(product);
     }
 

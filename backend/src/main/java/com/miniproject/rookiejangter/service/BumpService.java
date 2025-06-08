@@ -49,7 +49,7 @@ public class BumpService {
                 .build();
         Bump savedBump = bumpRepository.save(newBump);
 
-        product.setIsBumped(true);
+        product.markAsBumped(true);
         productRepository.save(product);
 
         return BumpDTO.Response.fromEntity(savedBump);

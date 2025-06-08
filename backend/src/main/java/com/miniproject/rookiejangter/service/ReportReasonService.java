@@ -47,11 +47,11 @@ public class ReportReasonService {
         ReportReason reportReason = reportReasonRepository.findByReportReasonId(reportReasonId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.RESOURCE_NOT_FOUND, "ReportReason", reportReasonId, ""));
 
-        reportReason.setReportReasonType(request.getReportReasonType());
+        reportReason.changeReasonType(request.getReportReasonType());
 
-        ReportReason updatedReportReason = reportReasonRepository.save(reportReason);
-        return ReportReasonDTO.Response.fromEntity(updatedReportReason);
+        return ReportReasonDTO.Response.fromEntity(reportReason);
     }
+
 
     public void deleteReportReason(Integer reportReasonId) {
         ReportReason reportReason = reportReasonRepository.findByReportReasonId(reportReasonId)

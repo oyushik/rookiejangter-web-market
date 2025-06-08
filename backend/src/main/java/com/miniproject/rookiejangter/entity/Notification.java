@@ -9,7 +9,6 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "notifications")
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -43,4 +42,10 @@ public class Notification {
     @Column(name = "is_read")
     private Boolean isRead;
 
+    // 비즈니스 메서드: 알림을 읽음 상태로 변경
+    public void markAsRead() {
+        if (!this.isRead) {
+            this.isRead = true;
+        }
+    }
 }

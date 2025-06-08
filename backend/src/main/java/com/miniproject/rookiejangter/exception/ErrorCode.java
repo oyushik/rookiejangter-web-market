@@ -83,12 +83,22 @@ public enum ErrorCode {
     PRODUCT_NOT_AVAILABLE_FOR_TRADE(HttpStatus.BAD_REQUEST, "P006", "거래 불가능한 상품입니다. (예: 예약중, 판매완료)"),
     PRODUCT_ALREADY_COMPLETED(HttpStatus.CONFLICT, "P007", "이미 거래 완료 처리된 게시글입니다: %s"), // New
     PRODUCT_OPERATION_FORBIDDEN(HttpStatus.FORBIDDEN, "P008", "상품에 대한 '%s' 작업 권한이 없습니다."), // New (for update, delete, status change)
+    PRODUCT_NAME_EMPTY(HttpStatus.BAD_REQUEST, "P009", "상품 제목은 필수입니다."),
+    PRODUCT_NAME_TOO_LONG(HttpStatus.BAD_REQUEST, "P010", "상품 제목은 최대 50자까지 가능합니다."),
+    PRODUCT_CONTENT_EMPTY(HttpStatus.BAD_REQUEST, "P011", "상품 내용은 필수입니다."),
+    PRODUCT_CONTENT_TOO_LONG(HttpStatus.BAD_REQUEST, "P012", "상품 내용은 최대 255자까지 가능합니다."),
+    PRODUCT_PRICE_NEGATIVE(HttpStatus.BAD_REQUEST, "P013", "상품 가격은 0 이상이어야 합니다."),
 
     // Report
     REPORT_REASON_NOT_FOUND(HttpStatus.NOT_FOUND, "RP001", "존재하지 않는 신고 사유입니다."),
     REPORT_ALREADY_EXISTS(HttpStatus.CONFLICT, "RP002", "이미 신고한 내용입니다."),
     CANNOT_REPORT_SELF(HttpStatus.BAD_REQUEST, "RP003", "자기 자신을 신고할 수 없습니다."),
     REPORT_NOT_FOUND(HttpStatus.NOT_FOUND, "RP004", "존재하지 않는 신고입니다."),
+    REPORT_REASON_EMPTY(HttpStatus.BAD_REQUEST, "RP005", "신고 사유는 필수입니다."),
+    REPORT_REASON_TOO_LONG(HttpStatus.BAD_REQUEST, "RP006", "신고 사유는 최대 255자까지 가능합니다."),
+    REPORT_TARGET_ID_EMPTY(HttpStatus.BAD_REQUEST, "RP007", "신고 대상 ID는 필수입니다."),
+    REPORT_TARGET_TYPE_EMPTY(HttpStatus.BAD_REQUEST, "RP008", "신고 대상 타입은 필수입니다."),
+    REPORT_TARGET_TYPE_TOO_LONG(HttpStatus.BAD_REQUEST, "RP009", "신고 대상 타입은 최대 20자까지 가능합니다."),
 
     // Reservation
     RESERVATION_NOT_FOUND(HttpStatus.NOT_FOUND, "R001", "존재하지 않는 예약입니다. (ID: %s)"), // Modified
@@ -108,6 +118,8 @@ public enum ErrorCode {
     TRADE_NOT_COMPLETED(HttpStatus.BAD_REQUEST, "RV004", "거래가 완료되지 않은 상품에는 리뷰를 작성할 수 없습니다."),
     REVIEW_ACCESS_DENIED(HttpStatus.FORBIDDEN, "RV005", "해당 리뷰에 대한 접근 권한이 없습니다."),
     TRADE_UNAUTHORIZED(HttpStatus.FORBIDDEN,"RV006", "해당 거래를 처리할 권한이 없습니다"),
+    INVALID_REVIEW_RATING(HttpStatus.BAD_REQUEST, "RV007", "리뷰 평점은 1에서 5 사이여야 합니다."),
+    REVIEW_CONTENT_TOO_LONG(HttpStatus.BAD_REQUEST, "RV008", "리뷰 내용은 최대 255자까지 가능합니다."),
 
     // User
     EMAIL_DUPLICATION(HttpStatus.CONFLICT, "U001", " 이미 사용중인 이메일입니다."), // Assuming loginId is not always email
@@ -123,6 +135,10 @@ public enum ErrorCode {
     LOGIN_ID_ALREADY_EXISTS(HttpStatus.CONFLICT, "U011", "이미 사용 중인 로그인 ID입니다: %s"), // New
     PHONE_ALREADY_EXISTS(HttpStatus.CONFLICT, "U012", "이미 사용 중인 전화번호입니다: %s"), // New
     USER_NOT_FOUND_BY_LOGIN_ID(HttpStatus.NOT_FOUND, "U00X", "로그인 ID '%s'에 해당하는 사용자를 찾을 수 없습니다."), // USER_NOT_FOUND와 코드 구분
+    USERNAME_TOO_LONG(HttpStatus.BAD_REQUEST, "U013", "사용자 이름은 최대 12자까지 가능합니다."),
+    PHONE_TOO_LONG(HttpStatus.BAD_REQUEST, "U014", "전화번호는 최대 20자까지 가능합니다."),
+    NICKNAME_TOO_LONG(HttpStatus.BAD_REQUEST, "U015", "닉네임은 최대 20자까지 가능합니다."),
+    INVALID_AREA(HttpStatus.BAD_REQUEST, "U016", "유효하지 않은 지역입니다. (ID: %s)"), // New
 
     ;
 

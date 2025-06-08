@@ -1,17 +1,18 @@
 package com.miniproject.rookiejangter.entity;
 
+import com.miniproject.rookiejangter.exception.BusinessException;
+import com.miniproject.rookiejangter.exception.ErrorCode;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 @Entity
 @Table(name = "users")
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
@@ -84,5 +85,32 @@ public class User extends BaseEntity {
 
     @OneToMany(mappedBy = "seller", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Complete> sellerCompletes = new ArrayList<>();
+
+    // 비즈니스 메서드: 사용자 정보 업데이트
+    public void updateUserInfo(Area newArea, String newUserName, String newPhone) {
+        if (newArea == null) {
+            throw new BusinessException(ErrorCode.INVALID_AREA);
+        }
+        if (newUserName.length() > 12) {
+            throw new BusinessException(ErrorCode.USERNAME_TOO_LONG);
+        }
+        if (newPhone.length() > 20) {
+            throw new BusinessException(ErrorCode.PHONE_TOO_LONG);
+        }
+
+        this.area = newArea;
+        this.userName = newUserName;
+        this.phone = newPhone;
+    }
+
+    // 비즈니스 메서드: 사용자 제재 상태 변경
+    public void changeBanStatus(boolean isBanned) {
+        this.isBanned = isBanned;
+    }
+
+    // 비즈니스 메서드: 관리자 권한 변경
+    public void changeAdminStatus(boolean isAdmin) {
+        this.isAdmin = isAdmin;
+    }
 
 }

@@ -75,20 +75,16 @@ public class ReportService {
         ReportReason reportReason = reportReasonRepository.findByReportReasonId(request.getReportReasonId())
                 .orElseThrow(() -> new BusinessException(ErrorCode.RESOURCE_NOT_FOUND, "ReportReason", request.getReportReasonId(), ""));
 
-        report.setReportReason(reportReason);
-        report.setTargetId(request.getTargetId());
-        report.setTargetType(request.getTargetType());
-        report.setReportDetail(request.getReportDetail());
+        report.updateReportInfo(reportReason, request.getTargetId(), request.getTargetType(), request.getReportDetail());
 
-        Report updatedReport = reportRepository.save(report);
-        return ReportDTO.Response.fromEntity(updatedReport);
+        return ReportDTO.Response.fromEntity(report);
     }
 
     public void markReportAsProcessed(Long reportId) {
         Report report = reportRepository.findByReportId(reportId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.RESOURCE_NOT_FOUND, "Report", reportId, ""));
 
-        report.setIsProcessed(true);
+        report.markAsProcessed();
         reportRepository.save(report);
     }
 }

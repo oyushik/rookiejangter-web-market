@@ -1,5 +1,7 @@
 package com.miniproject.rookiejangter.entity;
 
+import com.miniproject.rookiejangter.exception.BusinessException;
+import com.miniproject.rookiejangter.exception.ErrorCode;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.*;
@@ -10,7 +12,6 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "reports")
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
@@ -44,5 +45,36 @@ public class Report extends BaseEntity {
 
     @Column(name = "is_processed")
     private Boolean isProcessed;
+
+    // 비즈니스 메서드: 신고 정보 업데이트
+    public void updateReportInfo(ReportReason newReportReason, Long newTargetId, String newTargetType, String newReportDetail) {
+        if (newReportReason == null) {
+            throw new BusinessException(ErrorCode.REPORT_REASON_EMPTY);
+        }
+        if (newTargetId == null) {
+            throw new BusinessException(ErrorCode.REPORT_TARGET_ID_EMPTY);
+        }
+        if (newTargetType == null || newTargetType.trim().isEmpty()) {
+            throw new BusinessException(ErrorCode.REPORT_TARGET_TYPE_EMPTY);
+        }
+        if (newTargetType.length() > 20) {
+            throw new BusinessException(ErrorCode.REPORT_TARGET_TYPE_TOO_LONG);
+        }
+        if (newReportDetail != null && newReportDetail.length() > 255) {
+            throw new BusinessException(ErrorCode.REPORT_REASON_TOO_LONG);
+        }
+
+        this.reportReason = newReportReason;
+        this.targetId = newTargetId;
+        this.targetType = newTargetType;
+        this.reportDetail = newReportDetail;
+    }
+
+    // 비즈니스 메서드: 신고 처리 상태 변경
+    public void markAsProcessed() {
+        if (!this.isProcessed) {
+            this.isProcessed = true;
+        }
+    }
 
 }

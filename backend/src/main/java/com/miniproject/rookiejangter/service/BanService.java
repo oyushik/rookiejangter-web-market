@@ -40,7 +40,7 @@ public class BanService {
 
         Ban savedBan = banRepository.save(ban);
 
-        user.setIsBanned(true); // User 엔티티의 isBanned 필드를 true로 설정
+        user.changeBanStatus(true); // User 엔티티의 isBanned 필드를 true로 설정
 
         return BanDTO.Response.fromEntity(savedBan);
     }
@@ -49,7 +49,7 @@ public class BanService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND, userId));
 
-        user.setIsBanned(false); // User 엔티티의 isBanned 필드를 false로 설정
+        user.changeBanStatus(false); // User 엔티티의 isBanned 필드를 false로 설정
     }
 
     public BanDTO.Response getBanById(Long banId) {

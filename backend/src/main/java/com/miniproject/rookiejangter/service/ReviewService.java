@@ -57,18 +57,17 @@ public class ReviewService {
 
     @Transactional
     public ReviewDTO.Response updateReview(Long reviewId, Long userId, ReviewDTO.Request request) {
-        // 1. 수정할 리뷰가 있는지 확인
+        // 1. 해당 리뷰가 있는지 확인
         Review review = reviewRepository.findByReviewId(reviewId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.REVIEW_NOT_FOUND, reviewId));
 
         // 2. 리뷰 수정 권한 확인 (리뷰 작성자와 수정자가 동일한지)
         if (!review.getBuyer().getUserId().equals(userId)) {
-            throw new BusinessException(ErrorCode.TRADE_UNAUTHORIZED);
+            throw new BusinessException(ErrorCode.REVIEW_ACCESS_DENIED);
         }
 
-        // 3. 리뷰 내용 수정
-        review.setRating(request.getRating());
-        review.setContent(request.getContent());
+        // 3. 리뷰 내용 업데이트
+        review.updateReviewInfo(request.getRating(), request.getContent());
 
         return ReviewDTO.Response.fromEntity(review);
     }
