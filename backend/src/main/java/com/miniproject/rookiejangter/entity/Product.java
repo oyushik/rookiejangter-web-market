@@ -14,6 +14,8 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
+@ToString
+@EqualsAndHashCode
 public class Product extends BaseEntity {
 
     @Id
@@ -50,29 +52,4 @@ public class Product extends BaseEntity {
     @Column(name = "is_completed")
     private Boolean isCompleted;
 
-    @Override
-    public String toString() {
-        return "Product{" +
-                "productId=" + productId +
-                ", title='" + title + '\'' +
-                ", content='" + content + '\'' +
-                ", viewCount=" + viewCount +
-                ", isBumped=" + isBumped +
-                ", isReserved=" + isReserved +
-                ", isCompleted=" + isCompleted +
-                '}';
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Product product = (Product) o;
-        return productId != null && productId.equals(product.productId);
-    }
-
-    @Override
-    public int hashCode() {
-        return getClass().hashCode();
-    }
 }

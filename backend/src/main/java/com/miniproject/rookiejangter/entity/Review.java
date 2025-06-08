@@ -14,6 +14,8 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
+@ToString
+@EqualsAndHashCode
 public class Review extends BaseEntity {
 
     @Id
@@ -39,28 +41,4 @@ public class Review extends BaseEntity {
     @Column(name = "content", length = 255)
     private String content;
 
-    @Override
-    public String toString() {
-        return "Review{" +
-                "reviewId=" + reviewId +
-                ", complete=" + complete +
-                ", buyer=" + buyer +
-                ", seller=" + seller +
-                ", rating=" + rating +
-                ", content='" + content + '\'' +
-                '}';
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Review review = (Review) o;
-        return reviewId != null && reviewId.equals(review.reviewId);
-    }
-
-    @Override
-    public int hashCode() {
-        return getClass().hashCode();
-    }
 }

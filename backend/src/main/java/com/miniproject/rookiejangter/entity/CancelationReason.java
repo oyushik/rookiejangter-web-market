@@ -11,6 +11,8 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@ToString
+@EqualsAndHashCode
 public class CancelationReason {
 
     @Id
@@ -21,24 +23,4 @@ public class CancelationReason {
     @Column(name = "cancelation_reason_type", length = 50)
     private String cancelationReasonType;
 
-    @Override
-    public String toString() {
-        return "CancelationReason{" +
-                "cancelationReasonId=" + cancelationReasonId +
-                ", cancelationReasonType='" + cancelationReasonType + '\'' +
-                '}';
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        CancelationReason cancelationReason = (CancelationReason) o;
-        return cancelationReasonId != null && cancelationReasonId.equals(cancelationReason.cancelationReasonId);
-    }
-
-    @Override
-    public int hashCode() {
-        return getClass().hashCode();
-    }
 }

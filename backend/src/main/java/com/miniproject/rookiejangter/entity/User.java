@@ -15,6 +15,8 @@ import java.util.Objects;
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
+@ToString
+@EqualsAndHashCode
 public class User extends BaseEntity {
 
     @Id
@@ -83,30 +85,4 @@ public class User extends BaseEntity {
     @OneToMany(mappedBy = "seller", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Complete> sellerCompletes = new ArrayList<>();
 
-
-    @Override
-    public String toString() {
-        return "User{" +
-                "userId=" + userId +
-                ", loginId='" + loginId + '\'' +
-                ", userName='" + userName + '\'' +
-                ", phone='" + phone + '\'' +
-                ", isBanned=" + isBanned +
-                ", isAdmin=" + isAdmin +
-                '}';
-    }
-
-    @Override
-
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        User user = (User) o;
-        return userId != null && userId.equals(user.userId);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(userId); // userId 기반으로 hashCode 생성
-    }
 }

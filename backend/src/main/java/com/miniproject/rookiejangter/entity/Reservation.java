@@ -13,6 +13,8 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
+@ToString
+@EqualsAndHashCode
 public class Reservation extends BaseEntity {
 
     public enum TradeStatus {
@@ -43,23 +45,4 @@ public class Reservation extends BaseEntity {
     @Column(name = "status")
     private TradeStatus status;
 
-    @Override
-    public String toString() {
-        return "Reservation{" +
-                "reservationId=" + reservationId +
-                '}';
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Reservation reservation = (Reservation) o;
-        return reservationId != null && reservationId.equals(reservation.reservationId);
-    }
-
-    @Override
-    public int hashCode() {
-        return getClass().hashCode();
-    }
 }

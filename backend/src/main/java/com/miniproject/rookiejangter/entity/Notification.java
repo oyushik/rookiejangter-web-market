@@ -13,6 +13,8 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@ToString
+@EqualsAndHashCode
 public class Notification {
 
     @Id
@@ -41,28 +43,4 @@ public class Notification {
     @Column(name = "is_read")
     private Boolean isRead;
 
-    @Override
-    public String toString() {
-        return "Notification{" +
-                "notificationId=" + notificationId +
-                ", entityId=" + entityId +
-                ", entityType='" + entityType + '\'' +
-                ", message='" + message + '\'' +
-                ", sentAt=" + sentAt +
-                ", isRead=" + isRead +
-                '}';
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Notification notification = (Notification) o;
-        return notificationId != null && notificationId.equals(notification.notificationId);
-    }
-
-    @Override
-    public int hashCode() {
-        return getClass().hashCode();
-    }
 }

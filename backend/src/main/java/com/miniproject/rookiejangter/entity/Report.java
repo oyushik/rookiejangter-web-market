@@ -14,6 +14,8 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
+@ToString
+@EqualsAndHashCode
 public class Report extends BaseEntity {
 
     @Id
@@ -43,26 +45,4 @@ public class Report extends BaseEntity {
     @Column(name = "is_processed")
     private Boolean isProcessed;
 
-    @Override
-    public String toString() {
-        return "Report{" +
-                "reportId=" + reportId +
-                ", targetId=" + targetId +
-                ", targetType='" + targetType + '\'' +
-                ", isProcessed=" + isProcessed +
-                '}';
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Report report = (Report) o;
-        return reportId != null && reportId.equals(report.reportId);
-    }
-
-    @Override
-    public int hashCode() {
-        return getClass().hashCode();
-    }
 }

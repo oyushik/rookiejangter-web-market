@@ -13,6 +13,8 @@ import java.util.Objects;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@ToString
+@EqualsAndHashCode
 public class Cancelation {
 
     @Id
@@ -34,27 +36,4 @@ public class Cancelation {
     @Column(name = "canceled_at")
     private LocalDateTime canceledAt;
 
-    @Override
-    public String toString() {
-        return "Cancelation{" +
-                "cancelationId=" + cancelationId +
-                ", reservationId=" + (reservation != null ? reservation.getReservationId() : null) +
-                ", cancelationReasonId=" + (cancelationReason != null ? cancelationReason.getCancelationReasonId() : null) +
-                ", cancelationDetail='" + cancelationDetail + '\'' +
-                ", canceledAt=" + canceledAt +
-                '}';
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Cancelation that = (Cancelation) o;
-        return Objects.equals(cancelationId, that.cancelationId);
-    }
-
-    @Override
-    public int hashCode() {
-        return reservation != null ? reservation.getReservationId().hashCode() : 0;
-    }
 }

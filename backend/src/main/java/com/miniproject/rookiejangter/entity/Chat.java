@@ -7,10 +7,11 @@ import lombok.experimental.SuperBuilder;
 @Entity
 @Table(name = "chats")
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
+@ToString
+@EqualsAndHashCode
 public class Chat extends BaseEntity {
 
     @Id
@@ -30,23 +31,4 @@ public class Chat extends BaseEntity {
     @JoinColumn(name = "product_id")
     private Product product;
 
-    @Override
-    public String toString() {
-        return "Chat{" +
-                "chatId=" + chatId +
-                '}';
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Chat chat = (Chat) o;
-        return chatId != null && chatId.equals(chat.chatId);
-    }
-
-    @Override
-    public int hashCode() {
-        return getClass().hashCode();
-    }
 }

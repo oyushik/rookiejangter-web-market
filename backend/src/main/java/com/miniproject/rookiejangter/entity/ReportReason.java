@@ -14,6 +14,8 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@ToString
+@EqualsAndHashCode
 public class ReportReason {
 
     @Id
@@ -27,24 +29,4 @@ public class ReportReason {
     @OneToMany(mappedBy = "reportReason", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Report> reports = new ArrayList<>();
 
-    @Override
-    public String toString() {
-        return "ReportReason{" +
-                "reportReasonId=" + reportReasonId +
-                ", reportReasonType='" + reportReasonType + '\'' +
-                '}';
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        ReportReason reportReason = (ReportReason) o;
-        return reportReasonId != null && reportReasonId.equals(reportReason.reportReasonId);
-    }
-
-    @Override
-    public int hashCode() {
-        return getClass().hashCode();
-    }
 }
