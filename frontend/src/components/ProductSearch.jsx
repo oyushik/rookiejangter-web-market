@@ -43,12 +43,13 @@ const ProductSearch = () => {
     const fetchCategories = async () => {
       try {
         const responseData = await getCategories();
-        if (responseData && Array.isArray(responseData.data)) {
-          setCategories([{ categoryName: '전체', categoryId: '' }, ...responseData.data]);
-        } else {
-          console.error('Unexpected categories data format:', responseData);
-          setCategories([{ categoryName: '전체', categoryId: '' }]);
+        let categoryList = [];
+        if (Array.isArray(responseData)) {
+          categoryList = responseData;
+        } else if (responseData && Array.isArray(responseData.data)) {
+          categoryList = responseData.data;
         }
+        setCategories([{ categoryName: '전체', categoryId: '' }, ...categoryList]);
       } catch (error) {
         console.error('카테고리 목록을 불러오는데 실패했습니다.', error);
         setCategories([{ categoryName: '전체', categoryId: '' }]);
@@ -100,7 +101,10 @@ const ProductSearch = () => {
       <CategorySelect
         value={category}
         onChange={(e) => setCategory(e.target.value)}
-        options={categories.map((cat) => ({ value: cat.categoryName, label: cat.categoryName }))}
+        options={categories.map((cat) => ({
+          value: cat.categoryId ?? cat.categoryName,
+          label: cat.categoryName,
+        }))}
       />
       {/* 지역 선택 버튼 */}
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5, mt: 0.25 }}>

@@ -16,7 +16,7 @@ import {
   DialogContent,
   DialogActions,
 } from '@mui/material';
-import FormSnackbar from '../components/FormSnackbar'; // 추가
+import FormSnackbar from '../components/FormSnackbar';
 
 const AdminUserPage = () => {
   const [users, setUsers] = useState([]);
@@ -24,6 +24,15 @@ const AdminUserPage = () => {
   const [error, setError] = useState(null);
   const [selectedUser, setSelectedUser] = useState(null);
   const [detailLoading, setDetailLoading] = useState(false);
+
+  // 신고 관리용 state
+  const [reports, setReports] = useState([]);
+  const [reportUserMap, setReportUserMap] = useState({});
+  const [reportLoading, setReportLoading] = useState(false);
+
+  // 신고 상세 다이얼로그 state
+  const [selectedReport, setSelectedReport] = useState(null);
+  const [reportDetailLoading, setReportDetailLoading] = useState(false);
 
   // snackbar 상태 추가
   const [snackbar, setSnackbar] = useState({
@@ -37,18 +46,62 @@ const AdminUserPage = () => {
     setError(null);
     try {
       const response = await axios.get('http://localhost:8080/api/admin/users');
-      console.log("유저 목록 응답:", response.data);
       setUsers(response.data.content || []);
     } catch (err) {
-      console.error('유저 목록 불러오기 실패:', err);
       setError('유저 목록을 불러오지 못했습니다.');
     } finally {
       setLoading(false);
     }
   };
 
+  // 신고 목록 + 사용자 이름 매핑
+  const fetchReports = async () => {
+    setReportLoading(true);
+    try {
+      const token = localStorage.getItem('accessToken');
+      const res = await axios.get('http://localhost:8080/api/reports/admin/unprocessed', {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setReports(res.data);
+
+      // 신고자/대상 id 목록 추출
+      const ids = [
+        ...new Set(
+          res.data
+            .flatMap(r => [r.reporterId, r.targetId])
+            .filter(id => id != null)
+        ),
+      ];
+
+      // 사용자 이름 매핑
+      const map = {};
+      await Promise.all(
+        ids.map(async (id) => {
+          try {
+            const userRes = await axios.get(`http://localhost:8080/api/admin/users/${id}`, {
+              headers: { Authorization: `Bearer ${token}` }
+            });
+            map[id] = userRes.data.userName;
+          } catch (e) {
+            map[id] = undefined;
+          }
+        })
+      );
+      setReportUserMap(map);
+    } catch (err) {
+      setSnackbar({
+        open: true,
+        message: '신고 목록을 불러오지 못했습니다.',
+        severity: 'error',
+      });
+    } finally {
+      setReportLoading(false);
+    }
+  };
+
   useEffect(() => {
     fetchUsers();
+    fetchReports();
   }, []);
 
   const fetchUserDetail = async (userId) => {
@@ -57,7 +110,6 @@ const AdminUserPage = () => {
       const response = await axios.get(`http://localhost:8080/api/admin/users/${userId}`);
       setSelectedUser(response.data);
     } catch (err) {
-      console.error('유저 상세정보 불러오기 실패:', err);
       setSnackbar({
         open: true,
         message: '유저 상세정보를 불러오지 못했습니다.',
@@ -85,7 +137,6 @@ const AdminUserPage = () => {
       });
       fetchUsers();
     } catch (err) {
-      console.error('유저 Ban 처리 실패:', err);
       setSnackbar({
         open: true,
         message: '유저 Ban 처리에 실패했습니다.',
@@ -94,12 +145,20 @@ const AdminUserPage = () => {
     }
   };
 
+  // 신고 상세정보 불러오기
+  const handleViewReport = async (report) => {
+    setReportDetailLoading(true);
+    setSelectedReport(report);
+    setReportDetailLoading(false);
+  };
+
   return (
     <Box sx={{ p: 3 }}>
       <Typography variant="h4" gutterBottom>
         관리자 - 유저 관리
       </Typography>
 
+      {/* 유저 관리 테이블 */}
       {loading ? (
         <Box sx={{ textAlign: 'center', mt: 5 }}>
           <CircularProgress />
@@ -107,7 +166,7 @@ const AdminUserPage = () => {
       ) : error ? (
         <Typography color="error">{error}</Typography>
       ) : (
-        <Paper>
+        <Paper sx={{ mb: 5 }}>
           <Table>
             <TableHead>
               <TableRow>
@@ -162,6 +221,101 @@ const AdminUserPage = () => {
           </Table>
         </Paper>
       )}
+
+      {/* 신고 관리 테이블 */}
+      <Typography variant="h4" gutterBottom sx={{ mt: 6 }}>
+        신고 관리
+      </Typography>
+      {reportLoading ? (
+        <Box sx={{ textAlign: 'center', mt: 3 }}>
+          <CircularProgress />
+        </Box>
+      ) : (
+        <Paper>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell>신고ID</TableCell>
+                <TableCell>신고사유</TableCell>
+                <TableCell>신고자</TableCell>
+                <TableCell>대상</TableCell>
+                <TableCell>신고일시</TableCell>
+                <TableCell>상세 내용</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {reports.length > 0 ? (
+                reports.map((report) => (
+                  <TableRow key={report.reportId}>
+                    <TableCell>{report.reportId}</TableCell>
+                    <TableCell>{report.reportReasonType}</TableCell>
+                    <TableCell>
+                      {reportUserMap[report.reporterId]} (ID={report.reporterId})
+                    </TableCell>
+                    <TableCell>
+                      {reportUserMap[report.targetId]} (ID={report.targetId})
+                    </TableCell>
+                    <TableCell>{new Date(report.createdAt).toLocaleString()}</TableCell>
+                    <TableCell>
+                      <Button size="small" onClick={() => handleViewReport(report)}>
+                        보기
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell colSpan={7} align="center">
+                    신고 내역이 없습니다.
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </Paper>
+      )}
+
+      {/* 신고 상세 다이얼로그 */}
+      <Dialog
+        open={!!selectedReport}
+        onClose={() => {
+          setSelectedReport(null);
+          setSelectedReportUser({ reporter: null, target: null });
+        }}
+        maxWidth="sm"
+        fullWidth
+      >
+        <DialogTitle>신고 상세 내용</DialogTitle>
+        <DialogContent dividers>
+          {reportDetailLoading ? (
+            <Box sx={{ textAlign: 'center', p: 3 }}>
+              <CircularProgress />
+            </Box>
+          ) : selectedReport ? (
+            <>
+              <Typography>
+                <strong>신고 사유:</strong> {selectedReport.reportReasonType}
+              </Typography>
+              <Typography
+                sx={{
+                  mt: 2,
+                  whiteSpace: 'pre-line',
+                  wordBreak: 'break-all',
+                  overflowWrap: 'break-word',
+                }}
+              >
+                <strong>신고 상세 이유:</strong> {selectedReport.reportDetail}
+              </Typography>
+            </>
+          ) : null}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => {
+            setSelectedReport(null);
+            setSelectedReportUser({ reporter: null, target: null });
+          }}>닫기</Button>
+        </DialogActions>
+      </Dialog>
 
       {/* 유저 상세 다이얼로그 */}
       <Dialog
