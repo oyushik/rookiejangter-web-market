@@ -17,6 +17,7 @@ public class CategoryController {
 
     private final CategoryService categoryService;
 
+    // 전체 카테고리 조회
     @GetMapping
     public ResponseEntity<CategoryDTO.ApiResponseWrapper<List<CategoryDTO.Response>>> getAllCategories() {
         List<CategoryDTO.Response> categories = categoryService.getAllCategories();

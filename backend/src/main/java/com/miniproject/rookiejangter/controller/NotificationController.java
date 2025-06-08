@@ -17,6 +17,7 @@ public class NotificationController {
 
     private final NotificationService notificationService;
 
+    // 로그인 중인 사용자 알림 조회. token으로 조회
     @GetMapping
     public ResponseEntity<Page<NotificationDTO.Response>> getUserNotifications(
             Authentication authentication,
@@ -26,6 +27,7 @@ public class NotificationController {
         return ResponseEntity.ok(notifications);
     }
 
+    // 알림 읽음 표시
     @PatchMapping("/{notificationId}/read")
     @CrossOrigin(origins = "http://localhost:3000", methods = {RequestMethod.PATCH, RequestMethod.OPTIONS})
     public ResponseEntity<Void> markNotificationAsRead(
@@ -37,6 +39,7 @@ public class NotificationController {
         return ResponseEntity.ok().build();
     }
 
+    // 알림 삭제
     @DeleteMapping("/{notificationId}")
     public ResponseEntity<Void> deleteNotification(
             Authentication authentication,
@@ -47,6 +50,7 @@ public class NotificationController {
         return ResponseEntity.noContent().build();
     }
 
+    // 읽지 않은 알림 카운트
     @GetMapping("/unread-count")
     public ResponseEntity<Long> getUnreadNotificationsCount(Authentication authentication) {
         Long userId = Long.parseLong(authentication.getName());

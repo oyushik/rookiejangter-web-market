@@ -15,6 +15,7 @@ public class AreaController {
 
     private final AreaService areaService;
 
+    // 전체 지역 조회
     @GetMapping
     public ResponseEntity<AreaDTO.ApiResponseWrapper<List<AreaDTO.Response>>> getAllAreas() {
         List<AreaDTO.Response> areas = areaService.getAllAreas();
@@ -23,6 +24,4 @@ public class AreaController {
         response.setData(areas);
         return ResponseEntity.ok(response);
     }
-
-    // 필요한 경우 다른 API (예: getAreaById) 도 구현
 }

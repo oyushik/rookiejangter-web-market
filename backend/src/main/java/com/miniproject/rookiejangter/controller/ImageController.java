@@ -22,6 +22,7 @@ public class ImageController {
     private final ImageService imageService;
     private final FileStorageService fileStorageService;
 
+    // 이미지 업로드
     @PostMapping
     public ResponseEntity<List<ImageDTO.Response>> uploadImages(
             @RequestParam("productId") Long productId,
@@ -43,16 +44,19 @@ public class ImageController {
         return ResponseEntity.status(HttpStatus.CREATED).body(uploadedImages);
     }
 
+    // 이미지 id로 조회
     @GetMapping("/id/{imageId}")
     public ResponseEntity<ImageDTO.Response> getImageByImageId(@PathVariable Long imageId) {
         return ResponseEntity.ok(imageService.getImageByImageId(imageId));
     }
 
+    // 상품 id로 이미지 조회
     @GetMapping("/product/{productId}")
     public ResponseEntity<List<ImageDTO.Response>> getImagesByProductId(@PathVariable Long productId) {
         return ResponseEntity.ok(imageService.getImagesByProductId(productId));
     }
 
+    // 상품 id로 이미지 삭제
     @DeleteMapping("/product/{productId}")
     public ResponseEntity<Void> deleteImagesByProductId(@PathVariable Long productId) {
         try {
