@@ -10,13 +10,13 @@
 
 ## 👥 팀 구성 및 역할
 
-| 역할         | 이름   | 담당 업무                               | GitHub                                      |
-| ------------ | ------ | --------------------------------------- | ------------------------------------------- |
-| **PM**       | 지재현 | 프로젝트 관리, 일정 조율, 요구사항 정의 | [J-millar99](https://github.com/J-millar99) |
-| **Backend**  | -      | API 개발, 데이터베이스 설계, 서버 구축  | [oyushik](https://github.com/oyushik)       |
-| **Backend**  | -      | 인증/보안, 비즈니스 로직, 테스트        | [username]                                  |
-| **Frontend** | -      | React 컴포넌트, UI/UX 구현              | [username]                                  |
-| **Frontend** | -      | 상태관리, API 연동, 관리자 페이지       | [username]                                  |
+| 역할         | 이름   | 담당 업무                               | GitHub                                                |
+| ------------ | ------ | --------------------------------------- | ----------------------------------------------------- |
+| **PM**       | 지재현 | 프로젝트 관리, 일정 조율, 요구사항 정의 | [J-millar99](https://github.com/J-millar99)           |
+| **Backend**  | 오유식 | API 개발, 데이터베이스 설계, 서버 구축  | [oyushik](https://github.com/oyushik)                 |
+| **Backend**  | 김민정 | 인증/보안, 비즈니스 로직, 테스트        | [ReadyToStarting](https://github.com/ReadyToStarting) |
+| **Frontend** | 김우준 | React 컴포넌트, UI/UX 구현              | [Ra1nJun](https://github.com/Ra1nJun)                 |
+| **Frontend** | 안태경 | 상태관리, API 연동, 관리자 페이지       | [Ahn-TaeKyung] (https://github.com/Ahn-TaeKyung)      |
 
 ## 🎯 주요 기능
 
@@ -36,11 +36,10 @@
 
 - **Framework**: Spring Boot 3.4.6
 - **Language**: Java 17
-- **Database**: MySQL 8.0
+- **Database**: MariaDB 11.4
 - **ORM**: JPA/Hibernate
 - **Security**: Spring Security + JWT
 - **Build Tool**: Gradle
-- **API Documentation**: Swagger/OpenAPI
 
 ### Frontend
 
@@ -63,7 +62,7 @@
 ## 📁 프로젝트 구조
 
 ```
-secondhand-market/
+SK_Rookies_Mini_Project2-main/
 ├── backend/                        # Spring Boot 백엔드
 │   ├── src/main/java/
 │   │   ├── controller/             # REST API 컨트롤러
@@ -100,10 +99,6 @@ secondhand-market/
 │   ├── package.json
 │   └── vite.config.js
 ├── docs/                           # 프로젝트 문서
-│   ├── api/                        # API 명세서
-│   ├── design/                     # 화면 설계서
-│   ├── database/                   # DB 설계서
-│   └── requirements/               # 요구사항 문서
 └── README.md
 ```
 
@@ -123,10 +118,7 @@ docker-compose up --build -d
 
 ## 📖 API 문서
 
-개발 서버 실행 후 다음 URL에서 API 문서를 확인할 수 있습니다:
-
-- Swagger UI:
-- API Docs:
+SK_Rookies_Mini_Project2-main/docs/RESTAPI.md
 
 ## 🤝 협업 규칙
 
