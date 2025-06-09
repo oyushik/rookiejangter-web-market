@@ -120,10 +120,10 @@ classDiagram
 @Getter
 @EntityListeners(AuditingEntityListener.class)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@SuperBuilder // BaseEntity를 상속하지 않을 경우 @Builder
+@Builder // BaseEntity를 상속하는 경우 @SuperBuilder
 @ToString
 @EqualsAndHashCode
-public class EntityName extends BaseEntity {
+public class EntityName {
     // 필드 정의
 }
 ```
@@ -195,6 +195,14 @@ private User user;
     }
 ```
 
+#### 4.1.6 생성자 및 팩토리 메서드
+
+```java
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+```
+
 ### 4.2 Category Entity
 
 #### 4.2.1 기본 정보
@@ -239,6 +247,12 @@ private List<Product> products = new ArrayList<>();
 ```
 
 #### 4.2.6 생성자 및 팩토리 메서드
+
+```java
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+```
 
 ### 4.3 Reports Entity
 
@@ -318,6 +332,12 @@ private User user;
 ```
 
 #### 4.3.6 생성자 및 팩토리 메서드
+
+```java
+@NoArgsConstructor
+@AllArgsConstructor
+@SuperBuilder
+```
 
 ### 4.4 Dibs Entity
 
@@ -403,6 +423,12 @@ private Product product;
 ```
 
 #### 4.4.6 생성자 및 팩토리 메서드
+
+```java
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+```
 
 ### 4.5 Reservations Entity
 
@@ -493,6 +519,12 @@ private Product product;
 
 #### 4.5.6 생성자 및 팩토리 메서드
 
+```java
+@NoArgsConstructor
+@AllArgsConstructor
+@SuperBuilder
+```
+
 ### 4.7 Images Entity
 
 #### 4.7.1 기본 정보
@@ -525,7 +557,15 @@ private Product product;
 
 #### 4.7.5 비즈니스 메서드
 
+---
+
 #### 4.7.6 생성자 및 팩토리 메서드
+
+```java
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+```
 
 ### 4.8 Users Entity
 
@@ -666,6 +706,12 @@ private List<Complete> sellerCompletes = new ArrayList<>();
 
 #### 4.8.6 생성자 및 팩토리 메서드
 
+```java
+@NoArgsConstructor
+@AllArgsConstructor
+@SuperBuilder
+```
+
 ### 4.9 Bans Entity
 
 #### 4.9.1 기본 정보
@@ -703,7 +749,15 @@ private Report report;
 
 #### 4.9.5 비즈니스 메서드
 
+---
+
 #### 4.9.6 생성자 및 팩토리 메서드
+
+```java
+@NoArgsConstructor
+@AllArgsConstructor
+@SuperBuilder
+```
 
 ### 4.10 areas Entity
 
@@ -749,6 +803,12 @@ private List<User> users = new ArrayList<>();
 ```
 
 #### 4.10.6 생성자 및 팩토리 메서드
+
+```java
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+```
 
 ### 4.11 Products Entity
 
@@ -862,6 +922,12 @@ private User user;
 
 #### 4.11.6 생성자 및 팩토리 메서드
 
+```java
+@NoArgsConstructor
+@AllArgsConstructor
+@SuperBuilder
+```
+
 ### 4.12 Completes Entity
 
 #### 4.12.1 기본 정보
@@ -899,7 +965,15 @@ private User seller;
 
 #### 4.12.5 비즈니스 메서드
 
+---
+
 #### 4.12.6 생성자 및 팩토리 메서드
+
+```java
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+```
 
 ### 4.13 Cancelations Entity
 
@@ -956,6 +1030,12 @@ private CancelationReason cancelationReason;
 
 #### 4.13.6 생성자 및 팩토리 메서드
 
+```java
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+```
+
 ### 4.14 Cancelation_reasons Entity
 
 #### 4.14.1 기본 정보
@@ -993,6 +1073,12 @@ private String cancelationReasonType;
 ```
 
 #### 4.14.6 생성자 및 팩토리 메서드
+
+```java
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+```
 
 ### 4.17 Report_reasons Entity
 
@@ -1037,6 +1123,12 @@ private List<Report> reports = new ArrayList<>();
 ```
 
 #### 4.17.6 생성자 및 팩토리 메서드
+
+```java
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+```
 
 ## 5. Enum 타입 정의
 
@@ -1278,8 +1370,7 @@ private Boolean isReserved = false;
 
 ### 10.1 Entity 단위 테스트
 
-```java
-@DisplayName("Product Entity Test")
+````java
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 public class ProductTest {
@@ -1378,784 +1469,277 @@ public class ProductTest {
 ### 10.2 Repository 테스트
 
 ```java
-@DisplayName("Product Repository Test")
 @DataJpaTest
-public class ProductRepositoryTest {
+public class NotificationRepositoryTest {
 
     @Autowired
-    private ProductRepository productRepository;
-
-    @Autowired
-    private CategoryRepository categoryRepository;
-
-    @Autowired
-    private UserRepository userRepository;
+    private NotificationRepository notificationRepository;
 
     @Autowired
     private TestEntityManager entityManager;
 
-    private Category testCategory;
-    private User testUser;
+    private User user1;
+    private User user2;
+    private Notification notification1;
+    private Notification notification2;
+    private Notification notification3;
 
     @BeforeEach
     void setUp() {
-        // Given
-        testCategory = Category.builder()
-                .categoryName("Test Category")
+        user1 = User.builder()
+                .userName("사용자1")
+                .loginId("user1")
+                .password("password")
+                .phone("010-1234-1234")
                 .build();
-        testCategory = categoryRepository.save(testCategory);
+        entityManager.persist(user1);
 
-        testUser = User.builder()
-                .loginId("testId")
-                .password("testPassword")
-                .userName("Test User")
-                .phone("010-1234-5678")
+        user2 = User.builder()
+                .userName("사용자2")
+                .loginId("user2")
+                .password("password")
+                .phone("010-5678-5678")
                 .build();
-        testUser = userRepository.save(testUser);
+        entityManager.persist(user2);
+        entityManager.flush();
+
+        notification1 = Notification.builder()
+                .user(user1)
+                .message("새로운 채팅이 도착했습니다.")
+                .entityType("Chat")
+                .entityId(1L)
+                .sentAt(LocalDateTime.now())
+                .isRead(false)
+                .build();
+        entityManager.persist(notification1);
+
+        notification2 = Notification.builder()
+                .user(user1)
+                .message("예약이 완료되었습니다.")
+                .entityType("Reservation")
+                .entityId(2L)
+                .sentAt(LocalDateTime.now().plusMinutes(5))
+                .isRead(false)
+                .build();
+        entityManager.persist(notification2);
+
+        notification3 = Notification.builder()
+                .user(user2)
+                .message("관심 목록에 추가되었습니다.")
+                .entityType("Dibs")
+                .entityId(3L)
+                .sentAt(LocalDateTime.now().plusMinutes(10))
+                .isRead(false)
+                .build();
+        entityManager.persist(notification3);
+        entityManager.flush();
     }
 
     @Test
-    void createProduct() {
-        // Given
-        Product product = Product.builder()
-                .category(testCategory)
-                .user(testUser)
-                .title("Test Product Title")
-                .content("Test Product Content")
-                .price(10000)
-                .viewCount(0)
-                .isBumped(false)
-                .isReserved(false)
-                .isCompleted(false)
+    void saveNotification() {
+        Notification newNotification = Notification.builder()
+                .user(user2)
+                .message("리뷰가 작성되었습니다.")
+                .entityType("Review")
+                .entityId(4L)
+                .sentAt(LocalDateTime.now().plusHours(1))
+                .isRead(true)
                 .build();
+        Notification savedNotification = notificationRepository.save(newNotification);
 
-        // When
-        Product savedProduct = productRepository.save(product);
-
-        // Then
-        assertThat(savedProduct.getProductId()).isNotNull();
-        assertThat(savedProduct.getTitle()).isEqualTo("Test Product Title");
+        Optional<Notification> foundNotification = notificationRepository.findById(savedNotification.getNotificationId());
+        assertThat(foundNotification).isPresent();
+        assertThat(foundNotification.get().getMessage()).isEqualTo("리뷰가 작성되었습니다.");
+        assertThat(foundNotification.get().getUser().getUserId()).isEqualTo(user2.getUserId());
+        assertThat(foundNotification.get().getEntityType()).isEqualTo("Review");
+        assertThat(foundNotification.get().getEntityId()).isEqualTo(4L);
+        assertThat(foundNotification.get().getIsRead()).isTrue();
     }
 
     @Test
-    void getProductById() {
-        // Given
-        Product product = Product.builder()
-                .category(testCategory)
-                .user(testUser)
-                .title("Test Product Title")
-                .content("Test Product Content")
-                .price(10000)
-                .viewCount(0)
-                .isBumped(false)
-                .isReserved(false)
-                .isCompleted(false)
-                .build();
-        product = productRepository.save(product);
-
-        // When
-        Product foundProduct = productRepository.findById(product.getProductId()).orElse(null);
-
-        // Then
-        assertThat(foundProduct).isNotNull();
-        assertThat(foundProduct.getTitle()).isEqualTo("Test Product Title");
+    void findByNotificationId() {
+        Optional<Notification> foundNotification = notificationRepository.findById(notification1.getNotificationId());
+        assertThat(foundNotification).isPresent();
+        assertThat(foundNotification.get().getMessage()).isEqualTo("새로운 채팅이 도착했습니다.");
+        assertThat(foundNotification.get().getUser().getUserId()).isEqualTo(user1.getUserId());
     }
 
     @Test
-    void updateProduct() {
-        // Given
-        Product product = Product.builder()
-                .category(testCategory)
-                .user(testUser)
-                .title("Test Product Title")
-                .content("Test Product Content")
-                .price(10000)
-                .viewCount(0)
-                .isBumped(false)
-                .isReserved(false)
-                .isCompleted(false)
+    void updateIsRead() {
+        Notification unreadNotification = Notification.builder()
+                .user(user1)
+                .message("새로운 알림입니다.")
+                .entityType("Report")
+                .entityId(5L)
+                .sentAt(LocalDateTime.now().plusMinutes(15))
+                .isRead(false)
                 .build();
-        product = productRepository.save(product);
+        Notification savedUnreadNotification = entityManager.persist(unreadNotification);
+        entityManager.flush();
 
-        // When
-        product.setTitle("Updated Product Title");
-        Product updatedProduct = productRepository.save(product);
+        notificationRepository.updateIsReadByNotificationId(true, savedUnreadNotification.getNotificationId());
+        entityManager.clear();
 
-        // Then
-        assertThat(updatedProduct.getTitle()).isEqualTo("Updated Product Title");
+        Optional<Notification> updatedNotification = notificationRepository.findById(savedUnreadNotification.getNotificationId());
+        assertThat(updatedNotification).isPresent();
+        assertThat(updatedNotification.get().getIsRead()).isTrue();
     }
 
     @Test
-    void deleteProduct() {
-        // Given
-        Product product = Product.builder()
-                .category(testCategory)
-                .user(testUser)
-                .title("Test Product Title")
-                .content("Test Product Content")
-                .price(10000)
-                .viewCount(0)
-                .isBumped(false)
-                .isReserved(false)
-                .isCompleted(false)
+    void findByIsRead() {
+        Notification unreadNotification = Notification.builder()
+                .user(user1)
+                .message("읽음 여부 테스트용 알림입니다")
+                .entityType("Report")
+                .entityId(6L)
+                .sentAt(LocalDateTime.now().plusMinutes(30))
+                .isRead(false)
                 .build();
-        product = productRepository.save(product);
+        Notification savedUnreadNotification = entityManager.persist(unreadNotification);
+        entityManager.flush();
 
-        // When
-        productRepository.delete(product);
-        Product deletedProduct = productRepository.findById(product.getProductId()).orElse(null);
+        Optional<Notification> updatedNotification = notificationRepository.findById(savedUnreadNotification.getNotificationId());
+        assertThat(updatedNotification).isPresent();
+        assertThat(updatedNotification.get().getIsRead()).isFalse();
 
-        // Then
-        assertThat(deletedProduct).isNull();
-    }
-
-    @Test
-    void findByCategory() {
-        // Given
-        Product product1 = Product.builder()
-                .category(testCategory)
-                .user(testUser)
-                .title("Test Product Title 1")
-                .content("Test Product Content 1")
-                .price(10000)
-                .viewCount(0)
-                .isBumped(false)
-                .isReserved(false)
-                .isCompleted(false)
-                .build();
-        productRepository.save(product1);
-
-        Product product2 = Product.builder()
-                .category(testCategory)
-                .user(testUser)
-                .title("Test Product Title 2")
-                .content("Test Product Content 2")
-                .price(10000)
-                .viewCount(0)
-                .isBumped(false)
-                .isReserved(false)
-                .isCompleted(false)
-                .build();
-        productRepository.save(product2);
-
-        // When
-        List<Product> products = productRepository.findByCategory(testCategory);
-
-        // Then
-        assertThat(products).hasSize(2);
-        assertThat(products.get(0).getTitle()).isEqualTo("Test Product Title 1");
-        assertThat(products.get(1).getTitle()).isEqualTo("Test Product Title 2");
     }
 }
-```
+````
 
 ### 10.3 Service 테스트
 
 ```java
-@DisplayName("Product Service Test")
 @ExtendWith(MockitoExtension.class)
-public class ProductServiceTest {
+public class NotificationServiceTest {
 
     @Mock
-    private ProductRepository productRepository;
+    private NotificationRepository notificationRepository;
+
     @Mock
     private UserRepository userRepository;
-    @Mock
-    private CategoryRepository categoryRepository;
-    @Mock
-    private ImageRepository imageRepository;
-    @Mock
-    private DibsRepository dibsRepository;
-    @Mock
-    private BumpRepository bumpRepository;
 
     @InjectMocks
-    private ProductService productService;
+    private NotificationService notificationService;
 
-    @Test
-    @DisplayName("상품 생성 성공 테스트")
-    void createProductSuccessTest() {
-        // Given
-        Long userId = 1L;
-        ProductDTO.Request requestDto = ProductDTO.Request.builder()
-                .title("테스트 상품")
-                .content("테스트 내용")
-                .price(10000)
-                .categoryId(1)
-                .images(List.of("url1", "url2"))
+    private User user;
+    private Notification notification;
+
+    @BeforeEach
+    void setUp() {
+        user = User.builder()
+                .userId(1L)
                 .build();
-        User user = User.builder().userId(userId).build();
-        Category category = Category.builder().categoryId(1).categoryName("전자기기").build();
-        Product savedProduct = Product.builder()
-                .productId(10L)
+
+        notification = Notification.builder()
+                .notificationId(10L)
                 .user(user)
-                .category(category)
-                .title("테스트 상품")
-                .content("테스트 내용")
-                .price(10000)
-                .viewCount(0)
-                .isBumped(false)
-                .isReserved(false)
-                .isCompleted(false)
-                .createdAt(LocalDateTime.now())
+                .entityId(100L)
+                .entityType("Product")
+                .message("Test Notification")
+                .sentAt(LocalDateTime.now())
+                .isRead(false)
                 .build();
-        Image image1 = Image.builder().imageId(100L).product(savedProduct).imageUrl("url1").build();
-        Image image2 = Image.builder().imageId(101L).product(savedProduct).imageUrl("url2").build();
-
-        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
-        when(categoryRepository.findById(1)).thenReturn(Optional.of(category));
-        when(productRepository.save(any(Product.class))).thenReturn(savedProduct);
-        when(imageRepository.save(any(Image.class))).thenReturn(image1, image2);
-
-        // When
-        ProductDTO.Response response = productService.createProduct(requestDto, userId);
-
-        // Then
-        assertThat(response.getId()).isEqualTo(10L);
-        assertThat(response.getTitle()).isEqualTo("테스트 상품");
-        assertThat(response.getImages()).hasSize(2);
-        verify(userRepository, times(1)).findById(userId);
-        verify(categoryRepository, times(1)).findById(1);
-        verify(productRepository, times(1)).save(any(Product.class));
-        verify(imageRepository, times(2)).save(any(Image.class));
     }
 
     @Test
-    @DisplayName("상품 생성 실패 테스트 - 사용자 없음")
-    void createProductUserNotFoundFailTest() {
-        // Given
-        Long userId = 1L;
-        ProductDTO.Request requestDto = ProductDTO.Request.builder().categoryId(1).build();
-        when(userRepository.findById(userId)).thenReturn(Optional.empty());
+    void createNotification_성공() {
+        when(userRepository.findById(user.getUserId())).thenReturn(Optional.of(user));
+        when(notificationRepository.save(any(Notification.class))).thenReturn(notification);
 
-        // When & Then
-        assertThrows(EntityNotFoundException.class, () -> productService.createProduct(requestDto, userId));
-        verify(userRepository, times(1)).findById(userId);
-        verify(categoryRepository, never()).findById(anyInt());
-        verify(productRepository, never()).save(any());
-        verify(imageRepository, never()).save(any());
+        NotificationDTO.Response response = notificationService.createNotification(user.getUserId(), notification.getEntityId(), notification.getEntityType(), notification.getMessage());
+
+        assertNotNull(response);
+        assertEquals(notification.getNotificationId(), response.getNotificationId());
+        assertEquals(user.getUserId(), response.getUserId());
     }
 
     @Test
-    @DisplayName("상품 생성 실패 테스트 - 카테고리 없음")
-    void createProductCategoryNotFoundFailTest() {
-        // Given
-        Long userId = 1L;
-        ProductDTO.Request requestDto = ProductDTO.Request.builder().categoryId(1).build();
-        User user = User.builder().userId(userId).build();
-        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
-        when(categoryRepository.findById(1)).thenReturn(Optional.empty());
+    void createNotification_실패_USER_NOT_FOUND() {
+        when(userRepository.findById(user.getUserId())).thenReturn(Optional.empty());
 
-        // When & Then
-        assertThrows(EntityNotFoundException.class, () -> productService.createProduct(requestDto, userId));
-        verify(userRepository, times(1)).findById(userId);
-        verify(categoryRepository, times(1)).findById(1);
-        verify(productRepository, never()).save(any());
-        verify(imageRepository, never()).save(any());
+        assertThrows(BusinessException.class, () -> notificationService.createNotification(user.getUserId(), notification.getEntityId(), notification.getEntityType(), notification.getMessage()));
     }
 
     @Test
-    @DisplayName("상품 ID로 조회 성공 테스트")
-    void getProductByIdSuccessTest() {
-        // Given
-        Long productId = 10L;
-        Long currentUserId = 2L;
-        User seller = User.builder().userId(1L).userName("판매자").build();
-        Category category = Category.builder().categoryId(1).categoryName("전자기기").build();
-        Product product = Product.builder()
-                .productId(productId)
-                .user(seller)
-                .category(category)
-                .title("테스트 상품")
-                .content("테스트 내용")
-                .price(10000)
-                .viewCount(0)
-                .createdAt(LocalDateTime.now())
-                .build();
-        Image image1 = Image.builder().imageId(100L).product(product).imageUrl("url1").build();
-        Image image2 = Image.builder().imageId(101L).product(product).imageUrl("url2").build();
+    void getNotificationById_성공() {
+        when(notificationRepository.findByNotificationId(notification.getNotificationId())).thenReturn(Optional.of(notification));
 
-        when(productRepository.findById(productId)).thenReturn(Optional.of(product));
-        when(imageRepository.findByProduct_ProductId(productId)).thenReturn(List.of(image1, image2));
-        when(dibsRepository.findByProduct_ProductId(productId)).thenReturn(Collections.emptyList());
-        when(dibsRepository.existsByUser_UserIdAndProduct_ProductId(currentUserId, productId)).thenReturn(false);
-        when(productRepository.save(any(Product.class))).thenReturn(product); // 조회 시 viewCount 증가 후 저장
+        NotificationDTO.Response response = notificationService.getNotificationById(notification.getNotificationId());
 
-        // When
-        ProductDTO.Response response = productService.getProductById(productId, currentUserId);
-
-        // Then
-        assertThat(response.getId()).isEqualTo(productId);
-        assertThat(response.getViewCount()).isEqualTo(1);
-        assertThat(response.getImages()).hasSize(2);
-        verify(productRepository, times(1)).findById(productId);
-        verify(imageRepository, times(1)).findByProduct_ProductId(productId);
-        verify(productRepository, times(1)).save(any(Product.class));
+        assertNotNull(response);
+        assertEquals(notification.getNotificationId(), response.getNotificationId());
     }
 
     @Test
-    @DisplayName("상품 ID로 조회 실패 테스트 - 상품 없음")
-    void getProductByIdNotFoundFailTest() {
-        // Given
-        Long productId = 10L;
-        Long currentUserId = 2L;
-        when(productRepository.findById(productId)).thenReturn(Optional.empty());
+    void getNotificationById_실패_NOTIFICATION_NOT_FOUND() {
+        when(notificationRepository.findByNotificationId(notification.getNotificationId())).thenReturn(Optional.empty());
 
-        // When & Then
-        assertThrows(EntityNotFoundException.class, () -> productService.getProductById(productId, currentUserId));
-        verify(productRepository, times(1)).findById(productId);
-        verify(imageRepository, never()).findByProduct_ProductId(anyLong());
-        verify(productRepository, never()).save(any());
+        assertThrows(BusinessException.class, () -> notificationService.getNotificationById(notification.getNotificationId()));
     }
 
     @Test
-    @DisplayName("상품 수정 성공 테스트")
-    void updateProductSuccessTest() {
-        // Given
-        Long productId = 10L;
-        Long userId = 1L;
-        ProductDTO.UpdateRequest requestDto = ProductDTO.UpdateRequest.builder()
-                .title("수정된 제목")
-                .content("수정된 내용")
-                .price(20000)
-                .categoryId(2)
-                .images(List.of("updatedUrl1"))
-                .build();
-        User user = User.builder().userId(userId).build();
-        Category originalCategory = Category.builder().categoryId(1).categoryName("전자기기").build();
-        Category updatedCategory = Category.builder().categoryId(2).categoryName("의류").build();
-        Product originalProduct = Product.builder()
-                .productId(productId)
-                .user(user)
-                .category(originalCategory)
-                .title("테스트 상품")
-                .content("테스트 내용")
-                .price(10000)
-                .createdAt(LocalDateTime.now())
-                .build();
-        Image originalImage = Image.builder().imageId(100L).product(originalProduct).imageUrl("url1").build();
-        Image updatedImage = Image.builder().imageId(102L).product(originalProduct).imageUrl("updatedUrl1").build();
+    void getNotificationsByEntityId_성공() {
+        when(notificationRepository.findByEntityId(notification.getEntityId())).thenReturn(Arrays.asList(notification));
 
-        when(productRepository.findById(productId)).thenReturn(Optional.of(originalProduct));
-        when(categoryRepository.findById(2)).thenReturn(Optional.of(updatedCategory));
-        doNothing().when(imageRepository).deleteAll(anyList());
-        when(imageRepository.save(any(Image.class))).thenReturn(updatedImage);
-        when(productRepository.save(any(Product.class))).thenReturn(originalProduct); // 수정된 product 반환하도록
+        List<NotificationDTO.Response> responses = notificationService.getNotificationsByEntityId(notification.getEntityId());
 
-        // When
-        ProductDTO.Response response = productService.updateProduct(productId, requestDto, userId);
-
-        // Then
-        assertThat(response.getId()).isEqualTo(productId);
-        assertThat(response.getTitle()).isEqualTo("수정된 제목");
-        assertThat(response.getContent()).isEqualTo("수정된 내용");
-        assertThat(response.getPrice()).isEqualTo(20000);
-        assertThat(response.getCategoryName()).isEqualTo("의류");
-        assertThat(response.getImages()).hasSize(1);
-        assertThat(response.getImages().get(0).getImageUrl()).isEqualTo("updatedUrl1");
-        verify(productRepository, times(1)).findById(productId);
-        verify(categoryRepository, times(1)).findById(2);
-        verify(imageRepository, times(1)).deleteAll(anyList());
-        verify(imageRepository, times(1)).save(any(Image.class));
-        verify(productRepository, times(1)).save(any(Product.class));
+        assertNotNull(responses);
+        assertEquals(1, responses.size());
+        assertEquals(notification.getNotificationId(), responses.get(0).getNotificationId());
     }
 
     @Test
-    @DisplayName("상품 수정 실패 테스트 - 상품 없음")
-    void updateProductNotFoundFailTest() {
-        // Given
-        Long productId = 10L;
-        Long userId = 1L;
-        ProductDTO.UpdateRequest requestDto = ProductDTO.UpdateRequest.builder().title("수정").build();
-        when(productRepository.findById(productId)).thenReturn(Optional.empty());
+    void getNotificationsByEntityType_성공() {
+        when(notificationRepository.findByEntityType(notification.getEntityType())).thenReturn(Arrays.asList(notification));
 
-        // When & Then
-        assertThrows(EntityNotFoundException.class, () -> productService.updateProduct(productId, requestDto, userId));
-        verify(productRepository, times(1)).findById(productId);
-        verify(categoryRepository, never()).findById(anyInt());
-        verify(imageRepository, never()).deleteAll(anyList());
-        verify(imageRepository, never()).save(any());
-        verify(productRepository, never()).save(any());
+        List<NotificationDTO.Response> responses = notificationService.getNotificationsByEntityType(notification.getEntityType());
+
+        assertNotNull(responses);
+        assertEquals(1, responses.size());
+        assertEquals(notification.getNotificationId(), responses.get(0).getNotificationId());
     }
 
     @Test
-    @DisplayName("상품 수정 실패 테스트 - 권한 없음")
-    void updateProductNoPermissionFailTest() {
-        // Given
-        Long productId = 10L;
-        Long userId = 1L;
-        Long otherUserId = 2L;
-        ProductDTO.UpdateRequest requestDto = ProductDTO.UpdateRequest.builder().title("수정").build();
-        User user = User.builder().userId(otherUserId).build();
-        Product product = Product.builder().productId(productId).user(user).build();
-        when(productRepository.findById(productId)).thenReturn(Optional.of(product));
+    void getUnreadNotifications_성공() {
+        when(notificationRepository.findByIsRead(false)).thenReturn(Arrays.asList(notification));
 
-        // When & Then
-        assertThrows(SecurityException.class, () -> productService.updateProduct(productId, requestDto, userId));
-        verify(productRepository, times(1)).findById(productId);
-        verify(categoryRepository, never()).findById(anyInt());
-        verify(imageRepository, never()).deleteAll(anyList());
-        verify(imageRepository, never()).save(any());
-        verify(productRepository, never()).save(any());
+        List<NotificationDTO.Response> responses = notificationService.getUnreadNotifications();
+
+        assertNotNull(responses);
+        assertEquals(1, responses.size());
+        assertEquals(notification.getNotificationId(), responses.get(0).getNotificationId());
     }
 
     @Test
-    @DisplayName("상품 삭제 성공 테스트")
-    void deleteProductSuccessTest() {
-        // Given
-        Long productId = 10L;
-        Long userId = 1L;
-        User user = User.builder().userId(userId).build();
-        Product product = Product.builder().productId(productId).user(user).build();
-        when(productRepository.findById(productId)).thenReturn(Optional.of(product));
-        doNothing().when(imageRepository).deleteAll(anyList());
-        doNothing().when(dibsRepository).deleteAll(anyList());
-        doNothing().when(bumpRepository).deleteAll(anyList());
-        doNothing().when(productRepository).delete(product);
+    void markAsRead_성공() {
+        when(notificationRepository.findByNotificationId(notification.getNotificationId())).thenReturn(Optional.of(notification));
 
-        // When
-        productService.deleteProduct(productId, userId);
+        notificationService.markAsRead(notification.getNotificationId());
 
-        // Then
-        verify(productRepository, times(1)).findById(productId);
-        verify(imageRepository, times(1)).deleteAll(anyList());
-        verify(dibsRepository, times(1)).deleteAll(anyList());
-        verify(bumpRepository, times(1)).deleteAll(anyList());
-        verify(productRepository, times(1)).delete(product);
+        assertTrue(notification.getIsRead());
     }
 
     @Test
-    @DisplayName("상품 삭제 실패 테스트 - 상품 없음")
-    void deleteProductNotFoundFailTest() {
-        // Given
-        Long productId = 10L;
-        Long userId = 1L;
-        when(productRepository.findById(productId)).thenReturn(Optional.empty());
+    void markAsRead_실패_NOTIFICATION_NOT_FOUND() {
+        when(notificationRepository.findByNotificationId(notification.getNotificationId())).thenReturn(Optional.empty());
 
-        // When & Then
-        assertThrows(EntityNotFoundException.class, () -> productService.deleteProduct(productId, userId));
-        verify(productRepository, times(1)).findById(productId);
-        verify(imageRepository, never()).deleteAll(anyList());
-        verify(dibsRepository, never()).deleteAll(anyList());
-        verify(bumpRepository, never()).deleteAll(anyList());
-        verify(productRepository, never()).delete(any());
+        assertThrows(BusinessException.class, () -> notificationService.markAsRead(notification.getNotificationId()));
     }
 
     @Test
-    @DisplayName("상품 삭제 실패 테스트 - 권한 없음")
-    void deleteProductNoPermissionFailTest() {
-        // Given
-        Long productId = 10L;
-        Long userId = 1L;
-        Long otherUserId = 2L;
-        User user = User.builder().userId(otherUserId).build();
-        Product product = Product.builder().productId(productId).user(user).build();
-        when(productRepository.findById(productId)).thenReturn(Optional.of(product));
+    void deleteNotification_성공() {
+        when(notificationRepository.findByNotificationId(notification.getNotificationId())).thenReturn(Optional.of(notification));
 
-        // When & Then
-        assertThrows(SecurityException.class, () -> productService.deleteProduct(productId, userId));
-        verify(productRepository, times(1)).findById(productId);
-        verify(imageRepository, never()).deleteAll(anyList());
-        verify(dibsRepository, never()).deleteAll(anyList());
-        verify(bumpRepository, never()).deleteAll(anyList());
-        verify(productRepository, never()).delete(any());
+        notificationService.deleteNotification(notification.getNotificationId());
+
+        verify(notificationRepository).delete(notification);
     }
 
     @Test
-    @DisplayName("모든 상품 조회 (페이징) 성공 테스트")
-    void getAllProductsSuccessTest() {
-        // Given
-        Long currentUserId = 1L;
-        User seller = User.builder().userId(2L).userName("판매자").build();
-        Category category = Category.builder().categoryId(1).categoryName("전자기기").build();
-        Product product1 = Product.builder().productId(10L).user(seller).category(category).title("상품1").price(1000).createdAt(LocalDateTime.now()).build();
-        Product product2 = Product.builder().productId(11L).user(seller).category(category).title("상품2").price(2000).createdAt(LocalDateTime.now().minusHours(1)).build();
-        List<Product> products = Arrays.asList(product1, product2);
-        Page<Product> productPage = new PageImpl<>(products, Pageable.ofSize(2), products.size());
-        Image image1 = Image.builder().imageId(100L).product(product1).imageUrl("url1").build();
-        Image image2 = Image.builder().imageId(100L).product(product2).imageUrl("url2").build();
+    void deleteNotification_실패_NOTIFICATION_NOT_FOUND() {
+        when(notificationRepository.findByNotificationId(notification.getNotificationId())).thenReturn(Optional.empty());
 
-        when(productRepository.findAllByOrderByCreatedAtDesc(any(Pageable.class))).thenReturn(productPage);
-        when(imageRepository.findByProduct_ProductId(10L)).thenReturn(List.of(image1));
-        when(imageRepository.findByProduct_ProductId(11L)).thenReturn(List.of(image2));
-        when(dibsRepository.findByProduct_ProductId(10L)).thenReturn(Collections.emptyList());
-        when(dibsRepository.findByProduct_ProductId(11L)).thenReturn(Collections.emptyList());
-        when(dibsRepository.existsByUser_UserIdAndProduct_ProductId(currentUserId, 10L)).thenReturn(false);
-        when(dibsRepository.existsByUser_UserIdAndProduct_ProductId(currentUserId, 11L)).thenReturn(false);
-
-        // When
-        ProductDTO.ProductListData result = productService.getAllProducts(Pageable.ofSize(2), currentUserId);
-
-        // Then
-        assertThat(result.getContent()).hasSize(2);
-        assertThat(result.getPagination().getTotalElements()).isEqualTo(2);
-        verify(productRepository, times(1)).findAllByOrderByCreatedAtDesc(any(Pageable.class));
-        verify(imageRepository, times(1)).findByProduct_ProductId(10L);
-        verify(imageRepository, times(1)).findByProduct_ProductId(11L);
-        verify(dibsRepository, times(1)).findByProduct_ProductId(10L);
-        verify(dibsRepository, times(1)).findByProduct_ProductId(11L);
-        verify(dibsRepository, times(1)).existsByUser_UserIdAndProduct_ProductId(currentUserId, 10L);
-        verify(dibsRepository, times(1)).existsByUser_UserIdAndProduct_ProductId(currentUserId, 11L);
-    }
-
-    @Test
-    @DisplayName("카테고리별 상품 조회 (페이징) 성공 테스트")
-    void getProductsByCategorySuccessTest() {
-        // Given
-        int categoryId = 1;
-        Long currentUserId = 1L;
-        Category category = Category.builder().categoryId(categoryId).categoryName("전자기기").build();
-        User seller = User.builder().userId(2L).userName("판매자").build();
-        Product product1 = Product.builder().productId(10L).user(seller).category(category).title("상품1").price(1000).createdAt(LocalDateTime.now()).build();
-        Product product2 = Product.builder().productId(11L).user(seller).category(category).title("상품2").price(2000).createdAt(LocalDateTime.now().minusHours(1)).build();
-        List<Product> products = Arrays.asList(product1, product2);
-        Page<Product> productPage = new PageImpl<>(products, Pageable.ofSize(2), products.size());
-        Image image1 = Image.builder().imageId(100L).product(product1).imageUrl("url1").build();
-        Image image2 = Image.builder().imageId(101L).product(product2).imageUrl("url2").build();
-
-        when(categoryRepository.findById(categoryId)).thenReturn(Optional.of(category));
-        when(productRepository.findByCategory(eq(category), any(Pageable.class))).thenReturn(productPage);
-        when(imageRepository.findByProduct_ProductId(10L)).thenReturn(List.of(image1));
-        when(imageRepository.findByProduct_ProductId(11L)).thenReturn(List.of(image2));
-        when(dibsRepository.findByProduct_ProductId(10L)).thenReturn(Collections.emptyList());
-        when(dibsRepository.findByProduct_ProductId(11L)).thenReturn(Collections.emptyList());
-        when(dibsRepository.existsByUser_UserIdAndProduct_ProductId(currentUserId, 10L)).thenReturn(false);
-        when(dibsRepository.existsByUser_UserIdAndProduct_ProductId(currentUserId, 11L)).thenReturn(false);
-
-        // When
-        ProductDTO.ProductListData result = productService.getProductsByCategory(categoryId, Pageable.ofSize(2), currentUserId);
-
-        // Then
-        assertThat(result.getContent()).hasSize(2);
-        assertThat(result.getPagination().getTotalElements()).isEqualTo(2);
-        verify(categoryRepository, times(1)).findById(categoryId);
-        verify(productRepository, times(1)).findByCategory(eq(category), any(Pageable.class));
-        verify(imageRepository, times(1)).findByProduct_ProductId(10L);
-        verify(imageRepository, times(1)).findByProduct_ProductId(11L);
-        verify(dibsRepository, times(1)).findByProduct_ProductId(10L);
-        verify(dibsRepository, times(1)).findByProduct_ProductId(11L);
-        verify(dibsRepository, times(1)).existsByUser_UserIdAndProduct_ProductId(currentUserId, 10L);
-        verify(dibsRepository, times(1)).existsByUser_UserIdAndProduct_ProductId(currentUserId, 11L);
-    }
-
-    @Test
-    @DisplayName("카테고리별 상품 조회 실패 테스트 - 카테고리 없음")
-    void getProductsByCategoryNotFoundFailTest() {
-        // Given
-        int categoryId = 1;
-        Long currentUserId = 1L;
-        when(categoryRepository.findById(categoryId)).thenReturn(Optional.empty());
-
-        // When & Then
-        assertThrows(EntityNotFoundException.class, () -> productService.getProductsByCategory(categoryId, Pageable.ofSize(2), currentUserId));
-        verify(categoryRepository, times(1)).findById(categoryId);
-        verify(productRepository, never()).findByCategory(any(), any());
-        verify(imageRepository, never()).findByProduct_ProductId(anyLong());
-        verify(dibsRepository, never()).findByProduct_ProductId(anyLong());
-        verify(dibsRepository, never()).existsByUser_UserIdAndProduct_ProductId(anyLong(), anyLong());
-    }
-
-    @Test
-    @DisplayName("사용자별 상품 조회 (페이징) 성공 테스트")
-    void getProductsByUserSuccessTest() {
-        // Given
-        Long targetUserId = 2L;
-        Long currentUserId = 1L;
-        User seller = User.builder().userId(targetUserId).userName("판매자").build();
-        Category category = Category.builder().categoryId(1).categoryName("전자기기").build();
-        Product product1 = Product.builder().productId(10L).user(seller).category(category).title("상품1").price(1000).createdAt(LocalDateTime.now()).build();
-        Product product2 = Product.builder().productId(11L).user(seller).category(category).title("상품2").price(2000).createdAt(LocalDateTime.now().minusHours(1)).build();
-        List<Product> products = Arrays.asList(product1, product2);
-        Page<Product> productPage = new PageImpl<>(products, Pageable.ofSize(2), products.size());
-        Image image1 = Image.builder().imageId(100L).product(product1).imageUrl("url1").build();
-        Image image2 = Image.builder().imageId(101L).product(product2).imageUrl("url2").build();
-
-        when(userRepository.findById(targetUserId)).thenReturn(Optional.of(seller));
-        when(productRepository.findByUser(eq(seller), any(Pageable.class))).thenReturn(productPage);
-        when(imageRepository.findByProduct_ProductId(10L)).thenReturn(List.of(image1));
-        when(imageRepository.findByProduct_ProductId(11L)).thenReturn(List.of(image2));
-        when(dibsRepository.findByProduct_ProductId(10L)).thenReturn(Collections.emptyList());
-        when(dibsRepository.findByProduct_ProductId(11L)).thenReturn(Collections.emptyList());
-        when(dibsRepository.existsByUser_UserIdAndProduct_ProductId(currentUserId, 10L)).thenReturn(false);
-        when(dibsRepository.existsByUser_UserIdAndProduct_ProductId(currentUserId, 11L)).thenReturn(false);
-
-        // When
-        ProductDTO.ProductListData result = productService.getProductsByUser(targetUserId, Pageable.ofSize(2), currentUserId);
-
-        // Then
-        assertThat(result.getContent()).hasSize(2);
-        assertThat(result.getPagination().getTotalElements()).isEqualTo(2);
-        verify(userRepository, times(1)).findById(targetUserId);
-        verify(productRepository, times(1)).findByUser(eq(seller), any(Pageable.class));
-        verify(imageRepository, times(1)).findByProduct_ProductId(10L);
-        verify(imageRepository, times(1)).findByProduct_ProductId(11L);
-        verify(dibsRepository, times(1)).findByProduct_ProductId(10L);
-        verify(dibsRepository, times(1)).findByProduct_ProductId(11L);
-        verify(dibsRepository, times(1)).existsByUser_UserIdAndProduct_ProductId(currentUserId, 10L);
-        verify(dibsRepository, times(1)).existsByUser_UserIdAndProduct_ProductId(currentUserId, 11L);
-    }
-
-    @Test
-    @DisplayName("사용자별 상품 조회 실패 테스트 - 사용자 없음")
-    void getProductsByUserNotFoundFailTest() {
-        // Given
-        Long targetUserId = 2L;
-        Long currentUserId = 1L;
-        when(userRepository.findById(targetUserId)).thenReturn(Optional.empty());
-
-        // When & Then
-        assertThrows(EntityNotFoundException.class, () -> productService.getProductsByUser(targetUserId, Pageable.ofSize(2), currentUserId));
-        verify(userRepository, times(1)).findById(targetUserId);
-        verify(productRepository, never()).findByUser(any(), any());
-        verify(imageRepository, never()).findByProduct_ProductId(anyLong());
-        verify(dibsRepository, never()).findByProduct_ProductId(anyLong());
-        verify(dibsRepository, never()).existsByUser_UserIdAndProduct_ProductId(anyLong(), anyLong());
-    }
-
-    @Test
-    @DisplayName("제목으로 상품 검색 (페이징) 성공 테스트")
-    void searchProductsByTitleSuccessTest() {
-        // Given
-        String title = "테스트";
-        Long currentUserId = 1L;
-        User seller = User.builder().userId(2L).userName("판매자").build();
-        Category category = Category.builder().categoryId(1).categoryName("전자기기").build();
-        Product product1 = Product.builder().productId(10L).user(seller).category(category).title("테스트 상품1").price(1000).createdAt(LocalDateTime.now()).build();
-        Product product2 = Product.builder().productId(11L).user(seller).category(category).title("또 다른 테스트").price(2000).createdAt(LocalDateTime.now().minusHours(1)).build();
-        List<Product> products = Arrays.asList(product1, product2);
-        Page<Product> productPage = new PageImpl<>(products, Pageable.ofSize(2), products.size());
-        Image image1 = Image.builder().imageId(100L).product(product1).imageUrl("url1").build();
-        Image image2 = Image.builder().imageId(101L).product(product2).imageUrl("url2").build();
-
-        when(productRepository.findByTitleContainsIgnoreCase(title)).thenReturn(products);
-        when(imageRepository.findByProduct_ProductId(10L)).thenReturn(List.of(image1));
-        when(imageRepository.findByProduct_ProductId(11L)).thenReturn(List.of(image2));
-        when(dibsRepository.findByProduct_ProductId(10L)).thenReturn(Collections.emptyList());
-        when(dibsRepository.findByProduct_ProductId(11L)).thenReturn(Collections.emptyList());
-        when(dibsRepository.existsByUser_UserIdAndProduct_ProductId(currentUserId, 10L)).thenReturn(false);
-        when(dibsRepository.existsByUser_UserIdAndProduct_ProductId(currentUserId, 11L)).thenReturn(false);
-
-        // When
-        ProductDTO.ProductListData result = productService.searchProductsByTitle(title, Pageable.ofSize(2), currentUserId);
-
-        // Then
-        assertThat(result.getContent()).hasSize(2);
-        assertThat(result.getPagination().getTotalElements()).isEqualTo(2);
-        verify(productRepository, times(1)).findByTitleContainsIgnoreCase(title);
-        verify(imageRepository, times(1)).findByProduct_ProductId(10L);
-        verify(imageRepository, times(1)).findByProduct_ProductId(11L);
-        verify(dibsRepository, times(1)).findByProduct_ProductId(10L);
-        verify(dibsRepository, times(1)).findByProduct_ProductId(11L);
-        verify(dibsRepository, times(1)).existsByUser_UserIdAndProduct_ProductId(currentUserId, 10L);
-        verify(dibsRepository, times(1)).existsByUser_UserIdAndProduct_ProductId(currentUserId, 11L);
-    }
-
-    @Test
-    @DisplayName("키워드로 상품 검색 (페이징) 성공 테스트")
-    void searchProductsByKeywordSuccessTest() {
-        // Given
-        String keyword = "테스트";
-        Long currentUserId = 1L;
-        User seller = User.builder().userId(2L).userName("판매자").build();
-        Category category = Category.builder().categoryId(1).categoryName("전자기기").build();
-        Product product1 = Product.builder().productId(10L).user(seller).category(category).title("테스트 상품1").content("이것은 테스트입니다.").price(1000).createdAt(LocalDateTime.now()).build();
-        Product product2 = Product.builder().productId(11L).user(seller).category(category).title("다른 상품").content("테스트 내용 포함").price(2000).createdAt(LocalDateTime.now().minusHours(1)).build();
-        List<Product> products = Arrays.asList(product1, product2);
-        Page<Product> productPage = new PageImpl<>(products, Pageable.ofSize(2), products.size());
-        Image image1 = Image.builder().imageId(100L).product(product1).imageUrl("url1").build();
-        Image image2 = Image.builder().imageId(101L).product(product2).imageUrl("url2").build();
-
-        when(productRepository.findByTitleContainsIgnoreCaseOrContentContainsIgnoreCase(keyword, keyword)).thenReturn(products);
-        when(imageRepository.findByProduct_ProductId(10L)).thenReturn(List.of(image1));
-        when(imageRepository.findByProduct_ProductId(11L)).thenReturn(List.of(image2));
-        when(dibsRepository.findByProduct_ProductId(10L)).thenReturn(Collections.emptyList());
-        when(dibsRepository.findByProduct_ProductId(11L)).thenReturn(Collections.emptyList());
-        when(dibsRepository.existsByUser_UserIdAndProduct_ProductId(currentUserId, 10L)).thenReturn(false);
-        when(dibsRepository.existsByUser_UserIdAndProduct_ProductId(currentUserId, 11L)).thenReturn(false);
-
-        // When
-        ProductDTO.ProductListData result = productService.searchProductsByKeyword(keyword, Pageable.ofSize(2), currentUserId);
-
-        // Then
-        assertThat(result.getContent()).hasSize(2);
-        assertThat(result.getPagination().getTotalElements()).isEqualTo(2);
-        verify(productRepository, times(1)).findByTitleContainsIgnoreCaseOrContentContainsIgnoreCase(keyword, keyword);
-        verify(imageRepository, times(1)).findByProduct_ProductId(10L);
-        verify(imageRepository, times(1)).findByProduct_ProductId(11L);
-        verify(dibsRepository, times(1)).findByProduct_ProductId(10L);
-        verify(dibsRepository, times(1)).findByProduct_ProductId(11L);
-        verify(dibsRepository, times(1)).existsByUser_UserIdAndProduct_ProductId(currentUserId, 10L);
-        verify(dibsRepository, times(1)).existsByUser_UserIdAndProduct_ProductId(currentUserId, 11L);
-    }
-
-    @Test
-    @DisplayName("상품 상태 업데이트 성공 테스트 - 예약")
-    void updateProductStatusReserveSuccessTest() {
-        // Given
-        Long productId = 10L;
-        Long userId = 1L;
-        User seller = User.builder().userId(userId).build();
-        Product product = Product.builder().productId(productId).user(seller).isReserved(false).isCompleted(false).build();
-        when(productRepository.findById(productId)).thenReturn(Optional.of(product));
-        when(productRepository.save(any(Product.class))).thenReturn(product);
-
-        // When
-        productService.updateProductStatus(productId, true, null, userId);
-
-        // Then
-        assertThat(product.getIsReserved()).isTrue();
-        verify(productRepository, times(1)).findById(productId);
-        verify(productRepository, times(1)).save(product);
-    }
-
-    @Test
-    @DisplayName("상품 상태 업데이트 성공 테스트 - 완료")
-    void updateProductStatusCompleteSuccessTest() {
-        // Given
-        Long productId = 10L;
-        Long userId = 1L;
-        User seller = User.builder().userId(userId).build();
-        Product product = Product.builder().productId(productId).user(seller).isReserved(false).isCompleted(false).build();
-        when(productRepository.findById(productId)).thenReturn(Optional.of(product));
-        when(productRepository.save(any(Product.class))).thenReturn(product);
-
-        // When
-        productService.updateProductStatus(productId, null, true, userId);
-
-        // Then
-        assertThat(product.getIsCompleted()).isTrue();
-        verify(productRepository, times(1)).findById(productId);
-        verify(productRepository, times(1)).save(product);
-    }
-    @Test
-    @DisplayName("상품 상태 업데이트 실패 테스트 - 상품 없음")
-    void updateProductStatusNotFoundFailTest() {
-        // Given
-        Long productId = 10L;
-        Long userId = 1L;
-        when(productRepository.findById(productId)).thenReturn(Optional.empty());
-
-        // When & Then
-        assertThrows(EntityNotFoundException.class, () -> productService.updateProductStatus(productId, true, null, userId));
-        verify(productRepository, times(1)).findById(productId);
-        verify(productRepository, never()).save(any());
-    }
-
-    @Test
-    @DisplayName("상품 상태 업데이트 실패 테스트 - 권한 없음")
-    void updateProductStatusNoPermissionFailTest() {
-        // Given
-        Long productId = 10L;
-        Long userId = 1L;
-        Long otherUserId = 2L;
-        User seller = User.builder().userId(otherUserId).build();
-        Product product = Product.builder().productId(productId).user(seller).build();
-        when(productRepository.findById(productId)).thenReturn(Optional.of(product));
-
-        // When & Then
-        assertThrows(SecurityException.class, () -> productService.updateProductStatus(productId, true, null, userId));
-        verify(productRepository, times(1)).findById(productId);
-        verify(productRepository, never()).save(any());
+        assertThrows(BusinessException.class, () -> notificationService.deleteNotification(notification.getNotificationId()));
     }
 }
 ```
@@ -2217,7 +1801,7 @@ spring.jpa.properties.hibernate.type=trace
 
 ### 11.1.1 환경별 설정
 
-**개발환경 (application-dev.properties)**
+**개발환경 (application-test.properties)**
 
 ```properties
 # 개발환경 - 상세한 로깅 및 디버깅
@@ -2233,19 +1817,6 @@ spring.jpa.properties.hibernate.generate_statistics=true
 # H2 Console 활성화 (개발용)
 spring.h2.console.enabled=true
 spring.h2.console.path=/h2-console
-```
-
-**테스트환경 (application-test.properties)**
-
-```properties
-# 테스트환경 - 최소한의 로깅
-logging.level.org.hibernate.SQL=INFO
-spring.jpa.show-sql=false
-spring.jpa.properties.hibernate.format_sql=false
-
-# 테스트 데이터베이스 설정
-spring.datasource.url=jdbc:h2:mem:testdb
-spring.jpa.hibernate.ddl-auto=create-drop
 ```
 
 **운영환경 (application-prod.properties)**
@@ -2265,7 +1836,6 @@ spring.jpa.properties.hibernate.generate_statistics=true
 spring.datasource.hikari.maximum-pool-size=50
 spring.datasource.hikari.minimum-idle=10
 spring.datasource.hikari.connection-timeout=30000
-
 ```
 
 ### 11.2 슬로우 쿼리 감지
