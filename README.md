@@ -72,7 +72,7 @@ SK_Rookies_Mini_Project2-main/
 │   │   ├── entity/                 # JPA 엔티티
 │   │   ├── config/                 # 설정 클래스
 │   │   └── exception/              # 예외 처리
-│   │   │   └── advice/            # 컨트롤러 어드바이스 정의
+│   │   │   └── advice/             # 컨트롤러 어드바이스 정의
 │   │   └── provider/               # JWT 토큰 관련 정의
 │   ├── src/main/resources/
 │   │   ├── application.yml         # 애플리케이션 공통 설정
