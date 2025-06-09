@@ -39,11 +39,9 @@ public class Cancelation {
 
 
     /**
-     * 예약 취소를 업데이트합니다.
-     *
-     * @param reservation       예약 정보
-     * @param cancelationReason 취소 사유
-     * @param cancelationDetail 취소 상세 정보
+     * 취소 정보를 업데이트합니다.
+     * @param newCancelationReason 취소 사유
+     * @param newCancelationDetail 취소 상세 정보
      */
     public void updateCancelationInfo(CancelationReason newCancelationReason, String newCancelationDetail) {
         if (newCancelationReason == null) {

@@ -77,7 +77,7 @@ public class Report extends BaseEntity {
         this.reportDetail = newReportDetail;
     }
 
-    // 비즈니스 메서드: 신고 처리 상태 변경
+    // 신고 처리 상태 변경
     public void markAsProcessed() {
         if (!this.isProcessed) {
             this.isProcessed = true;

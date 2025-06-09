@@ -31,9 +31,9 @@ public class ReportReason {
     private List<Report> reports = new ArrayList<>();
 
     /**
-     * 신고 사유를 생성합니다.
+     * 신고 사유 내용을 변경합니다.
      *
-     * @param reportReasonType 신고 사유 타입
+     * @param newReasonType 신고 사유 타입
      */
     public void changeReasonType(String newReasonType) {
         if (newReasonType == null || newReasonType.trim().isEmpty()) {

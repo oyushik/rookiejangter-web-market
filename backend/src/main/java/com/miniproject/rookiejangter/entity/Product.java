@@ -90,7 +90,7 @@ public class Product extends BaseEntity {
         this.price = newPrice;
     }
 
-    // 조조회수 증가
+    // 조회수 증가
     public void incrementViewCount() {
         if (this.viewCount == null) {
             this.viewCount = 0;
