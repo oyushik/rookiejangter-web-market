@@ -31,11 +31,11 @@ public class Category {
     @Column(name = "category_name", length = 20)
     private String categoryName;
 
-    // 비즈니스 메서드: 카테고리 이름 변경
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Product> products = new ArrayList<>();
 
-        public void changeCategoryName(String newCategoryName) {
+    // 비즈니스 메서드: 카테고리 이름 변경
+    public void changeCategoryName(String newCategoryName) {
         if (newCategoryName == null || newCategoryName.trim().isEmpty()) {
             throw new BusinessException(ErrorCode.CATEGORY_NAME_EMPTY);
         }

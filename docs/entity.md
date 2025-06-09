@@ -28,7 +28,7 @@
 ### 1.3 기술 스택
 
 - **ORM 프레임워크**: Spring Data JPA 2.7.x
-- **데이터베이스**: MySQL 8.0
+- **데이터베이스**: MariaDB 11.4
 - **검증 프레임워크**: Bean Validation 2.0
 - **감사 기능**: Spring Data JPA Auditing
 
@@ -117,9 +117,12 @@ classDiagram
 // 기본 Entity 구조
 @Entity
 @Table(name = "테이블명")
+@Getter
 @EntityListeners(AuditingEntityListener.class)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Getter
+@SuperBuilder // BaseEntity를 상속하지 않을 경우 @Builder
+@ToString
+@EqualsAndHashCode
 public class EntityName extends BaseEntity {
     // 필드 정의
 }
@@ -183,77 +186,14 @@ private User user;
 
 #### 4.1.5 비즈니스 메서드
 
-    public NotificationDTO.Response getNotificationById(Long notificationId) {
-        Notification notification = notificationRepository.findByNotificationId(notificationId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.RESOURCE_NOT_FOUND, "Notification", notificationId));
-
-        return NotificationDTO.Response.fromEntity(notification);
+```java
+    // 비즈니스 메서드: 알림을 읽음 상태로 변경
+    public void markAsRead() {
+        if (!this.isRead) {
+            this.isRead = true;
+        }
     }
-
-    public List<NotificationDTO.Response> getNotificationsByUserId(Long userId) {
-        List<Notification> notifications = notificationRepository.findByUser_UserId(userId);
-
-        return notifications.stream()
-                .map(NotificationDTO.Response::fromEntity)
-                .collect(Collectors.toList());
-    }
-
-    public List<NotificationDTO.Response> getNotificationsByEntityId(Long entityId) {
-        List<Notification> notifications = notificationRepository.findByEntityId(entityId);
-
-        return notifications.stream()
-                .map(NotificationDTO.Response::fromEntity)
-                .collect(Collectors.toList());
-    }
-
-    public List<NotificationDTO.Response> getNotificationsByEntityType(String entityType) {
-        List<Notification> notifications = notificationRepository.findByEntityType(entityType);
-
-        return notifications.stream()
-                .map(NotificationDTO.Response::fromEntity)
-                .collect(Collectors.toList());
-    }
-
-    public List<NotificationDTO.Response> getUnreadNotifications() {
-        List<Notification> notifications = notificationRepository.findByIsRead(false);
-
-        return notifications.stream()
-                .map(NotificationDTO.Response::fromEntity)
-                .collect(Collectors.toList());
-    }
-
-    public void markAsRead(Long notificationId) {
-        Notification notification = notificationRepository.findByNotificationId(notificationId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.RESOURCE_NOT_FOUND, "Notification", notificationId));
-
-        notification.setIsRead(true);
-    }
-
-    public void deleteNotification(Long notificationId) {
-        Notification notification = notificationRepository.findByNotificationId(notificationId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.RESOURCE_NOT_FOUND, "Notification", notificationId));
-
-        notificationRepository.delete(notification);
-    }
-
-#### 4.1.6 생성자 및 팩토리 메서드
-
-    public NotificationDTO.Response createNotification(Long userId, Long entityId, String entityType, String message) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND, userId));
-
-        Notification notification = Notification.builder()
-                .user(user)
-                .entityId(entityId)
-                .entityType(entityType)
-                .message(message)
-                .sentAt(LocalDateTime.now())
-                .isRead(false)
-                .build();
-
-        Notification savedNotification = notificationRepository.save(notification);
-        return NotificationDTO.Response.fromEntity(savedNotification);
-    }
+```
 
 ### 4.2 Category Entity
 
@@ -285,69 +225,20 @@ private List<Product> products = new ArrayList<>();
 
 #### 4.2.5 비즈니스 메서드
 
-    @Transactional(readOnly = true)
-    public CategoryDTO.Response getCategoryById(Integer categoryId) {
-        Category category = categoryRepository.findById(categoryId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.CATEGORY_NOT_FOUND, categoryId));
-        return CategoryDTO.Response.fromEntity(category);
-    }
-
-    @Transactional(readOnly = true)
-    public CategoryDTO.Response getCategoryByName(String categoryName) {
-        Category category = categoryRepository.findByCategoryName(categoryName)
-                .orElseThrow(() -> new BusinessException(ErrorCode.CATEGORY_NOT_FOUND, categoryName));
-        return CategoryDTO.Response.fromEntity(category);
-    }
-
-    @Transactional(readOnly = true)
-    public List<CategoryDTO.Response> getAllCategories() {
-        return categoryRepository.findAll().stream()
-                .map(CategoryDTO.Response::fromEntity)
-                .collect(Collectors.toList());
-    }
-
-    @Transactional(readOnly = true)
-    public List<CategoryDTO.Response> searchCategoriesByName(String categoryName) {
-        return categoryRepository.findByCategoryNameContainingIgnoreCase(categoryName).stream()
-                .map(CategoryDTO.Response::fromEntity)
-                .collect(Collectors.toList());
-    }
-
-    @Transactional
-    public CategoryDTO.Response updateCategory(Integer categoryId, String newCategoryName) {
-        Category category = categoryRepository.findById(categoryId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.CATEGORY_NOT_FOUND, categoryId));
-
-        if (!category.getCategoryName().equals(newCategoryName) &&
-                categoryRepository.findByCategoryName(newCategoryName).isPresent()) {
-            throw new BusinessException(ErrorCode.CATEGORY_NAME_ALREADY_EXISTS, newCategoryName);
+```java
+    // 비즈니스 메서드: 카테고리 이름 변경
+    public void changeCategoryName(String newCategoryName) {
+        if (newCategoryName == null || newCategoryName.trim().isEmpty()) {
+            throw new BusinessException(ErrorCode.CATEGORY_NAME_EMPTY);
         }
-
-        category.setCategoryName(newCategoryName);
-        Category updatedCategory = categoryRepository.save(category);
-        return CategoryDTO.Response.fromEntity(updatedCategory);
+        if (newCategoryName.length() > 20) {
+            throw new BusinessException(ErrorCode.CATEGORY_NAME_TOO_LONG);
+        }
+        this.categoryName = newCategoryName;
     }
-
-    @Transactional
-    public void deleteCategory(Integer categoryId) {
-        Category category = categoryRepository.findById(categoryId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.CATEGORY_NOT_FOUND, categoryId));
-        categoryRepository.delete(category);
-    }
+```
 
 #### 4.2.6 생성자 및 팩토리 메서드
-
-    @Transactional
-    public CategoryDTO.Response createCategory(String categoryName) {
-        if (categoryRepository.findByCategoryName(categoryName).isPresent()) {
-            throw new BusinessException(ErrorCode.CATEGORY_NAME_ALREADY_EXISTS, categoryName);
-        }
-        Category category = Category.builder()
-                .categoryName(categoryName)
-                .build();
-        Category savedCategory = categoryRepository.save(category);
-        return CategoryDTO.Response.fromEntity(savedCategory);
-    }
 
 ### 4.3 Reports Entity
 
@@ -393,48 +284,40 @@ private User user;
 
 #### 4.3.5 비즈니스 메서드
 
-    public ReportReasonDTO.Response getReportReasonById(Integer reportReasonId) {
-        ReportReason reportReason = reportReasonRepository.findByReportReasonId(reportReasonId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.RESOURCE_NOT_FOUND, "ReportReason", reportReasonId, ""));
+```java
+    // 비즈니스 메서드: 신고 정보 업데이트
+    public void updateReportInfo(ReportReason newReportReason, Long newTargetId, String newTargetType, String newReportDetail) {
+        if (newReportReason == null) {
+            throw new BusinessException(ErrorCode.REPORT_REASON_EMPTY);
+        }
+        if (newTargetId == null) {
+            throw new BusinessException(ErrorCode.REPORT_TARGET_ID_EMPTY);
+        }
+        if (newTargetType == null || newTargetType.trim().isEmpty()) {
+            throw new BusinessException(ErrorCode.REPORT_TARGET_TYPE_EMPTY);
+        }
+        if (newTargetType.length() > 20) {
+            throw new BusinessException(ErrorCode.REPORT_TARGET_TYPE_TOO_LONG);
+        }
+        if (newReportDetail != null && newReportDetail.length() > 255) {
+            throw new BusinessException(ErrorCode.REPORT_REASON_TOO_LONG);
+        }
 
-        return ReportReasonDTO.Response.fromEntity(reportReason);
+        this.reportReason = newReportReason;
+        this.targetId = newTargetId;
+        this.targetType = newTargetType;
+        this.reportDetail = newReportDetail;
     }
 
-    public List<ReportReasonDTO.Response> getAllReportReasons() {
-        List<ReportReason> reportReasons = reportReasonRepository.findAll();
-
-        return reportReasons.stream()
-                .map(ReportReasonDTO.Response::fromEntity)
-                .collect(Collectors.toList());
+    // 비즈니스 메서드: 신고 처리 상태 변경
+    public void markAsProcessed() {
+        if (!this.isProcessed) {
+            this.isProcessed = true;
+        }
     }
-
-    public ReportReasonDTO.Response updateReportReason(Integer reportReasonId, ReportReasonDTO.Request request) {
-        ReportReason reportReason = reportReasonRepository.findByReportReasonId(reportReasonId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.RESOURCE_NOT_FOUND, "ReportReason", reportReasonId, ""));
-
-        reportReason.setReportReasonType(request.getReportReasonType());
-
-        ReportReason updatedReportReason = reportReasonRepository.save(reportReason);
-        return ReportReasonDTO.Response.fromEntity(updatedReportReason);
-    }
-
-    public void deleteReportReason(Integer reportReasonId) {
-        ReportReason reportReason = reportReasonRepository.findByReportReasonId(reportReasonId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.RESOURCE_NOT_FOUND, "ReportReason", reportReasonId, ""));
-
-        reportReasonRepository.deleteById(reportReasonId);
-    }
+```
 
 #### 4.3.6 생성자 및 팩토리 메서드
-
-    public ReportReasonDTO.Response createReportReason(ReportReasonDTO.Request request) {
-        ReportReason reportReason = ReportReason.builder()
-                .reportReasonType(request.getReportReasonType())
-                .build();
-
-        ReportReason savedReportReason = reportReasonRepository.save(reportReason);
-        return ReportReasonDTO.Response.fromEntity(savedReportReason);
-    }
 
 ### 4.4 Dibs Entity
 
@@ -467,79 +350,59 @@ private Product product;
 
 #### 4.4.5 비즈니스 메서드
 
-    @Transactional(readOnly = true)
-    public DibsDTO.Response getDibsStatus(Long userId, Long productId) {
-        // 먼저 Product 존재 여부를 확인합니다.
-        Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_NOT_FOUND, productId));
-
-        // Product가 존재할 경우에만 찜 상태를 확인합니다.
-        boolean isLiked = dibsRepository.existsByUser_UserIdAndProduct_ProductId(userId, productId);
-
-        if (isLiked) {
-            List<Dibs> dibsForProduct = dibsRepository.findByProduct_ProductId(productId);
-            Optional<Dibs> userDibsOpt = dibsForProduct.stream()
-                    .filter(d -> d.getUser().getUserId().equals(userId))
-                    .findFirst();
-            if (userDibsOpt.isPresent()) {
-                return DibsDTO.Response.fromEntity(userDibsOpt.get(), true);
-            }
-            Dibs tempDibs = Dibs.builder().product(product).addedAt(LocalDateTime.now()).build();
-            return DibsDTO.Response.fromEntity(tempDibs, true);
-        } else {
-            Dibs tempDibs = Dibs.builder().product(product).build();
-            return DibsDTO.Response.fromEntity(tempDibs, false);
+```java
+    // 비즈니스 메서드: 상품 정보 업데이트
+    public void updateProductInfo(Category newCategory, String newTitle, String newContent, Integer newPrice) {
+        if (newCategory == null) {
+            throw new BusinessException(ErrorCode.CATEGORY_NOT_FOUND, "카테고리 정보가 필요합니다.");
         }
+        if (newTitle == null || newTitle.trim().isEmpty()) {
+            throw new BusinessException(ErrorCode.PRODUCT_NAME_EMPTY);
+        }
+        if (newTitle.length() > 50) {
+            throw new BusinessException(ErrorCode.PRODUCT_NAME_TOO_LONG);
+        }
+        if (newContent == null || newContent.trim().isEmpty()) {
+            throw new BusinessException(ErrorCode.PRODUCT_CONTENT_EMPTY);
+        }
+        if (newContent.length() > 255) {
+            throw new BusinessException(ErrorCode.PRODUCT_CONTENT_TOO_LONG);
+        }
+        if (newPrice == null || newPrice < 0) { // 가격은 0 이상이어야 함
+            throw new BusinessException(ErrorCode.PRODUCT_PRICE_NEGATIVE);
+        }
+
+        this.category = newCategory;
+        this.title = newTitle;
+        this.content = newContent;
+        this.price = newPrice;
     }
 
-    @Transactional(readOnly = true)
-    public DibsDTO.DibsListResponse getUserDibsList(Long userId, Pageable pageable) {
-        userRepository.findById(userId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND, userId));
-
-        Page<Dibs> dibsPage = dibsRepository.findByUser_UserId(userId, pageable);
-        return DibsDTO.DibsListResponse.fromPage(dibsPage);
+    // 비즈니스 메서드: 조회수 증가
+    public void incrementViewCount() {
+        if (this.viewCount == null) {
+            this.viewCount = 0;
+        }
+        this.viewCount++;
     }
 
-    @Transactional(readOnly = true)
-    public long getDibsCountForProduct(Long productId) {
-        productRepository.findById(productId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_NOT_FOUND, productId));
-        return dibsRepository.findByProduct_ProductId(productId).size();
+    // 비즈니스 메서드: 끌어올리기 상태 변경
+    public void markAsBumped(boolean isBumped) {
+        this.isBumped = isBumped;
     }
+
+    // 비즈니스 메서드: 예약 상태 변경
+    public void markAsReserved(boolean isReserved) {
+        this.isReserved = isReserved;
+    }
+
+    // 비즈니스 메서드: 거래 완료 상태 변경
+    public void markAsCompleted(boolean isCompleted) {
+        this.isCompleted = isCompleted;
+    }
+```
 
 #### 4.4.6 생성자 및 팩토리 메서드
-
-    public DibsDTO.Response toggleDibs(Long userId, Long productId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND, userId));
-        Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_NOT_FOUND, productId));
-
-        Optional<Dibs> existingDibs = dibsRepository.findByUser_UserIdAndProduct_ProductId(userId, productId);
-
-        boolean isNowLiked;
-        if (existingDibs.isPresent()) {
-            dibsRepository.delete(existingDibs.get());
-            isNowLiked = false;
-        } else {
-
-            if (product.getUser() != null && product.getUser().getUserId().equals(userId)) {
-                throw new BusinessException("자신이 등록한 상품은 찜할 수 없습니다.");
-            }
-            Dibs newDibs = Dibs.builder()
-                    .user(user)
-                    .product(product)
-                    .addedAt(LocalDateTime.now())
-                    .build();
-            dibsRepository.save(newDibs);
-            isNowLiked = true;
-        }
-        return DibsDTO.Response.builder()
-                .productId(productId)
-                .isLiked(isNowLiked)
-                .build();
-    }
 
 ### 4.5 Reservations Entity
 
@@ -578,193 +441,57 @@ private Product product;
 
 #### 4.5.5 비즈니스 메서드
 
-    @Transactional(readOnly = true)
-    public List<ReservationDTO.Response> getAllReservations(Long currentUserId) {
-        // 관리자 권한 확인 (필요시)
-        User currentUser = userRepository.findById(currentUserId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND, currentUserId));
-
-        // 관리자 권한 체크 로직 (User 엔티티에 role 필드가 있다고 가정)
-        // if (!currentUser.getRole().equals(UserRole.ADMIN)) {
-        //     throw new BusinessException(ErrorCode.ACCESS_DENIED, "관리자만 모든 예약을 조회할 수 있습니다.");
-        // }
-
-        return reservationRepository.findAll().stream()
-                .map(ReservationDTO.Response::fromEntity)
-                .collect(Collectors.toList());
-    }
-
-    @Transactional(readOnly = true)
-    public List<ReservationDTO.Response> getReservationsByBuyer(Long buyerId) {
-        userRepository.findById(buyerId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND, buyerId));
-        return reservationRepository.findByBuyer_UserId(buyerId).stream() //
-                .map(ReservationDTO.Response::fromEntity)
-                .collect(Collectors.toList());
-    }
-
-    @Transactional(readOnly = true)
-    public List<ReservationDTO.Response> getReservationsBySeller(Long sellerId) {
-        userRepository.findById(sellerId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND, sellerId));
-        return reservationRepository.findBySeller_UserId(sellerId).stream() //
-                .map(ReservationDTO.Response::fromEntity)
-                .collect(Collectors.toList());
-    }
-
-    @Transactional(readOnly = true)
-    public List<ReservationDTO.Response> getReservationsByProduct(Long productId) {
-        productRepository.findById(productId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_NOT_FOUND, productId));
-        return reservationRepository.findByProduct_ProductId(productId).stream() //
-                .map(ReservationDTO.Response::fromEntity)
-                .collect(Collectors.toList());
-    }
-
-    @Transactional(readOnly = true)
-    public ReservationDTO.Response getReservationById(Long reservationId) {
-        Reservation reservation = reservationRepository.findById(reservationId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.RESERVATION_NOT_FOUND, reservationId));
-        return ReservationDTO.Response.fromEntity(reservation);
-    }
-
-
-    @Transactional
-    public ReservationDTO.Response updateReservationStatus(Long reservationId, Reservation.TradeStatus newStatus, Long currentUserId) {
-        Reservation reservation = reservationRepository.findById(reservationId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.RESERVATION_NOT_FOUND, reservationId));
-
-        User currentUser = userRepository.findById(currentUserId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND, currentUserId));
-
-        boolean isSeller = reservation.getSeller().getUserId().equals(currentUserId);
-        boolean isBuyer = reservation.getBuyer().getUserId().equals(currentUserId);
-
-        Product product = reservation.getProduct();
-
-        switch (newStatus) {
-            case ACCEPTED:
-                if (!isSeller) {
-                    throw new BusinessException(ErrorCode.RESERVATION_ACTION_FORBIDDEN, "수락");
-                }
-                reservation.setStatus(Reservation.TradeStatus.ACCEPTED); //
-                product.setIsReserved(true);
-                productRepository.save(product);
-                break;
-            case DECLINED:
-                if (!isSeller) {
-                    throw new BusinessException(ErrorCode.RESERVATION_ACTION_FORBIDDEN, "거절");
-                }
-                reservation.setStatus(Reservation.TradeStatus.DECLINED); //
-                product.setIsReserved(false);
-                productRepository.save(product);
-                break;
-            case CANCELLED:
-                if (!isBuyer && !isSeller) {
-                    throw new BusinessException(ErrorCode.RESERVATION_ACTION_FORBIDDEN, "취소");
-                }
-                // 구매자는 REQUESTED 또는 ACCEPTED 상태에서 취소 가능
-                // 판매자는 ACCEPTED 상태에서 취소 가능 (구매자와 합의 하에)
-                if (isBuyer && (reservation.getStatus() == Reservation.TradeStatus.REQUESTED || reservation.getStatus() == Reservation.TradeStatus.ACCEPTED)) {
-                    reservation.setStatus(Reservation.TradeStatus.CANCELLED); //
-                    reservation.setIsCanceled(true); //
-                } else if (isSeller && reservation.getStatus() == Reservation.TradeStatus.ACCEPTED) {
-                    reservation.setStatus(Reservation.TradeStatus.CANCELLED); //
-                    reservation.setIsCanceled(true); //
-                } else {
-                    throw new BusinessException(ErrorCode.RESERVATION_INVALID_STATE_FOR_ACTION, currentUser.getUserId(), "취소");
-                }
-                product.setIsReserved(false);
-                productRepository.save(product);
-                break;
-            case COMPLETED:
-                if (!isSeller) {
-                    throw new BusinessException(ErrorCode.RESERVATION_ACTION_FORBIDDEN, "완료");
-                }
-                if (reservation.getStatus() != Reservation.TradeStatus.ACCEPTED) {
-                    throw new BusinessException(ErrorCode.RESERVATION_INVALID_STATE_FOR_ACTION, currentUser.getUserId(), "완료");
-                }
-                reservation.setStatus(Reservation.TradeStatus.COMPLETED); //
-                product.setIsCompleted(true);
-                product.setIsReserved(false); // 예약 상태 해제
-                productRepository.save(product);
-                // 여기에 CompleteService를 호출하여 거래 완료 기록 생성 로직 추가 가능
-                break;
-            default:
-                throw new BusinessException(ErrorCode.RESERVATION_INVALID_STATUS_TRANSITION, newStatus.name());
+```java
+    // 비즈니스 메서드: 예약 상태를 요청됨으로 변경
+    public void requestReservation() {
+        if (this.status != null && this.status != TradeStatus.REQUESTED) {
+            throw new BusinessException(ErrorCode.RESERVATION_ALREADY_EXISTS, this.product.getProductId());
         }
-
-        Reservation updatedReservation = reservationRepository.save(reservation);
-        return ReservationDTO.Response.fromEntity(updatedReservation);
+        this.status = TradeStatus.REQUESTED;
+        this.isCanceled = false;
     }
 
-    @Transactional
-    public void deleteReservation(Long reservationId, Long currentUserId) {
-        Reservation reservation = reservationRepository.findById(reservationId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.RESERVATION_NOT_FOUND, reservationId));
-
-        User currentUser = userRepository.findById(currentUserId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND, currentUserId));
-
-        boolean isBuyer = reservation.getBuyer().getUserId().equals(currentUserId);
-
-        if (!isBuyer) {
-            throw new BusinessException(ErrorCode.RESERVATION_DELETE_CONDITIONS_NOT_MET, "본인이 요청한 예약이 아닙니다.");
+    // 비즈니스 메서드: 예약 상태를 수락됨으로 변경
+    public void acceptReservation() {
+        if (this.status != TradeStatus.REQUESTED) {
+            throw new BusinessException(ErrorCode.RESERVATION_INVALID_STATE_FOR_ACTION, this.status, "수락");
         }
-
-        // 일반적으로 예약 기록은 soft delete 하거나 상태 변경으로 관리하지만, 물리적 삭제가 필요하다면 아래 로직 사용
-        // 예약 요청 상태(REQUESTED)이거나 거절(DECLINED), 취소(CANCELLED)된 경우에만 구매자가 삭제 가능하도록 제한할 수 있음
-        if (reservation.getStatus() == Reservation.TradeStatus.REQUESTED ||
-                reservation.getStatus() == Reservation.TradeStatus.DECLINED ||
-                reservation.getStatus() == Reservation.TradeStatus.CANCELLED) {
-
-            // 게시글의 예약 상태를 풀어줄 필요가 있는지 확인 (보통 REQUESTED 상태에서는 isReserved가 false일 것임)
-            if (reservation.getProduct().getIsReserved() && reservation.getStatus() == Reservation.TradeStatus.REQUESTED) {
-                // 이 경우는 드물지만, 방어적으로 코딩
-            }
-            reservationRepository.delete(reservation);
-        } else {
-            throw new BusinessException(ErrorCode.RESERVATION_DELETE_CONDITIONS_NOT_MET, "현재 상태(" + reservation.getStatus() + ")의 예약은 삭제할 수 없습니다.");
-        }
+        this.status = TradeStatus.ACCEPTED;
+        this.isCanceled = false;
     }
+
+    // 비즈니스 메서드: 예약 상태를 거절됨으로 변경
+    public void declineReservation() {
+        if (this.status != TradeStatus.REQUESTED) {
+            throw new BusinessException(ErrorCode.RESERVATION_INVALID_STATE_FOR_ACTION, this.status, "거절");
+        }
+        this.status = TradeStatus.DECLINED;
+        this.isCanceled = true; // 거절 시에는 예약이 취소됨
+    }
+
+    // 비즈니스 메서드: 예약을 취소
+    public void cancelReservation() {
+        if (this.status == TradeStatus.COMPLETED) {
+            throw new BusinessException(ErrorCode.RESERVATION_CANNOT_CANCEL, this.status);
+        }
+        if (this.isCanceled) {
+            throw new BusinessException(ErrorCode.RESERVATION_CANNOT_CANCEL, this.status);
+        }
+        this.status = TradeStatus.CANCELLED;
+        this.isCanceled = true;
+    }
+
+    // 비즈니스 메서드: 예약을 완료됨 상태로 변경 (거래가 성사되었을 때)
+    public void completeReservation() {
+        if (this.status != TradeStatus.ACCEPTED) {
+            throw new BusinessException(ErrorCode.RESERVATION_INVALID_STATE_FOR_ACTION, this.status, "완료");
+        }
+        this.status = TradeStatus.COMPLETED;
+        this.isCanceled = false;
+    }
+```
 
 #### 4.5.6 생성자 및 팩토리 메서드
-
-    @Transactional
-    public ReservationDTO.Response createReservation(Long buyerId, Long productId) {
-        User buyer = userRepository.findById(buyerId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND, buyerId));
-        Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_NOT_FOUND, productId));
-
-        if (product.getIsCompleted() || (product.getIsReserved() && !product.getUser().getUserId().equals(buyerId))) {
-            throw new BusinessException(ErrorCode.PRODUCT_NOT_RESERVABLE, "이미 판매 완료된 상품입니다.");
-        }
-
-        if (product.getUser().getUserId().equals(buyerId)) {
-            throw new BusinessException(ErrorCode.CANNOT_RESERVE_OWN_PRODUCT);
-        }
-
-        if (reservationRepository.existsByBuyer_UserIdAndProduct_ProductId(buyerId, productId)) { //
-            throw new BusinessException(ErrorCode.RESERVATION_ALREADY_EXISTS, String.valueOf(productId));
-        }
-
-        User seller = product.getUser();
-
-        Reservation reservation = Reservation.builder()
-                .buyer(buyer)
-                .seller(seller)
-                .product(product)
-                .status(Reservation.TradeStatus.REQUESTED) //
-                .isCanceled(false)
-                .build();
-        Reservation savedReservation = reservationRepository.save(reservation);
-
-        productService.updateProductStatus(productId, true, null, seller.getUserId());
-
-
-        return ReservationDTO.Response.fromEntity(savedReservation);
-    }
 
 ### 4.7 Images Entity
 
@@ -798,53 +525,7 @@ private Product product;
 
 #### 4.7.5 비즈니스 메서드
 
-    @Transactional(readOnly = true)
-    public ImageDTO.Response getImageByImageId(Long imageId) {
-        Image image = imageRepository.findByImageId(imageId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.IMAGE_NOT_FOUND, imageId));
-        return ImageDTO.Response.fromEntity(image);
-    }
-
-    @Transactional(readOnly = true)
-    public List<ImageDTO.Response> getImagesByProductId(Long productId) {
-        if (!productRepository.existsById(productId)) {
-            throw new BusinessException(ErrorCode.PRODUCT_NOT_FOUND, productId);
-        }
-        return imageRepository.findByProduct_ProductId(productId).stream()
-                .map(ImageDTO.Response::fromEntity)
-                .collect(Collectors.toList());
-    }
-
-    @Transactional
-    public void deleteImage(Long imageId) {
-        Image image = imageRepository.findById(imageId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.IMAGE_NOT_FOUND, imageId));
-        imageRepository.delete(image);
-    }
-
-    @Transactional
-    public void deleteImagesByProductId(Long productId) {
-        if (!productRepository.existsById(productId)) {
-            throw new BusinessException(ErrorCode.PRODUCT_NOT_FOUND, productId);
-        }
-        List<Image> images = imageRepository.findByProduct_ProductId(productId);
-        imageRepository.deleteAll(images);
-    }
-
 #### 4.7.6 생성자 및 팩토리 메서드
-
-    @Transactional
-    public ImageDTO.Response createImage(Long productId, String imageUrl) {
-        Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_NOT_FOUND, productId));
-
-        Image image = Image.builder()
-                .product(product)
-                .imageUrl(imageUrl)
-                .build();
-        Image savedImage = imageRepository.save(image);
-        return ImageDTO.Response.fromEntity(savedImage);
-    }
 
 ### 4.8 Users Entity
 
@@ -954,200 +635,36 @@ private List<Complete> sellerCompletes = new ArrayList<>();
 
 #### 4.8.5 비즈니스 메서드
 
-    @Transactional(readOnly = true)
-    public UserDTO.Response getUserById(Long userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND, String.valueOf(userId)));
-        return UserDTO.Response.fromEntity(user);
-    }
-
-    @Transactional(readOnly = true)
-    public UserDTO.Response getUserByUserName(String userName) {
-        User user = userRepository.findByUserName(userName)
-                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND, userName));
-        return UserDTO.Response.fromEntity(user);
-    }
-
-    @Transactional(readOnly = true)
-    public UserDTO.Response getUserByLoginId(String loginId) {
-        User user = userRepository.findByLoginId(loginId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND, loginId));
-        return UserDTO.Response.fromEntity(user);
-    }
-
-    // userId 기반 업데이트 메서드 (JWT 토큰용)
-    @Transactional
-    public UserDTO.Response updateUser(Long userId, UserDTO.UpdateRequest requestDto) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND, String.valueOf(userId)));
-
-        if (requestDto.getUserName() != null && !requestDto.getUserName().isEmpty()) {
-            user.setUserName(requestDto.getUserName());
+```java
+    // 비즈니스 메서드: 사용자 정보 업데이트
+    public void updateUserInfo(Area newArea, String newUserName, String newPhone) {
+        if (newArea == null) {
+            throw new BusinessException(ErrorCode.INVALID_AREA);
+        }
+        if (newUserName.length() > 12) {
+            throw new BusinessException(ErrorCode.USERNAME_TOO_LONG);
+        }
+        if (newPhone.length() > 20) {
+            throw new BusinessException(ErrorCode.PHONE_TOO_LONG);
         }
 
-        if (requestDto.getPhone() != null && !requestDto.getPhone().isEmpty()) {
-            if (!user.getPhone().equals(requestDto.getPhone()) && userRepository.existsByPhone(requestDto.getPhone())) {
-                throw new BusinessException(ErrorCode.PHONE_ALREADY_EXISTS, requestDto.getPhone());
-            }
-            user.setPhone(requestDto.getPhone());
-        }
-
-        if (requestDto.getAreaId() != null) {
-            Area area = areaRepository.findById(requestDto.getAreaId().intValue())
-                    .orElseThrow(() -> new EntityNotFoundException("해당 지역을 찾을 수 없습니다: " + requestDto.getAreaId()));
-            user.setArea(area);
-        }
-
-        User updatedUser = userRepository.save(user);
-        return UserDTO.Response.fromEntity(updatedUser);
+        this.area = newArea;
+        this.userName = newUserName;
+        this.phone = newPhone;
     }
 
-    // username 기반 업데이트 메서드 (기존 호환성을 위해 유지)
-    @Transactional
-    public UserDTO.Response updateUser(String username, UserDTO.UpdateRequest requestDto) {
-        User user = userRepository.findByUserName(username)
-                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND, username));
-
-        if (requestDto.getUserName() != null && !requestDto.getUserName().isEmpty()) {
-            user.setUserName(requestDto.getUserName());
-        }
-
-        if (requestDto.getPhone() != null && !requestDto.getPhone().isEmpty()) {
-            if (!user.getPhone().equals(requestDto.getPhone()) && userRepository.existsByPhone(requestDto.getPhone())) {
-                throw new BusinessException(ErrorCode.PHONE_ALREADY_EXISTS, requestDto.getPhone());
-            }
-            user.setPhone(requestDto.getPhone());
-        }
-
-        if (requestDto.getAreaId() != null) {
-            Area area = areaRepository.findById(requestDto.getAreaId().intValue())
-                    .orElseThrow(() -> new EntityNotFoundException("해당 지역을 찾을 수 없습니다: " + requestDto.getAreaId()));
-            user.setArea(area);
-        }
-
-        User updatedUser = userRepository.save(user);
-        return UserDTO.Response.fromEntity(updatedUser);
+    // 비즈니스 메서드: 사용자 제재 상태 변경
+    public void changeBanStatus(boolean isBanned) {
+        this.isBanned = isBanned;
     }
 
-    @Transactional
-    public UserDTO.Response updateUserStatus(Long userId, UserDTO.StatusUpdateRequest requestDto) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND, String.valueOf(userId)));
-
-        user.setIsBanned(requestDto.getIsBanned());
-
-        if (requestDto.getIsBanned()) {
-            Ban ban = Ban.builder()
-                    .user(user)
-                    .banReason(requestDto.getBanReason())
-                    .build();
-            banRepository.save(ban);
-        }
-
-        User updatedUser = userRepository.save(user);
-        User finalUser = userRepository.findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException("사용자를 찾을 수 없습니다: " + userId));
-        return UserDTO.Response.fromEntityStatus(finalUser);
+    // 비즈니스 메서드: 관리자 권한 변경
+    public void changeAdminStatus(boolean isAdmin) {
+        this.isAdmin = isAdmin;
     }
-
-    // userId 기반 삭제 메서드 (JWT 토큰용)
-    @Transactional
-    public void deleteUser(Long userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND, String.valueOf(userId)));
-        userRepository.delete(user);
-    }
-
-    @Transactional
-    public void deleteUserWithPassword(Long userId, String password) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND, String.valueOf(userId)));
-
-        // 비밀번호 확인
-        if (!passwordEncoder.matches(password, user.getPassword())) {
-            throw new BusinessException(ErrorCode.PASSWORD_MISMATCH, "비밀번호가 일치하지 않습니다.");
-        }
-
-        userRepository.delete(user);
-    }
-
-    @Transactional(readOnly = true)
-    public UserDTO.UserListData getAllUsers(Pageable pageable) {
-        Page<User> userPage = userRepository.findAll(pageable);
-        List<UserDTO.Response> userResponses = userPage.getContent().stream()
-                .map(UserDTO.Response::fromEntity)
-                .collect(Collectors.toList());
-
-        UserDTO.UserListPagination pagination = UserDTO.UserListPagination.builder()
-                .page(userPage.getNumber())
-                .size(userPage.getSize())
-                .totalElements(userPage.getTotalElements())
-                .totalPages(userPage.getTotalPages())
-                .first(userPage.isFirst())
-                .last(userPage.isLast())
-                .build();
-
-        return UserDTO.UserListData.builder()
-                .content(userResponses)
-                .pagination(pagination)
-                .build();
-    }
-
-    @Transactional(readOnly = true)
-    public List<UserDTO.Response> getBannedUsers() {
-        List<User> bannedUsers = userRepository.findByIsBannedTrue();
-        return bannedUsers.stream()
-                .map(UserDTO.Response::fromEntity)
-                .collect(Collectors.toList());
-    }
-
-    @Transactional(readOnly = true)
-    public List<UserDTO.Response> getAdminUsers() {
-        List<User> adminUsers = userRepository.findByIsAdminTrue();
-        return adminUsers.stream()
-                .map(UserDTO.Response::fromEntity)
-                .collect(Collectors.toList());
-    }
-
-    @Transactional(readOnly = true)
-    public boolean isLoginIdAvailable(String loginId) {
-        return !userRepository.existsByLoginId(loginId);
-    }
-
-    @Transactional(readOnly = true)
-    public boolean isPhoneAvailable(String phone) {
-        return !userRepository.existsByPhone(phone);
-    }
+```
 
 #### 4.8.6 생성자 및 팩토리 메서드
-
-    @Transactional
-    public UserDTO.Response createUser(UserDTO.SignUpRequest requestDto) {
-
-        if (userRepository.existsByLoginId(requestDto.getLoginId())) {
-            throw new BusinessException(ErrorCode.LOGIN_ID_ALREADY_EXISTS, requestDto.getLoginId());
-        }
-
-        if (userRepository.existsByPhone(requestDto.getPhone())) {
-            throw new BusinessException(ErrorCode.PHONE_ALREADY_EXISTS, requestDto.getPhone());
-        }
-
-        Area area = areaRepository.findById(requestDto.getAreaId().intValue())
-                .orElseThrow(() -> new EntityNotFoundException("해당 지역을 찾을 수 없습니다: " + requestDto.getAreaId()));
-
-        User user = User.builder()
-                .loginId(requestDto.getLoginId())
-                .password(passwordEncoder.encode(requestDto.getPassword()))
-                .userName(requestDto.getUserName())
-                .phone(requestDto.getPhone())
-                .area(area)
-                .isBanned(false)
-                .isAdmin(false)
-                .build();
-
-        User savedUser = userRepository.save(user);
-        return UserDTO.Response.fromEntity(savedUser);
-    }
 
 ### 4.9 Bans Entity
 
@@ -1186,72 +703,7 @@ private Report report;
 
 #### 4.9.5 비즈니스 메서드
 
-    public void unbanUser(Long userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND, userId));
-
-        user.setIsBanned(false); // User 엔티티의 isBanned 필드를 false로 설정
-    }
-
-    public BanDTO.Response getBanById(Long banId) {
-        Ban ban = banRepository.findByBanId(banId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.RESOURCE_NOT_FOUND, "Ban", banId));
-
-        return BanDTO.Response.fromEntity(ban);
-    }
-
-
-    public List<BanDTO.Response> getBansByUserId(Long userId) {
-        List<Ban> bans = banRepository.findByUser_UserId(userId);
-
-        return bans.stream()
-                .map(BanDTO.Response::fromEntity)
-                .collect(Collectors.toList());
-    }
-
-    public BanDTO.Response getBanByReportId(Long reportId) {
-        Ban ban = banRepository.findByReport_ReportId(reportId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.RESOURCE_NOT_FOUND, "Report", reportId));
-
-        return BanDTO.Response.fromEntity(ban);
-    }
-
-    public List<BanDTO.Response> getBansByBanReason(String banReason) {
-        List<Ban> bans = banRepository.findByBanReason(banReason);
-
-        return bans.stream()
-                .map(BanDTO.Response::fromEntity)
-                .collect(Collectors.toList());
-    }
-
-    public void deleteBan(Long banId) {
-        Ban ban = banRepository.findByBanId(banId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.RESOURCE_NOT_FOUND, "Ban", banId));
-
-        banRepository.delete(ban);
-    }
-
 #### 4.9.6 생성자 및 팩토리 메서드
-
-    public BanDTO.Response banUser(Long userId, Long reportId, String banReason) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND, userId));
-
-        Report report = reportRepository.findByReportId(reportId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.RESOURCE_NOT_FOUND, "Report", reportId));
-
-        Ban ban = Ban.builder()
-                .user(user)
-                .report(report)
-                .banReason(banReason)
-                .build();
-
-        Ban savedBan = banRepository.save(ban);
-
-        user.setIsBanned(true); // User 엔티티의 isBanned 필드를 true로 설정
-
-        return BanDTO.Response.fromEntity(savedBan);
-    }
 
 ### 4.10 areas Entity
 
@@ -1283,47 +735,20 @@ private List<User> users = new ArrayList<>();
 
 #### 4.10.5 비즈니스 메서드
 
-    @Transactional(readOnly = true)
-    public AreaDTO.Response getAreaById(Integer areaId) {
-        Area area = areaRepository.findById(areaId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.AREA_NOT_FOUND, areaId));
-        return AreaDTO.Response.fromEntity(area);
+```java
+    // 비즈니스 메서드: 지역 이름 변경
+    public void changeAreaName(String newAreaName) {
+        if (newAreaName == null || newAreaName.trim().isEmpty()) {
+            throw new BusinessException(ErrorCode.AREA_NAME_EMPTY);
+        }
+        if (newAreaName.length() > 50) {
+            throw new BusinessException(ErrorCode.AREA_NAME_TOO_LONG);
+        }
+        this.areaName = newAreaName;
     }
-
-    @Transactional(readOnly = true)
-    public List<AreaDTO.Response> getAllAreas() {
-        return areaRepository.findAll().stream()
-                .map(AreaDTO.Response::fromEntity)
-                .collect(Collectors.toList());
-    }
-
-    @Transactional
-    public AreaDTO.Response updateArea(Integer areaId, String newAreaName) {
-        Area area = areaRepository.findById(areaId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.AREA_NOT_FOUND, areaId));
-
-        area.setAreaName(newAreaName);
-        Area updatedArea = areaRepository.save(area);
-        return AreaDTO.Response.fromEntity(updatedArea);
-    }
-
-    @Transactional
-    public void deleteArea(Integer areaId) {
-        Area area = areaRepository.findById(areaId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.AREA_NOT_FOUND, areaId));
-        areaRepository.delete(area);
-    }
+```
 
 #### 4.10.6 생성자 및 팩토리 메서드
-
-    @Transactional
-    public AreaDTO.Response createArea(String areaName) {
-        Area area = Area.builder()
-                .areaName(areaName)
-                .build();
-        Area savedArea = areaRepository.save(area);
-        return AreaDTO.Response.fromEntity(savedArea);
-    }
 
 ### 4.11 Products Entity
 
@@ -1384,84 +809,58 @@ private User user;
 #### 4.11.5 비즈니스 메서드
 
 ```java
+    // 비즈니스 메서드: 상품 정보 업데이트
+    public void updateProductInfo(Category newCategory, String newTitle, String newContent, Integer newPrice) {
+        if (newCategory == null) {
+            throw new BusinessException(ErrorCode.CATEGORY_NOT_FOUND, "카테고리 정보가 필요합니다.");
+        }
+        if (newTitle == null || newTitle.trim().isEmpty()) {
+            throw new BusinessException(ErrorCode.PRODUCT_NAME_EMPTY);
+        }
+        if (newTitle.length() > 50) {
+            throw new BusinessException(ErrorCode.PRODUCT_NAME_TOO_LONG);
+        }
+        if (newContent == null || newContent.trim().isEmpty()) {
+            throw new BusinessException(ErrorCode.PRODUCT_CONTENT_EMPTY);
+        }
+        if (newContent.length() > 255) {
+            throw new BusinessException(ErrorCode.PRODUCT_CONTENT_TOO_LONG);
+        }
+        if (newPrice == null || newPrice < 0) { // 가격은 0 이상이어야 함
+            throw new BusinessException(ErrorCode.PRODUCT_PRICE_NEGATIVE);
+        }
+
+        this.category = newCategory;
+        this.title = newTitle;
+        this.content = newContent;
+        this.price = newPrice;
+    }
+
+    // 비즈니스 메서드: 조회수 증가
     public void incrementViewCount() {
-        // null 체크: viewCount가 초기화되지 않은 경우를 대비 (DB 기본값 0이 아닌 경우)
         if (this.viewCount == null) {
             this.viewCount = 0;
         }
         this.viewCount++;
     }
+
+    // 비즈니스 메서드: 끌어올리기 상태 변경
+    public void markAsBumped(boolean isBumped) {
+        this.isBumped = isBumped;
+    }
+
+    // 비즈니스 메서드: 예약 상태 변경
+    public void markAsReserved(boolean isReserved) {
+        this.isReserved = isReserved;
+    }
+
+    // 비즈니스 메서드: 거래 완료 상태 변경
+    public void markAsCompleted(boolean isCompleted) {
+        this.isCompleted = isCompleted;
+    }
 ```
 
 #### 4.11.6 생성자 및 팩토리 메서드
-
-    @Transactional
-    public ProductDTO.Response createProduct(ProductDTO.Request requestDto, Long userId) {
-        User user = userRepository.findByUserId(userId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND, userId));
-        Category category = categoryRepository.findByCategoryId(requestDto.getCategoryId())
-                .orElseThrow(() -> new BusinessException(ErrorCode.CATEGORY_NOT_FOUND, requestDto.getCategoryId()));
-
-        Product product = Product.builder()
-                .category(category)
-                .user(user)
-                .title(requestDto.getTitle())
-                .content(requestDto.getContent())
-                .price(requestDto.getPrice())
-                .viewCount(0)
-                .isBumped(false)
-                .isReserved(false)
-                .isCompleted(false)
-                .build();
-        Product savedProduct = productRepository.save(product);
-
-        return mapToProductDTOResponse(savedProduct, userId);
-    }
-    private ProductDTO.ProductListData convertToProductListData(Page<Product> productPage, Long currentUserId) {
-        List<ProductDTO.Response> productResponses = productPage.getContent().stream()
-                .map(product -> {
-                    List<Image> images = imageRepository.findByProduct_ProductId(product.getProductId());
-                    return mapToProductDTOResponse(product, currentUserId);
-                })
-                .collect(Collectors.toList());
-
-        ProductDTO.ProductListPagination pagination = ProductDTO.ProductListPagination.builder()
-                .page(productPage.getNumber())
-                .size(productPage.getSize())
-                .totalElements(productPage.getTotalElements())
-                .totalPages(productPage.getTotalPages())
-                .first(productPage.isFirst())
-                .last(productPage.isLast())
-                .build();
-
-        return ProductDTO.ProductListData.builder()
-                .content(productResponses)
-                .pagination(pagination)
-                .build();
-    }
-
-    private ProductDTO.Response mapToProductDTOResponse(Product product, Long currentUserId) {
-
-        boolean isLiked = false;
-        if (currentUserId != null) {
-            isLiked = dibsRepository.existsByUser_UserIdAndProduct_ProductId(currentUserId, product.getProductId());
-        }
-        long likeCount = dibsRepository.findByProduct_ProductId(product.getProductId()).size();
-
-
-        return ProductDTO.Response.builder()
-                .id(product.getProductId())
-                .title(product.getTitle())
-                .content(product.getContent())
-                .price(product.getPrice())
-                .categoryName(product.getCategory() != null ? product.getCategory().getCategoryName() : null)
-                .seller(ProductDTO.SellerInfo.fromEntity(product.getUser()))
-                .createdAt(product.getCreatedAt().atOffset(java.time.ZoneOffset.UTC))
-                .updatedAt(product.getUpdatedAt() != null ? product.getUpdatedAt().atOffset(java.time.ZoneOffset.UTC) : null)
-                .viewCount(product.getViewCount())
-                .isLiked(isLiked)
-                .build();
-    }
 
 ### 4.12 Completes Entity
 
@@ -1540,68 +939,22 @@ private CancelationReason cancelationReason;
 
 #### 4.13.5 비즈니스 메서드
 
-    public CancelationDTO.Response getCancelationByReservationId(Long reservationId) {
-        Cancelation cancelation = cancelationRepository.findByReservation_ReservationId(reservationId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.TRADE_NOT_FOUND, reservationId));
+```java
+    // 비즈니스 메서드: 취소 정보 업데이트
+    public void updateCancelationInfo(CancelationReason newCancelationReason, String newCancelationDetail) {
+        if (newCancelationReason == null) {
+            throw new BusinessException(ErrorCode.CANCELATION_REASON_EMPTY);
+        }
+        if (newCancelationDetail != null && newCancelationDetail.length() > 255) {
+            throw new BusinessException(ErrorCode.CANCELATION_REASON_TOO_LONG);
+        }
 
-        return CancelationDTO.Response.fromEntity(cancelation);
+        this.cancelationReason = newCancelationReason;
+        this.cancelationDetail = newCancelationDetail;
     }
-
-    public List<CancelationDTO.Response> getCancelationsByCancelationReasonId(Integer cancelationReasonId) {
-        List<Cancelation> cancelations = cancelationRepository.findByCancelationReason_CancelationReasonId(cancelationReasonId);
-
-        return cancelations.stream()
-                .map(CancelationDTO.Response::fromEntity)
-                .collect(Collectors.toList());
-    }
-
-    public CancelationDTO.Response updateCancelation(Long reservationId, CancelationDTO.Request request) {
-        Cancelation cancelation = cancelationRepository.findByReservation_ReservationId(reservationId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.TRADE_NOT_FOUND, reservationId));
-
-        CancelationReason cancelationReason = cancelationReasonRepository.findById(request.getCancelationReasonId())
-                .orElseThrow(() -> new BusinessException(ErrorCode.RESOURCE_NOT_FOUND, "CancelationReason", "ID", request.getCancelationReasonId()));
-
-        cancelation.setCancelationReason(cancelationReason);
-        cancelation.setCancelationDetail(request.getCancelationDetail());
-
-        Cancelation updatedCancelation = cancelationRepository.save(cancelation);
-        return CancelationDTO.Response.fromEntity(updatedCancelation);
-    }
-
-    public void deleteCancelation(Long reservationId) {
-        Cancelation cancelation = cancelationRepository.findByReservation_ReservationId(reservationId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.TRADE_NOT_FOUND, reservationId));
-
-        cancelationRepository.delete(cancelation);
-    }
-
-        public CancelationReasonDTO.Response getCancelationReasonById(Integer cancelationReasonId) {
-        CancelationReason cancelationReason = cancelationReasonRepository.findById(cancelationReasonId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.RESOURCE_NOT_FOUND, "CancelationReason", cancelationReasonId));
-
-        return CancelationReasonDTO.Response.fromEntity(cancelationReason);
-    }
+```
 
 #### 4.13.6 생성자 및 팩토리 메서드
-
-    public CancelationDTO.Response createCancelation(Long reservationId, CancelationDTO.Request request) {
-        Reservation reservation = reservationRepository.findById(reservationId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.TRADE_NOT_FOUND, reservationId));
-
-        CancelationReason cancelationReason = cancelationReasonRepository.findById(request.getCancelationReasonId())
-                .orElseThrow(() -> new BusinessException(ErrorCode.RESOURCE_NOT_FOUND, "CancelationReason", "ID", request.getCancelationReasonId()));
-
-        Cancelation cancelation = Cancelation.builder()
-                .reservation(reservation)
-                .cancelationReason(cancelationReason)
-                .cancelationDetail(request.getCancelationDetail())
-                .canceledAt(LocalDateTime.now())
-                .build();
-
-        Cancelation savedCancelation = cancelationRepository.save(cancelation);
-        return CancelationDTO.Response.fromEntity(savedCancelation);
-    }
 
 ### 4.14 Cancelation_reasons Entity
 
@@ -1626,48 +979,20 @@ private String cancelationReasonType;
 
 #### 4.14.5 비즈니스 메서드
 
-    public CancelationReasonDTO.Response getCancelationReasonById(Integer cancelationReasonId) {
-        CancelationReason cancelationReason = cancelationReasonRepository.findById(cancelationReasonId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.RESOURCE_NOT_FOUND, "CancelationReason", cancelationReasonId));
-
-        return CancelationReasonDTO.Response.fromEntity(cancelationReason);
+```java
+    // 비즈니스 메서드: 취소 사유 유형 내용 변경
+    public void changeReasonType(String newReasonType) {
+        if (newReasonType == null || newReasonType.trim().isEmpty()) {
+            throw new BusinessException(ErrorCode.CANCELATION_REASON_EMPTY);
+        }
+        if (newReasonType.length() > 50) {
+            throw new BusinessException(ErrorCode.CANCELATION_REASON_TOO_LONG);
+        }
+        this.cancelationReasonType = newReasonType;
     }
-
-    public List<CancelationReasonDTO.Response> getAllCancelationReasons() {
-        List<CancelationReason> cancelationReasons = cancelationReasonRepository.findAll();
-
-        return cancelationReasons.stream()
-                .map(CancelationReasonDTO.Response::fromEntity)
-                .collect(Collectors.toList());
-    }
-
-    public CancelationReasonDTO.Response updateCancelationReason(Integer cancelationReasonId, CancelationReasonDTO.Request request) {
-        CancelationReason cancelationReason = cancelationReasonRepository.findById(cancelationReasonId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.RESOURCE_NOT_FOUND, "CancelationReason", cancelationReasonId));
-
-        cancelationReason.setCancelationReasonType(request.getCancelationReasonType());
-
-        CancelationReason updatedCancelationReason = cancelationReasonRepository.save(cancelationReason);
-        return CancelationReasonDTO.Response.fromEntity(updatedCancelationReason);
-    }
-
-    public void deleteCancelationReason(Integer cancelationReasonId) {
-        CancelationReason cancelationReason = cancelationReasonRepository.findById(cancelationReasonId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.RESOURCE_NOT_FOUND, "CancelationReason", cancelationReasonId));
-
-        cancelationReasonRepository.delete(cancelationReason);
-    }
+```
 
 #### 4.14.6 생성자 및 팩토리 메서드
-
-    public CancelationReasonDTO.Response createCancelationReason(CancelationReasonDTO.Request request) {
-        CancelationReason cancelationReason = CancelationReason.builder()
-                .cancelationReasonType(request.getCancelationReasonType())
-                .build();
-
-        CancelationReason savedCancelationReason = cancelationReasonRepository.save(cancelationReason);
-        return CancelationReasonDTO.Response.fromEntity(savedCancelationReason);
-    }
 
 ### 4.17 Report_reasons Entity
 
@@ -1698,48 +1023,20 @@ private List<Report> reports = new ArrayList<>();
 
 #### 4.17.5 비즈니스 메서드
 
-    public ReportReasonDTO.Response getReportReasonById(Integer reportReasonId) {
-        ReportReason reportReason = reportReasonRepository.findByReportReasonId(reportReasonId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.RESOURCE_NOT_FOUND, "ReportReason", reportReasonId, ""));
-
-        return ReportReasonDTO.Response.fromEntity(reportReason);
+```java
+    // 비즈니스 메서드: 신고 사유 유형 내용 변경
+    public void changeReasonType(String newReasonType) {
+        if (newReasonType == null || newReasonType.trim().isEmpty()) {
+            throw new BusinessException(ErrorCode.REPORT_REASON_EMPTY);
+        }
+        if (newReasonType.length() > 50) {
+            throw new BusinessException(ErrorCode.REPORT_REASON_TOO_LONG);
+        }
+        this.reportReasonType = newReasonType;
     }
-
-    public List<ReportReasonDTO.Response> getAllReportReasons() {
-        List<ReportReason> reportReasons = reportReasonRepository.findAll();
-
-        return reportReasons.stream()
-                .map(ReportReasonDTO.Response::fromEntity)
-                .collect(Collectors.toList());
-    }
-
-    public ReportReasonDTO.Response updateReportReason(Integer reportReasonId, ReportReasonDTO.Request request) {
-        ReportReason reportReason = reportReasonRepository.findByReportReasonId(reportReasonId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.RESOURCE_NOT_FOUND, "ReportReason", reportReasonId, ""));
-
-        reportReason.setReportReasonType(request.getReportReasonType());
-
-        ReportReason updatedReportReason = reportReasonRepository.save(reportReason);
-        return ReportReasonDTO.Response.fromEntity(updatedReportReason);
-    }
-
-    public void deleteReportReason(Integer reportReasonId) {
-        ReportReason reportReason = reportReasonRepository.findByReportReasonId(reportReasonId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.RESOURCE_NOT_FOUND, "ReportReason", reportReasonId, ""));
-
-        reportReasonRepository.deleteById(reportReasonId);
-    }
+```
 
 #### 4.17.6 생성자 및 팩토리 메서드
-
-    public ReportReasonDTO.Response createReportReason(ReportReasonDTO.Request request) {
-        ReportReason reportReason = ReportReason.builder()
-                .reportReasonType(request.getReportReasonType())
-                .build();
-
-        ReportReason savedReportReason = reportReasonRepository.save(reportReason);
-        return ReportReasonDTO.Response.fromEntity(savedReportReason);
-    }
 
 ## 5. Enum 타입 정의
 
