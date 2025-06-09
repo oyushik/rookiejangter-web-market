@@ -16,7 +16,7 @@
 | **Backend**  | 오유식 | API 개발, 데이터베이스 설계, 서버 구축  | [oyushik](https://github.com/oyushik)                 |
 | **Backend**  | 김민정 | 인증/보안, 비즈니스 로직, 테스트        | [ReadyToStarting](https://github.com/ReadyToStarting) |
 | **Frontend** | 김우준 | React 컴포넌트, UI/UX 구현              | [Ra1nJun](https://github.com/Ra1nJun)                 |
-| **Frontend** | 안태경 | 상태관리, API 연동, 관리자 페이지       | [Ahn-TaeKyung] (https://github.com/Ahn-TaeKyung)      |
+| **Frontend** | 안태경 | 상태관리, API 연동, 관리자 페이지       | [Ahn-TaeKyung](https://github.com/Ahn-TaeKyung)       |
 
 ## 🎯 주요 기능
 
@@ -72,12 +72,12 @@ SK_Rookies_Mini_Project2-main/
 │   │   ├── entity/                 # JPA 엔티티
 │   │   ├── config/                 # 설정 클래스
 │   │   └── exception/              # 예외 처리
-│   │   │   └── advuice/            # 컨트롤러 어드바이스 정의
+│   │   │   └── advice/             # 컨트롤러 어드바이스 정의
 │   │   └── provider/               # JWT 토큰 관련 정의
 │   ├── src/main/resources/
 │   │   ├── application.yml         # 애플리케이션 공통 설정
 │   │   ├── application-prod.yml    # 애플리케이션 설정: 운영 환경
-│   │   ├── application-test.yml    # 애플리케이션 설정: 개발 환경
+│   │   ├── application-test.yml    # 애플리케이션 설정: 개발(테스트) 환경
 │   │   ├── db/                     # DB 형상관리 설정
 │   │   │   └── migration/          # Flyway 초기 스키마, 데이터 설정
 │   │   ├── static/                 # 정적 리소스

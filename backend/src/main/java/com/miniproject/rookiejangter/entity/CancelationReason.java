@@ -25,9 +25,9 @@ public class CancelationReason {
     private String cancelationReasonType;
 
     /**
-     * 취소 사유를 생성합니다.
+     * 취소 사유 내용을 변경합니다.
      *
-     * @param cancelationReasonType 취소 사유 타입
+     * @param newReasonType 취소 사유 타입
      */
     public void changeReasonType(String newReasonType) {
         if (newReasonType == null || newReasonType.trim().isEmpty()) {

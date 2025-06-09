@@ -187,7 +187,7 @@ private User user;
 #### 4.1.5 비즈니스 메서드
 
 ```java
-    // 비즈니스 메서드: 알림을 읽음 상태로 변경
+    // 알림의 읽음 상태를 true로 업데이트
     public void markAsRead() {
         if (!this.isRead) {
             this.isRead = true;
@@ -234,7 +234,12 @@ private List<Product> products = new ArrayList<>();
 #### 4.2.5 비즈니스 메서드
 
 ```java
-    // 비즈니스 메서드: 카테고리 이름 변경
+    /**
+     * 카테고리 이름을 변경합니다.
+     *
+     * @param newCategoryName 새 카테고리 이름
+     * @throws BusinessException 카테고리 이름이 비어있거나 길이가 20자를 초과하는 경우
+     */
     public void changeCategoryName(String newCategoryName) {
         if (newCategoryName == null || newCategoryName.trim().isEmpty()) {
             throw new BusinessException(ErrorCode.CATEGORY_NAME_EMPTY);
@@ -299,7 +304,14 @@ private User user;
 #### 4.3.5 비즈니스 메서드
 
 ```java
-    // 비즈니스 메서드: 신고 정보 업데이트
+    /**
+     * 신고 정보를 업데이트합니다.
+     *
+     * @param newReportReason 신고 사유
+     * @param newTargetId 신고 대상 ID
+     * @param newTargetType 신고 대상 타입
+     * @param newReportDetail 신고 상세 정보
+     */
     public void updateReportInfo(ReportReason newReportReason, Long newTargetId, String newTargetType, String newReportDetail) {
         if (newReportReason == null) {
             throw new BusinessException(ErrorCode.REPORT_REASON_EMPTY);
@@ -323,12 +335,13 @@ private User user;
         this.reportDetail = newReportDetail;
     }
 
-    // 비즈니스 메서드: 신고 처리 상태 변경
+    // 신고 처리 상태 변경
     public void markAsProcessed() {
         if (!this.isProcessed) {
             this.isProcessed = true;
         }
     }
+
 ```
 
 #### 4.3.6 생성자 및 팩토리 메서드
@@ -370,57 +383,7 @@ private Product product;
 
 #### 4.4.5 비즈니스 메서드
 
-```java
-    // 비즈니스 메서드: 상품 정보 업데이트
-    public void updateProductInfo(Category newCategory, String newTitle, String newContent, Integer newPrice) {
-        if (newCategory == null) {
-            throw new BusinessException(ErrorCode.CATEGORY_NOT_FOUND, "카테고리 정보가 필요합니다.");
-        }
-        if (newTitle == null || newTitle.trim().isEmpty()) {
-            throw new BusinessException(ErrorCode.PRODUCT_NAME_EMPTY);
-        }
-        if (newTitle.length() > 50) {
-            throw new BusinessException(ErrorCode.PRODUCT_NAME_TOO_LONG);
-        }
-        if (newContent == null || newContent.trim().isEmpty()) {
-            throw new BusinessException(ErrorCode.PRODUCT_CONTENT_EMPTY);
-        }
-        if (newContent.length() > 255) {
-            throw new BusinessException(ErrorCode.PRODUCT_CONTENT_TOO_LONG);
-        }
-        if (newPrice == null || newPrice < 0) { // 가격은 0 이상이어야 함
-            throw new BusinessException(ErrorCode.PRODUCT_PRICE_NEGATIVE);
-        }
-
-        this.category = newCategory;
-        this.title = newTitle;
-        this.content = newContent;
-        this.price = newPrice;
-    }
-
-    // 비즈니스 메서드: 조회수 증가
-    public void incrementViewCount() {
-        if (this.viewCount == null) {
-            this.viewCount = 0;
-        }
-        this.viewCount++;
-    }
-
-    // 비즈니스 메서드: 끌어올리기 상태 변경
-    public void markAsBumped(boolean isBumped) {
-        this.isBumped = isBumped;
-    }
-
-    // 비즈니스 메서드: 예약 상태 변경
-    public void markAsReserved(boolean isReserved) {
-        this.isReserved = isReserved;
-    }
-
-    // 비즈니스 메서드: 거래 완료 상태 변경
-    public void markAsCompleted(boolean isCompleted) {
-        this.isCompleted = isCompleted;
-    }
-```
+---
 
 #### 4.4.6 생성자 및 팩토리 메서드
 
@@ -468,7 +431,7 @@ private Product product;
 #### 4.5.5 비즈니스 메서드
 
 ```java
-    // 비즈니스 메서드: 예약 상태를 요청됨으로 변경
+    // 예약 상태를 요청됨으로 변경
     public void requestReservation() {
         if (this.status != null && this.status != TradeStatus.REQUESTED) {
             throw new BusinessException(ErrorCode.RESERVATION_ALREADY_EXISTS, this.product.getProductId());
@@ -477,7 +440,7 @@ private Product product;
         this.isCanceled = false;
     }
 
-    // 비즈니스 메서드: 예약 상태를 수락됨으로 변경
+    // 예약 상태를 수락됨으로 변경
     public void acceptReservation() {
         if (this.status != TradeStatus.REQUESTED) {
             throw new BusinessException(ErrorCode.RESERVATION_INVALID_STATE_FOR_ACTION, this.status, "수락");
@@ -486,7 +449,7 @@ private Product product;
         this.isCanceled = false;
     }
 
-    // 비즈니스 메서드: 예약 상태를 거절됨으로 변경
+    // 예약 상태를 거절됨으로 변경
     public void declineReservation() {
         if (this.status != TradeStatus.REQUESTED) {
             throw new BusinessException(ErrorCode.RESERVATION_INVALID_STATE_FOR_ACTION, this.status, "거절");
@@ -495,7 +458,7 @@ private Product product;
         this.isCanceled = true; // 거절 시에는 예약이 취소됨
     }
 
-    // 비즈니스 메서드: 예약을 취소
+    // 예약을 취소
     public void cancelReservation() {
         if (this.status == TradeStatus.COMPLETED) {
             throw new BusinessException(ErrorCode.RESERVATION_CANNOT_CANCEL, this.status);
@@ -507,7 +470,7 @@ private Product product;
         this.isCanceled = true;
     }
 
-    // 비즈니스 메서드: 예약을 완료됨 상태로 변경 (거래가 성사되었을 때)
+    // 예약을 완료됨 상태로 변경 (거래가 성사되었을 때)
     public void completeReservation() {
         if (this.status != TradeStatus.ACCEPTED) {
             throw new BusinessException(ErrorCode.RESERVATION_INVALID_STATE_FOR_ACTION, this.status, "완료");
@@ -676,7 +639,14 @@ private List<Complete> sellerCompletes = new ArrayList<>();
 #### 4.8.5 비즈니스 메서드
 
 ```java
-    // 비즈니스 메서드: 사용자 정보 업데이트
+    /**
+     * 사용자 정보를 업데이트합니다.
+     *
+     * @param newArea       새 지역 정보
+     * @param newUserName   새 사용자 이름
+     * @param newPhone      새 전화번호
+     * @throws BusinessException 지역 정보가 null인 경우, 사용자 이름이 12자를 초과하는 경우, 전화번호가 20자를 초과하는 경우
+    */
     public void updateUserInfo(Area newArea, String newUserName, String newPhone) {
         if (newArea == null) {
             throw new BusinessException(ErrorCode.INVALID_AREA);
@@ -693,15 +663,16 @@ private List<Complete> sellerCompletes = new ArrayList<>();
         this.phone = newPhone;
     }
 
-    // 비즈니스 메서드: 사용자 제재 상태 변경
+    // 사용자 제재 상태 변경
     public void changeBanStatus(boolean isBanned) {
         this.isBanned = isBanned;
     }
 
-    // 비즈니스 메서드: 관리자 권한 변경
+    // 관리자 권한 변경
     public void changeAdminStatus(boolean isAdmin) {
         this.isAdmin = isAdmin;
     }
+
 ```
 
 #### 4.8.6 생성자 및 팩토리 메서드
@@ -790,7 +761,12 @@ private List<User> users = new ArrayList<>();
 #### 4.10.5 비즈니스 메서드
 
 ```java
-    // 비즈니스 메서드: 지역 이름 변경
+    /**
+     * 지역 이름을 변경합니다.
+     *
+     * @param newAreaName 새 지역 이름
+     * @throws BusinessException 지역 이름이 비어있거나 길이가 50자를 초과하는 경우
+     */
     public void changeAreaName(String newAreaName) {
         if (newAreaName == null || newAreaName.trim().isEmpty()) {
             throw new BusinessException(ErrorCode.AREA_NAME_EMPTY);
@@ -869,7 +845,14 @@ private User user;
 #### 4.11.5 비즈니스 메서드
 
 ```java
-    // 비즈니스 메서드: 상품 정보 업데이트
+    /**
+     * 생성자: ProductDTO를 사용하여 Product 정보를 업데이트합니다.
+     *
+     * @param newCategory   새 카테고리 정보
+     * @param newTitle      새 제목
+     * @param newContent    새 내용
+     * @param newPrice      새 가격
+     */
     public void updateProductInfo(Category newCategory, String newTitle, String newContent, Integer newPrice) {
         if (newCategory == null) {
             throw new BusinessException(ErrorCode.CATEGORY_NOT_FOUND, "카테고리 정보가 필요합니다.");
@@ -896,7 +879,7 @@ private User user;
         this.price = newPrice;
     }
 
-    // 비즈니스 메서드: 조회수 증가
+    // 조회수 증가
     public void incrementViewCount() {
         if (this.viewCount == null) {
             this.viewCount = 0;
@@ -904,17 +887,17 @@ private User user;
         this.viewCount++;
     }
 
-    // 비즈니스 메서드: 끌어올리기 상태 변경
+    // 끌어올리기 상태 변경
     public void markAsBumped(boolean isBumped) {
         this.isBumped = isBumped;
     }
 
-    // 비즈니스 메서드: 예약 상태 변경
+    // 예약 상태 변경
     public void markAsReserved(boolean isReserved) {
         this.isReserved = isReserved;
     }
 
-    // 비즈니스 메서드: 거래 완료 상태 변경
+    // 거래 완료 상태 변경
     public void markAsCompleted(boolean isCompleted) {
         this.isCompleted = isCompleted;
     }
@@ -1014,7 +997,11 @@ private CancelationReason cancelationReason;
 #### 4.13.5 비즈니스 메서드
 
 ```java
-    // 비즈니스 메서드: 취소 정보 업데이트
+    /**
+     * 취소 정보를 업데이트합니다.
+     * @param newCancelationReason 취소 사유
+     * @param newCancelationDetail 취소 상세 정보
+     */
     public void updateCancelationInfo(CancelationReason newCancelationReason, String newCancelationDetail) {
         if (newCancelationReason == null) {
             throw new BusinessException(ErrorCode.CANCELATION_REASON_EMPTY);
@@ -1060,7 +1047,11 @@ private String cancelationReasonType;
 #### 4.14.5 비즈니스 메서드
 
 ```java
-    // 비즈니스 메서드: 취소 사유 유형 내용 변경
+    /**
+     * 취소 사유 내용을 변경합니다.
+     *
+     * @param newReasonType 취소 사유 타입
+     */
     public void changeReasonType(String newReasonType) {
         if (newReasonType == null || newReasonType.trim().isEmpty()) {
             throw new BusinessException(ErrorCode.CANCELATION_REASON_EMPTY);
@@ -1110,7 +1101,11 @@ private List<Report> reports = new ArrayList<>();
 #### 4.17.5 비즈니스 메서드
 
 ```java
-    // 비즈니스 메서드: 신고 사유 유형 내용 변경
+    /**
+     * 신고 사유 내용을 변경합니다.
+     *
+     * @param newReasonType 신고 사유 타입
+     */
     public void changeReasonType(String newReasonType) {
         if (newReasonType == null || newReasonType.trim().isEmpty()) {
             throw new BusinessException(ErrorCode.REPORT_REASON_EMPTY);
@@ -1149,48 +1144,27 @@ private List<Report> reports = new ArrayList<>();
 
 ```java
 // 부모-자식 관계 (강한 연결)
-@OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
-private List<Loan> loans = new ArrayList<>();
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Product> products = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Report> reports = new ArrayList<>();
 
 // 참조 관계 (약한 연결)
-@ManyToOne(fetch = FetchType.LAZY)
-@JoinColumn(name = "category_id")
-private Category category; // cascade 없음
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_id")
+    private Category category;
 
-// 선택적 관계
-@OneToMany(mappedBy = "book", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-private List<Reservation> reservations = new ArrayList<>();
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
+
 ```
 
 ### 6.3 양방향 연관관계 관리
 
-```java
-// Member Entity에서
-public void addLoan(Loan loan) {
-    loans.add(loan);
-    loan.setMember(this); // 양방향 연관관계 동기화
-}
-
-public void removeLoan(Loan loan) {
-    loans.remove(loan);
-    loan.setMember(null);
-}
-
-// Loan Entity에서
-public void setMember(Member member) {
-    // 기존 관계 제거
-    if (this.member != null) {
-        this.member.getLoans().remove(this);
-    }
-
-    this.member = member;
-
-    // 새로운 관계 설정
-    if (member != null && !member.getLoans().contains(this)) {
-        member.getLoans().add(this);
-    }
-}
-```
+- 직접적인 양방향 연관관계 매핑은 최대한 지양하여, Entity 설계에 포함되지 않았습니다.
+- 각 Entity의 비즈니스 메서드는 다른 Entity에 영향을 미치지 않습니다.
 
 ---
 
@@ -1338,7 +1312,6 @@ Page<ProductSummaryDTO> findProductSummariesByCategory(@Param("categoryId") Inte
 | @Pattern    | 정규식 패턴 제약               |
 | @Min / @Max | 숫자 최소/최대값 제약          |
 | @Positive   | 양수 제약                      |
-| @Email      | 이메일 형식 제약               |
 
 ```java
 @NotBlank(message = "로그인 ID는 필수입니다.")
@@ -1351,7 +1324,7 @@ private String loginId;
 ### 9.2 데이터베이스 제약조건
 
 기본 원칙
-데이터 무결성을 보장하기 위한 제약조건 명확 적용
+데이터 무결성을 보장하기 위한 제약조건 적용
 | 제약조건 | 적용 대상 컬럼 |
 | ----------- | ------------------------------------------------------------ |
 | PRIMARY KEY | 모든 Entity 기본키 |
@@ -1370,7 +1343,9 @@ private Boolean isReserved = false;
 
 ### 10.1 Entity 단위 테스트
 
-````java
+```java
+// 예시: Product Entity의 단위 테스트 ProductTest
+
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 public class ProductTest {
@@ -1469,6 +1444,8 @@ public class ProductTest {
 ### 10.2 Repository 테스트
 
 ```java
+// 예시: Notification Repository의 단위 테스트 NotificationRepositoryTest
+
 @DataJpaTest
 public class NotificationRepositoryTest {
 
@@ -1604,11 +1581,13 @@ public class NotificationRepositoryTest {
 
     }
 }
-````
+```
 
 ### 10.3 Service 테스트
 
 ```java
+// 예시: Notification Service의 단위 테스트 NotificationServiceTest
+
 @ExtendWith(MockitoExtension.class)
 public class NotificationServiceTest {
 
