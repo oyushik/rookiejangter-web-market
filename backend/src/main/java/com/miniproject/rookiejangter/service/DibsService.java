@@ -11,7 +11,6 @@ import com.miniproject.rookiejangter.repository.ProductRepository;
 import com.miniproject.rookiejangter.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 
-//import org.springframework.boot.autoconfigure.data.web.SpringDataWebProperties.Pageable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -29,6 +28,13 @@ public class DibsService {
     private final UserRepository userRepository;
     private final ProductRepository productRepository;
 
+    /**
+     * 찜 상태를 토글합니다. 이미 찜한 상품이면 찜을 해제하고, 찜하지 않은 상품이면 찜을 추가합니다.
+     *
+     * @param userId    사용자 ID
+     * @param productId 상품 ID
+     * @return 찜 상태 응답 DTO
+     */
     public DibsDTO.Response toggleDibs(Long userId, Long productId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND, userId));
@@ -60,34 +66,13 @@ public class DibsService {
                 .build();
     }
 
-    // @Transactional
-    // public DibsDTO.Response addDibs(Long userId, Long productId) {
-    //     if (dibsRepository.existsByUser_UserIdAndProduct_ProductId(userId, productId)) {
-    //         throw new BusinessException(ErrorCode.DIBS_ALREADY_EXISTS, userId, productId);
-    //     }
-
-    //     User user = userRepository.findById(userId)
-    //             .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND, userId));
-    //     Product product = productRepository.findById(productId)
-    //             .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_NOT_FOUND, productId));
-
-    //     Dibs dibs = Dibs.builder()
-    //             .user(user)
-    //             .product(product)
-    //             .addedAt(LocalDateTime.now())
-    //             .build();
-    //     Dibs savedDibs = dibsRepository.save(dibs);
-    //     return DibsDTO.Response.fromEntity(savedDibs, true);
-    // }
-
-    // @Transactional
-    // public void removeDibs(Long userId, Long productId) {
-    //     if (!dibsRepository.existsByUser_UserIdAndProduct_ProductId(userId, productId)) {
-    //         throw new BusinessException(ErrorCode.DIBS_NOT_FOUND, userId, productId);
-    //     }
-    //     dibsRepository.deleteByUser_UserIdAndProduct_ProductId(userId, productId);
-    // }
-
+    /**
+     * 특정 사용자가 특정 상품에 대해 찜 상태를 조회합니다.
+     *
+     * @param userId    사용자 ID
+     * @param productId 상품 ID
+     * @return 찜 상태 응답 DTO
+     */
     @Transactional(readOnly = true)
     public DibsDTO.Response getDibsStatus(Long userId, Long productId) {
         // 먼저 Product 존재 여부를 확인합니다.
@@ -113,6 +98,13 @@ public class DibsService {
         }
     }
 
+    /**
+     * 특정 사용자의 찜 목록을 페이지네이션하여 조회합니다.
+     *
+     * @param userId   사용자 ID
+     * @param pageable 페이지네이션 정보
+     * @return 찜 목록 응답 DTO
+     */
     @Transactional(readOnly = true)
     public DibsDTO.DibsListResponse getUserDibsList(Long userId, Pageable pageable) {
         userRepository.findById(userId)
@@ -122,6 +114,12 @@ public class DibsService {
         return DibsDTO.DibsListResponse.fromPage(dibsPage);
     }
 
+    /**
+     * 특정 상품에 대한 찜 개수를 조회합니다.
+     *
+     * @param productId 상품 ID
+     * @return 찜 개수
+     */
     @Transactional(readOnly = true)
     public long getDibsCountForProduct(Long productId) {
         productRepository.findById(productId)

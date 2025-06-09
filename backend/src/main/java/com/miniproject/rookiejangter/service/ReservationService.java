@@ -27,6 +27,13 @@ public class ReservationService {
     private final ProductService productService;
     private final NotificationService notificationService;
 
+    /**
+     * 예약을 생성합니다.
+     *
+     * @param buyerId   구매자 ID
+     * @param productId 상품 ID
+     * @return 생성된 예약 정보
+     */
     @Transactional
     public ReservationDTO.Response createReservation(Long buyerId, Long productId) {
         User buyer = userRepository.findById(buyerId)
@@ -70,12 +77,15 @@ public class ReservationService {
                 "Reservation",
                 notificationMessage
         );
-
-
-
         return ReservationDTO.Response.fromEntity(savedReservation);
     }
 
+    /**
+     * 현재 사용자가 예약을 요청한 상품에 대해 예약을 조회합니다.
+     *
+     * @param currentUserId 현재 사용자 ID
+     * @return 예약 정보 리스트
+     */
     @Transactional(readOnly = true)
     public List<ReservationDTO.Response> getAllReservations(Long currentUserId) {
         User currentUser = userRepository.findById(currentUserId)
@@ -90,6 +100,12 @@ public class ReservationService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * 특정 구매자가 요청한 예약을 조회합니다.
+     *
+     * @param buyerId 구매자 ID
+     * @return 예약 정보 리스트
+     */
     @Transactional(readOnly = true)
     public List<ReservationDTO.Response> getReservationsByBuyer(Long buyerId) {
         userRepository.findById(buyerId)
@@ -99,6 +115,12 @@ public class ReservationService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * 특정 판매자가 등록한 상품에 대한 예약을 조회합니다.
+     *
+     * @param sellerId 판매자 ID
+     * @return 예약 정보 리스트
+     */
     @Transactional(readOnly = true)
     public List<ReservationDTO.Response> getReservationsBySeller(Long sellerId) {
         userRepository.findById(sellerId)
@@ -108,6 +130,12 @@ public class ReservationService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * 특정 상품에 대한 모든 예약을 조회합니다.
+     *
+     * @param productId 상품 ID
+     * @return 예약 정보 리스트
+     */
     @Transactional(readOnly = true)
     public List<ReservationDTO.Response> getReservationsByProduct(Long productId) {
         productRepository.findById(productId)
@@ -117,6 +145,12 @@ public class ReservationService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * 특정 예약 ID에 대한 예약 정보를 조회합니다.
+     *
+     * @param reservationId 예약 ID
+     * @return 예약 정보
+     */
     @Transactional(readOnly = true)
     public ReservationDTO.Response getReservationById(Long reservationId) {
         Reservation reservation = reservationRepository.findById(reservationId)
@@ -124,7 +158,14 @@ public class ReservationService {
         return ReservationDTO.Response.fromEntity(reservation);
     }
 
-
+    /**
+     * 예약 상태를 업데이트합니다.
+     *
+     * @param reservationId 예약 ID
+     * @param newStatus     새로운 예약 상태
+     * @param currentUserId 현재 사용자 ID
+     * @return 업데이트된 예약 정보
+     */
     @Transactional
     public ReservationDTO.Response updateReservationStatus(Long reservationId, Reservation.TradeStatus newStatus, Long currentUserId) {
         Reservation reservation = reservationRepository.findById(reservationId)
@@ -227,6 +268,12 @@ public class ReservationService {
         return ReservationDTO.Response.fromEntity(updatedReservation);
     }
 
+    /**
+     * 예약을 삭제합니다.
+     *
+     * @param reservationId 예약 ID
+     * @param currentUserId 현재 사용자 ID
+     */
     @Transactional
     public void deleteReservation(Long reservationId, Long currentUserId) {
         Reservation reservation = reservationRepository.findById(reservationId)

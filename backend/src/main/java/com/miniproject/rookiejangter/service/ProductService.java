@@ -27,6 +27,13 @@ public class ProductService {
     private final DibsRepository dibsRepository;
     private final BumpRepository bumpRepository;
 
+    /**
+     * 상품을 생성합니다.
+     *
+     * @param requestDto 상품 생성 요청 DTO
+     * @param userId     사용자 ID
+     * @return 생성된 상품 정보 DTO
+     */
     @Transactional
     public ProductDTO.Response createProduct(ProductDTO.Request requestDto, Long userId) {
         User user = userRepository.findByUserId(userId)
@@ -50,6 +57,13 @@ public class ProductService {
         return mapToProductDTOResponse(savedProduct, userId);
     }
 
+    /**
+     * 상품 ID로 상품을 조회합니다.
+     *
+     * @param productId      상품 ID
+     * @param currentUserId  현재 사용자 ID (조회 시 사용)
+     * @return 조회된 상품 정보 DTO
+     */
     @Transactional
     public ProductDTO.Response getProductById(Long productId, Long currentUserId) {
         Product product = productRepository.findById(productId)
@@ -62,6 +76,14 @@ public class ProductService {
         return mapToProductDTOResponse(product, currentUserId);
     }
 
+    /**
+     * 상품 정보를 업데이트합니다.
+     *
+     * @param productId 상품 ID
+     * @param requestDto 상품 업데이트 요청 DTO
+     * @param userId    사용자 ID (업데이트 권한 확인용)
+     * @return 업데이트된 상품 정보 DTO
+     */
     @Transactional
     public ProductDTO.Response updateProduct(Long productId, ProductDTO.UpdateRequest requestDto, Long userId) {
         Product product = productRepository.findById(productId)
@@ -87,6 +109,12 @@ public class ProductService {
         return mapToProductDTOResponse(product, userId);
     }
 
+    /**
+     * 상품을 삭제합니다.
+     *
+     * @param productId 상품 ID
+     * @param userId    사용자 ID (삭제 권한 확인용)
+     */
     @Transactional
     public void deleteProduct(Long productId, Long userId) {
         Product product = productRepository.findById(productId)
@@ -103,6 +131,14 @@ public class ProductService {
         productRepository.delete(product);
     }
 
+    /**
+     * 특정 사용자의 상품 목록을 페이지네이션하여 조회합니다.
+     *
+     * @param targetUserId  대상 사용자 ID
+     * @param pageable      페이지네이션 정보
+     * @param currentUserId 현재 사용자 ID (조회 시 사용)
+     * @return 상품 목록 데이터 DTO
+     */
     @Transactional(readOnly = true)
     public ProductDTO.ProductListData getProductsByUser(Long targetUserId, Pageable pageable, Long currentUserId) {
         User user = userRepository.findById(targetUserId)
@@ -111,6 +147,13 @@ public class ProductService {
         return convertToProductListData(productPage, currentUserId);
     }
 
+    /**
+     * 특정 사용자의 상품을 ID로 조회합니다.
+     *
+     * @param productId 상품 ID
+     * @param userId    사용자 ID (조회 권한 확인용)
+     * @return 조회된 상품 정보 DTO
+     */
     @Transactional
     public ProductDTO.Response getUserProductById(Long productId, Long userId) {
         Product product = productRepository.findById(productId)
@@ -125,12 +168,27 @@ public class ProductService {
         return mapToProductDTOResponse(product, userId);
     }
 
+    /**
+     * 모든 상품을 페이지네이션하여 조회합니다.
+     *
+     * @param pageable      페이지네이션 정보
+     * @param currentUserId 현재 사용자 ID (조회 시 사용)
+     * @return 상품 목록 데이터 DTO
+     */
     @Transactional(readOnly = true)
     public ProductDTO.ProductListData getAllProducts(Pageable pageable, Long currentUserId) {
         Page<Product> productPage = productRepository.findAllByOrderByCreatedAtDesc(pageable);
         return convertToProductListData(productPage, currentUserId);
     }
 
+    /**
+     * 특정 카테고리의 상품을 페이지네이션하여 조회합니다.
+     *
+     * @param categoryId   카테고리 ID
+     * @param pageable     페이지네이션 정보
+     * @param currentUserId 현재 사용자 ID (조회 시 사용)
+     * @return 상품 목록 데이터 DTO
+     */
     @Transactional(readOnly = true)
     public ProductDTO.ProductListData getProductsByCategory(Integer categoryId, Pageable pageable, Long currentUserId) {
         Category category = categoryRepository.findById(categoryId)
@@ -139,6 +197,14 @@ public class ProductService {
         return convertToProductListData(productPage, currentUserId);
     }
 
+    /**
+     * 상품 제목으로 상품을 검색합니다.
+     *
+     * @param title         상품 제목
+     * @param pageable      페이지네이션 정보
+     * @param currentUserId 현재 사용자 ID (조회 시 사용)
+     * @return 상품 목록 데이터 DTO
+     */
     @Transactional(readOnly = true)
     public ProductDTO.ProductListData searchProductsByTitle(String title, Pageable pageable, Long currentUserId) {
         List<Product> productList = productRepository.findByTitleContainsIgnoreCase(title);
@@ -146,6 +212,14 @@ public class ProductService {
         return convertToProductListData(productPage, currentUserId);
     }
 
+    /**
+     * 상품 내용으로 상품을 검색합니다.
+     *
+     * @param content       상품 내용
+     * @param pageable      페이지네이션 정보
+     * @param currentUserId 현재 사용자 ID (조회 시 사용)
+     * @return 상품 목록 데이터 DTO
+     */
     @Transactional(readOnly = true)
     public ProductDTO.ProductListData searchProductsByKeyword(String keyword, Pageable pageable, Long currentUserId) {
         List<Product> productList = productRepository.findByTitleContainsIgnoreCaseOrContentContainsIgnoreCase(keyword, keyword);
@@ -153,6 +227,14 @@ public class ProductService {
         return convertToProductListData(productPage, currentUserId);
     }
 
+    /**
+     * 상품의 상태를 업데이트합니다 (예약, 완료).
+     *
+     * @param productId   상품 ID
+     * @param isReserved  예약 상태
+     * @param isCompleted 완료 상태
+     * @param userId      사용자 ID (업데이트 권한 확인용)
+     */
     @Transactional
     public void updateProductStatus(Long productId, Boolean isReserved, Boolean isCompleted, Long userId) {
         Product product = productRepository.findById(productId)
@@ -166,6 +248,12 @@ public class ProductService {
         productRepository.save(product);
     }
 
+    /**
+     * 상품을 부각시킵니다.
+     *
+     * @param productId 상품 ID
+     * @param userId    사용자 ID (부각 권한 확인용)
+     */
     private Page<Product> paginateList(List<Product> list, Pageable pageable) {
         int start = (int) pageable.getOffset();
         int end = Math.min((start + pageable.getPageSize()), list.size());
@@ -175,6 +263,13 @@ public class ProductService {
         return new PageImpl<>(list.subList(start, end), pageable, list.size());
     }
 
+    /**
+     * 상품 페이지 정보를 ProductDTO.ProductListData로 변환합니다.
+     *
+     * @param productPage  상품 페이지 정보
+     * @param currentUserId 현재 사용자 ID (조회 시 사용)
+     * @return 변환된 상품 목록 데이터 DTO
+     */
     private ProductDTO.ProductListData convertToProductListData(Page<Product> productPage, Long currentUserId) {
         List<ProductDTO.Response> productResponses = productPage.getContent().stream()
                 .map(product -> {
@@ -198,6 +293,13 @@ public class ProductService {
                 .build();
     }
 
+    /**
+     * Product 엔티티를 ProductDTO.Response로 변환합니다.
+     *
+     * @param product       변환할 Product 엔티티
+     * @param currentUserId 현재 사용자 ID (조회 시 사용)
+     * @return 변환된 상품 정보 DTO
+     */
     private ProductDTO.Response mapToProductDTOResponse(Product product, Long currentUserId) {
 
         return ProductDTO.Response.builder()

@@ -29,6 +29,12 @@ public class UserService {
     private final BanRepository banRepository;
     private final PasswordEncoder passwordEncoder;
 
+    /**
+     * 사용자 생성 메서드
+     *
+     * @param requestDto 사용자 생성 요청 DTO
+     * @return 생성된 사용자 정보 DTO
+     */
     @Transactional
     public UserDTO.Response createUser(UserDTO.SignUpRequest requestDto) {
 
@@ -57,6 +63,12 @@ public class UserService {
         return UserDTO.Response.fromEntity(savedUser);
     }
 
+    /**
+     * 사용자 ID로 사용자 정보를 조회합니다.
+     *
+     * @param userId 사용자 ID
+     * @return 사용자 정보 DTO
+     */
     @Transactional(readOnly = true)
     public UserDTO.Response getUserById(Long userId) {
         User user = userRepository.findById(userId)
@@ -64,6 +76,12 @@ public class UserService {
         return UserDTO.Response.fromEntity(user);
     }
 
+    /**
+     * 사용자 이름으로 사용자 정보를 조회합니다.
+     *
+     * @param userName 사용자 이름
+     * @return 사용자 정보 DTO
+     */
     @Transactional(readOnly = true)
     public UserDTO.Response getUserByUserName(String userName) {
         User user = userRepository.findByUserName(userName)
@@ -71,6 +89,12 @@ public class UserService {
         return UserDTO.Response.fromEntity(user);
     }
 
+    /**
+     * 로그인 ID로 사용자 정보를 조회합니다.
+     *
+     * @param loginId 로그인 ID
+     * @return 사용자 정보 DTO
+     */
     @Transactional(readOnly = true)
     public UserDTO.Response getUserByLoginId(String loginId) {
         User user = userRepository.findByLoginId(loginId)
@@ -78,7 +102,13 @@ public class UserService {
         return UserDTO.Response.fromEntity(user);
     }
 
-    // userId 기반 업데이트 메서드 (JWT 토큰용)
+    /**
+     * 사용자 정보를 업데이트합니다. (JWT 토큰용)
+     *
+     * @param userId 사용자 ID
+     * @param requestDto 사용자 정보 업데이트 요청 DTO
+     * @return 업데이트된 사용자 정보 DTO
+     */
     @Transactional
     public UserDTO.Response updateUser(Long userId, UserDTO.UpdateRequest requestDto) {
         User user = userRepository.findById(userId)
@@ -102,7 +132,13 @@ public class UserService {
         return UserDTO.Response.fromEntity(updatedUser);
     }
 
-    // username 기반 업데이트 메서드 (기존 호환성을 위해 유지)
+    /**
+     * 사용자 정보를 업데이트합니다. (사용자 이름 기반, 기존 호환성을 위해 남겨둠)
+     *
+     * @param username 사용자 이름
+     * @param requestDto 사용자 정보 업데이트 요청 DTO
+     * @return 업데이트된 사용자 정보 DTO
+     */
     @Transactional
     public UserDTO.Response updateUser(String username, UserDTO.UpdateRequest requestDto) {
         User user = userRepository.findByUserName(username)
@@ -147,7 +183,11 @@ public class UserService {
         return UserDTO.Response.fromEntityStatus(finalUser);
     }
 
-    // userId 기반 삭제 메서드 (JWT 토큰용)
+    /**
+     * 사용자 정보 삭제제
+     *
+     * @param userId 사용자 ID
+     */
     @Transactional
     public void deleteUser(Long userId) {
         User user = userRepository.findById(userId)
@@ -155,6 +195,12 @@ public class UserService {
         userRepository.delete(user);
     }
 
+    /**
+     * 비밀번호 확인 후 사용자 정보 삭제
+     *
+     * @param userId 사용자 ID
+     * @param password 사용자의 비밀번호
+     */
     @Transactional
     public void deleteUserWithPassword(Long userId, String password) {
         User user = userRepository.findById(userId)
@@ -168,6 +214,12 @@ public class UserService {
         userRepository.delete(user);
     }
 
+    /**
+     * 모든 사용자 정보를 페이지네이션하여 조회합니다.
+     *
+     * @param pageable 페이지 정보
+     * @return 페이지네이션된 사용자 정보 DTO
+     */
     @Transactional(readOnly = true)
     public UserDTO.UserListData getAllUsers(Pageable pageable) {
         Page<User> userPage = userRepository.findAll(pageable);
@@ -190,6 +242,11 @@ public class UserService {
                 .build();
     }
 
+    /**
+     * 제재된 사용자 정보를 조회합니다.
+     * 
+     * @return 제재된 사용자 정보 리스트
+     */
     @Transactional(readOnly = true)
     public List<UserDTO.Response> getBannedUsers() {
         List<User> bannedUsers = userRepository.findByIsBannedTrue();
@@ -198,6 +255,11 @@ public class UserService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * 관리자 권한을 가진 사용자 정보를 조회합니다.
+     *
+     * @return 관리자 사용자 정보 리스트
+     */
     @Transactional(readOnly = true)
     public List<UserDTO.Response> getAdminUsers() {
         List<User> adminUsers = userRepository.findByIsAdminTrue();
@@ -206,11 +268,23 @@ public class UserService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * 로그인 ID가 사용 가능한지 확인합니다.
+     * 
+     * @param loginId 로그인 ID
+     * @return 사용 가능 여부
+     */
     @Transactional(readOnly = true)
     public boolean isLoginIdAvailable(String loginId) {
         return !userRepository.existsByLoginId(loginId);
     }
 
+    /**
+     * 전화번호가 사용 가능한지 확인합니다.
+     *
+     * @param phone 전화번호
+     * @return 사용 가능 여부
+     */
     @Transactional(readOnly = true)
     public boolean isPhoneAvailable(String phone) {
         return !userRepository.existsByPhone(phone);

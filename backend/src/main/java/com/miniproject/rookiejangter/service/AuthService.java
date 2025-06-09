@@ -30,7 +30,13 @@ public class AuthService {
     private static final String REFRESH_TOKEN_PREFIX = "RT:";
     private static final String BLACKLIST_PREFIX = "BL:";
 
-    // 로그인 처리
+    
+    /**
+     * 사용자 로그인 처리
+     *
+     * @param request 로그인 요청 정보
+     * @return 로그인 응답 정보
+     */
     public LoginResponse login(UserDTO.LoginRequest request) {
         try {
             // 1. 사용자 조회
@@ -82,7 +88,12 @@ public class AuthService {
         }
     }
 
-    // 로그아웃 처리
+    /**
+     * 사용자 로그아웃 처리
+     *
+     * @param accessToken 사용자의 AccessToken
+     * @param userId      사용자의 ID
+     */
     public void logout(String accessToken, Long userId) {
         try {
             if (jwtProvider.validateToken(accessToken) && !jwtProvider.isTokenExpired(accessToken)) {
@@ -110,7 +121,12 @@ public class AuthService {
         }
     }
 
-    // 토큰 갱신
+    /**
+     * RefreshToken을 사용하여 새로운 AccessToken을 생성합니다.
+     *
+     * @param refreshToken 사용자의 RefreshToken
+     * @return 새로운 AccessToken 정보
+     */
     public TokenRefreshResponse refreshToken(String refreshToken) {
         try {
             // 1. RefreshToken 유효성 검증
@@ -155,7 +171,12 @@ public class AuthService {
         }
     }
 
-    // AccessToken이 블랙리스트에 있는지 확인
+    /**
+     * AccessToken이 블랙리스트에 있는지 확인합니다.
+     *
+     * @param accessToken 사용자의 AccessToken
+     * @return 블랙리스트 여부
+     */
     public boolean isTokenBlacklisted(String accessToken) {
         try {
             return redisTemplate.hasKey(BLACKLIST_PREFIX + accessToken);
@@ -165,7 +186,11 @@ public class AuthService {
         }
     }
 
-    // 사용자의 모든 세션 무효화 (강제 로그아웃)
+    /**
+     * 특정 사용자의 모든 세션을 무효화합니다.
+     *
+     * @param userId 사용자의 ID
+     */
     public void invalidateAllSessions(Long userId) {
         try {
             String refreshTokenKey = REFRESH_TOKEN_PREFIX + userId;

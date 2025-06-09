@@ -25,6 +25,14 @@ public class ReviewService {
     private final CompleteRepository completeRepository;
     private final UserRepository userRepository;
 
+    /**
+     * 리뷰를 생성합니다.
+     *
+     * @param completeId 거래 완료 ID
+     * @param userId    리뷰 작성자 ID
+     * @param request   리뷰 요청 정보
+     * @return 생성된 리뷰 정보
+     */
     @Transactional
     public ReviewDTO.Response createReview(Long completeId, Long userId, ReviewDTO.Request request) {
         // 1. 해당 거래가 완료되었는지 확인
@@ -55,6 +63,14 @@ public class ReviewService {
         return ReviewDTO.Response.fromEntity(savedReview);
     }
 
+    /**
+     * 리뷰를 수정합니다.
+     *
+     * @param reviewId 리뷰 ID
+     * @param userId   리뷰 작성자 ID
+     * @param request  수정할 리뷰 정보
+     * @return 수정된 리뷰 정보
+     */
     @Transactional
     public ReviewDTO.Response updateReview(Long reviewId, Long userId, ReviewDTO.Request request) {
         // 1. 해당 리뷰가 있는지 확인
@@ -72,6 +88,12 @@ public class ReviewService {
         return ReviewDTO.Response.fromEntity(review);
     }
 
+    /**
+     * 리뷰를 삭제합니다.
+     *
+     * @param reviewId 리뷰 ID
+     * @param userId   리뷰 작성자 ID
+     */
     @Transactional
     public void deleteReview(Long reviewId, Long userId) {
         // 1. 삭제할 리뷰가 있는지 확인
@@ -87,12 +109,24 @@ public class ReviewService {
         reviewRepository.delete(review);
     }
 
+    /**
+     * 특정 리뷰를 ID로 조회합니다.
+     *
+     * @param reviewId 리뷰 ID
+     * @return 리뷰 정보
+     */
     public ReviewDTO.Response getReviewById(Long reviewId) {
         Review review = reviewRepository.findByReviewId(reviewId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.REVIEW_NOT_FOUND, reviewId));
         return ReviewDTO.Response.fromEntity(review);
     }
 
+    /**
+     * 특정 사용자가 작성한 모든 리뷰를 조회합니다.
+     *
+     * @param userId 사용자 ID
+     * @return 해당 사용자가 작성한 리뷰 리스트
+     */
     public List<ReviewDTO.Response> getReviewsBySellerId(Long userId) {
         List<Review> reviews = reviewRepository.findBySeller_UserId(userId);
         if (reviews.isEmpty()) {
@@ -103,6 +137,12 @@ public class ReviewService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * 특정 거래 완료 ID에 대한 리뷰를 조회합니다.
+     *
+     * @param completeId 거래 완료 ID
+     * @return 해당 거래 완료 ID에 대한 리뷰 정보
+     */
     public ReviewDTO.Response getReviewByCompleteId(Long completeId) {
         Optional<Review> reviewOptional = reviewRepository.findByComplete_CompleteId(completeId);
         return reviewOptional.map(ReviewDTO.Response::fromEntity)

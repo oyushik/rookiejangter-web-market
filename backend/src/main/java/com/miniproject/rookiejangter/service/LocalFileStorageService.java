@@ -19,6 +19,13 @@ public class LocalFileStorageService implements FileStorageService {
     @Value("${image.upload.dir}")
     private String uploadDir;
 
+    /**
+     * 파일을 업로드하고 URL을 반환합니다.
+     *
+     * @param file 업로드할 파일
+     * @return 업로드된 파일의 URL
+     * @throws BusinessException 파일 업로드 중 오류 발생 시 예외
+     */
     @Override
     public String uploadFile(MultipartFile file) throws BusinessException {
         if (file.isEmpty()) {
@@ -48,6 +55,12 @@ public class LocalFileStorageService implements FileStorageService {
         }
     }
 
+    /**
+     * 파일을 삭제합니다.
+     *
+     * @param fileUrl 삭제할 파일의 URL
+     * @throws BusinessException 파일 삭제 중 오류 발생 시 예외
+     */
     @Override
     public void deleteFile(String fileUrl) throws BusinessException {
         if (fileUrl == null || fileUrl.isEmpty()) {

@@ -18,6 +18,12 @@ public class CategoryService {
 
     private final CategoryRepository categoryRepository;
 
+    /**
+     * 카테고리를 생성합니다.
+     *
+     * @param categoryName 카테고리 이름
+     * @return 생성된 카테고리 정보
+     */
     @Transactional
     public CategoryDTO.Response createCategory(String categoryName) {
         if (categoryRepository.findByCategoryName(categoryName).isPresent()) {
@@ -30,6 +36,12 @@ public class CategoryService {
         return CategoryDTO.Response.fromEntity(savedCategory);
     }
 
+    /**
+     * 카테고리를 ID로 조회합니다.
+     *
+     * @param categoryId 카테고리 ID
+     * @return 카테고리 정보
+     */
     @Transactional(readOnly = true)
     public CategoryDTO.Response getCategoryById(Integer categoryId) {
         Category category = categoryRepository.findById(categoryId)
@@ -37,6 +49,12 @@ public class CategoryService {
         return CategoryDTO.Response.fromEntity(category);
     }
 
+    /**
+     * 카테고리를 이름으로 조회합니다.
+     *
+     * @param categoryName 카테고리 이름
+     * @return 카테고리 정보
+     */
     @Transactional(readOnly = true)
     public CategoryDTO.Response getCategoryByName(String categoryName) {
         Category category = categoryRepository.findByCategoryName(categoryName)
@@ -44,6 +62,11 @@ public class CategoryService {
         return CategoryDTO.Response.fromEntity(category);
     }
 
+    /**
+     * 모든 카테고리를 조회합니다.
+     *
+     * @return 카테고리 리스트
+     */
     @Transactional(readOnly = true)
     public List<CategoryDTO.Response> getAllCategories() {
         return categoryRepository.findAll().stream()
@@ -51,6 +74,12 @@ public class CategoryService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * 카테고리 이름으로 카테고리를 검색합니다.
+     *
+     * @param categoryName 카테고리 이름
+     * @return 카테고리 리스트
+     */
     @Transactional(readOnly = true)
     public List<CategoryDTO.Response> searchCategoriesByName(String categoryName) {
         return categoryRepository.findByCategoryNameContainingIgnoreCase(categoryName).stream()
@@ -58,6 +87,13 @@ public class CategoryService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * 카테고리 이름을 업데이트합니다.
+     *
+     * @param categoryId 카테고리 ID
+     * @param newCategoryName 새로운 카테고리 이름
+     * @return 업데이트된 카테고리 정보
+     */
     @Transactional
     public CategoryDTO.Response updateCategory(Integer categoryId, String newCategoryName) {
         Category category = categoryRepository.findById(categoryId)
@@ -72,6 +108,11 @@ public class CategoryService {
         return CategoryDTO.Response.fromEntity(category);
     }
 
+    /**
+     * 카테고리를 삭제합니다.
+     *
+     * @param categoryId 카테고리 ID
+     */
     @Transactional
     public void deleteCategory(Integer categoryId) {
         Category category = categoryRepository.findById(categoryId)

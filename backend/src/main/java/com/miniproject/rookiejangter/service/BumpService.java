@@ -26,6 +26,12 @@ public class BumpService {
     private final ProductRepository productRepository;
     private static final int MAX_BUMPS_PER_DAY = 3; // 일일 최대 끌어올리기 횟수
 
+    /**
+     * 특정 상품을 끌어올립니다.
+     *
+     * @param productId 끌어올릴 상품 ID
+     * @return BumpDTO.Response 끌어올린 정보
+     */
     @Transactional
     public BumpDTO.Response bumpProduct(Long productId) {
         Product product = productRepository.findById(productId)
@@ -55,12 +61,24 @@ public class BumpService {
         return BumpDTO.Response.fromEntity(savedBump);
     }
 
+    /**
+     * 특정 상품의 최신 끌어올리기 정보를 조회합니다.
+     *
+     * @param productId 상품 ID
+     * @return BumpDTO.Response 최신 끌어올리기 정보
+     */
     @Transactional(readOnly = true)
     public Optional<BumpDTO.Response> getLatestBumpForProduct(Long productId) {
         return bumpRepository.findTopByProduct_ProductIdOrderByBumpedAtDesc(productId) //
                 .map(BumpDTO.Response::fromEntity);
     }
 
+    /**
+     * 특정 상품의 모든 끌어올리기 정보를 조회합니다.
+     *
+     * @param productId 상품 ID
+     * @return List<BumpDTO.Response> 끌어올리기 정보 리스트
+     */
     @Transactional(readOnly = true)
     public List<BumpDTO.Response> getBumpsForProduct(Long productId) {
         if (!productRepository.existsById(productId)) {
@@ -71,6 +89,12 @@ public class BumpService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * 오늘 특정 상품에 대해 끌어올린 횟수를 조회합니다.
+     *
+     * @param productId 상품 ID
+     * @return Long 오늘 끌어올린 횟수
+     */
     @Transactional(readOnly = true)
     public Long getTodaysBumpCountForProduct(Long productId) {
         if (!productRepository.existsById(productId)) {

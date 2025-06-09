@@ -26,6 +26,13 @@ public class CancelationService {
     private final CancelationReasonRepository cancelationReasonRepository;
     private final ReservationRepository reservationRepository;
 
+    /**
+     * 예약 취소를 생성합니다.
+     *
+     * @param reservationId 예약 ID
+     * @param request       취소 요청 정보
+     * @return 생성된 취소 정보
+     */
     public CancelationDTO.Response createCancelation(Long reservationId, CancelationDTO.Request request) {
         Reservation reservation = reservationRepository.findById(reservationId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.TRADE_NOT_FOUND, reservationId));
@@ -44,6 +51,12 @@ public class CancelationService {
         return CancelationDTO.Response.fromEntity(savedCancelation);
     }
 
+    /**
+     * 특정 예약 ID에 대한 취소 정보를 조회합니다.
+     *
+     * @param reservationId 예약 ID
+     * @return 취소 정보
+     */
     public CancelationDTO.Response getCancelationByReservationId(Long reservationId) {
         Cancelation cancelation = cancelationRepository.findByReservation_ReservationId(reservationId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.TRADE_NOT_FOUND, reservationId));
@@ -51,6 +64,12 @@ public class CancelationService {
         return CancelationDTO.Response.fromEntity(cancelation);
     }
 
+    /**
+     * 특정 취소 사유 ID에 대한 모든 취소 정보를 조회합니다.
+     *
+     * @param cancelationReasonId 취소 사유 ID
+     * @return 취소 정보 리스트
+     */
     public List<CancelationDTO.Response> getCancelationsByCancelationReasonId(Integer cancelationReasonId) {
         List<Cancelation> cancelations = cancelationRepository.findByCancelationReason_CancelationReasonId(cancelationReasonId);
 
@@ -59,6 +78,13 @@ public class CancelationService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * 특정 예약 ID에 대한 취소 정보를 업데이트합니다.
+     *
+     * @param reservationId 예약 ID
+     * @param request       취소 요청 정보
+     * @return 업데이트된 취소 정보
+     */
     public CancelationDTO.Response updateCancelation(Long reservationId, CancelationDTO.Request request) {
         Cancelation cancelation = cancelationRepository.findByReservation_ReservationId(reservationId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.TRADE_NOT_FOUND, reservationId));

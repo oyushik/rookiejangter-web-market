@@ -19,6 +19,12 @@ public class ReportReasonService {
 
     private final ReportReasonRepository reportReasonRepository;
 
+    /**
+     * 특정 신고 사유를 생성합니다.
+     *
+     * @param request 신고 사유 요청 정보
+     * @return 생성된 신고 사유 정보
+     */
     public ReportReasonDTO.Response createReportReason(ReportReasonDTO.Request request) {
         ReportReason reportReason = ReportReason.builder()
                 .reportReasonType(request.getReportReasonType())
@@ -28,6 +34,12 @@ public class ReportReasonService {
         return ReportReasonDTO.Response.fromEntity(savedReportReason);
     }
 
+    /**
+     * 특정 신고 사유를 ID로 조회합니다.
+     *
+     * @param reportReasonId 신고 사유 ID
+     * @return 신고 사유 정보
+     */
     public ReportReasonDTO.Response getReportReasonById(Integer reportReasonId) {
         ReportReason reportReason = reportReasonRepository.findByReportReasonId(reportReasonId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.RESOURCE_NOT_FOUND, "ReportReason", reportReasonId, ""));
@@ -35,6 +47,11 @@ public class ReportReasonService {
         return ReportReasonDTO.Response.fromEntity(reportReason);
     }
 
+    /**
+     * 모든 신고 사유를 조회합니다.
+     *
+     * @return 신고 사유 리스트
+     */
     public List<ReportReasonDTO.Response> getAllReportReasons() {
         List<ReportReason> reportReasons = reportReasonRepository.findAll();
 
@@ -43,6 +60,13 @@ public class ReportReasonService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * 특정 신고 사유를 수정합니다.
+     *
+     * @param reportReasonId 신고 사유 ID
+     * @param request 수정 요청 정보
+     * @return 수정된 신고 사유 정보
+     */
     public ReportReasonDTO.Response updateReportReason(Integer reportReasonId, ReportReasonDTO.Request request) {
         ReportReason reportReason = reportReasonRepository.findByReportReasonId(reportReasonId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.RESOURCE_NOT_FOUND, "ReportReason", reportReasonId, ""));
@@ -52,7 +76,11 @@ public class ReportReasonService {
         return ReportReasonDTO.Response.fromEntity(reportReason);
     }
 
-
+    /**
+     * 특정 신고 사유를 삭제합니다.
+     *
+     * @param reportReasonId 신고 사유 ID
+     */
     public void deleteReportReason(Integer reportReasonId) {
         ReportReason reportReason = reportReasonRepository.findByReportReasonId(reportReasonId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.RESOURCE_NOT_FOUND, "ReportReason", reportReasonId, ""));
