@@ -24,7 +24,11 @@ public class CancelationReason {
     @Column(name = "cancelation_reason_type", length = 50)
     private String cancelationReasonType;
 
-    // 비즈니스 메서드: 취소 사유 유형 내용 변경
+    /**
+     * 취소 사유를 생성합니다.
+     *
+     * @param cancelationReasonType 취소 사유 타입
+     */
     public void changeReasonType(String newReasonType) {
         if (newReasonType == null || newReasonType.trim().isEmpty()) {
             throw new BusinessException(ErrorCode.CANCELATION_REASON_EMPTY);

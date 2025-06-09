@@ -46,7 +46,14 @@ public class Report extends BaseEntity {
     @Column(name = "is_processed")
     private Boolean isProcessed;
 
-    // 비즈니스 메서드: 신고 정보 업데이트
+    /**
+     * 신고 정보를 업데이트합니다.
+     *
+     * @param newReportReason 신고 사유
+     * @param newTargetId 신고 대상 ID
+     * @param newTargetType 신고 대상 타입
+     * @param newReportDetail 신고 상세 정보
+     */
     public void updateReportInfo(ReportReason newReportReason, Long newTargetId, String newTargetType, String newReportDetail) {
         if (newReportReason == null) {
             throw new BusinessException(ErrorCode.REPORT_REASON_EMPTY);

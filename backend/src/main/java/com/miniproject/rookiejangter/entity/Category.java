@@ -34,7 +34,12 @@ public class Category {
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Product> products = new ArrayList<>();
 
-    // 비즈니스 메서드: 카테고리 이름 변경
+    /**
+     * 카테고리 이름을 변경합니다.
+     *
+     * @param newCategoryName 새 카테고리 이름
+     * @throws BusinessException 카테고리 이름이 비어있거나 길이가 20자를 초과하는 경우
+     */
     public void changeCategoryName(String newCategoryName) {
         if (newCategoryName == null || newCategoryName.trim().isEmpty()) {
             throw new BusinessException(ErrorCode.CATEGORY_NAME_EMPTY);

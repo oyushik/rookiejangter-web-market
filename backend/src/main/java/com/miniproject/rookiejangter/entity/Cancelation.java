@@ -38,7 +38,13 @@ public class Cancelation {
     private LocalDateTime canceledAt;
 
 
-    // 비즈니스 메서드: 취소 정보 업데이트
+    /**
+     * 예약 취소를 업데이트합니다.
+     *
+     * @param reservation       예약 정보
+     * @param cancelationReason 취소 사유
+     * @param cancelationDetail 취소 상세 정보
+     */
     public void updateCancelationInfo(CancelationReason newCancelationReason, String newCancelationDetail) {
         if (newCancelationReason == null) {
             throw new BusinessException(ErrorCode.CANCELATION_REASON_EMPTY);

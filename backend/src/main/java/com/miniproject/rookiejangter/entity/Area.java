@@ -33,7 +33,12 @@ public class Area {
     @OneToMany(mappedBy = "area", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<User> users = new ArrayList<>();
 
-    // 비즈니스 메서드: 지역 이름 변경
+    /**
+     * 지역 이름을 변경합니다.
+     *
+     * @param newAreaName 새 지역 이름
+     * @throws BusinessException 지역 이름이 비어있거나 길이가 50자를 초과하는 경우
+     */
     public void changeAreaName(String newAreaName) {
         if (newAreaName == null || newAreaName.trim().isEmpty()) {
             throw new BusinessException(ErrorCode.AREA_NAME_EMPTY);

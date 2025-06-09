@@ -86,7 +86,14 @@ public class User extends BaseEntity {
     @OneToMany(mappedBy = "seller", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Complete> sellerCompletes = new ArrayList<>();
 
-    // 비즈니스 메서드: 사용자 정보 업데이트
+    /** 
+     * 사용자 정보를 업데이트합니다.
+     * 
+     * @param newArea       새 지역 정보
+     * @param newUserName   새 사용자 이름
+     * @param newPhone      새 전화번호
+     * @throws BusinessException 지역 정보가 null인 경우, 사용자 이름이 12자를 초과하는 경우, 전화번호가 20자를 초과하는 경우
+    */
     public void updateUserInfo(Area newArea, String newUserName, String newPhone) {
         if (newArea == null) {
             throw new BusinessException(ErrorCode.INVALID_AREA);
@@ -103,12 +110,12 @@ public class User extends BaseEntity {
         this.phone = newPhone;
     }
 
-    // 비즈니스 메서드: 사용자 제재 상태 변경
+    // 사용자 제재 상태 변경
     public void changeBanStatus(boolean isBanned) {
         this.isBanned = isBanned;
     }
 
-    // 비즈니스 메서드: 관리자 권한 변경
+    // 관리자 권한 변경
     public void changeAdminStatus(boolean isAdmin) {
         this.isAdmin = isAdmin;
     }

@@ -42,7 +42,7 @@ public class Notification {
     @Column(name = "is_read")
     private Boolean isRead;
 
-    // 비즈니스 메서드: 알림을 읽음 상태로 변경
+    // 알림의 읽음 상태를 true로 업데이트
     public void markAsRead() {
         if (!this.isRead) {
             this.isRead = true;

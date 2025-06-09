@@ -44,7 +44,13 @@ public class Review extends BaseEntity {
     @Column(name = "content", length = 255)
     private String content;
 
-    // 비즈니스 메서드: 리뷰 내용 업데이트
+    /**
+     * 리뷰를 업데이트합니다.
+     * 
+     * @param newRating 새로운 평점 (1~5 사이의 정수)
+     * @param newContent 새로운 리뷰 내용 (최대 255자)
+     * @throws BusinessException 평점이 유효하지 않거나 리뷰 내용이 너무 긴 경우 예외 발생
+     */
     public void updateReviewInfo(Integer newRating, String newContent) {
         if (newRating == null || newRating < 1 || newRating > 5) {
             throw new BusinessException(ErrorCode.INVALID_REVIEW_RATING);

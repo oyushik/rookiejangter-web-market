@@ -56,7 +56,14 @@ public class Product extends BaseEntity {
     @Column(name = "is_completed")
     private Boolean isCompleted;
 
-    // 비즈니스 메서드: 상품 정보 업데이트
+    /**
+     * 생성자: ProductDTO를 사용하여 Product 정보를 업데이트합니다.
+     * 
+     * @param newCategory   새 카테고리 정보
+     * @param newTitle      새 제목
+     * @param newContent    새 내용
+     * @param newPrice      새 가격
+     */
     public void updateProductInfo(Category newCategory, String newTitle, String newContent, Integer newPrice) {
         if (newCategory == null) {
             throw new BusinessException(ErrorCode.CATEGORY_NOT_FOUND, "카테고리 정보가 필요합니다.");
@@ -83,7 +90,7 @@ public class Product extends BaseEntity {
         this.price = newPrice;
     }
 
-    // 비즈니스 메서드: 조회수 증가
+    // 조조회수 증가
     public void incrementViewCount() {
         if (this.viewCount == null) {
             this.viewCount = 0;
@@ -91,17 +98,17 @@ public class Product extends BaseEntity {
         this.viewCount++;
     }
 
-    // 비즈니스 메서드: 끌어올리기 상태 변경
+    // 끌어올리기 상태 변경
     public void markAsBumped(boolean isBumped) {
         this.isBumped = isBumped;
     }
 
-    // 비즈니스 메서드: 예약 상태 변경
+    // 예약 상태 변경
     public void markAsReserved(boolean isReserved) {
         this.isReserved = isReserved;
     }
 
-    // 비즈니스 메서드: 거래 완료 상태 변경
+    // 거래 완료 상태 변경
     public void markAsCompleted(boolean isCompleted) {
         this.isCompleted = isCompleted;
     }

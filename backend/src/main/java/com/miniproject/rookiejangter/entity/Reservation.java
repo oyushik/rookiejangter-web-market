@@ -52,7 +52,7 @@ public class Reservation extends BaseEntity {
     @Column(name = "status")
     private TradeStatus status;
 
-    // 비즈니스 메서드: 예약 상태를 요청됨으로 변경
+    // 예약 상태를 요청됨으로 변경
     public void requestReservation() {
         if (this.status != null && this.status != TradeStatus.REQUESTED) {
             throw new BusinessException(ErrorCode.RESERVATION_ALREADY_EXISTS, this.product.getProductId());
@@ -61,7 +61,7 @@ public class Reservation extends BaseEntity {
         this.isCanceled = false;
     }
 
-    // 비즈니스 메서드: 예약 상태를 수락됨으로 변경
+    // 예약 상태를 수락됨으로 변경
     public void acceptReservation() {
         if (this.status != TradeStatus.REQUESTED) {
             throw new BusinessException(ErrorCode.RESERVATION_INVALID_STATE_FOR_ACTION, this.status, "수락");
@@ -70,7 +70,7 @@ public class Reservation extends BaseEntity {
         this.isCanceled = false;
     }
 
-    // 비즈니스 메서드: 예약 상태를 거절됨으로 변경
+    // 예약 상태를 거절됨으로 변경
     public void declineReservation() {
         if (this.status != TradeStatus.REQUESTED) {
             throw new BusinessException(ErrorCode.RESERVATION_INVALID_STATE_FOR_ACTION, this.status, "거절");
@@ -79,7 +79,7 @@ public class Reservation extends BaseEntity {
         this.isCanceled = true; // 거절 시에는 예약이 취소됨
     }
 
-    // 비즈니스 메서드: 예약을 취소
+    // 예약을 취소
     public void cancelReservation() {
         if (this.status == TradeStatus.COMPLETED) {
             throw new BusinessException(ErrorCode.RESERVATION_CANNOT_CANCEL, this.status);
@@ -91,7 +91,7 @@ public class Reservation extends BaseEntity {
         this.isCanceled = true;
     }
 
-    // 비즈니스 메서드: 예약을 완료됨 상태로 변경 (거래가 성사되었을 때)
+    // 예약을 완료됨 상태로 변경 (거래가 성사되었을 때)
     public void completeReservation() {
         if (this.status != TradeStatus.ACCEPTED) {
             throw new BusinessException(ErrorCode.RESERVATION_INVALID_STATE_FOR_ACTION, this.status, "완료");
