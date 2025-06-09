@@ -1,5 +1,7 @@
 package com.miniproject.rookiejangter.entity;
 
+import com.miniproject.rookiejangter.exception.BusinessException;
+import com.miniproject.rookiejangter.exception.ErrorCode;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.*;
@@ -7,10 +9,11 @@ import lombok.*;
 @Entity
 @Table(name = "cancelation_reasons")
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@ToString
+@EqualsAndHashCode
 public class CancelationReason {
 
     @Id
@@ -21,24 +24,18 @@ public class CancelationReason {
     @Column(name = "cancelation_reason_type", length = 50)
     private String cancelationReasonType;
 
-    @Override
-    public String toString() {
-        return "CancelationReason{" +
-                "cancelationReasonId=" + cancelationReasonId +
-                ", cancelationReasonType='" + cancelationReasonType + '\'' +
-                '}';
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        CancelationReason cancelationReason = (CancelationReason) o;
-        return cancelationReasonId != null && cancelationReasonId.equals(cancelationReason.cancelationReasonId);
-    }
-
-    @Override
-    public int hashCode() {
-        return getClass().hashCode();
+    /**
+     * 취소 사유를 생성합니다.
+     *
+     * @param cancelationReasonType 취소 사유 타입
+     */
+    public void changeReasonType(String newReasonType) {
+        if (newReasonType == null || newReasonType.trim().isEmpty()) {
+            throw new BusinessException(ErrorCode.CANCELATION_REASON_EMPTY);
+        }
+        if (newReasonType.length() > 50) {
+            throw new BusinessException(ErrorCode.CANCELATION_REASON_TOO_LONG);
+        }
+        this.cancelationReasonType = newReasonType;
     }
 }

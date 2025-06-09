@@ -1,5 +1,7 @@
 package com.miniproject.rookiejangter.entity;
 
+import com.miniproject.rookiejangter.exception.BusinessException;
+import com.miniproject.rookiejangter.exception.ErrorCode;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -7,13 +9,16 @@ import jakarta.validation.constraints.Size;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Table(name = "reviews")
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
+@ToString
+@EqualsAndHashCode
 public class Review extends BaseEntity {
 
     @Id
@@ -39,28 +44,22 @@ public class Review extends BaseEntity {
     @Column(name = "content", length = 255)
     private String content;
 
-    @Override
-    public String toString() {
-        return "Review{" +
-                "reviewId=" + reviewId +
-                ", complete=" + complete +
-                ", buyer=" + buyer +
-                ", seller=" + seller +
-                ", rating=" + rating +
-                ", content='" + content + '\'' +
-                '}';
+    /**
+     * 리뷰를 업데이트합니다.
+     * 
+     * @param newRating 새로운 평점 (1~5 사이의 정수)
+     * @param newContent 새로운 리뷰 내용 (최대 255자)
+     * @throws BusinessException 평점이 유효하지 않거나 리뷰 내용이 너무 긴 경우 예외 발생
+     */
+    public void updateReviewInfo(Integer newRating, String newContent) {
+        if (newRating == null || newRating < 1 || newRating > 5) {
+            throw new BusinessException(ErrorCode.INVALID_REVIEW_RATING);
+        }
+        if (newContent != null && newContent.length() > 255) {
+            throw new BusinessException(ErrorCode.REVIEW_CONTENT_TOO_LONG);
+        }
+        this.rating = newRating;
+        this.content = newContent;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Review review = (Review) o;
-        return reviewId != null && reviewId.equals(review.reviewId);
-    }
-
-    @Override
-    public int hashCode() {
-        return getClass().hashCode();
-    }
 }

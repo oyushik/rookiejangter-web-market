@@ -9,10 +9,11 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "notifications")
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@ToString
+@EqualsAndHashCode
 public class Notification {
 
     @Id
@@ -41,28 +42,10 @@ public class Notification {
     @Column(name = "is_read")
     private Boolean isRead;
 
-    @Override
-    public String toString() {
-        return "Notification{" +
-                "notificationId=" + notificationId +
-                ", entityId=" + entityId +
-                ", entityType='" + entityType + '\'' +
-                ", message='" + message + '\'' +
-                ", sentAt=" + sentAt +
-                ", isRead=" + isRead +
-                '}';
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Notification notification = (Notification) o;
-        return notificationId != null && notificationId.equals(notification.notificationId);
-    }
-
-    @Override
-    public int hashCode() {
-        return getClass().hashCode();
+    // 알림의 읽음 상태를 true로 업데이트
+    public void markAsRead() {
+        if (!this.isRead) {
+            this.isRead = true;
+        }
     }
 }

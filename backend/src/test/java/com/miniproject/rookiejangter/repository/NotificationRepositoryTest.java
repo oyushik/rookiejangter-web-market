@@ -109,14 +109,6 @@ public class NotificationRepositoryTest {
         assertThat(foundNotification.get().getUser().getUserId()).isEqualTo(user1.getUserId());
     }
 
-//    @Test
-//    void findByUserId() {
-//        List<Notification> foundNotifications = notificationRepository.findByUser_UserId(user1.getUserId());
-//        assertThat(foundNotifications).hasSize(2);
-//        assertThat(foundNotifications).extracting(Notification::getMessage)
-//                .containsExactlyInAnyOrder("새로운 채팅이 도착했습니다.", "예약이 완료되었습니다.");
-//    }
-
     @Test
     void updateIsRead() {
         Notification unreadNotification = Notification.builder()

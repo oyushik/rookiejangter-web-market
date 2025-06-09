@@ -1,5 +1,7 @@
 package com.miniproject.rookiejangter.entity;
 
+import com.miniproject.rookiejangter.exception.BusinessException;
+import com.miniproject.rookiejangter.exception.ErrorCode;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.*;
@@ -10,10 +12,11 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "reports")
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
+@ToString
+@EqualsAndHashCode
 public class Report extends BaseEntity {
 
     @Id
@@ -43,26 +46,42 @@ public class Report extends BaseEntity {
     @Column(name = "is_processed")
     private Boolean isProcessed;
 
-    @Override
-    public String toString() {
-        return "Report{" +
-                "reportId=" + reportId +
-                ", targetId=" + targetId +
-                ", targetType='" + targetType + '\'' +
-                ", isProcessed=" + isProcessed +
-                '}';
+    /**
+     * 신고 정보를 업데이트합니다.
+     *
+     * @param newReportReason 신고 사유
+     * @param newTargetId 신고 대상 ID
+     * @param newTargetType 신고 대상 타입
+     * @param newReportDetail 신고 상세 정보
+     */
+    public void updateReportInfo(ReportReason newReportReason, Long newTargetId, String newTargetType, String newReportDetail) {
+        if (newReportReason == null) {
+            throw new BusinessException(ErrorCode.REPORT_REASON_EMPTY);
+        }
+        if (newTargetId == null) {
+            throw new BusinessException(ErrorCode.REPORT_TARGET_ID_EMPTY);
+        }
+        if (newTargetType == null || newTargetType.trim().isEmpty()) {
+            throw new BusinessException(ErrorCode.REPORT_TARGET_TYPE_EMPTY);
+        }
+        if (newTargetType.length() > 20) {
+            throw new BusinessException(ErrorCode.REPORT_TARGET_TYPE_TOO_LONG);
+        }
+        if (newReportDetail != null && newReportDetail.length() > 255) {
+            throw new BusinessException(ErrorCode.REPORT_REASON_TOO_LONG);
+        }
+
+        this.reportReason = newReportReason;
+        this.targetId = newTargetId;
+        this.targetType = newTargetType;
+        this.reportDetail = newReportDetail;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Report report = (Report) o;
-        return reportId != null && reportId.equals(report.reportId);
+    // 비즈니스 메서드: 신고 처리 상태 변경
+    public void markAsProcessed() {
+        if (!this.isProcessed) {
+            this.isProcessed = true;
+        }
     }
 
-    @Override
-    public int hashCode() {
-        return getClass().hashCode();
-    }
 }

@@ -8,10 +8,11 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "completes")
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@ToString
+@EqualsAndHashCode
 public class Complete {
 
     @Id
@@ -34,24 +35,4 @@ public class Complete {
     @Column(name = "completed_at")
     private LocalDateTime completedAt;
 
-    @Override
-    public String toString() {
-        return "Complete{" +
-                "completeId=" + completeId +
-                ", completedAt=" + completedAt +
-                '}';
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Complete complete = (Complete) o;
-        return completeId != null && completeId.equals(complete.completeId);
-    }
-
-    @Override
-    public int hashCode() {
-        return getClass().hashCode();
-    }
 }

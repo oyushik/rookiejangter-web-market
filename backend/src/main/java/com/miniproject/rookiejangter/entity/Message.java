@@ -10,10 +10,11 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "messages")
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@ToString
+@EqualsAndHashCode
 public class Message {
 
     @Id
@@ -38,26 +39,4 @@ public class Message {
     @Column(name = "is_read")
     private Boolean isRead;
 
-    @Override
-    public String toString() {
-        return "Message{" +
-                "messageId=" + messageId +
-                ", content='" + content + '\'' +
-                ", sentAt=" + sentAt +
-                ", isRead=" + isRead +
-                '}';
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Message message = (Message) o;
-        return messageId != null && messageId.equals(message.messageId);
-    }
-
-    @Override
-    public int hashCode() {
-        return getClass().hashCode();
-    }
 }

@@ -1,4 +1,4 @@
-package com.miniproject.rookiejangter.controller.dto;
+package com.miniproject.rookiejangter.dto;
 
 import com.miniproject.rookiejangter.entity.Image;
 import lombok.*;

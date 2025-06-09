@@ -1,17 +1,18 @@
-package com.miniproject.rookiejangter.controller.dto;
+package com.miniproject.rookiejangter.dto;
 
-import com.miniproject.rookiejangter.entity.CancelationReason;
+import com.miniproject.rookiejangter.entity.ReportReason;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
-public class CancelationReasonDTO {
+public class ReportReasonDTO {
+
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
     @Builder
     public static class Request {
-        @Size(max = 50, message = "취소 사유 타입은 최대 50자까지 가능합니다.")
-        private String cancelationReasonType;
+        @Size(max = 50, message = "신고 사유 타입은 최대 50자까지 가능합니다.")
+        private String reportReasonType;
     }
 
     @Data
@@ -19,13 +20,13 @@ public class CancelationReasonDTO {
     @AllArgsConstructor
     @Builder
     public static class Response {
-        private Integer cancelationReasonId;
-        private String cancelationReasonType;
+        private Integer reportReasonId;
+        private String reportReasonType;
 
-        public static Response fromEntity(CancelationReason cancelationReason) {
+        public static Response fromEntity(ReportReason reportReason) {
             return Response.builder()
-                    .cancelationReasonId(cancelationReason.getCancelationReasonId())
-                    .cancelationReasonType(cancelationReason.getCancelationReasonType())
+                    .reportReasonId(reportReason.getReportReasonId())
+                    .reportReasonType(reportReason.getReportReasonType())
                     .build();
         }
     }

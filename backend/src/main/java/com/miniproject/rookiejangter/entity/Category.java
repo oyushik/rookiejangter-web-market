@@ -1,5 +1,7 @@
 package com.miniproject.rookiejangter.entity;
 
+import com.miniproject.rookiejangter.exception.BusinessException;
+import com.miniproject.rookiejangter.exception.ErrorCode;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -15,6 +17,8 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@ToString
+@EqualsAndHashCode
 public class Category {
 
     @Id
@@ -30,24 +34,19 @@ public class Category {
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Product> products = new ArrayList<>();
 
-    @Override
-    public String toString() {
-        return "Category{" +
-                "categoryId=" + categoryId +
-                ", categoryName='" + categoryName + '\'' +
-                '}';
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Category category = (Category) o;
-        return categoryId != null && categoryId.equals(category.categoryId);
-    }
-
-    @Override
-    public int hashCode() {
-        return getClass().hashCode();
+    /**
+     * 카테고리 이름을 변경합니다.
+     *
+     * @param newCategoryName 새 카테고리 이름
+     * @throws BusinessException 카테고리 이름이 비어있거나 길이가 20자를 초과하는 경우
+     */
+    public void changeCategoryName(String newCategoryName) {
+        if (newCategoryName == null || newCategoryName.trim().isEmpty()) {
+            throw new BusinessException(ErrorCode.CATEGORY_NAME_EMPTY);
+        }
+        if (newCategoryName.length() > 20) {
+            throw new BusinessException(ErrorCode.CATEGORY_NAME_TOO_LONG);
+        }
+        this.categoryName = newCategoryName;
     }
 }

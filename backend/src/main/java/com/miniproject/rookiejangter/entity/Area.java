@@ -1,5 +1,7 @@
 package com.miniproject.rookiejangter.entity;
 
+import com.miniproject.rookiejangter.exception.BusinessException;
+import com.miniproject.rookiejangter.exception.ErrorCode;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -11,10 +13,11 @@ import java.util.List;
 @Entity
 @Table(name = "areas")
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@ToString
+@EqualsAndHashCode
 public class Area {
 
     @Id
@@ -30,24 +33,19 @@ public class Area {
     @OneToMany(mappedBy = "area", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<User> users = new ArrayList<>();
 
-    @Override
-    public String toString() {
-        return "Area{" +
-                "areaId=" + areaId +
-                ", areaName='" + areaName + '\'' +
-                '}';
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Area area = (Area) o;
-        return areaId != null && areaId.equals(area.areaId);
-    }
-
-    @Override
-    public int hashCode() {
-        return getClass().hashCode();
+    /**
+     * 지역 이름을 변경합니다.
+     *
+     * @param newAreaName 새 지역 이름
+     * @throws BusinessException 지역 이름이 비어있거나 길이가 50자를 초과하는 경우
+     */
+    public void changeAreaName(String newAreaName) {
+        if (newAreaName == null || newAreaName.trim().isEmpty()) {
+            throw new BusinessException(ErrorCode.AREA_NAME_EMPTY);
+        }
+        if (newAreaName.length() > 50) {
+            throw new BusinessException(ErrorCode.AREA_NAME_TOO_LONG);
+        }
+        this.areaName = newAreaName;
     }
 }

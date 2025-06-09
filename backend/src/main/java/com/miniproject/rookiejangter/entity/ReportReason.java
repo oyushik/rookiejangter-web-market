@@ -1,5 +1,7 @@
 package com.miniproject.rookiejangter.entity;
 
+import com.miniproject.rookiejangter.exception.BusinessException;
+import com.miniproject.rookiejangter.exception.ErrorCode;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.*;
@@ -10,10 +12,11 @@ import java.util.List;
 @Entity
 @Table(name = "report_reasons")
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@ToString
+@EqualsAndHashCode
 public class ReportReason {
 
     @Id
@@ -27,24 +30,18 @@ public class ReportReason {
     @OneToMany(mappedBy = "reportReason", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Report> reports = new ArrayList<>();
 
-    @Override
-    public String toString() {
-        return "ReportReason{" +
-                "reportReasonId=" + reportReasonId +
-                ", reportReasonType='" + reportReasonType + '\'' +
-                '}';
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        ReportReason reportReason = (ReportReason) o;
-        return reportReasonId != null && reportReasonId.equals(reportReason.reportReasonId);
-    }
-
-    @Override
-    public int hashCode() {
-        return getClass().hashCode();
+    /**
+     * 신고 사유를 생성합니다.
+     *
+     * @param reportReasonType 신고 사유 타입
+     */
+    public void changeReasonType(String newReasonType) {
+        if (newReasonType == null || newReasonType.trim().isEmpty()) {
+            throw new BusinessException(ErrorCode.REPORT_REASON_EMPTY);
+        }
+        if (newReasonType.length() > 50) {
+            throw new BusinessException(ErrorCode.REPORT_REASON_TOO_LONG);
+        }
+        this.reportReasonType = newReasonType;
     }
 }

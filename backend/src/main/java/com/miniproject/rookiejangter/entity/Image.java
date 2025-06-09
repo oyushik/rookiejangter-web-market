@@ -8,10 +8,11 @@ import lombok.*;
 @Entity
 @Table(name = "images")
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@ToString
+@EqualsAndHashCode
 public class Image {
 
     @Id
@@ -27,24 +28,4 @@ public class Image {
     @Column(name = "image_url", length = 255, nullable = false)
     private String imageUrl;
 
-    @Override
-    public String toString() {
-        return "Image{" +
-                "imageId=" + imageId +
-                ", imageUrl='" + imageUrl + '\'' +
-                '}';
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Image image = (Image) o;
-        return imageId != null && imageId.equals(image.imageId);
-    }
-
-    @Override
-    public int hashCode() {
-        return getClass().hashCode();
-    }
 }

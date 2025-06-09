@@ -1,6 +1,6 @@
 package com.miniproject.rookiejangter.service;
 
-import com.miniproject.rookiejangter.controller.dto.CompleteDTO;
+import com.miniproject.rookiejangter.dto.CompleteDTO;
 import com.miniproject.rookiejangter.entity.Complete;
 import com.miniproject.rookiejangter.entity.Product;
 import com.miniproject.rookiejangter.entity.User;
@@ -25,6 +25,14 @@ public class CompleteService {
     private final ProductRepository productRepository;
     private final UserRepository userRepository;
 
+    /**
+     * 상품 거래 완료를 생성합니다.
+     *
+     * @param productId 상품 ID
+     * @param buyerId   구매자 ID
+     * @param sellerId  판매자 ID
+     * @return 생성된 거래 완료 정보
+     */
     @Transactional
     public CompleteDTO.Response createComplete(Long productId, Long buyerId, Long sellerId) {
         Product product = productRepository.findById(productId)
@@ -46,12 +54,17 @@ public class CompleteService {
                 .seller(seller)
                 .completedAt(LocalDateTime.now())
                 .build();
-        complete.setCompleteId(product.getProductId()); // Complete.java의 정의에 따라 직접 설정
 
         Complete savedComplete = completeRepository.save(complete);
         return CompleteDTO.Response.fromEntity(savedComplete);
     }
 
+    /**
+     * 특정 상품의 거래 완료 정보를 조회합니다.
+     *
+     * @param productId 상품 ID
+     * @return 거래 완료 정보
+     */
     @Transactional(readOnly = true)
     public CompleteDTO.Response getCompleteByProductId(Long productId) {
         Complete complete = completeRepository.findByProduct_ProductId(productId)
@@ -59,6 +72,12 @@ public class CompleteService {
         return CompleteDTO.Response.fromEntity(complete);
     }
 
+    /**
+     * 특정 거래 완료 ID에 대한 거래 완료 정보를 조회합니다.
+     *
+     * @param completeId 거래 완료 ID
+     * @return 거래 완료 정보
+     */
     @Transactional(readOnly = true)
     public List<CompleteDTO.Response> getCompletesByBuyerId(Long buyerId) {
         return completeRepository.findByBuyer_UserId(buyerId).stream()
@@ -66,6 +85,12 @@ public class CompleteService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * 특정 판매자의 거래 완료 정보를 조회합니다.
+     *
+     * @param sellerId 판매자 ID
+     * @return 거래 완료 정보 리스트
+     */
     @Transactional(readOnly = true)
     public List<CompleteDTO.Response> getCompletesBySellerId(Long sellerId) {
         return completeRepository.findBySeller_UserId(sellerId).stream()
@@ -73,6 +98,11 @@ public class CompleteService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * 모든 거래 완료 정보를 조회합니다.
+     *
+     * @return 거래 완료 정보 리스트
+     */
     @Transactional(readOnly = true)
     public List<CompleteDTO.Response> getAllCompletes() {
         return completeRepository.findAll().stream()

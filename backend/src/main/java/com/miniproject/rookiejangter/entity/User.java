@@ -1,20 +1,23 @@
 package com.miniproject.rookiejangter.entity;
 
+import com.miniproject.rookiejangter.exception.BusinessException;
+import com.miniproject.rookiejangter.exception.ErrorCode;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 @Entity
 @Table(name = "users")
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
+@ToString
+@EqualsAndHashCode
 public class User extends BaseEntity {
 
     @Id
@@ -83,30 +86,38 @@ public class User extends BaseEntity {
     @OneToMany(mappedBy = "seller", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Complete> sellerCompletes = new ArrayList<>();
 
+    /** 
+     * 사용자 정보를 업데이트합니다.
+     * 
+     * @param newArea       새 지역 정보
+     * @param newUserName   새 사용자 이름
+     * @param newPhone      새 전화번호
+     * @throws BusinessException 지역 정보가 null인 경우, 사용자 이름이 12자를 초과하는 경우, 전화번호가 20자를 초과하는 경우
+    */
+    public void updateUserInfo(Area newArea, String newUserName, String newPhone) {
+        if (newArea == null) {
+            throw new BusinessException(ErrorCode.INVALID_AREA);
+        }
+        if (newUserName.length() > 12) {
+            throw new BusinessException(ErrorCode.USERNAME_TOO_LONG);
+        }
+        if (newPhone.length() > 20) {
+            throw new BusinessException(ErrorCode.PHONE_TOO_LONG);
+        }
 
-    @Override
-    public String toString() {
-        return "User{" +
-                "userId=" + userId +
-                ", loginId='" + loginId + '\'' +
-                ", userName='" + userName + '\'' +
-                ", phone='" + phone + '\'' +
-                ", isBanned=" + isBanned +
-                ", isAdmin=" + isAdmin +
-                '}';
+        this.area = newArea;
+        this.userName = newUserName;
+        this.phone = newPhone;
     }
 
-    @Override
-
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        User user = (User) o;
-        return userId != null && userId.equals(user.userId);
+    // 사용자 제재 상태 변경
+    public void changeBanStatus(boolean isBanned) {
+        this.isBanned = isBanned;
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(userId); // userId 기반으로 hashCode 생성
+    // 관리자 권한 변경
+    public void changeAdminStatus(boolean isAdmin) {
+        this.isAdmin = isAdmin;
     }
+
 }

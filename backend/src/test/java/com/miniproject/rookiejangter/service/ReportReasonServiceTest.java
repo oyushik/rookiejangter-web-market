@@ -1,9 +1,8 @@
 package com.miniproject.rookiejangter.service;
 
-import com.miniproject.rookiejangter.controller.dto.ReportReasonDTO;
+import com.miniproject.rookiejangter.dto.ReportReasonDTO;
 import com.miniproject.rookiejangter.entity.ReportReason;
 import com.miniproject.rookiejangter.exception.BusinessException;
-import com.miniproject.rookiejangter.exception.ErrorCode;
 import com.miniproject.rookiejangter.repository.ReportReasonRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

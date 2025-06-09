@@ -1,7 +1,7 @@
 package com.miniproject.rookiejangter.controller;
 
-import com.miniproject.rookiejangter.controller.dto.DibsDTO;
-import com.miniproject.rookiejangter.controller.dto.ProductDTO;
+import com.miniproject.rookiejangter.dto.DibsDTO;
+import com.miniproject.rookiejangter.dto.ProductDTO;
 import com.miniproject.rookiejangter.service.DibsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -21,6 +21,7 @@ public class DibsController {
 
     private final DibsService dibsService;
 
+    // 상품 찜 토글
     @PutMapping("/{productId}")
     public ResponseEntity<ProductDTO.ApiResponseWrapper<DibsDTO.Response>> toggleDibs(
             @PathVariable Long productId,
@@ -50,11 +51,6 @@ public class DibsController {
         Long userId = Long.parseLong(authentication.getName());
 
         DibsDTO.DibsListResponse dibsListResponse = dibsService.getUserDibsList(userId, pageable);
-
-        // if (dibsListResponse.getPagination() != null && dibsListResponse.getPagination().getContent() != null) {
-        //     log.debug("DibsListResponse.pagination.content 중복 필드 제거");
-        //     dibsListResponse.getPagination().setContent(null);
-        // }
 
         ProductDTO.ApiResponseWrapper<DibsDTO.DibsListResponse> response = ProductDTO.ApiResponseWrapper.<DibsDTO.DibsListResponse>builder()
                 .success(true)

@@ -1,20 +1,11 @@
 package com.miniproject.rookiejangter.controller;
 
-import com.miniproject.rookiejangter.controller.dto.NotificationDTO;
-import com.miniproject.rookiejangter.controller.dto.ProductDTO;
-import com.miniproject.rookiejangter.controller.dto.ReservationDTO;
-import com.miniproject.rookiejangter.controller.dto.UserDTO;
-import com.miniproject.rookiejangter.entity.User;
-import com.miniproject.rookiejangter.service.NotificationService;
-import com.miniproject.rookiejangter.service.ProductService;
+import com.miniproject.rookiejangter.dto.ReservationDTO;
+import com.miniproject.rookiejangter.dto.UserDTO;
 import com.miniproject.rookiejangter.service.ReservationService;
 import com.miniproject.rookiejangter.service.UserService;
 import jakarta.validation.Valid;
-import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;

@@ -1,5 +1,7 @@
 package com.miniproject.rookiejangter.entity;
 
+import com.miniproject.rookiejangter.exception.BusinessException;
+import com.miniproject.rookiejangter.exception.ErrorCode;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -9,10 +11,11 @@ import java.util.Objects;
 @Entity
 @Table(name = "cancelations")
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@ToString
+@EqualsAndHashCode
 public class Cancelation {
 
     @Id
@@ -34,27 +37,23 @@ public class Cancelation {
     @Column(name = "canceled_at")
     private LocalDateTime canceledAt;
 
-    @Override
-    public String toString() {
-        return "Cancelation{" +
-                "cancelationId=" + cancelationId +
-                ", reservationId=" + (reservation != null ? reservation.getReservationId() : null) +
-                ", cancelationReasonId=" + (cancelationReason != null ? cancelationReason.getCancelationReasonId() : null) +
-                ", cancelationDetail='" + cancelationDetail + '\'' +
-                ", canceledAt=" + canceledAt +
-                '}';
-    }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Cancelation that = (Cancelation) o;
-        return Objects.equals(cancelationId, that.cancelationId);
-    }
+    /**
+     * 예약 취소를 업데이트합니다.
+     *
+     * @param reservation       예약 정보
+     * @param cancelationReason 취소 사유
+     * @param cancelationDetail 취소 상세 정보
+     */
+    public void updateCancelationInfo(CancelationReason newCancelationReason, String newCancelationDetail) {
+        if (newCancelationReason == null) {
+            throw new BusinessException(ErrorCode.CANCELATION_REASON_EMPTY);
+        }
+        if (newCancelationDetail != null && newCancelationDetail.length() > 255) {
+            throw new BusinessException(ErrorCode.CANCELATION_REASON_TOO_LONG);
+        }
 
-    @Override
-    public int hashCode() {
-        return reservation != null ? reservation.getReservationId().hashCode() : 0;
+        this.cancelationReason = newCancelationReason;
+        this.cancelationDetail = newCancelationDetail;
     }
 }

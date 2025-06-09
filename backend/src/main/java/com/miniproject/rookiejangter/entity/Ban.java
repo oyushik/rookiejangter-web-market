@@ -8,10 +8,11 @@ import lombok.experimental.SuperBuilder;
 @Entity
 @Table(name = "bans")
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
+@ToString
+@EqualsAndHashCode
 public class Ban extends BaseEntity {
 
     @Id
@@ -30,24 +31,4 @@ public class Ban extends BaseEntity {
     @Column(name = "ban_reason", length = 50)
     private String banReason;
 
-    @Override
-    public String toString() {
-        return "Ban{" +
-                "banId=" + banId +
-                ", banReason='" + banReason + '\'' +
-                '}';
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Ban ban = (Ban) o;
-        return banId != null && banId.equals(ban.banId);
-    }
-
-    @Override
-    public int hashCode() {
-        return getClass().hashCode();
-    }
 }

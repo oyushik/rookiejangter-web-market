@@ -1,7 +1,7 @@
 package com.miniproject.rookiejangter.controller;
 
-import com.miniproject.rookiejangter.controller.dto.ProductDTO;
-import com.miniproject.rookiejangter.controller.dto.ReservationDTO;
+import com.miniproject.rookiejangter.dto.ProductDTO;
+import com.miniproject.rookiejangter.dto.ReservationDTO;
 import com.miniproject.rookiejangter.service.ReservationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +18,7 @@ public class ReservationController {
 
     private final ReservationService reservationService;
 
-    // 현재 로그인 중인 사용자가 buyerId로 설정된 모든 reservations를 목록으로 보여줌
+    // 현재 로그인 중인 사용자가 buyerId로 설정된 모든 reservations를 목록으로 표시
     @GetMapping("/buyer")
     public ResponseEntity<ProductDTO.ApiResponseWrapper<List<ReservationDTO.Response>>> getReservationsByBuyer(
             Authentication authentication) {
@@ -31,7 +31,7 @@ public class ReservationController {
                 .build());
     }
 
-    // 현재 로그인 중인 사용자가 sellerId로 설정된 모든 reservations를 목록으로 보여줌
+    // 현재 로그인 중인 사용자가 sellerId로 설정된 모든 reservations를 목록으로 표시
     @GetMapping("/seller")
     public ResponseEntity<ProductDTO.ApiResponseWrapper<List<ReservationDTO.Response>>> getReservationsBySeller(
             Authentication authentication) { // @RequestHeader 대신 Authentication 사용
@@ -44,7 +44,7 @@ public class ReservationController {
                 .build());
     }
 
-    // 특정 Product(상품 게시물)에 대한 예약 요청을 보냄
+    // 특정 상품에 대한 예약 요청
     @PostMapping
     public ResponseEntity<ProductDTO.ApiResponseWrapper<ReservationDTO.Response>> createReservation(
             @RequestBody ReservationDTO.TradeRequest request,
