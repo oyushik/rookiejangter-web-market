@@ -72,6 +72,7 @@ CREATE TABLE IF NOT EXISTS `messages` (
   `message_id` BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
   `chat_id` BIGINT NULL,
   `sender_id` BIGINT NULL,
+  `receiver_id` BIGINT NULL,
   `content` VARCHAR(255) NOT NULL,
   `is_read` BOOLEAN NULL,
   `created_at` TIMESTAMP NULL,

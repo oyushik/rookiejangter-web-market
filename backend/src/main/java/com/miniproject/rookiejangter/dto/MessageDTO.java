@@ -27,16 +27,16 @@ public class MessageDTO {
     @Builder
     public static class Response {
         private Long messageId;
-        private Long chatRoomId;
+        private Long chatId;
         private Long senderId;
         private String content;
         private LocalDateTime sentAt;
         private Boolean isRead;
 
-        public static Response fromEntity(Message message, Long chatRoomId) {
+        public static Response fromEntity(Message message, Long chatId) {
             return Response.builder()
                     .messageId(message.getMessageId())
-                    .chatRoomId(chatRoomId)
+                    .chatId(chatId)
                     .senderId(message.getUser().getUserId())
                     .content(message.getContent())
                     .sentAt(message.getCreatedAt())

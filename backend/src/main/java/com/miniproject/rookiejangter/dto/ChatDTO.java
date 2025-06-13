@@ -24,7 +24,7 @@ public class ChatDTO {
     @AllArgsConstructor
     @Builder
     public static class Response {
-        private Long chatRoomId;
+        private Long chatId;
         private Long productId;
         private Long buyerId;
         private Long sellerId;
@@ -32,7 +32,7 @@ public class ChatDTO {
 
         public static Response fromEntity(Chat chat) {
             return Response.builder()
-                    .chatRoomId(chat.getChatId())
+                    .chatId(chat.getChatId())
                     .productId(chat.getProduct().getProductId())
                     .buyerId(chat.getBuyer().getUserId())
                     .sellerId(chat.getSeller().getUserId())
@@ -59,18 +59,18 @@ public class ChatDTO {
         @AllArgsConstructor
         @Builder
         public static class ChatInfo {
-            private Long chatRoomId;
+            private Long chatId;
             private Long productId;
             private String lastMessage;
-            private Integer unreadCount;
+//            private Integer unreadCount;
             private LocalDateTime createdAt;
 
-            public static ChatInfo fromEntity(Chat chat, String lastMessage, Integer unreadCount) {
+            public static ChatInfo fromEntity(Chat chat, String lastMessage) {
                 return ChatInfo.builder()
-                        .chatRoomId(chat.getChatId())
+                        .chatId(chat.getChatId())
                         .productId(chat.getProduct().getProductId())
                         .lastMessage(lastMessage)
-                        .unreadCount(unreadCount)
+//                        .unreadCount(unreadCount)
                         .createdAt(chat.getCreatedAt())
                         .build();
             }

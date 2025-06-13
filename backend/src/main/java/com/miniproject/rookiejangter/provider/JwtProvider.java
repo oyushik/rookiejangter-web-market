@@ -6,13 +6,16 @@ import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Component
@@ -117,5 +120,46 @@ public class JwtProvider {
     // RefreshToken 만료 시간 반환 (Redis 저장시 사용)
     public long getRefreshTokenExpireTime() {
         return REFRESH_TOKEN_VALIDITY;
+    }
+
+    /**
+     * JWT 토큰에서 인증 정보(Authentication)를 조회합니다.
+     * StompHandler에서 사용될 핵심 메서드.
+     *
+     * @param accessToken JWT Access Token
+     * @return Authentication 객체
+     */
+    public Authentication getAuthentication(String accessToken) {
+        // 토큰 복호화
+        Claims claims = parseClaims(accessToken);
+
+        if (claims.get("auth") == null) {
+            // 권한 정보가 없는 토큰은 유효하지 않음
+            throw new RuntimeException("권한 정보가 없는 토큰입니다.");
+        }
+
+        // 클레임에서 권한 정보 가져오기
+        Collection<? extends GrantedAuthority> authorities =
+                Arrays.stream(claims.get("auth").toString().split(","))
+                        .map(SimpleGrantedAuthority::new)
+                        .collect(Collectors.toList());
+
+        // Spring Security User 객체를 생성 (userId를 username으로 사용)
+        // UserDetails 구현체를 사용하거나, 직접 Principal 객체를 생성할 수 있습니다.
+        // 여기서는 userId를 String으로 변환하여 User 객체에 넣습니다.
+        User principal = new User(claims.getSubject(), "", authorities); // subject는 userId
+
+        // UsernamePasswordAuthenticationToken을 반환하여 SecurityContext에 저장할 Authentication 객체 생성
+        return new UsernamePasswordAuthenticationToken(principal, "", authorities);
+    }
+
+    // JWT 토큰을 복호화하여 클레임(claims)을 추출하는 헬퍼 메서드
+    private Claims parseClaims(String accessToken) {
+        try {
+            return Jwts.parser().setSigningKey(key).build().parseClaimsJws(accessToken).getBody();
+        } catch (ExpiredJwtException e) {
+            // 만료된 토큰에서도 클레임은 추출 가능 (리프레시 토큰 로직에 사용될 수 있음)
+            return e.getClaims();
+        }
     }
 }

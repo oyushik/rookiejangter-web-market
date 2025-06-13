@@ -1,6 +1,8 @@
 package com.miniproject.rookiejangter.repository;
 
 import com.miniproject.rookiejangter.entity.Message;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -12,8 +14,10 @@ import java.util.Optional;
 
 @Repository
 public interface MessageRepository extends JpaRepository<Message, Long> {
-    List<Message> findByChat_ChatId(Long chatChatId);
+    Page<Message> findByChat_ChatId(Long chatChatId, Pageable pageable);
     List<Message> findByUser_UserId(Long senderUserId);
+    List<Message> findByChat_ChatIdOrderByCreatedAtDesc(Long chatChatId);
+    List<Message> findByChat_ChatIdAndIsReadFalseAndReceiver_UserId(Long chatChatId, Boolean isRead, Long receiverUserId);
 
     @Transactional
     @Modifying

@@ -49,6 +49,7 @@ function App() {
           <Route path="/products/:product_id" element={<ProductDetailPage />} />
           <Route path="/my-products/:id/edit" element={<ProductRegisterPage editMode />} />
           <Route path="/my-products" element={<MyProductsPage />} />
+          <Route path="/chat/:chatRoomId" element={<ChatRoomPage />} />
           <Route
             path="/products/register"
             element={

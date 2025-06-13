@@ -5,8 +5,10 @@ import com.miniproject.rookiejangter.exception.ErrorCode;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+import org.springframework.security.core.GrantedAuthority;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 @Entity
@@ -84,6 +86,9 @@ public class User extends BaseEntity {
 
     @OneToMany(mappedBy = "seller", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Complete> sellerCompletes = new ArrayList<>();
+
+    public User(String subject, String s, Collection<? extends GrantedAuthority> authorities) {
+    }
 
     /** 
      * 사용자 정보를 업데이트합니다.
