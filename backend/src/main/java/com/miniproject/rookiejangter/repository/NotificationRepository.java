@@ -14,7 +14,6 @@ import java.util.Optional;
 
 @Repository
 public interface NotificationRepository extends JpaRepository<Notification, Long> {
-    Optional<Notification> findByNotificationId(Long notificationId);
     Page<Notification> findByUser_UserId(Long userUserId, Pageable pageable);
     List<Notification> findByEntityId(Long entityId);
     List<Notification> findByEntityType(String entityType);

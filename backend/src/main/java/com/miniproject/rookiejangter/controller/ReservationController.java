@@ -58,21 +58,6 @@ public class ReservationController {
                 .build());
     }
 
-    // 예약 상태 업데이트 (판매자가 수락/거절/완료, 구매자/판매자가 취소)
-    @PatchMapping("/{reservation_id}/status")
-    public ResponseEntity<ProductDTO.ApiResponseWrapper<ReservationDTO.Response>> updateReservationStatus(
-            @PathVariable("reservation_id") Long reservationId,
-            @RequestBody ReservationDTO.StatusUpdateRequest request,
-            Authentication authentication) { // @RequestHeader 대신 Authentication 사용
-        Long currentUserId = Long.parseLong(authentication.getName()); // JWT에서 userId 추출
-        ReservationDTO.Response updatedReservation = reservationService.updateReservationStatus(reservationId, request.getStatus(), currentUserId);
-        return ResponseEntity.ok(ProductDTO.ApiResponseWrapper.<ReservationDTO.Response>builder()
-                .success(true)
-                .data(updatedReservation)
-                .message("예약 상태가 성공적으로 업데이트되었습니다.")
-                .build());
-    }
-
     // 예약 상세 조회 (필요시)
     @GetMapping("/{reservation_id}")
     public ResponseEntity<ProductDTO.ApiResponseWrapper<ReservationDTO.Response>> getReservationById(

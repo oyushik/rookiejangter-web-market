@@ -107,9 +107,7 @@ public enum ErrorCode {
     CANNOT_RESERVE_OWN_PRODUCT(HttpStatus.BAD_REQUEST, "R004", "자신의 상품은 예약할 수 없습니다."),
     PRODUCT_NOT_RESERVABLE(HttpStatus.BAD_REQUEST, "R005", "예약할 수 없는 상품입니다: %s"), // Modified to take reason
     RESERVATION_ACTION_FORBIDDEN(HttpStatus.FORBIDDEN, "R006", "예약에 대한 '%s' 작업 권한이 없습니다."), // New
-    RESERVATION_INVALID_STATE_FOR_ACTION(HttpStatus.BAD_REQUEST, "R007", "현재 예약 상태(%s)에서는 '%s' 작업을 수행할 수 없습니다."), // New
-    RESERVATION_INVALID_STATUS_TRANSITION(HttpStatus.BAD_REQUEST, "R008", "유효하지 않은 예약 상태(%s)로 변경할 수 없습니다."), // New
-    RESERVATION_DELETE_CONDITIONS_NOT_MET(HttpStatus.FORBIDDEN, "R009", "예약 삭제 조건을 만족하지 않습니다 (권한 또는 상태)."), // New
+    RESERVATION_DELETE_CONDITIONS_NOT_MET(HttpStatus.FORBIDDEN, "R007", "예약 삭제 조건을 만족하지 않습니다 (권한 또는 상태)."),
 
     // Review
     DUPLICATE_REVIEW(HttpStatus.CONFLICT, "RV001","이미 후기를 작성하였습니다"),

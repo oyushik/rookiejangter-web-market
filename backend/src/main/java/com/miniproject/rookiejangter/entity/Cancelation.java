@@ -4,19 +4,17 @@ import com.miniproject.rookiejangter.exception.BusinessException;
 import com.miniproject.rookiejangter.exception.ErrorCode;
 import jakarta.persistence.*;
 import lombok.*;
-
-import java.time.LocalDateTime;
-import java.util.Objects;
+import lombok.experimental.SuperBuilder;
 
 @Entity
 @Table(name = "cancelations")
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
+@SuperBuilder
 @ToString
 @EqualsAndHashCode
-public class Cancelation {
+public class Cancelation extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,10 +31,6 @@ public class Cancelation {
 
     @Column(name = "cancelation_detail", length = 255)
     private String cancelationDetail;
-
-    @Column(name = "canceled_at")
-    private LocalDateTime canceledAt;
-
 
     /**
      * 취소 정보를 업데이트합니다.

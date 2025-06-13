@@ -12,10 +12,8 @@ import java.util.Optional;
 
 @Repository
 public interface MessageRepository extends JpaRepository<Message, Long> {
-    Optional<Message> findByMessageId(Long messageId);
     List<Message> findByChat_ChatId(Long chatChatId);
     List<Message> findByUser_UserId(Long senderUserId);
-    List<Message> findByIsRead(Boolean isRead);
 
     @Transactional
     @Modifying

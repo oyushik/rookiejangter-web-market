@@ -36,11 +36,11 @@ public class ReviewService {
     @Transactional
     public ReviewDTO.Response createReview(Long completeId, Long userId, ReviewDTO.Request request) {
         // 1. 해당 거래가 완료되었는지 확인
-        Complete complete = completeRepository.findByCompleteId(completeId)
+        Complete complete = completeRepository.findById(completeId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.TRADE_NOT_FOUND, completeId));
 
         // 2. 리뷰를 작성하는 사용자(구매자) 존재 확인
-        User user = userRepository.findByUserId(userId)
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND, userId));
 
         // 3. 이미 리뷰를 작성했는지 확인 (1개의 거래에 1개의 리뷰만 허용)
@@ -74,7 +74,7 @@ public class ReviewService {
     @Transactional
     public ReviewDTO.Response updateReview(Long reviewId, Long userId, ReviewDTO.Request request) {
         // 1. 해당 리뷰가 있는지 확인
-        Review review = reviewRepository.findByReviewId(reviewId)
+        Review review = reviewRepository.findById(reviewId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.REVIEW_NOT_FOUND, reviewId));
 
         // 2. 리뷰 수정 권한 확인 (리뷰 작성자와 수정자가 동일한지)
@@ -97,7 +97,7 @@ public class ReviewService {
     @Transactional
     public void deleteReview(Long reviewId, Long userId) {
         // 1. 삭제할 리뷰가 있는지 확인
-        Review review = reviewRepository.findByReviewId(reviewId)
+        Review review = reviewRepository.findById(reviewId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.REVIEW_NOT_FOUND, reviewId));
 
         // 2. 리뷰 삭제 권한 확인 (리뷰 작성자와 삭제자가 동일한지)
@@ -116,7 +116,7 @@ public class ReviewService {
      * @return 리뷰 정보
      */
     public ReviewDTO.Response getReviewById(Long reviewId) {
-        Review review = reviewRepository.findByReviewId(reviewId)
+        Review review = reviewRepository.findById(reviewId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.REVIEW_NOT_FOUND, reviewId));
         return ReviewDTO.Response.fromEntity(review);
     }

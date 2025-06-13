@@ -2,15 +2,14 @@ package com.miniproject.rookiejangter.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-
-import java.time.LocalDateTime;
+import lombok.experimental.SuperBuilder;
 
 @Entity
 @Table(name = "bumps")
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
+@SuperBuilder
 @ToString
 @EqualsAndHashCode
 public class Bump {
@@ -23,9 +22,6 @@ public class Bump {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id")
     private Product product;
-
-    @Column(name = "bumped_at")
-    private LocalDateTime bumpedAt;
 
     @Column(name = "bump_count")
     private Integer bumpCount;

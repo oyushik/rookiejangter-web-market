@@ -4,6 +4,7 @@ import com.miniproject.rookiejangter.entity.Cancelation;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
+import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 
@@ -30,7 +31,7 @@ public class CancelationDTO {
         private Integer cancelationReasonId;
         private String cancelationReasonType;
         private String cancelationDetail;
-        private OffsetDateTime canceledAt;
+        private LocalDateTime canceledAt;
 
         public static Response fromEntity(Cancelation cancelation) {
             return Response.builder()
@@ -39,7 +40,7 @@ public class CancelationDTO {
                     .cancelationReasonId(cancelation.getCancelationReason().getCancelationReasonId())
                     .cancelationReasonType(cancelation.getCancelationReason().getCancelationReasonType())
                     .cancelationDetail(cancelation.getCancelationDetail())
-                    .canceledAt(cancelation.getCanceledAt() != null ? cancelation.getCanceledAt().atOffset(ZoneOffset.UTC) : null)
+                    .canceledAt(cancelation.getCreatedAt())
                     .build();
         }
     }

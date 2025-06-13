@@ -13,12 +13,9 @@ import java.util.Optional;
 
 @Repository
 public interface DibsRepository extends JpaRepository<Dibs, Long> {
-    Optional<Dibs> findByDibsId(Long dibsId);
     Page<Dibs> findByUser_UserId(Long userId, Pageable pageable);
     Optional<Dibs> findByUser_UserIdAndProduct_ProductId(Long userId, Long productId);
     List<Dibs> findByProduct_ProductId(Long productId);
     boolean existsByUser_UserIdAndProduct_ProductId(Long userId, Long productId);
-    void deleteByUser_UserIdAndProduct_ProductId(Long userId, Long productId);
-
 }
 

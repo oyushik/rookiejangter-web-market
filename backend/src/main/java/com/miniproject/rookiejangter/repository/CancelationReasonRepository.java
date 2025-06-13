@@ -8,5 +8,5 @@ import java.util.Optional;
 
 @Repository
 public interface CancelationReasonRepository extends JpaRepository<CancelationReason, Integer> {
-    Optional<CancelationReason> findByCancelationReasonId(Integer cancelationReasonId);
+
 }

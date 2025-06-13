@@ -73,15 +73,15 @@ const SignUpForm = ({ defaultName, defaultPhone }) => {
       case 'phone':
         if (!value) {
           message = '전화번호는 필수입니다.';
-        } else if (value.length < 9 || value.length > 20) {
+        } else if (value.length < 9 || value.length > 12) {
           message = '유효한 전화번호를 입력해야 합니다.';
-        } else if (!/^010-\d{4}-\d{4}$/.test(value)) {
-          message = '전화번호 형식은 010-XXXX-XXXX 입니다.';
+        } else if (!/^010\d{8}$/.test(value)) {
+          message = '전화번호 형식은 010XXXXOOOO 입니다.';
         }
         break;
       case 'areaId':
         if (!value) {
-          message = '지역은 필수 선택 항목입니다.'; // 메시지 변경
+          message = '지역은 필수 선택 항목입니다.';
         }
         break;
       default:
@@ -235,7 +235,7 @@ const SignUpForm = ({ defaultName, defaultPhone }) => {
         margin="normal"
         required
         error={!!errors.phone}
-        helperText={errors.phone || '010-XXXX-XXXX 형식'}
+        helperText={errors.phone || '010XXXXOOOO 형식'}
         FormHelperTextProps={{
           style: { color: errors.phone ? 'red' : 'grey' },
         }}

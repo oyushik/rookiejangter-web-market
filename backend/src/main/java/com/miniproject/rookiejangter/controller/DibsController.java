@@ -31,7 +31,7 @@ public class DibsController {
 
         DibsDTO.Response toggleResult = dibsService.toggleDibs(userId, productId);
 
-        String message = toggleResult.isLiked() ? "찜 목록에 추가되었습니다." : "찜 목록에서 제거되었습니다.";
+        String message = toggleResult.isDibbed() ? "찜 목록에 추가되었습니다." : "찜 목록에서 제거되었습니다.";
 
         ProductDTO.ApiResponseWrapper<DibsDTO.Response> response = ProductDTO.ApiResponseWrapper.<DibsDTO.Response>builder()
                 .success(true)

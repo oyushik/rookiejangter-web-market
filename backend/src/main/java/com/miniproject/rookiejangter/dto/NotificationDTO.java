@@ -3,6 +3,7 @@ package com.miniproject.rookiejangter.dto;
 import com.miniproject.rookiejangter.entity.Notification;
 import lombok.*;
 
+import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 
@@ -17,7 +18,7 @@ public class NotificationDTO {
         private Long entityId;
         private String entityType;
         private String message;
-        private OffsetDateTime sentAt;
+        private LocalDateTime sentAt;
         private Boolean isRead;
 
         public static Response fromEntity(Notification notification) {
@@ -27,7 +28,7 @@ public class NotificationDTO {
                     .entityId(notification.getEntityId())
                     .entityType(notification.getEntityType())
                     .message(notification.getMessage())
-                    .sentAt(notification.getSentAt() != null ? notification.getSentAt().atOffset(ZoneOffset.UTC) : null)
+                    .sentAt(notification.getCreatedAt())
                     .isRead(notification.getIsRead())
                     .build();
         }
@@ -42,7 +43,7 @@ public class NotificationDTO {
         private T data;
         private Object error;
         private String message;
-        private java.time.OffsetDateTime timestamp = java.time.OffsetDateTime.now(java.time.ZoneOffset.UTC);
+        private OffsetDateTime timestamp = OffsetDateTime.now(ZoneOffset.UTC);
         private String requestId;
     }
 }

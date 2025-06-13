@@ -3,6 +3,7 @@ package com.miniproject.rookiejangter.dto;
 import com.miniproject.rookiejangter.entity.Report;
 import lombok.*;
 
+import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 
@@ -32,7 +33,7 @@ public class ReportDTO {
         private String targetType;
         private String reportDetail;
         private Boolean isProcessed;
-        private OffsetDateTime createdAt;
+        private LocalDateTime createdAt;
 
         public static Response fromEntity(Report report) {
             return Response.builder()
@@ -44,7 +45,7 @@ public class ReportDTO {
                     .targetType(report.getTargetType())
                     .reportDetail(report.getReportDetail())
                     .isProcessed(report.getIsProcessed())
-                    .createdAt(report.getCreatedAt() != null ? report.getCreatedAt().atOffset(ZoneOffset.UTC) : null)
+                    .createdAt(report.getCreatedAt())
                     .build();
         }
     }
@@ -58,7 +59,7 @@ public class ReportDTO {
         private T data;
         private Object error;
         private String message;
-        private java.time.OffsetDateTime timestamp = java.time.OffsetDateTime.now(java.time.ZoneOffset.UTC);
+        private OffsetDateTime timestamp = OffsetDateTime.now(ZoneOffset.UTC);
         private String requestId;
     }
 }

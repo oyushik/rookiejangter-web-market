@@ -37,7 +37,7 @@ public class BanService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND, userId));
 
-        Report report = reportRepository.findByReportId(reportId)
+        Report report = reportRepository.findById(reportId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.RESOURCE_NOT_FOUND, "Report", reportId));
 
         Ban ban = Ban.builder()
@@ -72,7 +72,7 @@ public class BanService {
      * @return 밴 정보 DTO
      */
     public BanDTO.Response getBanById(Long banId) {
-        Ban ban = banRepository.findByBanId(banId)
+        Ban ban = banRepository.findById(banId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.RESOURCE_NOT_FOUND, "Ban", banId));
 
         return BanDTO.Response.fromEntity(ban);
@@ -120,14 +120,12 @@ public class BanService {
     }
 
     /**
-     * 특정 밴 정보를 수정합니다.
+     * 밴 정보를 삭제합니다.
      *
      * @param banId      수정할 밴 ID
-     * @param banReason  새로운 밴 사유
-     * @return 수정된 밴 정보 DTO
      */
     public void deleteBan(Long banId) {
-        Ban ban = banRepository.findByBanId(banId)
+        Ban ban = banRepository.findById(banId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.RESOURCE_NOT_FOUND, "Ban", banId));
 
         banRepository.delete(ban);

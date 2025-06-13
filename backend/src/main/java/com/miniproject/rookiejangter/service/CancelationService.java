@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -44,7 +45,7 @@ public class CancelationService {
                 .reservation(reservation)
                 .cancelationReason(cancelationReason)
                 .cancelationDetail(request.getCancelationDetail())
-                .canceledAt(LocalDateTime.now())
+                .createdAt(LocalDateTime.now())
                 .build();
 
         Cancelation savedCancelation = cancelationRepository.save(cancelation);

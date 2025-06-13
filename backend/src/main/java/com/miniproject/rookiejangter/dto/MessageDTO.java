@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
+import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 
@@ -29,7 +30,7 @@ public class MessageDTO {
         private Long chatRoomId;
         private Long senderId;
         private String content;
-        private OffsetDateTime sentAt;
+        private LocalDateTime sentAt;
         private Boolean isRead;
 
         public static Response fromEntity(Message message, Long chatRoomId) {
@@ -38,7 +39,7 @@ public class MessageDTO {
                     .chatRoomId(chatRoomId)
                     .senderId(message.getUser().getUserId())
                     .content(message.getContent())
-                    .sentAt(message.getSentAt() != null ? message.getSentAt().atOffset(ZoneOffset.UTC) : null)
+                    .sentAt(message.getCreatedAt())
                     .isRead(false)
                     .build();
         }
@@ -65,7 +66,7 @@ public class MessageDTO {
             private Long messageId;
             private Long senderId;
             private String content;
-            private OffsetDateTime sentAt;
+            private LocalDateTime sentAt;
             private Boolean isRead;
 
             public static MessageResponse fromEntity(Message message) {
@@ -73,7 +74,7 @@ public class MessageDTO {
                         .messageId(message.getMessageId())
                         .senderId(message.getUser().getUserId())
                         .content(message.getContent())
-                        .sentAt(message.getSentAt() != null ? message.getSentAt().atOffset(ZoneOffset.UTC) : null)
+                        .sentAt(message.getCreatedAt())
                         .isRead(false)
                         .build();
             }

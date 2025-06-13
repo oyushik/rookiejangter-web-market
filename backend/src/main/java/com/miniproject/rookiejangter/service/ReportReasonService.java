@@ -41,7 +41,7 @@ public class ReportReasonService {
      * @return 신고 사유 정보
      */
     public ReportReasonDTO.Response getReportReasonById(Integer reportReasonId) {
-        ReportReason reportReason = reportReasonRepository.findByReportReasonId(reportReasonId)
+        ReportReason reportReason = reportReasonRepository.findById(reportReasonId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.RESOURCE_NOT_FOUND, "ReportReason", reportReasonId, ""));
 
         return ReportReasonDTO.Response.fromEntity(reportReason);
@@ -68,7 +68,7 @@ public class ReportReasonService {
      * @return 수정된 신고 사유 정보
      */
     public ReportReasonDTO.Response updateReportReason(Integer reportReasonId, ReportReasonDTO.Request request) {
-        ReportReason reportReason = reportReasonRepository.findByReportReasonId(reportReasonId)
+        ReportReason reportReason = reportReasonRepository.findById(reportReasonId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.RESOURCE_NOT_FOUND, "ReportReason", reportReasonId, ""));
 
         reportReason.changeReasonType(request.getReportReasonType());
@@ -82,7 +82,7 @@ public class ReportReasonService {
      * @param reportReasonId 신고 사유 ID
      */
     public void deleteReportReason(Integer reportReasonId) {
-        ReportReason reportReason = reportReasonRepository.findByReportReasonId(reportReasonId)
+        ReportReason reportReason = reportReasonRepository.findById(reportReasonId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.RESOURCE_NOT_FOUND, "ReportReason", reportReasonId, ""));
 
         reportReasonRepository.deleteById(reportReasonId);

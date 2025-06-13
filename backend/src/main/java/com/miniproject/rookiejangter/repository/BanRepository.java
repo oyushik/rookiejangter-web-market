@@ -11,7 +11,6 @@ import java.util.Optional;
 
 @Repository
 public interface BanRepository extends JpaRepository<Ban, Long> {
-    Optional<Ban> findByBanId(Long banId);
     List<Ban> findByUser_UserId(Long userUserId);
     Optional<Ban> findByReport_ReportId(Long reportReportId);
     List<Ban> findByBanReason(String banReason);

@@ -4,6 +4,9 @@ import com.miniproject.rookiejangter.entity.CancelationReason;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
+
 public class CancelationReasonDTO {
     @Data
     @NoArgsConstructor
@@ -39,7 +42,7 @@ public class CancelationReasonDTO {
         private T data;
         private Object error;
         private String message;
-        private java.time.OffsetDateTime timestamp = java.time.OffsetDateTime.now(java.time.ZoneOffset.UTC);
+        private OffsetDateTime timestamp = OffsetDateTime.now(ZoneOffset.UTC);
         private String requestId;
     }
 }

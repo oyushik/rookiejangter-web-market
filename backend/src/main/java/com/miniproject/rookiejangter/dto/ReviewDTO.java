@@ -6,6 +6,7 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
+import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 
@@ -35,7 +36,8 @@ public class ReviewDTO {
         private Long sellerId;
         private Integer rating;
         private String content;
-        private OffsetDateTime createdAt;
+        private LocalDateTime createdAt;
+        private LocalDateTime updatedAt;
 
         public static Response fromEntity(Review review) {
             return Response.builder()
@@ -45,7 +47,8 @@ public class ReviewDTO {
                     .sellerId(review.getComplete().getSeller().getUserId())
                     .rating(review.getRating())
                     .content(review.getContent())
-                    .createdAt(review.getCreatedAt() != null ? review.getCreatedAt().atOffset(ZoneOffset.UTC) : null)
+                    .createdAt(review.getCreatedAt())
+                    .updatedAt(review.getUpdatedAt())
                     .build();
         }
     }
@@ -59,7 +62,7 @@ public class ReviewDTO {
         private T data;
         private Object error;
         private String message;
-        private java.time.OffsetDateTime timestamp = java.time.OffsetDateTime.now(java.time.ZoneOffset.UTC);
+        private OffsetDateTime timestamp = OffsetDateTime.now(ZoneOffset.UTC);
         private String requestId;
     }
 }

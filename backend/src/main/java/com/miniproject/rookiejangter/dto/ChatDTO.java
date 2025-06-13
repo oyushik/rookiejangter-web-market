@@ -3,6 +3,7 @@ package com.miniproject.rookiejangter.dto;
 import com.miniproject.rookiejangter.entity.Chat;
 import lombok.*;
 
+import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.List;
@@ -27,7 +28,7 @@ public class ChatDTO {
         private Long productId;
         private Long buyerId;
         private Long sellerId;
-        private OffsetDateTime createdAt;
+        private LocalDateTime createdAt;
 
         public static Response fromEntity(Chat chat) {
             return Response.builder()
@@ -35,7 +36,7 @@ public class ChatDTO {
                     .productId(chat.getProduct().getProductId())
                     .buyerId(chat.getBuyer().getUserId())
                     .sellerId(chat.getSeller().getUserId())
-                    .createdAt(chat.getCreatedAt().atOffset(ZoneOffset.UTC))
+                    .createdAt(chat.getCreatedAt())
                     .build();
         }
     }
@@ -62,7 +63,7 @@ public class ChatDTO {
             private Long productId;
             private String lastMessage;
             private Integer unreadCount;
-            private OffsetDateTime updatedAt;
+            private LocalDateTime createdAt;
 
             public static ChatInfo fromEntity(Chat chat, String lastMessage, Integer unreadCount) {
                 return ChatInfo.builder()
@@ -70,7 +71,7 @@ public class ChatDTO {
                         .productId(chat.getProduct().getProductId())
                         .lastMessage(lastMessage)
                         .unreadCount(unreadCount)
-                        .updatedAt(chat.getUpdatedAt() != null ? chat.getUpdatedAt().atOffset(ZoneOffset.UTC) : chat.getCreatedAt().atOffset(ZoneOffset.UTC)) // updatedAt 없을 경우 createdAt 사용
+                        .createdAt(chat.getCreatedAt())
                         .build();
             }
         }

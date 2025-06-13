@@ -13,7 +13,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -45,7 +44,6 @@ public class MessageService {
                 .chat(chat)
                 .user(sender)
                 .content(request.getContent())
-                .sentAt(LocalDateTime.now())
                 .isRead(false)
                 .build();
 

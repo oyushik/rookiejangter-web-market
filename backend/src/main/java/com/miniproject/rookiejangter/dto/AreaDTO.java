@@ -3,6 +3,9 @@ package com.miniproject.rookiejangter.dto;
 import com.miniproject.rookiejangter.entity.Area;
 import lombok.*;
 
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
+
 public class AreaDTO {
 
     @Data
@@ -30,7 +33,7 @@ public class AreaDTO {
         private T data;
         private Object error;
         private String message;
-        private java.time.OffsetDateTime timestamp = java.time.OffsetDateTime.now(java.time.ZoneOffset.UTC);
+        private OffsetDateTime timestamp = OffsetDateTime.now(ZoneOffset.UTC);
         private String requestId;
     }
 }

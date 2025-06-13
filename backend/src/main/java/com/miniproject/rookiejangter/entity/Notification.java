@@ -3,18 +3,17 @@ package com.miniproject.rookiejangter.entity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.*;
-
-import java.time.LocalDateTime;
+import lombok.experimental.SuperBuilder;
 
 @Entity
 @Table(name = "notifications")
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
+@SuperBuilder
 @ToString
 @EqualsAndHashCode
-public class Notification {
+public class Notification extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -35,9 +34,6 @@ public class Notification {
     @Size(max = 255, message = "메시지는 최대 255자까지 가능합니다.")
     @Column(name = "message", length = 255)
     private String message;
-
-    @Column(name = "sent_at")
-    private LocalDateTime sentAt;
 
     @Column(name = "is_read")
     private Boolean isRead;

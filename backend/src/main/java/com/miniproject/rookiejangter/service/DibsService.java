@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -55,14 +56,14 @@ public class DibsService {
             Dibs newDibs = Dibs.builder()
                     .user(user)
                     .product(product)
-                    .addedAt(LocalDateTime.now())
+                    .createdAt(LocalDateTime.now())
                     .build();
             dibsRepository.save(newDibs);
             isNowLiked = true;
         }
         return DibsDTO.Response.builder()
                 .productId(productId)
-                .isLiked(isNowLiked)
+                .isDibbed(isNowLiked)
                 .build();
     }
 
@@ -90,7 +91,7 @@ public class DibsService {
             if (userDibsOpt.isPresent()) {
                 return DibsDTO.Response.fromEntity(userDibsOpt.get(), true);
             }
-            Dibs tempDibs = Dibs.builder().product(product).addedAt(LocalDateTime.now()).build();
+            Dibs tempDibs = Dibs.builder().product(product).createdAt(LocalDateTime.now()).build();
             return DibsDTO.Response.fromEntity(tempDibs, true);
         } else {
             Dibs tempDibs = Dibs.builder().product(product).build();

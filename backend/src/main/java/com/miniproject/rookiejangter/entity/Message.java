@@ -1,21 +1,18 @@
 package com.miniproject.rookiejangter.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
 import lombok.*;
-
-import java.time.LocalDateTime;
+import lombok.experimental.SuperBuilder;
 
 @Entity
 @Table(name = "messages")
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
+@SuperBuilder
 @ToString
 @EqualsAndHashCode
-public class Message {
+public class Message extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,9 +29,6 @@ public class Message {
 
     @Column(name = "content", length = 255, nullable = false)
     private String content;
-
-    @Column(name = "sent_at")
-    private LocalDateTime sentAt;
 
     @Column(name = "is_read")
     private Boolean isRead;
