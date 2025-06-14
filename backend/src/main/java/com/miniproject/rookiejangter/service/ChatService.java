@@ -14,10 +14,13 @@ import com.miniproject.rookiejangter.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -34,29 +37,40 @@ public class ChatService {
      * 새로운 채팅방을 생성합니다.
      *
      * @param request 채팅방 생성 요청 DTO (판매자 ID, 상품 ID 포함)
-     * @param buyerId 채팅방을 생성하는 구매자 ID
      * @return 생성된 채팅방의 응답 DTO
      */
-    public ChatDTO.Response createChat(ChatDTO.Request request, Long buyerId) {
+    public ChatDTO.Response createChat(ChatDTO.Request request) { // request는 sellerId와 productId만 포함
+        // 현재 로그인한 사용자(buyer)의 userId를 SecurityContext에서 가져옴
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || "anonymousUser".equals(authentication.getName())) {
+            throw new BusinessException(ErrorCode.UNAUTHORIZED_ACCESS, "로그인이 필요합니다.");
+        }
+        Long currentUserId = Long.parseLong(authentication.getName()); // JwtTokenProvider에서 subject에 userId 저장
+
         Product product = productRepository.findById(request.getProductId())
                 .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_NOT_FOUND, request.getProductId()));
 
-        // 구매자 정보 조회 (현재 로그인한 사용자)
-        User buyer = userRepository.findById(buyerId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND, buyerId));
+        User buyer = userRepository.findById(currentUserId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND, currentUserId));
 
-        // 판매자 정보 조회 (상품 등록자)
         User seller = userRepository.findById(request.getSellerId())
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND, request.getSellerId()));
 
-        // 구매자가 판매자 자신인 경우 채팅방 생성 방지
+        // 자신의 상품에 채팅하는 경우 방지 (백엔드에서 검증)
         if (buyer.getUserId().equals(seller.getUserId())) {
             throw new BusinessException(ErrorCode.CANNOT_CHAT_WITH_SELF);
         }
 
-        // 이미 존재하는 채팅방이 있는지 확인 (구매자, 판매자, 상품 기준으로)
-        // TODO: 정확한 중복 채팅방 확인 로직 필요 (예: 구매자와 판매자 간 특정 상품에 대한 채팅방은 하나만 존재)
-        // 현재는 단순히 없으면 생성하는 것으로 간주
+        // 기존 채팅방이 있는지 확인 (상품-구매자-판매자 조합으로)
+        // findByProductAndBuyerAndSeller 또는 findByProductAndParticipantsIds 등으로 조회
+        // 이 로직은 ChatRepository에 추가되어야 합니다.
+        Optional<Chat> existingChat = chatRepository.findByProduct_ProductIdAndBuyer_UserIdAndSeller_UserId(
+                request.getProductId(), currentUserId, request.getSellerId());
+
+        if (existingChat.isPresent()) {
+            // 이미 존재하는 채팅방이 있다면 해당 채팅방 정보를 반환
+            return ChatDTO.Response.fromEntity(existingChat.get());
+        }
 
         Chat chat = Chat.builder()
                 .product(product)

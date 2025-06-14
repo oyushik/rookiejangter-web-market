@@ -18,6 +18,7 @@ import Header from './components/Header';
 import NotificationList from './components/NotificationList';
 import { Box } from '@mui/material';
 import './App.css';
+import ChatRoomPage from './pages/ChatRoomPage';
 
 function App() {
   const dispatch = useDispatch();
@@ -38,6 +39,7 @@ function App() {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignUpPage />} />
           <Route path="/users/notify" element={<NotificationList />} />
+
           <Route
             path="/users/profile"
             element={
@@ -49,7 +51,6 @@ function App() {
           <Route path="/products/:product_id" element={<ProductDetailPage />} />
           <Route path="/my-products/:id/edit" element={<ProductRegisterPage editMode />} />
           <Route path="/my-products" element={<MyProductsPage />} />
-          <Route path="/chat/:chatRoomId" element={<ChatRoomPage />} />
           <Route
             path="/products/register"
             element={
@@ -64,6 +65,14 @@ function App() {
               <ProtectedRoute>
                 <AdminUserPage />
               </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/chats/:chatId"
+            element={
+              // <ProtectedRoute>
+              <ChatRoomPage />
+              // </ProtectedRoute>
             }
           />
         </Routes>

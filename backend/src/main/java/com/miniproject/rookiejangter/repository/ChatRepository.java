@@ -15,4 +15,5 @@ public interface ChatRepository extends JpaRepository<Chat, Long> {
     List<Chat> findBySeller_UserId(Long sellerUserId);
     List<Chat> findByProduct_ProductId(Long productProductId);
     Page<Chat> findByBuyer_UserIdOrSeller_UserId(Long buyerUserId, Long sellerUserId, Pageable pageable);
+    Optional<Chat> findByProduct_ProductIdAndBuyer_UserIdAndSeller_UserId(Long productProductId, Long buyerUserId, Long sellerUserId);
 }

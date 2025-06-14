@@ -37,7 +37,7 @@ public class ChatController {
             Principal principal) {
         try {
             Long buyerId = Long.valueOf(principal.getName()); // JWT 토큰의 subject (사용자 ID) 추출
-            ChatDTO.Response response = chatService.createChat(request, buyerId);
+            ChatDTO.Response response = chatService.createChat(request);
             return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponseWrapper.<ChatDTO.Response>builder()
                     .success(true)
                     .data(response)
@@ -61,13 +61,13 @@ public class ChatController {
     /**
      * 특정 ID의 채팅방 정보를 조회합니다.
      *
-     * @param chatRoomId 조회할 채팅방 ID
+     * @param chatId 조회할 채팅방 ID
      * @return 조회된 채팅방 정보
      */
-    @GetMapping("/{chatRoomId}")
-    public ResponseEntity<ApiResponseWrapper<ChatDTO.Response>> getChatById(@PathVariable Long chatRoomId) {
+    @GetMapping("/{chatId}")
+    public ResponseEntity<ApiResponseWrapper<ChatDTO.Response>> getChatById(@PathVariable Long chatId) {
         try {
-            ChatDTO.Response response = chatService.getChatById(chatRoomId);
+            ChatDTO.Response response = chatService.getChatById(chatId);
             return ResponseEntity.ok(ApiResponseWrapper.<ChatDTO.Response>builder()
                     .success(true)
                     .data(response)
@@ -126,13 +126,13 @@ public class ChatController {
     /**
      * 특정 채팅방을 삭제합니다.
      *
-     * @param chatRoomId 삭제할 채팅방 ID
+     * @param chatId 삭제할 채팅방 ID
      * @return 삭제 성공 여부
      */
-    @DeleteMapping("/{chatRoomId}")
-    public ResponseEntity<ApiResponseWrapper<Void>> deleteChat(@PathVariable Long chatRoomId) {
+    @DeleteMapping("/{chatId}")
+    public ResponseEntity<ApiResponseWrapper<Void>> deleteChat(@PathVariable Long chatId) {
         try {
-            chatService.deleteChat(chatRoomId);
+            chatService.deleteChat(chatId);
             return ResponseEntity.ok(ApiResponseWrapper.<Void>builder()
                     .success(true)
                     .message("채팅방이 성공적으로 삭제되었습니다.")

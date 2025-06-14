@@ -36,9 +36,9 @@ public class RedisSubscriber implements MessageListener {
             log.info("Redis received message: {}", chatMessage);
 
             // WebSocket 구독자에게 메시지 전송
-            // "/sub/chat/room/{chatRoomId}" topic으로 메시지를 발행
-            messagingTemplate.convertAndSend("/sub/chat/room/" + chatMessage.getChatRoomId(), chatMessage);
-            log.info("Sent WebSocket message to /sub/chat/room/{}: {}", chatMessage.getChatRoomId(), chatMessage);
+            // "/sub/chat/room/{chatId}" topic으로 메시지를 발행
+            messagingTemplate.convertAndSend("/sub/chat/room/" + chatMessage.getChatId(), chatMessage);
+            log.info("Sent WebSocket message to /sub/chat/room/{}: {}", chatMessage.getChatId(), chatMessage);
 
         } catch (Exception e) {
             log.error("Error processing Redis message: {}", e.getMessage(), e);

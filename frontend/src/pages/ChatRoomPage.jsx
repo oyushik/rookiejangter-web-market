@@ -10,9 +10,11 @@ import {
   Divider,
 } from '@mui/material';
 import axios from 'axios';
-import { getUserIdFromToken } from '../utils/jwtUtils';
 import SockJS from 'sockjs-client';
 import { Stomp } from '@stomp/stompjs';
+import { jwtDecode } from 'jwt-decode';
+
+const CHAT_API_BASE_URL = 'http://localhost:8080/api/chats'; // 실제 API 엔드포인트로 변경 필요
 
 // 시간 포맷터 유틸리티 (예시, 실제 프로젝트의 FormatTime 사용)
 const formatMessageTime = (isoString) => {
@@ -23,8 +25,23 @@ const formatMessageTime = (isoString) => {
 };
 
 const ChatRoomPage = () => {
-  const { chatRoomId } = useParams();
-  const currentUserId = getUserIdFromToken();
+  const { chatId } = useParams();
+
+  // 현재 로그인한 사용자 ID를 토큰에서 직접 파싱
+  const [currentUserId, setCurrentUserId] = useState(null);
+  useEffect(() => {
+    try {
+      const accessToken = localStorage.getItem('accessToken');
+      if (accessToken) {
+        const decodedToken = jwtDecode(accessToken);
+        setCurrentUserId(decodedToken.sub ? parseInt(decodedToken.sub, 10) : null);
+      }
+    } catch (error) {
+      console.error('Failed to decode JWT token from local storage:', error);
+      setCurrentUserId(null);
+    }
+  }, []);
+
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState('');
   const [loading, setLoading] = useState(true);
@@ -40,16 +57,18 @@ const ChatRoomPage = () => {
 
   // 컴포넌트 마운트 시 메시지 로드 및 WebSocket 연결
   useEffect(() => {
-    const fetchMessages = async () => {
-      if (!currentUserId) {
-        setError('로그인이 필요합니다.');
-        setLoading(false);
-        return;
-      }
+    const token = localStorage.getItem('accessToken');
+    if (!token) {
+      setError('로그인이 필요합니다. 토큰이 없습니다.');
+      setLoading(false);
+      return;
+    }
+    const headers = { Authorization: `Bearer ${token}` };
 
+    const fetchChatData = async () => {
       try {
         // 1. 채팅방 정보 가져오기 (판매자/구매자 닉네임 등을 표시하기 위함)
-        const chatResponse = await axios.get(`/api/chats/${chatRoomId}`);
+        const chatResponse = await axios.get(`${CHAT_API_BASE_URL}/${chatId}`, { headers });
         if (chatResponse.data.success) {
           setChatInfo(chatResponse.data.data);
         } else {
@@ -59,11 +78,12 @@ const ChatRoomPage = () => {
         }
 
         // 2. 기존 메시지 로드
-        const messageResponse = await axios.get(`/api/chats/${chatRoomId}/messages`);
+        const messageResponse = await axios.get(`${CHAT_API_BASE_URL}/${chatId}/messages`, {
+          headers,
+        });
         if (messageResponse.data.success) {
-          // 메시지 목록을 시간 순서대로 정렬 (가장 오래된 것이 위로)
           const sortedMessages = messageResponse.data.data.content.sort(
-            (a, b) => new Date(a.sentAt) - new Date(b.sentAt)
+            (a, b) => new Date(a.createdAt) - new Date(b.createdAt)
           );
           setMessages(sortedMessages);
         } else {
@@ -77,32 +97,36 @@ const ChatRoomPage = () => {
       }
     };
 
-    fetchMessages();
+    fetchChatData();
 
     // 3. WebSocket 연결
-    const socket = new SockJS('http://localhost:8080/ws/chat'); // 백엔드 WebSocket 엔드포인트
-    stompClient.current = Stomp.over(socket);
-
-    // STOMP 연결 시 헤더에 JWT 토큰 포함
-    const accessToken = localStorage.getItem('accessToken');
-    const headers = accessToken ? { Authorization: `Bearer ${accessToken}` } : {};
+    stompClient.current = Stomp.over(() => new SockJS('http://localhost:8080/ws/chat'));
 
     stompClient.current.connect(
       headers,
       () => {
         console.log('WebSocket connected!');
-        // 메시지 구독: RedisSubscriber가 "/sub/chat/room/{chatRoomId}"로 메시지를 보냄
-        stompClient.current.subscribe(`/sub/chat/room/${chatRoomId}`, (message) => {
+        // 메시지 구독 부분
+        stompClient.current.subscribe(`/sub/chat/room/${chatId}`, (message) => {
           const receivedMessage = JSON.parse(message.body);
           console.log('Received message:', receivedMessage);
-          setMessages((prevMessages) => [...prevMessages, receivedMessage]);
-          // 메시지 수신 후 읽음 처리 API 호출 (선택 사항)
-          // axios.patch(`/api/chats/${chatRoomId}/messages/${receivedMessage.messageId}/read`);
+
+          setMessages((prevMessages) => {
+            // receivedMessage.messageId가 없는 경우도 처리 (안전장치)
+            const isDuplicate = prevMessages.some(
+              (msg) => msg.messageId === receivedMessage.messageId
+            );
+            if (isDuplicate) {
+              console.log('Duplicate message received, ignoring:', receivedMessage);
+              return prevMessages; // 중복이면 이전 상태 반환 (추가하지 않음)
+            }
+            return [...prevMessages, receivedMessage]; // 중복이 아니면 새 메시지 추가
+          });
         });
       },
       (error) => {
         console.error('WebSocket connection error:', error);
-        setError('실시간 채팅 연결에 실패했습니다.');
+        setError('실시간 채팅 연결에 실패했습니다. ' + error.message);
       }
     );
 
@@ -114,7 +138,7 @@ const ChatRoomPage = () => {
         });
       }
     };
-  }, [chatRoomId, currentUserId]); // chatRoomId 또는 currentUserId 변경 시 재실행
+  }, [chatId]); // currentUserId 제거 (초기 로드만)
 
   // 메시지가 업데이트될 때마다 최하단으로 스크롤
   useEffect(() => {
@@ -127,19 +151,19 @@ const ChatRoomPage = () => {
       return;
     }
 
-    // STOMP 메시지 전송 (백엔드 StompChatController의 @MessageMapping 경로)
+    const token = localStorage.getItem('accessToken');
+    const sendHeaders = {
+      Authorization: `Bearer ${token}`, // 메시지 전송 시에도 토큰 포함
+    };
+
     const messageToSend = {
       content: newMessage,
       // senderId는 백엔드에서 토큰으로 추출하므로 여기서는 보낼 필요 없음
     };
 
-    const headers = {
-      Authorization: `Bearer ${localStorage.getItem('accessToken')}`, // 메시지 전송 시에도 토큰 포함
-    };
-
     stompClient.current.send(
-      `/pub/chat/message/${chatRoomId}`, // 백엔드 Pub 경로
-      headers,
+      `/pub/chat/message/${chatId}`, // 백엔드 Pub 경로
+      sendHeaders,
       JSON.stringify(messageToSend)
     );
 
@@ -156,14 +180,16 @@ const ChatRoomPage = () => {
 
   // 채팅 상대방의 이름을 표시
   const getChatPartnerName = () => {
-    if (!chatInfo || !currentUserId) return '상대방';
-    if (chatInfo.buyerId === currentUserId) {
-      // 현재 유저가 구매자라면 판매자 정보 반환 (API에서 seller 객체에 userName이 있다고 가정)
+    if (!chatInfo || currentUserId === null) return '상대방'; // currentUserId 로드 전에는 기본값
+
+    // chatInfo.buyer, chatInfo.seller 객체에 userName이 있다고 가정
+    // DTO 구조: chatResponse.data.data.buyer.userName, chatResponse.data.data.seller.userName
+    if (chatInfo.buyer && chatInfo.buyer.id === currentUserId) {
       return chatInfo.seller ? chatInfo.seller.userName : '판매자';
-    } else {
-      // 현재 유저가 판매자라면 구매자 정보 반환 (API에서 buyer 객체에 userName이 있다고 가정)
+    } else if (chatInfo.seller && chatInfo.seller.id === currentUserId) {
       return chatInfo.buyer ? chatInfo.buyer.userName : '구매자';
     }
+    return '상대방'; // 일치하는 ID가 없을 경우
   };
 
   return (
@@ -187,9 +213,9 @@ const ChatRoomPage = () => {
             아직 메시지가 없습니다. 대화를 시작해보세요!
           </Typography>
         )}
-        {messages.map((msg, index) => (
+        {messages.map((msg) => (
           <Box
-            key={msg.messageId || index} // messageId가 없으면 index 사용 (임시)
+            key={msg.messageId}
             sx={{
               display: 'flex',
               justifyContent: msg.senderId === currentUserId ? 'flex-end' : 'flex-start',
@@ -213,7 +239,7 @@ const ChatRoomPage = () => {
               </Typography>
               <Typography variant="body1">{msg.content}</Typography>
               <Typography variant="caption" display="block" align="right" sx={{ mt: 0.5 }}>
-                {formatMessageTime(msg.sentAt)}{' '}
+                {formatMessageTime(msg.createdAt)}{' '}
                 {msg.isRead ? '' : msg.senderId !== currentUserId ? '' : '읽지않음'}
               </Typography>
             </Paper>

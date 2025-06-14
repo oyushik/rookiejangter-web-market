@@ -21,7 +21,7 @@ public class NotificationController {
     @GetMapping
     public ResponseEntity<Page<NotificationDTO.Response>> getUserNotifications(
             Authentication authentication,
-            @PageableDefault(size = 10, sort = "sentAt", direction = org.springframework.data.domain.Sort.Direction.DESC) Pageable pageable) {
+            @PageableDefault(size = 10, sort = "createdAt", direction = org.springframework.data.domain.Sort.Direction.DESC) Pageable pageable) {
         Long userId = Long.parseLong(authentication.getName());
         Page<NotificationDTO.Response> notifications = notificationService.getNotificationsByUserId(userId, pageable);
         return ResponseEntity.ok(notifications);

@@ -49,6 +49,9 @@ public class SecurityConfig {
                         // 상품 조회 API만 허용 (POST, PUT, DELETE는 인증 필요)
                         .requestMatchers(HttpMethod.GET, "/api/products/**").permitAll()
 
+                        // SockJS의 초기 handshake 및 info 요청은 인증 없이 허용
+                        .requestMatchers("/ws/chat/**").permitAll()
+
                         // 개발 환경 리소스 허용
                         .requestMatchers("/src/**", "/Users/**", "/@vite/**", "/node_modules/**").permitAll()
                         
@@ -86,7 +89,6 @@ public class SecurityConfig {
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);
-
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;

@@ -12,6 +12,7 @@ import com.miniproject.rookiejangter.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,6 +28,8 @@ public class MessageService {
     private final MessageRepository messageRepository;
     private final ChatRepository chatRepository;
     private final UserRepository userRepository;
+    private final NotificationService notificationService;
+    private final SimpMessagingTemplate messagingTemplate;
 
     /**
      * 특정 채팅방에 메시지를 전송합니다.
@@ -43,6 +46,12 @@ public class MessageService {
         User sender = userRepository.findById(senderId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND, senderId));
 
+        User receiver = chat.getBuyer().getUserId().equals(senderId) ?
+                userRepository.findById(chat.getSeller().getUserId())
+                        .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND, chat.getSeller().getUserId())) :
+                userRepository.findById(chat.getBuyer().getUserId())
+                        .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND, chat.getBuyer().getUserId()));
+
         // 메시지 전송 시에는 아직 읽지 않은 상태 (isRead = false)
         Message message = Message.builder()
                 .chat(chat)
@@ -53,7 +62,26 @@ public class MessageService {
                 .build();
 
         Message savedMessage = messageRepository.save(message);
-        return MessageDTO.Response.fromEntity(savedMessage, chatId);
+//        return MessageDTO.Response.fromEntity(savedMessage, chatId);
+
+        // 🌟 이 부분이 핵심: 메시지를 저장한 후, 웹소켓 토픽으로 발행
+        MessageDTO.Response responseDTO = MessageDTO.Response.fromEntity(savedMessage, chatId);
+        messagingTemplate.convertAndSend(
+                "/sub/chat/room/" + chatId,
+                responseDTO // 발행할 객체 (프론트엔드에서 파싱할 JSON 형태)
+        );
+
+        // 알림 생성
+        String notificationMessageToReceiver = "[" + sender.getUserName() + "]: " + message.getContent();
+
+        notificationService.createNotification(
+                receiver.getUserId(),
+                message.getMessageId(),
+                "Message",
+                notificationMessageToReceiver
+        );
+
+        return responseDTO;
     }
 
     /**
@@ -105,17 +133,16 @@ public class MessageService {
      * (즉, userId는 메시지를 읽는 사람의 ID이며, 해당 사용자가 받은 메시지 중 읽지 않은 메시지를 대상으로 함)
      *
      * @param chatId 메시지를 읽음 처리할 채팅방 ID
-     * @param receiverId 메시지를 읽는 사용자 ID (로그인한 사용자)
+     * @param
+     * @param
      */
-    public void markAllMessagesAsRead(Long chatId, Long receiverId) {
+    public void markAllMessagesAsRead(Long chatId, Long senderId) {
         // 채팅방 존재 여부 확인
         if (!chatRepository.existsById(chatId)) {
             throw new BusinessException(ErrorCode.CHATROOM_NOT_FOUND, chatId);
         }
 
-        // 특정 채팅방에서 receiverId의 메시지 중 읽지 않은 메시지들을 찾아서 읽음 처리
-        List<Message> unreadMessages = messageRepository.findByChat_ChatIdAndIsReadFalseAndReceiver_UserId(chatId, false, receiverId);
-
-        unreadMessages.forEach(message -> messageRepository.updateIsReadByMessageId(true, message.getMessageId()));
+        // 특정 채팅방에서 senderId가 아닌 메시지 중 읽지 않은 메시지들을 찾아서 읽음 처리
+        List<Message> unreadMessages = messageRepository.findByChat_ChatIdAndIsReadFalseAndSender_UserIdNot(chatId, senderId);
     }
 }

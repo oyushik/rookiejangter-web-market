@@ -18,7 +18,7 @@ public class NotificationDTO {
         private Long entityId;
         private String entityType;
         private String message;
-        private LocalDateTime sentAt;
+        private LocalDateTime createdAt;
         private Boolean isRead;
 
         public static Response fromEntity(Notification notification) {
@@ -28,7 +28,7 @@ public class NotificationDTO {
                     .entityId(notification.getEntityId())
                     .entityType(notification.getEntityType())
                     .message(notification.getMessage())
-                    .sentAt(notification.getCreatedAt())
+                    .createdAt(notification.getCreatedAt())
                     .isRead(notification.getIsRead())
                     .build();
         }

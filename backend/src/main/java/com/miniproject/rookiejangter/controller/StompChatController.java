@@ -27,15 +27,15 @@ public class StompChatController {
 
     /**
      * 클라이언트로부터 STOMP 메시지를 수신합니다.
-     * "/pub/chat/message/{chatRoomId}"로 메시지가 발행되면 이 메서드가 호출됩니다.
+     * "/pub/chat/message/{chatId}"로 메시지가 발행되면 이 메서드가 호출됩니다.
      *
-     * @param chatRoomId 메시지를 보낼 채팅방 ID
+     * @param chatId 메시지를 보낼 채팅방 ID
      * @param request 메시지 내용 요청 DTO
      * @param headerAccessor STOMP 메시지 헤더 접근자 (여기서 Principal을 가져올 수 있음)
      */
-    @MessageMapping("/chat/message/{chatRoomId}") // 실제 경로는 "/pub/chat/message/{chatRoomId}"
+    @MessageMapping("/chat/message/{chatId}") // 실제 경로는 "/pub/chat/message/{chatId}"
     public void message(
-            @DestinationVariable Long chatRoomId,
+            @DestinationVariable Long chatId,
             MessageDTO.Request request,
             SimpMessageHeaderAccessor headerAccessor) {
         try {
@@ -51,19 +51,19 @@ public class StompChatController {
             }
             Long senderId = Long.parseLong(principal.getName()); // JWT 토큰의 subject에서 userId 추출
 
-            log.info("Received WebSocket message for chatRoomId {}: {}", chatRoomId, request.getContent());
+            log.info("Received WebSocket message for chatId {}: {}", chatId, request.getContent());
 
             // 1. DB에 메시지 저장
-            MessageDTO.Response savedMessage = messageService.sendMessage(chatRoomId, request, senderId);
+            MessageDTO.Response savedMessage = messageService.sendMessage(chatId, request, senderId);
             log.info("Message saved to DB: {}", savedMessage);
 
             // 2. Redis Pub/Sub을 통해 메시지 발행
             // 이 메시지는 RedisSubscriber에 의해 수신되어 해당 채팅방 구독자들에게 다시 WebSocket으로 전송됩니다.
-            redisPublisher.publish("chatRoom." + chatRoomId, savedMessage);
-            log.info("Message published to Redis topic chatRoom.{}", chatRoomId);
+            redisPublisher.publish("chatRoom." + chatId, savedMessage);
+            log.info("Message published to Redis topic chatRoom.{}", chatId);
 
         } catch (Exception e) {
-            log.error("Error processing WebSocket message for chatRoomId {}: {}", chatRoomId, e.getMessage(), e);
+            log.error("Error processing WebSocket message for chatId {}: {}", chatId, e.getMessage(), e);
             // 에러 발생 시 클라이언트에게 에러 메시지를 보낼 수 있음
             // messagingTemplate.convertAndSendToUser(principal.getName(), "/queue/errors", "메시지 전송 실패");
         }

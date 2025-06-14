@@ -1,5 +1,5 @@
 import { useParams, useNavigate } from 'react-router-dom';
-import axios from "axios";
+import axios from 'axios';
 import { Box, Typography, Divider, Grid, Button } from '@mui/material';
 import { FormatTime } from '../utils/FormatTime';
 import React, { useState, useEffect } from 'react';
@@ -10,7 +10,6 @@ import ProductActions from '../components/ProductActions';
 import ReportModal from '../components/ReportModal';
 import { useTheme } from '@mui/material/styles';
 import FormSnackbar from '../components/FormSnackbar';
-
 
 const ProductDetailPage = () => {
   const { product_id } = useParams();
@@ -38,13 +37,14 @@ const ProductDetailPage = () => {
 
   // 상품 상세 정보 불러오기
   useEffect(() => {
-    axios.get(`http://localhost:8080/api/products/${product_id}`)
-      .then(res => {
-        console.log("상품 상세 정보 응답:", res.data); // 콘솔 출력 추가
+    axios
+      .get(`http://localhost:8080/api/products/${product_id}`)
+      .then((res) => {
+        console.log('상품 상세 정보 응답:', res.data); // 콘솔 출력 추가
         setProduct(res.data.data);
         setLoading(false);
       })
-      .catch(err => {
+      .catch((err) => {
         setLoading(false);
         if (err.response && err.response.status === 404) {
           setError('notfound');
@@ -67,7 +67,7 @@ const ProductDetailPage = () => {
       .get(`http://localhost:8080/images/product/${product.id}`)
       .then((res) => {
         const imgArr = Array.isArray(res.data)
-          ? res.data.map(img =>
+          ? res.data.map((img) =>
               img.imageUrl.startsWith('http')
                 ? img.imageUrl.replace('http://localhost:3000', 'http://localhost:8080')
                 : `http://localhost:8080${img.imageUrl}`
@@ -81,7 +81,7 @@ const ProductDetailPage = () => {
   // 찜 상태 조회
   useEffect(() => {
     if (!product?.id) return;
-    const token = localStorage.getItem("accessToken");
+    const token = localStorage.getItem('accessToken');
     if (!token) return;
     axios
       .get(`http://localhost:8080/api/dibs/${product.id}`, {
@@ -89,14 +89,14 @@ const ProductDetailPage = () => {
           Authorization: `Bearer ${token}`,
         },
       })
-      .then(res => {
-        console.log("찜 상태 응답:", res.data);
-        if (res.data?.success && typeof res.data.data?.liked === "boolean") {
+      .then((res) => {
+        console.log('찜 상태 응답:', res.data);
+        if (res.data?.success && typeof res.data.data?.liked === 'boolean') {
           setIsLiked(res.data.data.liked);
         }
       })
-      .catch(err => {
-        console.log("찜 상태 조회 실패:", err);
+      .catch((err) => {
+        console.log('찜 상태 조회 실패:', err);
       });
   }, [product?.id]);
 
@@ -104,11 +104,15 @@ const ProductDetailPage = () => {
   useEffect(() => {
     if (!product?.categoryName || !product?.id) return;
     axios
-      .get(`http://localhost:8080/api/products?categoryName=${encodeURIComponent(product.categoryName)}`)
-      .then(res => {
+      .get(
+        `http://localhost:8080/api/products?categoryName=${encodeURIComponent(
+          product.categoryName
+        )}`
+      )
+      .then((res) => {
         const arr = Array.isArray(res.data.data?.content) ? res.data.data.content : [];
         const filtered = arr.filter(
-          p => p.id !== product.id && p.categoryName === product.categoryName
+          (p) => p.id !== product.id && p.categoryName === product.categoryName
         );
         setSimilarProducts(filtered);
       })
@@ -170,13 +174,13 @@ const ProductDetailPage = () => {
 
   const isOwner = currentUser?.id === product.seller?.id;
 
-    // 상품 삭제 핸들러
+  // 상품 삭제 핸들러
   const handleDelete = () => {
     if (window.confirm('정말로 이 상품을 삭제하시겠습니까?')) {
       axios
         .delete(`http://localhost:8080/api/users/products/${product.id}`, {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+            Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
           },
         })
         .then(() => {
@@ -201,6 +205,60 @@ const ProductDetailPage = () => {
   // 상품 수정 핸들러
   const handleEdit = () => {
     navigate(`/my-products/${product.id}/edit`);
+  };
+
+  // **채팅 시작 핸들러**
+  const handleStartChat = async () => {
+    const token = localStorage.getItem('accessToken'); // 토큰 가져오기
+    if (!token) {
+      setSnackbarMsg('로그인 후 이용해주세요.');
+      setSnackbarSeverity('warning');
+      setSnackbarOpen(true);
+      navigate('/login');
+      return;
+    }
+
+    if (!product || !product.seller || !product.seller.id) {
+      setSnackbarMsg('판매자 정보를 찾을 수 없습니다.');
+      setSnackbarSeverity('error');
+      setSnackbarOpen(true);
+      return;
+    }
+
+    const sellerId = product.seller.id;
+    const productId = parseInt(product_id, 10);
+
+    try {
+      const response = await axios.post(
+        'http://localhost:8080/api/chats',
+        {
+          sellerId: sellerId,
+          productId: productId,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`, // 토큰을 헤더에 추가
+          },
+        }
+      );
+
+      if (response.data.success) {
+        const chatId = response.data.data.chatId;
+        setSnackbarMsg('채팅방이 성공적으로 생성되었습니다.');
+        setSnackbarSeverity('success');
+        setSnackbarOpen(true);
+        navigate(`/chats/${chatId}`);
+      } else {
+        setSnackbarMsg(`채팅방 생성 실패: ${response.data.message}`);
+        setSnackbarSeverity('error');
+        setSnackbarOpen(true);
+      }
+    } catch (error) {
+      console.error('채팅방 생성 요청 실패:', error);
+      setSnackbarMsg('채팅방 생성 중 오류가 발생했습니다.');
+      setSnackbarSeverity('error');
+      setSnackbarOpen(true);
+    }
   };
 
   return (
@@ -245,7 +303,7 @@ const ProductDetailPage = () => {
                 카테고리: {product.categoryName}
                 <Divider orientation="vertical" flexItem sx={{ mx: 2 }} />
                 상태: &nbsp;
-                  {product.isCompleted ? 'SOLD' : product.isReserved ? 'RESERVED' : 'SALE'}
+                {product.isCompleted ? 'SOLD' : product.isReserved ? 'RESERVED' : 'SALE'}
                 <Divider orientation="vertical" flexItem sx={{ mx: 2 }} />
                 등록일: {FormatTime(product.createdAt)}
                 <Divider orientation="vertical" flexItem sx={{ mx: 2 }} />
@@ -256,7 +314,8 @@ const ProductDetailPage = () => {
                 {product.price?.toLocaleString()}원
               </Typography>
               <Typography variant="subtitle2" sx={{ mb: 1 }}>
-                지역: {product.seller?.area?.areaName || product.seller?.areaName || '지역정보 없음'}
+                지역:{' '}
+                {product.seller?.area?.areaName || product.seller?.areaName || '지역정보 없음'}
               </Typography>
             </Box>
             <ProductActions
@@ -313,14 +372,23 @@ const ProductDetailPage = () => {
                   <Box
                     sx={{
                       width: 64,
-                      height: 64,     
+                      height: 64,
                       borderRadius: '50%',
                       mb: 1,
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
                       background: (() => {
-                        const colors = ['#FFB6C1', '#FFD700', '#87CEFA', '#90EE90', '#FFA07A', '#B39DDB', '#FFCC80', '#80CBC4'];
+                        const colors = [
+                          '#FFB6C1',
+                          '#FFD700',
+                          '#87CEFA',
+                          '#90EE90',
+                          '#FFA07A',
+                          '#B39DDB',
+                          '#FFCC80',
+                          '#80CBC4',
+                        ];
                         if (!product.seller?.userName) return '#ccc';
                         const idx = product.seller.userName.charCodeAt(0) % colors.length;
                         return colors[idx];
@@ -346,11 +414,15 @@ const ProductDetailPage = () => {
                       borderRadius: 2,
                       fontSize: 16,
                       fontWeight: 700,
-                      border: `2px solid ${isOwner ? theme.palette.info.main : theme.palette.error.main}`,
+                      border: `2px solid ${
+                        isOwner ? theme.palette.info.main : theme.palette.error.main
+                      }`,
                       color: isOwner ? theme.palette.info.main : theme.palette.error.main,
                       background: 'default',
                       '&:hover': {
-                        background: isOwner ? theme.palette.info.extraLight : theme.palette.error.extraLight,
+                        background: isOwner
+                          ? theme.palette.info.extraLight
+                          : theme.palette.error.extraLight,
                         borderColor: isOwner ? theme.palette.info.dark : theme.palette.error.dark,
                       },
                     }}
@@ -362,6 +434,23 @@ const ProductDetailPage = () => {
                   >
                     {isOwner ? '마이페이지' : '신고하기'}
                   </Button>
+
+                  {/* **추가된 채팅 시작 버튼** */}
+                  {!isOwner && ( // 로그인했고 자기 상품이 아닐 때만 채팅 버튼 표시
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      sx={{
+                        padding: '8px 24px',
+                        borderRadius: 2,
+                        fontSize: 18,
+                        fontWeight: 700,
+                      }}
+                      onClick={handleStartChat}
+                    >
+                      채팅 시작하기
+                    </Button>
+                  )}
                 </Box>
               </Box>
             </Box>

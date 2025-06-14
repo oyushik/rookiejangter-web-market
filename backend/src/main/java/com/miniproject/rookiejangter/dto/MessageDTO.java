@@ -30,17 +30,17 @@ public class MessageDTO {
         private Long chatId;
         private Long senderId;
         private String content;
-        private LocalDateTime sentAt;
         private Boolean isRead;
+        private LocalDateTime createdAt;
 
         public static Response fromEntity(Message message, Long chatId) {
             return Response.builder()
                     .messageId(message.getMessageId())
                     .chatId(chatId)
-                    .senderId(message.getUser().getUserId())
+                    .senderId(message.getSender() != null ? message.getSender().getUserId() : null) // sender가 null인 경우 처리
                     .content(message.getContent())
-                    .sentAt(message.getCreatedAt())
-                    .isRead(false)
+                    .isRead(message.getIsRead() != null ? message.getIsRead() : false) // Message 엔티티의 isRead 값 사용
+                    .createdAt(message.getCreatedAt() != null ? message.getCreatedAt() : null)
                     .build();
         }
     }
@@ -66,16 +66,16 @@ public class MessageDTO {
             private Long messageId;
             private Long senderId;
             private String content;
-            private LocalDateTime sentAt;
             private Boolean isRead;
+            private LocalDateTime createdAt;
 
             public static MessageResponse fromEntity(Message message) {
                 return MessageResponse.builder()
                         .messageId(message.getMessageId())
-                        .senderId(message.getUser().getUserId())
+                        .senderId(message.getSender() != null ? message.getSender().getUserId() : null)
                         .content(message.getContent())
-                        .sentAt(message.getCreatedAt())
-                        .isRead(false)
+                        .isRead(message.getIsRead() != null ? message.getIsRead() : false)
+                        .createdAt(message.getCreatedAt() != null ? message.getCreatedAt() : null)
                         .build();
             }
         }

@@ -10,15 +10,14 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
 @Repository
 public interface MessageRepository extends JpaRepository<Message, Long> {
     Page<Message> findByChat_ChatId(Long chatChatId, Pageable pageable);
-    List<Message> findByUser_UserId(Long senderUserId);
     List<Message> findByChat_ChatIdOrderByCreatedAtDesc(Long chatChatId);
-    List<Message> findByChat_ChatIdAndIsReadFalseAndReceiver_UserId(Long chatChatId, Boolean isRead, Long receiverUserId);
 
+    List<Message> findByChat_ChatIdAndIsReadFalseAndSender_UserIdNot(Long chatChatId, Long senderUserId);
+    
     @Transactional
     @Modifying
     @Query("UPDATE Message m SET m.isRead = :isRead WHERE m.messageId = :messageId")

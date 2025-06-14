@@ -205,8 +205,8 @@ const MyPage = () => {
     const fetchNotifications = async () => {
       const token = localStorage.getItem('accessToken');
       if (!token) return;
-      const res = await notificationService.getNotifications(0, 10, 'sentAt,desc');
-      console.log("알림 리스트 응답:", res);
+      const res = await notificationService.getNotifications(0, 10, 'createdAt,desc');
+      console.log('알림 리스트 응답:', res);
       if (res.success && res.data?.content) {
         setNotifications(res.data.content);
       } else {
@@ -222,10 +222,12 @@ const MyPage = () => {
         마이페이지
       </Typography>
       <Box my={4}>
-        <Button variant="contained"
-        color="success"
-        sx={{ ml: 2 }} 
-        onClick={() => navigate('/products/register')}>
+        <Button
+          variant="contained"
+          color="success"
+          sx={{ ml: 2 }}
+          onClick={() => navigate('/products/register')}
+        >
           상품 등록
         </Button>
         <Button
@@ -270,12 +272,7 @@ const MyPage = () => {
           />
           <FormControl fullWidth error={!!errors.areaId} sx={{ mb: 2 }}>
             <InputLabel>지역</InputLabel>
-            <Select
-              name="areaId"
-              value={formData.areaId}
-              onChange={handleChange}
-              label="지역"
-            >
+            <Select name="areaId" value={formData.areaId} onChange={handleChange} label="지역">
               {areas.map((area) => (
                 <MenuItem key={area.areaId} value={area.areaId}>
                   {area.areaName}
@@ -357,10 +354,13 @@ const MyPage = () => {
       </Typography>
       {notifications.length > 0 ? (
         notifications.map((noti) => (
-          <Box key={noti.notificationId || noti.id} sx={{ mb: 1, p: 1, border: '1px solid #ccc', borderRadius: 2 }}>
+          <Box
+            key={noti.notificationId || noti.id}
+            sx={{ mb: 1, p: 1, border: '1px solid #ccc', borderRadius: 2 }}
+          >
             <Typography>{noti.message}</Typography>
             <Typography variant="caption" color="text.secondary">
-              {noti.sentAt ? FormatTime(noti.sentAt) : (noti.date || noti.sentAt)}
+              {noti.createdAt ? FormatTime(noti.createdAt) : noti.date || noti.createdAt}
             </Typography>
           </Box>
         ))
