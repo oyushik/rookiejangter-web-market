@@ -123,6 +123,40 @@ public class JwtProvider {
     }
 
     /**
+     * JWT 토큰으로부터 Authentication 객체를 생성합니다.
+     * 이 메서드는 JwtAuthenticationFilter와 WebSocketAuthenticationInterceptor에서 공통으로 사용됩니다.
+     *
+     * @param accessToken JWT Access Token
+     * @return Spring Security Authentication 객체
+     */
+    public Authentication createAuthentication(String accessToken) {
+        // 토큰에서 클레임 추출 (만료된 토큰도 클레임은 가져올 수 있도록 parseClaims 사용)
+        Claims claims = parseClaims(accessToken);
+
+        if (claims.getSubject() == null) {
+            throw new RuntimeException("JWT 토큰에 사용자 ID (subject)가 없습니다.");
+        }
+
+        // "role" 클레임에서 String 타입으로 권한 추출
+        String roleString = claims.get("role", String.class);
+
+        if (roleString == null || roleString.isEmpty()) {
+            throw new RuntimeException("권한 정보가 없는 토큰입니다. (클레임: role)");
+        }
+
+        // 단일 역할을 SimpleGrantedAuthority로 변환
+        Collection<? extends GrantedAuthority> authorities = Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + roleString));
+
+        // Spring Security User 객체를 생성 (subject는 userId)
+        // User 객체의 첫 번째 인자(username)는 Principal.getName()으로 사용됩니다.
+        org.springframework.security.core.userdetails.User principal = new org.springframework.security.core.userdetails.User(claims.getSubject(), "", authorities);
+
+        // UsernamePasswordAuthenticationToken을 반환하여 SecurityContext에 저장할 Authentication 객체 생성
+        // principal 객체를 첫 번째 인자로 전달합니다.
+        return new UsernamePasswordAuthenticationToken(principal, "", authorities);
+    }
+
+    /**
      * JWT 토큰에서 인증 정보(Authentication)를 조회합니다.
      * StompHandler에서 사용될 핵심 메서드.
      *

@@ -13,12 +13,13 @@ import ProductRegisterPage from './pages/ProductRegisterPage';
 import MyProductsPage from './pages/MyProductsPage';
 import AdminUserPage from './pages/AdminUserPage';
 import ProtectedRoute from './components/ProtectedRoute';
+import ChatListPage from './pages/ChatListPage';
+import ChatRoomPage from './pages/ChatRoomPage';
 
 import Header from './components/Header';
 import NotificationList from './components/NotificationList';
 import { Box } from '@mui/material';
 import './App.css';
-import ChatRoomPage from './pages/ChatRoomPage';
 
 function App() {
   const dispatch = useDispatch();
@@ -68,11 +69,19 @@ function App() {
             }
           />
           <Route
+            path="/chats"
+            element={
+              <ProtectedRoute>
+                <ChatListPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
             path="/chats/:chatId"
             element={
-              // <ProtectedRoute>
-              <ChatRoomPage />
-              // </ProtectedRoute>
+              <ProtectedRoute>
+                <ChatRoomPage />
+              </ProtectedRoute>
             }
           />
         </Routes>

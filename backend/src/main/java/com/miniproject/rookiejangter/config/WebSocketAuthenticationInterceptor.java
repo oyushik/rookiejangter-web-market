@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class WebSocketAuthenticationInterceptor implements ChannelInterceptor {
 
-    private final JwtProvider jwtProvider; // <-- 여기도 수정!
+    private final JwtProvider jwtProvider;
 
     @Override
     public Message<?> preSend(Message<?> message, MessageChannel channel) {

@@ -11,9 +11,9 @@ import com.miniproject.rookiejangter.repository.ReservationRepository;
 import com.miniproject.rookiejangter.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import com.miniproject.rookiejangter.entity.EntityType;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -72,14 +72,14 @@ public class ReservationService {
         notificationService.createNotification(
                 buyer.getUserId(),
                 reservation.getReservationId(),
-                "Reservation",
+                EntityType.RESERVATION.name(),
                 notificationMessageToBuyer
         );
 
         notificationService.createNotification(
                 seller.getUserId(),
                 reservation.getReservationId(),
-                "Reservation",
+                EntityType.RESERVATION.name(),
                 notificationMessageToSeller
         );
         return ReservationDTO.Response.fromEntity(savedReservation);

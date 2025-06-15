@@ -5,7 +5,7 @@ logging:
   level:
     com:
       miniproject:
-        joongo: DEBUG
+        rookiejangter: INFO
 
 spring:
   datasource:

@@ -2,6 +2,7 @@ package com.miniproject.rookiejangter.service;
 
 import com.miniproject.rookiejangter.dto.MessageDTO;
 import com.miniproject.rookiejangter.entity.Chat;
+import com.miniproject.rookiejangter.entity.EntityType;
 import com.miniproject.rookiejangter.entity.Message;
 import com.miniproject.rookiejangter.entity.User;
 import com.miniproject.rookiejangter.exception.BusinessException;
@@ -72,12 +73,12 @@ public class MessageService {
         );
 
         // 알림 생성
-        String notificationMessageToReceiver = "[" + sender.getUserName() + "]: " + message.getContent();
+        String notificationMessageToReceiver = "'" + sender.getUserName() + "'님의 메시지: " + message.getContent();
 
         notificationService.createNotification(
                 receiver.getUserId(),
                 message.getMessageId(),
-                "Message",
+                EntityType.MESSAGE.name(), 
                 notificationMessageToReceiver
         );
 

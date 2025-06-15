@@ -246,6 +246,9 @@ const MyPage = () => {
         >
           찜한 상품
         </Button>
+        <Button variant="contained" color="error" sx={{ ml: 2 }} onClick={() => navigate('/chats')}>
+          내 채팅
+        </Button>
       </Box>
 
       {editing ? (
@@ -317,12 +320,13 @@ const MyPage = () => {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             placeholder="비밀번호"
-            fullWidth
-            sx={{ my: 2 }}
+            sx={{ my: 2, maxWidth: '400px', width: '100%' }}
           />
+          <br />
           <Button onClick={handleDeleteAccount} color="error" variant="contained">
             삭제 확인
           </Button>{' '}
+          <br />
           <Button onClick={() => setShowDeleteConfirm(false)}>취소</Button>
         </Box>
       )}

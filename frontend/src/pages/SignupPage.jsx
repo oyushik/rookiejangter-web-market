@@ -1,9 +1,19 @@
-import React, { useState } from 'react';
+import { useState, useEffect } from 'react';
 import PhoneVerification from '../components/PhoneVerification';
 import SignUpForm from '../components/SignUpForm';
 import { Container, Typography } from '@mui/material';
 
 const SignUpPage = () => {
+  useEffect(() => {
+    document.body.style.overflow = 'hidden';
+    document.body.style.overflowY = 'auto';
+    document.body.style.overflowX = 'auto';
+    return () => {
+      document.body.style.overflowY = 'auto';
+      document.body.style.overflowX = 'auto';
+    };
+  }, []);
+
   const [userName, setUserName] = useState('');
   const [phone, setPhone] = useState('');
   const [isVerified, setIsVerified] = useState(false);
@@ -18,7 +28,7 @@ const SignUpPage = () => {
     <div>
       <Container>
         <Typography variant="h4" sx={{ mt: 4 }}>
-          회원가입 페이지
+          회원가입
         </Typography>
         <PhoneVerification onSuccess={handlePhoneVerified} />
 
@@ -27,8 +37,6 @@ const SignUpPage = () => {
           <SignUpForm defaultName={userName} defaultPhone={phone} />
         </>
         {/* )} */}
-
-        <div>본인인증된 이름: {userName}</div>
       </Container>
     </div>
   );

@@ -47,13 +47,14 @@ const ProductRegisterPage = ({ editMode }) => {
 
   // 카테고리 목록 불러오기
   useEffect(() => {
-    axios.get('http://localhost:8080/categories')
-      .then(res => {
+    axios
+      .get('http://localhost:8080/categories')
+      .then((res) => {
         const arr = Array.isArray(res.data.data) ? res.data.data : [];
         setCategoryOptions(
-          arr.map(cat => ({
+          arr.map((cat) => ({
             value: String(cat.categoryId),
-            label: cat.categoryName
+            label: cat.categoryName,
           }))
         );
       })
@@ -63,7 +64,7 @@ const ProductRegisterPage = ({ editMode }) => {
   // 상품 정보와 이미지 한 번에 불러오기
   useEffect(() => {
     if (isEdit && !id) {
-      setFormError("ID를 찾을 수 없습니다!");
+      setFormError('ID를 찾을 수 없습니다!');
       setOpenError(true);
       return;
     }
@@ -87,7 +88,7 @@ const ProductRegisterPage = ({ editMode }) => {
           try {
             const imgRes = await axios.get(`http://localhost:8080/images/product/${id}`);
             imgArr = Array.isArray(imgRes.data)
-              ? imgRes.data.map(img => ({
+              ? imgRes.data.map((img) => ({
                   file: null,
                   url: img.imageUrl.startsWith('http')
                     ? img.imageUrl.replace('http://localhost:3000', 'http://localhost:8080')
@@ -113,7 +114,17 @@ const ProductRegisterPage = ({ editMode }) => {
         })
         .finally(() => setLoading(false));
     }
-  }, [isEdit, id, token, navigate, categoryOptions, setForm, setLoading, setFormError, setOpenError]);
+  }, [
+    isEdit,
+    id,
+    token,
+    navigate,
+    categoryOptions,
+    setForm,
+    setLoading,
+    setFormError,
+    setOpenError,
+  ]);
 
   // 사용자 상태 정보 불러오기
   useEffect(() => {
@@ -172,7 +183,7 @@ const ProductRegisterPage = ({ editMode }) => {
           },
         });
         // 이미지가 있으면 별도 업로드
-        if (form.images && form.images.length > 0 && form.images.some(img => img.file)) {
+        if (form.images && form.images.length > 0 && form.images.some((img) => img.file)) {
           const imageFormData = new FormData();
           imageFormData.append('productId', product_id);
           form.images.forEach((img) => {
@@ -210,7 +221,7 @@ const ProductRegisterPage = ({ editMode }) => {
         });
         // 상품 등록 성공 후 이미지가 있으면 별도 업로드
         if (res.data && res.data.id) {
-          if (form.images && form.images.length > 0 && form.images.some(img => img.file)) {
+          if (form.images && form.images.length > 0 && form.images.some((img) => img.file)) {
             const imageFormData = new FormData();
             imageFormData.append('productId', res.data.id);
             form.images.forEach((img) => {
@@ -296,19 +307,19 @@ const ProductRegisterPage = ({ editMode }) => {
         <Box sx={{ flex: 1 }}>
           <select
             value={form.category}
-            onChange={e => setForm(prev => ({ ...prev, category: e.target.value }))}
+            onChange={(e) => setForm((prev) => ({ ...prev, category: e.target.value }))}
             style={{
               width: '100%',
               height: 48,
               fontSize: 16,
               borderRadius: 8,
               border: '1px solid #ccc',
-              padding: '0 12px'
+              padding: '0 12px',
             }}
             required
           >
             <option value="">카테고리 선택</option>
-            {categoryOptions.map(opt => (
+            {categoryOptions.map((opt) => (
               <option key={opt.value} value={opt.value}>
                 {opt.label}
               </option>
@@ -358,7 +369,7 @@ const ProductRegisterPage = ({ editMode }) => {
       </Box>
 
       {/* 등록/수정 버튼 */}
-      <Box display="flex" justifyContent="flex-end">
+      <Box display="flex" justifyContent="center" mt={4}>
         <Button
           type="submit"
           variant="contained"

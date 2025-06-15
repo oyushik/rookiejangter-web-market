@@ -7,7 +7,6 @@ import { useSelector } from 'react-redux';
 import { getUnreadNotificationsCount } from '../api/notificationService';
 import { useEffect, useState } from 'react';
 
-
 const Header = () => {
   const navigate = useNavigate();
   const { isAuthenticated, logout } = useAuthStore();
@@ -41,8 +40,8 @@ const Header = () => {
     fetchUnreadCount(); // 컴포넌트 마운트 시 또는 isAuthenticated 변경 시 즉시 호출
 
     // 주기적으로 알림 개수를 업데이트하려면 다음 주석을 해제하고 사용
-    // const intervalId = setInterval(fetchUnreadCount, 60000); // 1분(60000ms)마다 업데이트
-    // return () => clearInterval(intervalId); // 컴포넌트 언마운트 시 인터벌 해제
+    const intervalId = setInterval(fetchUnreadCount, 60000); // 1분(60000ms)마다 업데이트
+    return () => clearInterval(intervalId); // 컴포넌트 언마운트 시 인터벌 해제
   }, [isAuthenticated]); // isAuthenticated 상태가 변경될 때마다 실행
 
   const handleLogout = () => {
@@ -99,7 +98,7 @@ const Header = () => {
             variant="h5"
             component="div"
             onClick={() => navigate('/')}
-            color = 'secondary'
+            color="secondary"
             sx={{
               cursor: 'pointer',
               display: 'flex',

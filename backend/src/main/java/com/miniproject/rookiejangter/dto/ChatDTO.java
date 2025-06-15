@@ -61,17 +61,33 @@ public class ChatDTO {
         public static class ChatInfo {
             private Long chatId;
             private Long productId;
+            private Long buyerId;
+            private Long sellerId;
             private String lastMessage;
-//            private Integer unreadCount;
+            private String otherParticipantName;
+            private Long otherParticipantId;
             private LocalDateTime createdAt;
 
-            public static ChatInfo fromEntity(Chat chat, String lastMessage) {
+            public static ChatInfo fromEntity(Chat chat, String lastMessage, Long currentUserId) {
+                String otherName = null;
+                Long otherId = null;
+
+                // 현재 사용자가 구매자라면 판매자 정보를, 판매자라면 구매자 정보를 설정
+                if (chat.getBuyer().getUserId().equals(currentUserId)) {
+                    otherName = chat.getSeller().getUserName(); // User 엔티티에 userName 필드가 있다고 가정
+                    otherId = chat.getSeller().getUserId();
+                } else if (chat.getSeller().getUserId().equals(currentUserId)) {
+                    otherName = chat.getBuyer().getUserName(); // User 엔티티에 userName 필드가 있다고 가정
+                    otherId = chat.getBuyer().getUserId();
+                }
+
                 return ChatInfo.builder()
                         .chatId(chat.getChatId())
                         .productId(chat.getProduct().getProductId())
                         .lastMessage(lastMessage)
-//                        .unreadCount(unreadCount)
                         .createdAt(chat.getCreatedAt())
+                        .otherParticipantName(otherName)
+                        .otherParticipantId(otherId)
                         .build();
             }
         }

@@ -43,6 +43,7 @@ public enum ErrorCode {
     CHAT_MESSAGE_NOT_FOUND(HttpStatus.NOT_FOUND, "CH002", "존재하지 않는 채팅 메시지입니다."),
     CANNOT_CHAT_WITH_SELF(HttpStatus.BAD_REQUEST, "CH003", "자기 자신과는 채팅할 수 없습니다."),
     CHAT_ROOM_ALREADY_EXISTS(HttpStatus.CONFLICT, "CH004", "이미 해당 사용자와의 채팅방이 존재합니다."),
+    CHAT_FORBIDDEN_ACCESS(HttpStatus.FORBIDDEN, "CH005", "해당 채팅방에 접근할 권한이 없습니다."),
 
     // Complete
     COMPLETE_NOT_FOUND(HttpStatus.NOT_FOUND, "CP001", "존재하지 않는 거래 완료 기록입니다."),
