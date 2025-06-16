@@ -1,6 +1,7 @@
 package com.miniproject.rookiejangter.service;
 
 import com.miniproject.rookiejangter.dto.ChatDTO;
+import com.miniproject.rookiejangter.dto.MessageDTO;
 import com.miniproject.rookiejangter.entity.Chat;
 import com.miniproject.rookiejangter.entity.Message;
 import com.miniproject.rookiejangter.entity.Product;
@@ -24,7 +25,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
-@Transactional
+@Transactional // 트랜잭션 관리 유지
 @RequiredArgsConstructor
 public class ChatService {
 
@@ -32,12 +33,11 @@ public class ChatService {
     private final ProductRepository productRepository;
     private final UserRepository userRepository;
     private final MessageRepository messageRepository;
+    private final MessageService messageService;
 
-    // ... createChat (기존과 동일) ...
     public ChatDTO.Response createChat(ChatDTO.Request request) {
-        // ... (기존 로직 유지) ...
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        Long buyerId = Long.parseLong(authentication.getName()); // 구매자 ID는 현재 로그인 유저
+        Long buyerId = Long.parseLong(authentication.getName());
         User buyer = userRepository.findById(buyerId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND, buyerId));
 
@@ -47,10 +47,8 @@ public class ChatService {
         Product product = productRepository.findById(request.getProductId())
                 .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_NOT_FOUND, request.getProductId()));
 
-        // 이미 존재하는 채팅방인지 확인 (구매자와 판매자, 상품 기준으로)
         Optional<Chat> existingChat = chatRepository.findByBuyerAndSellerAndProduct(buyer, seller, product);
         if (existingChat.isPresent()) {
-            // 이미 존재하면 해당 채팅방 반환 (에러가 아니라 재사용)
             return ChatDTO.Response.fromEntity(existingChat.get());
         }
 
@@ -61,7 +59,14 @@ public class ChatService {
                 .build();
 
         Chat savedChat = chatRepository.save(chat);
-        return ChatDTO.Response.fromEntity(savedChat);
+
+        String initialMessageContent = "안녕하세요. '" + product.getTitle() + "' 상품 구매 문의드립니다.";
+        MessageDTO.Request initialMessageRequest = MessageDTO.Request.builder()
+                .content(initialMessageContent)
+                .build();
+        messageService.sendMessage(savedChat.getChatId(), initialMessageRequest, buyer.getUserId());
+
+        return ChatDTO.Response.fromEntity(savedChat); // 수정된 ChatDTO.Response.fromEntity 호출
     }
 
 
@@ -73,16 +78,16 @@ public class ChatService {
      * @param currentUserId 현재 로그인한 사용자 ID (컨트롤러에서 주입받음)
      * @return 조회된 채팅방 정보
      */
-    public ChatDTO.Response getChatById(Long chatId, Long currentUserId) { // currentUserId 파라미터 추가
+    @Transactional(readOnly = true) // 읽기 전용 트랜잭션
+    public ChatDTO.Response getChatById(Long chatId, Long currentUserId) {
         Chat chat = chatRepository.findById(chatId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.CHATROOM_NOT_FOUND, chatId));
 
-        // **인가 로직을 서비스 메서드 내부로 이동**
         if (!chat.getBuyer().getUserId().equals(currentUserId) && !chat.getSeller().getUserId().equals(currentUserId)) {
             throw new BusinessException(ErrorCode.CHAT_FORBIDDEN_ACCESS);
         }
 
-        return ChatDTO.Response.fromEntity(chat);
+        return ChatDTO.Response.fromEntity(chat); // 수정된 ChatDTO.Response.fromEntity 호출
     }
 
     /**
@@ -91,16 +96,14 @@ public class ChatService {
      * @param pageable 페이징 및 정렬 정보
      * @return 사용자가 참여하고 있는 채팅방 목록
      */
+    @Transactional(readOnly = true) // 읽기 전용 트랜잭션
     public ChatDTO.ChatListResponse getChatsByUserId(Pageable pageable) {
-        // 이 메서드에서는 컨트롤러에서 Principal을 받지 않고 SecurityContextHolder에서 직접 User ID를 가져오는 기존 방식 유지
-        // 이 방식이 문제가 없다면 유지하고, 만약 이 부분에서도 principal.name 에러가 나면
-        // 이 메서드에도 currentUserId 파라미터를 추가하고 컨트롤러에서 주입하는 방식으로 변경 고려
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         if (authentication == null || !authentication.isAuthenticated() || "anonymousUser".equals(authentication.getName())) {
             throw new BusinessException(ErrorCode.UNAUTHORIZED_ACCESS, "채팅방 목록 조회를 위한 인증 정보가 없습니다.");
         }
-        Long currentUserId = Long.parseLong(authentication.getName()); // principal.getName()은 userId (String)를 반환
+        Long currentUserId = Long.parseLong(authentication.getName());
 
         Page<Chat> chatPage = chatRepository.findByBuyer_UserIdOrSeller_UserId(currentUserId, currentUserId, pageable);
 
@@ -108,7 +111,7 @@ public class ChatService {
                 .map(chat -> {
                     List<Message> messages = messageRepository.findByChat_ChatIdOrderByCreatedAtDesc(chat.getChatId());
                     String lastMessageContent = messages.isEmpty() ? "메시지가 없습니다." : messages.get(0).getContent();
-                    return ChatDTO.ChatListResponse.ChatInfo.fromEntity(chat,lastMessageContent, currentUserId);
+                    return ChatDTO.ChatListResponse.ChatInfo.fromEntity(chat,lastMessageContent, currentUserId); // 수정된 ChatInfo.fromEntity 호출
                 })
                 .collect(Collectors.toList());
 
@@ -130,11 +133,10 @@ public class ChatService {
      * @param chatId 삭제할 채팅방 ID
      * @param currentUserId 현재 로그인한 사용자 ID (컨트롤러에서 주입받음)
      */
-    public void deleteChat(Long chatId, Long currentUserId) { // currentUserId 파라미터 추가
+    public void deleteChat(Long chatId, Long currentUserId) {
         Chat chat = chatRepository.findById(chatId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.CHATROOM_NOT_FOUND, chatId));
 
-        // **인가 로직을 서비스 메서드 내부로 이동**
         if (!chat.getBuyer().getUserId().equals(currentUserId) && !chat.getSeller().getUserId().equals(currentUserId)) {
             throw new BusinessException(ErrorCode.CHAT_FORBIDDEN_ACCESS);
         }

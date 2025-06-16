@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import {
   Box,
   TextField,
@@ -15,8 +15,9 @@ import { Stomp } from '@stomp/stompjs';
 import { jwtDecode } from 'jwt-decode';
 
 const CHAT_API_BASE_URL = 'http://localhost:8080/api/chats';
+const PRODUCT_DETAIL_BASE_URL = '/products'; // 상품 상세 페이지 URL 접두사
 
-// 시간 포맷터 유틸리티 (예시, 실제 프로젝트의 FormatTime 사용)
+// 시간 포맷터 유틸리티
 const formatMessageTime = (isoString) => {
   if (!isoString) return '';
   const date = new Date(isoString);
@@ -26,17 +27,21 @@ const formatMessageTime = (isoString) => {
 
 const ChatRoomPage = () => {
   const { chatId } = useParams();
+  const navigate = useNavigate();
 
   const [currentUserId, setCurrentUserId] = useState(null);
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [chatInfo, setChatInfo] = useState(null); // 채팅방 정보 저장 (otherParticipantName/Id 포함)
-  const stompClient = useRef(null); // STOMP 클라이언트 인스턴스 저장
-  const messagesEndRef = useRef(null); // 메시지 스크롤을 위한 ref
+  const [chatInfo, setChatInfo] = useState(null);
+  const [otherParticipantName, setOtherParticipantName] = useState('상대방');
+  const [productTitle, setProductTitle] = useState('상품 정보 없음');
+  const [productId, setProductId] = useState(null); // productId 상태 추가
+  const stompClient = useRef(null);
+  const messagesEndRef = useRef(null);
 
-  // 1. 컴포넌트 마운트 시 현재 사용자 ID를 토큰에서 파싱 (한 번만 실행)
+  // 컴포넌트 마운트 시 현재 사용자 ID를 토큰에서 파싱
   useEffect(() => {
     try {
       const accessToken = localStorage.getItem('accessToken');
@@ -50,11 +55,10 @@ const ChatRoomPage = () => {
     }
   }, []);
 
-  // 2. chatId 또는 currentUserId가 준비되면 채팅 데이터 로드 및 WebSocket 연결
+  // chatId 또는 currentUserId가 준비되면 채팅 데이터 로드 및 WebSocket 연결
   useEffect(() => {
-    // currentUserId가 아직 로드되지 않았다면 실행하지 않음
     if (currentUserId === null || !chatId) {
-      setLoading(false); // currentUserId 로딩 대기
+      setLoading(false);
       return;
     }
 
@@ -68,17 +72,41 @@ const ChatRoomPage = () => {
 
     const fetchChatDataAndConnectWs = async () => {
       try {
-        // 1. 채팅방 정보 가져오기 (otherParticipantName 등을 표시하기 위함)
+        // 채팅방 정보 가져오기
         const chatResponse = await axios.get(`${CHAT_API_BASE_URL}/${chatId}`, { headers });
         if (chatResponse.data.success) {
-          setChatInfo(chatResponse.data.data);
+          const chatData = chatResponse.data.data;
+          setChatInfo(chatData);
+
+          // 응답 구조에 따라 상품명 설정
+          if (chatData.product && chatData.product.title) {
+            setProductTitle(chatData.product.title);
+          } else {
+            setProductTitle('상품 정보 없음');
+          }
+
+          // productId 설정 (추가된 부분)
+          if (chatData.productId) {
+            setProductId(chatData.productId);
+          } else {
+            setProductId(null); // productId가 없을 경우 null로 설정
+          }
+
+          // 응답 구조와 현재 사용자 ID에 따라 상대방 이름 설정
+          if (currentUserId === chatData.buyerId) {
+            setOtherParticipantName(chatData.seller?.userName || '상대방');
+          } else if (currentUserId === chatData.sellerId) {
+            setOtherParticipantName(chatData.buyer?.userName || '상대방');
+          } else {
+            setOtherParticipantName('상대방');
+          }
         } else {
           setError(`채팅방 정보 로드 실패: ${chatResponse.data.message}`);
           setLoading(false);
           return;
         }
 
-        // 2. 기존 메시지 로드
+        // 기존 메시지 로드
         const messageResponse = await axios.get(`${CHAT_API_BASE_URL}/${chatId}/messages`, {
           headers,
         });
@@ -97,20 +125,19 @@ const ChatRoomPage = () => {
         setLoading(false);
       }
 
-      // 3. WebSocket 연결
+      // WebSocket 연결
       stompClient.current = Stomp.over(() => new SockJS('http://localhost:8080/ws/chat'));
 
       stompClient.current.connect(
-        headers, // CONNECT 헤더에 토큰 포함
+        headers,
         (frame) => {
           console.log('WebSocket connected:', frame);
-          // 메시지 구독 부분
+          // 메시지 구독
           stompClient.current.subscribe(`/sub/chat/room/${chatId}`, (message) => {
             const receivedMessage = JSON.parse(message.body);
             console.log('Received message:', receivedMessage);
 
             setMessages((prevMessages) => {
-              // messageId가 없거나 (예: 입장/퇴장 메시지) 중복 메시지 방지
               const isDuplicate =
                 receivedMessage.messageId &&
                 prevMessages.some((msg) => msg.messageId === receivedMessage.messageId);
@@ -121,19 +148,6 @@ const ChatRoomPage = () => {
               return [...prevMessages, receivedMessage];
             });
           });
-
-          // 채팅방 입장 메시지 발행 (선택 사항, 필요하다면 messageType: 'ENTER' 등 정의)
-          // 백엔드에서 처리하지 않는다면 불필요
-          // stompClient.current.publish({
-          //   destination: `/pub/chat/enter/${chatId}`,
-          //   headers: headers, // SEND 헤더에도 토큰 포함
-          //   body: JSON.stringify({
-          //     chatId: parseInt(chatId),
-          //     senderId: currentUserId,
-          //     content: `${currentUserId}님이 입장했습니다.`,
-          //     messageType: 'ENTER',
-          //   }),
-          // });
         },
         (error) => {
           console.error('WebSocket connection error:', error);
@@ -152,7 +166,7 @@ const ChatRoomPage = () => {
         });
       }
     };
-  }, [chatId, currentUserId]); // currentUserId가 변경될 때 재실행
+  }, [chatId, currentUserId]);
 
   // 메시지가 업데이트될 때마다 최하단으로 스크롤
   useEffect(() => {
@@ -172,22 +186,75 @@ const ChatRoomPage = () => {
 
     const token = localStorage.getItem('accessToken');
     const sendHeaders = {
-      Authorization: `Bearer ${token}`, // 메시지 전송 시에도 토큰 포함
+      Authorization: `Bearer ${token}`,
     };
 
     const messageToSend = {
       content: newMessage,
-      // senderId는 백엔드에서 토큰으로 추출하므로 여기서는 보낼 필요 없음 (JwtAuthenticationInterceptor에서 처리)
-      // messageType: 'TALK' // 백엔드 메시지 DTO에 따라 필요 시 추가
     };
 
     stompClient.current.publish({
-      destination: `/pub/chat/message/${chatId}`, // 백엔드 Pub 경로
+      destination: `/pub/chat/message/${chatId}`,
       headers: sendHeaders,
       body: JSON.stringify(messageToSend),
     });
 
     setNewMessage('');
+  };
+
+  // '채팅 목록으로' 버튼 클릭 핸들러
+  const handleGoToChatList = () => {
+    navigate('/chats');
+  };
+
+  // '상품 상세 보기' 버튼 클릭 핸들러 (추가된 부분)
+  const handleViewProductDetails = () => {
+    if (productId) {
+      navigate(`${PRODUCT_DETAIL_BASE_URL}/${productId}`);
+    } else {
+      alert('상품 정보를 찾을 수 없습니다.');
+    }
+  };
+
+  // '채팅 나가기' 버튼 클릭 핸들러
+  const handleLeaveChat = async () => {
+    if (!chatId) {
+      setError('채팅방 ID를 찾을 수 없습니다.');
+      return;
+    }
+
+    const confirmLeave = window.confirm(
+      '정말로 채팅방을 나가시겠습니까? 모든 대화 기록이 삭제됩니다.'
+    );
+    if (!confirmLeave) {
+      return;
+    }
+
+    setLoading(true);
+    const token = localStorage.getItem('accessToken');
+    const headers = { Authorization: `Bearer ${token}` };
+
+    try {
+      const response = await axios.delete(`${CHAT_API_BASE_URL}/${chatId}`, { headers });
+      if (response.data.success) {
+        alert('채팅방이 성공적으로 삭제되었습니다.');
+        navigate('/chats');
+      } else {
+        alert(`채팅방 삭제 실패: ${response.data.message || response.data.error}`);
+        setError(`채팅방 삭제 실패: ${response.data.message || response.data.error}`);
+      }
+    } catch (err) {
+      console.error('Error leaving chat:', err);
+      if (err.response && err.response.data && err.response.data.message) {
+        alert(`채팅방 삭제 중 오류 발생: ${err.response.data.message}`);
+        setError(`채팅방 삭제 중 오류 발생: ${err.response.data.message}`);
+      } else {
+        alert('채팅방 삭제 중 알 수 없는 오류가 발생했습니다.');
+        setError('채팅방 삭제 중 알 수 없는 오류가 발생했습니다.');
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
   if (loading) {
@@ -198,19 +265,34 @@ const ChatRoomPage = () => {
     return <Typography color="error">{error}</Typography>;
   }
 
-  // 채팅 상대방의 이름을 표시
-  // chatInfo.otherParticipantName 필드를 활용하도록 변경
-  const getChatPartnerName = () => {
-    if (!chatInfo || currentUserId === null) return '상대방';
-
-    return chatInfo.otherParticipantName || '상대방';
-  };
-
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', height: '85vh', p: 2 }}>
-      <Typography variant="h5" sx={{ mb: 2 }}>
-        {chatInfo ? `${getChatPartnerName()}님과의 채팅` : '채팅방'}
-      </Typography>
+      {/* 제목 및 버튼 영역 */}
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
+        <Box>
+          <Typography variant="h5">{otherParticipantName}님과의 채팅</Typography>
+          <Typography variant="subtitle1" color="text.secondary">
+            상품명: {productTitle}
+          </Typography>
+        </Box>
+        <Box sx={{ display: 'flex', gap: 1 }}>
+          {/* 상품 상세 보기 버튼 (추가된 부분) */}
+          <Button
+            variant="outlined"
+            color="info" // 정보성 버튼에 적합한 색상
+            onClick={handleViewProductDetails}
+            disabled={!productId} // productId가 없으면 버튼 비활성화
+          >
+            상품 상세 보기
+          </Button>
+          <Button variant="outlined" color="primary" onClick={handleGoToChatList}>
+            채팅 목록으로
+          </Button>
+          <Button variant="contained" color="error" onClick={handleLeaveChat}>
+            채팅 나가기
+          </Button>
+        </Box>
+      </Box>
       <Divider sx={{ mb: 2 }} />
 
       <Box
@@ -229,7 +311,7 @@ const ChatRoomPage = () => {
         )}
         {messages.map((msg) => (
           <Box
-            key={msg.messageId} // messageId가 유일한 키가 되도록 확인
+            key={msg.messageId}
             sx={{
               display: 'flex',
               justifyContent: msg.senderId === currentUserId ? 'flex-end' : 'flex-start',
@@ -244,23 +326,22 @@ const ChatRoomPage = () => {
                 backgroundColor: msg.senderId === currentUserId ? 'primary.light' : 'grey.200',
                 color: msg.senderId === currentUserId ? 'white' : 'black',
                 borderRadius: '10px',
-                borderTopRightRadius: msg.senderId === currentUserId ? '0px' : '10px', // 자기 메시지는 오른쪽 위 각짐
-                borderTopLeftRadius: msg.senderId === currentUserId ? '10px' : '0px', // 상대 메시지는 왼쪽 위 각짐
+                borderTopRightRadius: msg.senderId === currentUserId ? '0px' : '10px',
+                borderTopLeftRadius: msg.senderId === currentUserId ? '10px' : '0px',
               }}
             >
               <Typography variant="caption" sx={{ display: 'block', mb: 0.5 }}>
-                {/* `senderId`와 `currentUserId`를 비교하여 발신자 이름 표시 */}
-                {msg.senderId === currentUserId ? '나' : getChatPartnerName()}
+                {msg.senderId === currentUserId ? '나' : otherParticipantName}
               </Typography>
               <Typography variant="body1">{msg.content}</Typography>
               <Typography variant="caption" display="block" align="right" sx={{ mt: 0.5 }}>
-                {formatMessageTime(msg.createdAt)} {/* isRead 필드가 있다면 사용, 없다면 제거 */}
-                {msg.isRead ? '' : msg.senderId !== currentUserId ? '' : '읽지않음'}
+                {formatMessageTime(msg.createdAt)}
+                {msg.isRead ? '' : msg.senderId !== currentUserId ? '' : ' 읽지않음'}
               </Typography>
             </Paper>
           </Box>
         ))}
-        <div ref={messagesEndRef} /> {/* 스크롤 위치를 위한 더미 div */}
+        <div ref={messagesEndRef} />
       </Box>
 
       <Box component="form" onSubmit={handleSendMessage} sx={{ display: 'flex', mt: 2 }}>

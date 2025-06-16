@@ -14,7 +14,7 @@ import FormSnackbar from '../components/FormSnackbar';
 const ProductDetailPage = () => {
   const { product_id } = useParams();
   const navigate = useNavigate();
-  const currentUser = useSelector((state) => state.auth.identityInfo); // 로그인한 유저 정보
+  const currentUser = useSelector((state) => state.auth.identityInfo);
   const [error, setError] = useState(null);
   const [images, setImages] = useState([]);
   const [reportOpen, setReportOpen] = useState(false);
@@ -24,9 +24,9 @@ const ProductDetailPage = () => {
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [imgIdx, setImgIdx] = useState(0);
-  const [isLiked, setIsLiked] = useState(false); // 추가
+  const [isDibbed, setIsDibbed] = useState(false);
 
-  // snackbar 상태
+  // ProductDetailPage의 스낵바는 ProductActions와 별개로 유지
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMsg, setSnackbarMsg] = useState('');
   const [snackbarSeverity, setSnackbarSeverity] = useState('error');
@@ -40,7 +40,7 @@ const ProductDetailPage = () => {
     axios
       .get(`http://localhost:8080/api/products/${product_id}`)
       .then((res) => {
-        console.log('상품 상세 정보 응답:', res.data); // 콘솔 출력 추가
+        console.log('상품 상세 정보 응답:', res.data);
         setProduct(res.data.data);
         setLoading(false);
       })
@@ -58,7 +58,7 @@ const ProductDetailPage = () => {
           setSnackbarOpen(true);
         }
       });
-  }, [product_id, navigate]);
+  }, [product_id]); // navigate를 의존성 배열에서 제거, 대신 직접 navigate 사용
 
   // 상품 이미지 별도 호출
   useEffect(() => {
@@ -91,8 +91,8 @@ const ProductDetailPage = () => {
       })
       .then((res) => {
         console.log('찜 상태 응답:', res.data);
-        if (res.data?.success && typeof res.data.data?.liked === 'boolean') {
-          setIsLiked(res.data.data.liked);
+        if (res.data?.success && typeof res.data.data?.dibbed === 'boolean') {
+          setIsDibbed(res.data.data.dibbed);
         }
       })
       .catch((err) => {
@@ -207,60 +207,6 @@ const ProductDetailPage = () => {
     navigate(`/my-products/${product.id}/edit`);
   };
 
-  // **채팅 시작 핸들러**
-  const handleStartChat = async () => {
-    const token = localStorage.getItem('accessToken'); // 토큰 가져오기
-    if (!token) {
-      setSnackbarMsg('로그인 후 이용해주세요.');
-      setSnackbarSeverity('warning');
-      setSnackbarOpen(true);
-      navigate('/login');
-      return;
-    }
-
-    if (!product || !product.seller || !product.seller.id) {
-      setSnackbarMsg('판매자 정보를 찾을 수 없습니다.');
-      setSnackbarSeverity('error');
-      setSnackbarOpen(true);
-      return;
-    }
-
-    const sellerId = product.seller.id;
-    const productId = parseInt(product_id, 10);
-
-    try {
-      const response = await axios.post(
-        'http://localhost:8080/api/chats',
-        {
-          sellerId: sellerId,
-          productId: productId,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`, // 토큰을 헤더에 추가
-          },
-        }
-      );
-
-      if (response.data.success) {
-        const chatId = response.data.data.chatId;
-        setSnackbarMsg('채팅방이 성공적으로 생성되었습니다.');
-        setSnackbarSeverity('success');
-        setSnackbarOpen(true);
-        navigate(`/chats/${chatId}`);
-      } else {
-        setSnackbarMsg(`채팅방 생성 실패: ${response.data.message}`);
-        setSnackbarSeverity('error');
-        setSnackbarOpen(true);
-      }
-    } catch (error) {
-      console.error('채팅방 생성 요청 실패:', error);
-      setSnackbarMsg('채팅방 생성 중 오류가 발생했습니다.');
-      setSnackbarSeverity('error');
-      setSnackbarOpen(true);
-    }
-  };
-
   return (
     <Box sx={{ px: 5, py: 4 }}>
       <Grid container spacing={4}>
@@ -310,12 +256,18 @@ const ProductDetailPage = () => {
                 조회수: {product.viewCount}
               </Typography>
               <Divider sx={{ mb: 2, width: 725 }} />
-              <Typography variant="h3" sx={{ mb: 2, fontWeight: 700 }}>
-                {product.price?.toLocaleString()}원
-              </Typography>
-              <Typography variant="subtitle2" sx={{ mb: 1 }}>
+              <Typography
+                variant="subtitle1"
+                sx={{ mb: 1, color: '#777', display: 'flex', alignItems: 'center', gap: 2 }}
+              >
                 지역:{' '}
                 {product.seller?.area?.areaName || product.seller?.areaName || '지역정보 없음'}
+                <Divider orientation="vertical" flexItem sx={{ mx: 2 }} />
+                판매자명: {product.seller?.userName || '판매자명'}
+              </Typography>
+              <Divider sx={{ mb: 2, width: 725 }} />
+              <Typography variant="h3" sx={{ mb: 2, fontWeight: 700 }}>
+                {product.price?.toLocaleString()}원
               </Typography>
             </Box>
             <ProductActions
@@ -323,7 +275,8 @@ const ProductDetailPage = () => {
               isOwner={isOwner}
               onEdit={handleEdit}
               onDelete={handleDelete}
-              isInitiallyLiked={isLiked}
+              isInitiallyDibbed={isDibbed}
+              product={product} // ProductActions로 product 객체 전달
             />
           </Box>
         </Grid>
@@ -434,23 +387,6 @@ const ProductDetailPage = () => {
                   >
                     {isOwner ? '마이페이지' : '신고하기'}
                   </Button>
-
-                  {/* **추가된 채팅 시작 버튼** */}
-                  {!isOwner && ( // 로그인했고 자기 상품이 아닐 때만 채팅 버튼 표시
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      sx={{
-                        padding: '8px 24px',
-                        borderRadius: 2,
-                        fontSize: 18,
-                        fontWeight: 700,
-                      }}
-                      onClick={handleStartChat}
-                    >
-                      채팅 시작하기
-                    </Button>
-                  )}
                 </Box>
               </Box>
             </Box>

@@ -200,22 +200,6 @@ const MyPage = () => {
     }
   };
 
-  // 알림 리스트 불러오기
-  useEffect(() => {
-    const fetchNotifications = async () => {
-      const token = localStorage.getItem('accessToken');
-      if (!token) return;
-      const res = await notificationService.getNotifications(0, 10, 'createdAt,desc');
-      console.log('알림 리스트 응답:', res);
-      if (res.success && res.data?.content) {
-        setNotifications(res.data.content);
-      } else {
-        setNotifications([]);
-      }
-    };
-    fetchNotifications();
-  }, []);
-
   return (
     <Box sx={{ p: 3 }}>
       <Typography variant="h4" gutterBottom>
@@ -305,8 +289,8 @@ const MyPage = () => {
           </Button>
         </>
       )}
-
-      <hr style={{ margin: '30px 0' }} />
+      <br />
+      <br />
 
       {!showDeleteConfirm ? (
         <Button onClick={() => setShowDeleteConfirm(true)} color="error">
@@ -351,26 +335,6 @@ const MyPage = () => {
       )}
 
       <hr style={{ margin: '30px 0' }} />
-
-      {/* 알림 리스트 */}
-      <Typography variant="h5" gutterBottom>
-        알림 리스트
-      </Typography>
-      {notifications.length > 0 ? (
-        notifications.map((noti) => (
-          <Box
-            key={noti.notificationId || noti.id}
-            sx={{ mb: 1, p: 1, border: '1px solid #ccc', borderRadius: 2 }}
-          >
-            <Typography>{noti.message}</Typography>
-            <Typography variant="caption" color="text.secondary">
-              {noti.createdAt ? FormatTime(noti.createdAt) : noti.date || noti.createdAt}
-            </Typography>
-          </Box>
-        ))
-      ) : (
-        <Typography color="text.secondary">알림이 없습니다.</Typography>
-      )}
 
       {/* Snackbar 팝업 */}
       <FormSnackbar

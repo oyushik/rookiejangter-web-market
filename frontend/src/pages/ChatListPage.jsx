@@ -15,7 +15,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { jwtDecode } from 'jwt-decode';
 
-const CHAT_API_BASE_URL = 'http://localhost:8080/api/chats'; // 실제 API 엔드포인트로 변경 필요
+const CHAT_API_BASE_URL = 'http://localhost:8080/api/chats';
 
 // 시간 포맷터 유틸리티 (ChatRoomPage와 동일하게 사용)
 const formatChatListTime = (isoString) => {
@@ -33,16 +33,6 @@ const formatChatListTime = (isoString) => {
 };
 
 const ChatListPage = () => {
-  useEffect(() => {
-    document.body.style.overflow = 'hidden';
-    document.body.style.overflowY = 'hidden';
-    document.body.style.overflowX = 'auto';
-    return () => {
-      document.body.style.overflowY = 'hidden';
-      document.body.style.overflowX = 'auto';
-    };
-  }, []);
-
   const [chatRooms, setChatRooms] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -50,38 +40,43 @@ const ChatListPage = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // JWT 토큰에서 현재 사용자 ID 추출
-    try {
-      const accessToken = localStorage.getItem('accessToken');
-      if (accessToken) {
-        const decodedToken = jwtDecode(accessToken);
-        setCurrentUserId(decodedToken.sub ? parseInt(decodedToken.sub, 10) : null);
+    const token = localStorage.getItem('accessToken');
+    if (token) {
+      try {
+        const decodedToken = jwtDecode(token);
+        setCurrentUserId(decodedToken.sub); // assuming 'sub' claim holds the userId
+      } catch (error) {
+        console.error('Invalid token:', error);
+        setError('유효하지 않은 인증 정보입니다.');
+        setLoading(false);
+        return;
       }
-    } catch (error) {
-      console.error('Failed to decode JWT token from local storage:', error);
-      setCurrentUserId(null);
+    } else {
+      setError('로그인이 필요합니다.');
+      setLoading(false);
+      return;
     }
 
     const fetchChatRooms = async () => {
-      setLoading(true);
-      setError(null);
       try {
-        const token = localStorage.getItem('accessToken');
-        if (!token) {
-          setError('로그인이 필요합니다. 토큰이 없습니다.');
-          setLoading(false);
-          return;
-        }
-        const headers = { Authorization: `Bearer ${token}` };
-        // getChatsByUserId 호출 (페이징은 기본값 사용)
-        const response = await axios.get(CHAT_API_BASE_URL, { headers });
+        const response = await axios.get(`${CHAT_API_BASE_URL}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          params: {
+            page: 0, // 첫 페이지 요청
+            size: 10, // 페이지 당 10개
+            sort: 'createdAt,desc', // 최신순 정렬
+          },
+        });
         if (response.data.success) {
-          setChatRooms(response.data.data.content);
+          // 'content' 배열이 존재하는지 확인하고, 없다면 빈 배열로 초기화
+          setChatRooms(response.data.data.content || []);
         } else {
-          setError(`채팅방 목록 로드 실패: ${response.data.message}`);
+          setError(response.data.message || '채팅방 목록을 불러오는데 실패했습니다.');
         }
       } catch (err) {
-        console.error('Failed to load chat rooms:', err);
+        console.error('Error fetching chat rooms:', err);
         setError('채팅방 목록을 불러오는 중 오류가 발생했습니다.');
       } finally {
         setLoading(false);
@@ -92,54 +87,76 @@ const ChatListPage = () => {
   }, []);
 
   const handleEnterChat = (chatId) => {
-    navigate(`/chats/${chatId}`); // ChatRoomPage로 이동
+    navigate(`/chats/${chatId}`);
   };
 
   if (loading) {
-    return <CircularProgress sx={{ display: 'block', margin: '20px auto' }} />;
+    return (
+      <Box display="flex" justifyContent="center" alignItems="center" minHeight="80vh">
+        <CircularProgress />
+      </Box>
+    );
   }
 
   if (error) {
     return (
-      <Typography color="error" sx={{ textAlign: 'center', mt: 4 }}>
-        {error}
-      </Typography>
+      <Box display="flex" justifyContent="center" alignItems="center" minHeight="80vh">
+        <Typography color="error">{error}</Typography>
+      </Box>
     );
   }
 
   return (
-    <Box sx={{ p: 3, maxWidth: 800, margin: 'auto' }}>
-      <Typography variant="h4" component="h1" gutterBottom sx={{ mb: 3, textAlign: 'center' }}>
-        내 채팅방 목록
+    <Box
+      sx={{
+        width: '100%',
+        maxWidth: 800,
+        margin: 'auto',
+        mt: 4,
+        px: 2,
+      }}
+    >
+      <Typography variant="h4" component="h1" gutterBottom sx={{ textAlign: 'center', mb: 4 }}>
+        내 채팅 목록
       </Typography>
-      <Paper elevation={3} sx={{ borderRadius: '8px', overflow: 'hidden' }}>
+      <Paper elevation={3} sx={{ p: 2 }}>
         {chatRooms.length === 0 ? (
-          <Typography variant="body1" color="textSecondary" sx={{ p: 4, textAlign: 'center' }}>
-            참여하고 있는 채팅방이 없습니다.
+          <Typography variant="body1" sx={{ textAlign: 'center', py: 4 }}>
+            아직 참여 중인 채팅방이 없습니다.
           </Typography>
         ) : (
           <List>
             {chatRooms.map((chat) => (
               <React.Fragment key={chat.chatId}>
-                <ListItem
-                  alignItems="flex-start"
-                  sx={{ py: 2, '&:hover': { backgroundColor: 'action.hover' } }}
-                >
+                <ListItem alignItems="flex-start">
                   <ListItemText
                     primary={
-                      <Typography variant="h6" component="span">
-                        {`채팅방 (상품 ID: ${chat.productId})`}
+                      <Typography
+                        sx={{ fontWeight: 'bold' }}
+                        component="span"
+                        variant="h6" // 채팅방 목록에서 상대방 이름과 상품명을 더 강조
+                        color="text.primary"
+                      >
+                        {chat.otherParticipantName}님과의 채팅
                       </Typography>
                     }
                     secondary={
                       <Box
                         sx={{
                           display: 'flex',
-                          justifyContent: 'space-between',
-                          alignItems: 'flex-end',
+                          flexDirection: 'column',
                           mt: 1,
                         }}
                       >
+                        <Typography
+                          sx={{ display: 'inline', mb: 0.5 }}
+                          component="span"
+                          variant="body1" // 상품명도 일반 텍스트보다 살짝 강조
+                          color="text.secondary"
+                        >
+                          상품명: {chat.productTitle || '상품 정보 없음'}{' '}
+                          {/* 백엔드에서 productTitle을 내려줘야 합니다. */}
+                        </Typography>
                         <Typography
                           sx={{ display: 'inline' }}
                           component="span"
@@ -163,9 +180,9 @@ const ChatListPage = () => {
                       variant="contained"
                       color="primary"
                       onClick={() => handleEnterChat(chat.chatId)}
-                      sx={{ minWidth: '100px', mr: 2 }} // 오른쪽 margin 추가로 버튼 위치 조절
+                      sx={{ minWidth: '100px', mr: 2 }}
                     >
-                      채팅 참여
+                      들어가기
                     </Button>
                   </ListItemSecondaryAction>
                 </ListItem>

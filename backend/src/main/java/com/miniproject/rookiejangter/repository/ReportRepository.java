@@ -13,8 +13,6 @@ import java.util.Optional;
 public interface ReportRepository extends JpaRepository<Report, Long> {
     Page<Report> findByReportReason_ReportReasonId(Integer reportReasonReportReasonId, Pageable pageable);
     List<Report> findByUser_UserId(Long userUserId);
-    List<Report> findByTargetId(Long targetId);
     List<Report> findByTargetType(String targetType);
     List<Report> findByIsProcessedFalse();
-    List<Report> findByIsProcessedTrue();
 }

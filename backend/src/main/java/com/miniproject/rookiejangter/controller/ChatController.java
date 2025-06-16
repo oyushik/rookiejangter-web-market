@@ -66,7 +66,6 @@ public class ChatController {
      * @return 조회된 채팅방 정보
      */
     @GetMapping("/{chatId}")
-    // @PreAuthorize("@chatAuthService.isChatParticipant(#chatId, principal.name)") // 이 부분을 제거합니다.
     public ResponseEntity<ApiResponseWrapper<ChatDTO.Response>> getChatById(
             @PathVariable Long chatId,
             Principal principal // Principal은 계속 받아야 합니다.
@@ -137,7 +136,6 @@ public class ChatController {
      * @return 삭제 성공 여부
      */
     @DeleteMapping("/{chatId}")
-    // @PreAuthorize("@chatAuthService.isChatParticipant(#chatId, principal.name)") // 이 부분을 제거합니다.
     public ResponseEntity<ApiResponseWrapper<Void>> deleteChat(
             @PathVariable Long chatId,
             Principal principal // Principal은 계속 받아야 합니다.
