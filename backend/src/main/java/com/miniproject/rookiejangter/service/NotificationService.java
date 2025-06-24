@@ -13,7 +13,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -43,7 +42,6 @@ public class NotificationService {
                 .entityId(entityId)
                 .entityType(entityType)
                 .message(message)
-                .sentAt(LocalDateTime.now())
                 .isRead(false)
                 .build();
 
@@ -57,7 +55,7 @@ public class NotificationService {
      * @return 조회된 알림 정보
      */
     public NotificationDTO.Response getNotificationById(Long notificationId) {
-        Notification notification = notificationRepository.findByNotificationId(notificationId)
+        Notification notification = notificationRepository.findById(notificationId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.RESOURCE_NOT_FOUND, "Notification", notificationId));
 
         return NotificationDTO.Response.fromEntity(notification);
@@ -127,7 +125,7 @@ public class NotificationService {
      * @param notificationId 알림 ID
      */
     public void markAsRead(Long notificationId) {
-        Notification notification = notificationRepository.findByNotificationId(notificationId)
+        Notification notification = notificationRepository.findById(notificationId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.RESOURCE_NOT_FOUND, "Notification", notificationId));
         
         notification.markAsRead();
@@ -138,7 +136,7 @@ public class NotificationService {
      * @param notificationId 알림 ID
      */
     public void deleteNotification(Long notificationId) {
-        Notification notification = notificationRepository.findByNotificationId(notificationId)
+        Notification notification = notificationRepository.findById(notificationId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.RESOURCE_NOT_FOUND, "Notification", notificationId));
 
         notificationRepository.delete(notification);

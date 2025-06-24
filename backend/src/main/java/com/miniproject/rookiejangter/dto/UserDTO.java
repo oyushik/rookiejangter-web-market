@@ -5,6 +5,7 @@ import com.miniproject.rookiejangter.entity.User;
 import jakarta.validation.constraints.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.List;
@@ -27,14 +28,14 @@ public class UserDTO {
                 message = "비밀번호는 영문, 숫자, 특수문자를 각 1개 이상 포함해야 합니다.")
         private String password;
 
-        @NotBlank(message = "이름은 필수입니다.")
-        @Size(min = 2, max = 12, message = "이름은 2~12자 이내로 입력해야 합니다.")
-        @Pattern(regexp = "^[가-힣a-zA-Z]+$", message = "이름은 한글과 영문만 가능합니다.")
+        @NotBlank(message = "유저명 필수입니다.")
+        @Size(min = 2, max = 12, message = "유저명은 2~12자 이내로 입력해야 합니다.")
+        @Pattern(regexp = "^[가-힣a-zA-Z]+$", message = "유저명은 한글과 영문만 가능합니다.")
         private String userName;
 
         @NotBlank(message = "전화번호는 필수입니다.")
-        @Size(min = 9, max = 20, message = "유효한 전화번호를 입력해야 합니다.")
-        @Pattern(regexp = "^010-\\d{4}-\\d{4}$", message = "전화번호 형식은 010-XXXX-XXXX 입니다.")
+        @Size(min = 9, max = 12, message = "유효한 전화번호를 입력해야 합니다.")
+        @Pattern(regexp = "^010\\d{8}$", message = "전화번호 형식은 010XXXXOOOO 입니다.")
         private String phone;
 
         @NotNull(message = "지역 ID는 필수입니다.")
@@ -62,8 +63,8 @@ public class UserDTO {
         @Pattern(regexp = "^[가-힣a-zA-Z]+$", message = "이름은 한글과 영문만 가능합니다.")
         private String userName;
 
-        @Size(min = 9, max = 20, message = "유효한 전화번호를 입력해야 합니다.")
-        @Pattern(regexp = "^010-\\d{4}-\\d{4}$", message = "전화번호 형식은 010-XXXX-XXXX 입니다.")
+        @Size(min = 9, max = 12, message = "유효한 전화번호를 입력해야 합니다.")
+        @Pattern(regexp = "^010\\d{8}$", message = "전화번호 형식은 010XXXXOOOO 입니다.")
         private String phone;
 
         private Integer areaId;
@@ -118,11 +119,12 @@ public class UserDTO {
         private String loginId;
         private String userName;
         private String phone;
-        private OffsetDateTime createdAt;
+        private LocalDateTime createdAt;
+        private LocalDateTime updatedAt;
         private Boolean isBanned;
         private Boolean isAdmin;
         private String banReason;
-        private OffsetDateTime bannedAt;
+        private LocalDateTime bannedAt;
 
         public static Response fromEntity(User user) {
             return Response.builder()
@@ -131,18 +133,10 @@ public class UserDTO {
                     .loginId(user.getLoginId())
                     .userName(user.getUserName())
                     .phone(user.getPhone())
-                    .createdAt(user.getCreatedAt().atOffset(ZoneOffset.UTC))
+                    .createdAt(user.getCreatedAt())
+                    .updatedAt(user.getUpdatedAt())
                     .isBanned(user.getIsBanned())
                     .isAdmin(user.getIsAdmin())
-                    .build();
-        }
-
-        // 간단한 응답을 위한 fromEntity (필요한 필드만 포함)
-        public static Response fromEntitySimple(User user) {
-            return Response.builder()
-                    .id(user.getUserId())
-                    .area(AreaInfo.fromEntity(user.getArea()))
-                    .userName(user.getUserName())
                     .build();
         }
 
@@ -152,7 +146,7 @@ public class UserDTO {
                     .id(user.getUserId())
                     .isBanned(user.getIsBanned())
                     .banReason(user.getBans().stream().findFirst().map(ban -> ban.getBanReason()).orElse(null))
-                    .bannedAt(user.getBans().stream().findFirst().map(ban -> ban.getCreatedAt().atOffset(ZoneOffset.UTC)).orElse(null))
+                    .bannedAt(user.getBans().stream().findFirst().map(ban -> ban.getCreatedAt()).orElse(null))
                     .build();
         }
     }

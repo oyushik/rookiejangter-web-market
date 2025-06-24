@@ -6,16 +6,19 @@ import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Slf4j
-@Component
+@Component("jwtProvider") // 빈 이름을 "jwtProvider"로 명시적으로 지정
 public class JwtProvider {
 
     private static final long ACCESS_TOKEN_VALIDITY = 1000L * 60 * 30;  // 30분
@@ -35,7 +38,7 @@ public class JwtProvider {
         String role = Boolean.TRUE.equals(user.getIsAdmin()) ? "ADMIN" : "USER";
         Map<String, Object> claims = Map.of(
                 "userName", user.getUserName(),
-                "role", role  // isAdmin 필드를 기반으로 권한 정보 추가
+                "role", role  // isAdmin 필드를 기반으로 권한 정보 추가 (여기서는 "role" 클레임 사용)
         );
         return createAccessToken(String.valueOf(user.getUserId()), claims);
     }
@@ -52,7 +55,7 @@ public class JwtProvider {
                 .subject(subject)
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + ACCESS_TOKEN_VALIDITY))
-                .signWith(key, Jwts.SIG.HS256)
+                .signWith(key, Jwts.SIG.HS256) // Jwts.SIG.HS256 사용
                 .compact();
     }
 
@@ -62,7 +65,7 @@ public class JwtProvider {
                 .subject(subject)
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + REFRESH_TOKEN_VALIDITY))
-                .signWith(key, Jwts.SIG.HS256)
+                .signWith(key, Jwts.SIG.HS256) // Jwts.SIG.HS256 사용
                 .compact();
     }
 
@@ -90,7 +93,7 @@ public class JwtProvider {
     // 모든 Claims 추출
     private Claims getAllClaimsFromToken(String token) {
         return Jwts.parser()
-                .verifyWith(key)
+                .verifyWith(key) // verifyWith 사용
                 .build()
                 .parseSignedClaims(token)
                 .getPayload();
@@ -105,9 +108,9 @@ public class JwtProvider {
     // 토큰 유효성 검증
     public boolean validateToken(String token) {
         try {
-            Jwts.parser().verifyWith(key).build().parseSignedClaims(token);
+            Jwts.parser().verifyWith(key).build().parseSignedClaims(token); // verifyWith 사용
             return true;
-        } catch (SecurityException | MalformedJwtException | ExpiredJwtException |
+        } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException | ExpiredJwtException |
                  UnsupportedJwtException | IllegalArgumentException e) {
             log.warn("JWT 검증 실패: {}", e.getMessage());
             return false;
@@ -117,5 +120,85 @@ public class JwtProvider {
     // RefreshToken 만료 시간 반환 (Redis 저장시 사용)
     public long getRefreshTokenExpireTime() {
         return REFRESH_TOKEN_VALIDITY;
+    }
+
+    /**
+     * JWT 토큰으로부터 Authentication 객체를 생성합니다.
+     * 이 메서드는 JwtAuthenticationFilter와 WebSocketAuthenticationInterceptor에서 공통으로 사용됩니다.
+     *
+     * @param accessToken JWT Access Token
+     * @return Spring Security Authentication 객체
+     */
+    public Authentication createAuthentication(String accessToken) {
+        // 토큰에서 클레임 추출 (만료된 토큰도 클레임은 가져올 수 있도록 parseClaims 사용)
+        Claims claims = parseClaims(accessToken);
+
+        if (claims.getSubject() == null) {
+            throw new RuntimeException("JWT 토큰에 사용자 ID (subject)가 없습니다.");
+        }
+
+        // "role" 클레임에서 String 타입으로 권한 추출
+        String roleString = claims.get("role", String.class);
+
+        if (roleString == null || roleString.isEmpty()) {
+            throw new RuntimeException("권한 정보가 없는 토큰입니다. (클레임: role)");
+        }
+
+        // 단일 역할을 SimpleGrantedAuthority로 변환
+        Collection<? extends GrantedAuthority> authorities = Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + roleString));
+
+        // Spring Security User 객체를 생성 (subject는 userId)
+        // User 객체의 첫 번째 인자(username)는 Principal.getName()으로 사용됩니다.
+        org.springframework.security.core.userdetails.User principal = new org.springframework.security.core.userdetails.User(claims.getSubject(), "", authorities);
+
+        // UsernamePasswordAuthenticationToken을 반환하여 SecurityContext에 저장할 Authentication 객체 생성
+        // principal 객체를 첫 번째 인자로 전달합니다.
+        return new UsernamePasswordAuthenticationToken(principal, "", authorities);
+    }
+
+    /**
+     * JWT 토큰에서 인증 정보(Authentication)를 조회합니다.
+     * StompHandler에서 사용될 핵심 메서드.
+     *
+     * @param accessToken JWT Access Token
+     * @return Authentication 객체
+     */
+    public Authentication getAuthentication(String accessToken) {
+        // 토큰 복호화
+        Claims claims = parseClaims(accessToken);
+
+        // JWT 생성 시 "role" 클레임에 권한을 저장하므로 "role" 클레임을 확인
+        String roleString = claims.get("role", String.class); // "role" 클레임에서 String 타입으로 권한 추출
+
+        if (roleString == null || roleString.isEmpty()) {
+            throw new RuntimeException("권한 정보가 없는 토큰입니다. (클레임: role)");
+        }
+
+        // 단일 역할을 SimpleGrantedAuthority로 변환
+        Collection<? extends GrantedAuthority> authorities = Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + roleString));
+
+        // Spring Security User 객체를 생성 (subject는 userId)
+        org.springframework.security.core.userdetails.User principal = new org.springframework.security.core.userdetails.User(claims.getSubject(), "", authorities);
+
+        // UsernamePasswordAuthenticationToken을 반환하여 SecurityContext에 저장할 Authentication 객체 생성
+        return new UsernamePasswordAuthenticationToken(principal, "", authorities);
+    }
+
+    // JWT 토큰을 복호화하여 클레임(claims)을 추출하는 헬퍼 메서드
+    private Claims parseClaims(String accessToken) {
+        try {
+            return Jwts.parser()
+                    .verifyWith(key) // verifyWith 사용
+                    .build()
+                    .parseSignedClaims(accessToken)
+                    .getPayload();
+        } catch (ExpiredJwtException e) {
+            // 만료된 토큰에서도 클레임은 추출 가능 (리프레시 토큰 로직에 사용될 수 있음)
+            log.warn("Expired JWT token: {}", e.getMessage());
+            return e.getClaims();
+        } catch (Exception e) {
+            log.error("Failed to parse JWT claims: {}", e.getMessage());
+            throw new JwtException("Failed to parse JWT claims", e);
+        }
     }
 }

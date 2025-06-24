@@ -5,9 +5,10 @@ import com.miniproject.rookiejangter.exception.ErrorCode;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+import org.springframework.security.core.GrantedAuthority;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 @Entity
@@ -17,7 +18,6 @@ import java.util.List;
 @AllArgsConstructor
 @SuperBuilder
 @ToString
-@EqualsAndHashCode
 public class User extends BaseEntity {
 
     @Id
@@ -32,13 +32,13 @@ public class User extends BaseEntity {
     @Column(name = "login_id", length = 20, nullable = false, unique = true)
     private String loginId;
 
-    @Column(name = "password", length = 100, nullable = false)
+    @Column(name = "password", nullable = false)
     private String password;
 
     @Column(name = "user_name", length = 12, nullable = false)
     private String userName;
 
-    @Column(name = "phone", length = 20, nullable = false, unique = true)
+    @Column(name = "phone", length = 12, nullable = false, unique = true)
     private String phone;
 
     @Column(name = "is_banned")
@@ -85,6 +85,9 @@ public class User extends BaseEntity {
 
     @OneToMany(mappedBy = "seller", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Complete> sellerCompletes = new ArrayList<>();
+
+    public User(String subject, String s, Collection<? extends GrantedAuthority> authorities) {
+    }
 
     /** 
      * 사용자 정보를 업데이트합니다.

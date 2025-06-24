@@ -12,12 +12,7 @@ import java.util.Optional;
 
 @Repository
 public interface ReservationRepository extends JpaRepository<Reservation, Long> {
-    Optional<Reservation> findByReservationId(Long reservationId);
     List<Reservation> findByBuyer_UserId(Long buyerId);
     List<Reservation> findBySeller_UserId(Long sellerId);
     List<Reservation> findByProduct_ProductId(Long productId);
-    List<Reservation> findByBuyer_UserIdAndProduct_ProductId(Long buyerUserId, Long productProductId);
-
-    boolean existsByBuyer_UserIdAndProduct_ProductIdAndStatusIn(Long buyerUserId, Long productProductId, List<Reservation.TradeStatus> statuses);
-    void deleteByBuyer_UserIdAndProduct_ProductId(Long buyerId, Long productId);
 }

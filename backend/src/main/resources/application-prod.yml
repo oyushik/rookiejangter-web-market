@@ -5,7 +5,7 @@ logging:
   level:
     com:
       miniproject:
-        joongo: DEBUG
+        rookiejangter: INFO
 
 spring:
   datasource:
@@ -32,7 +32,3 @@ spring:
     baseline-on-migrate: true # 기존 DB에 테이블이 있을 경우 Flyway가 현재 상태를 기준으로 베이스라인을 설정
 #    clean-disabled: false  # 프로덕션 환경에서는 비활성화 권장
 #    schemas: rookiejangter_db # 특정 스키마에서 작업할 경우 (선택 사항, default-schema와 유사)
-  data:
-    redis:
-      host: redis
-      port: 6379

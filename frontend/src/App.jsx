@@ -13,6 +13,8 @@ import ProductRegisterPage from './pages/ProductRegisterPage';
 import MyProductsPage from './pages/MyProductsPage';
 import AdminUserPage from './pages/AdminUserPage';
 import ProtectedRoute from './components/ProtectedRoute';
+import ChatListPage from './pages/ChatListPage';
+import ChatRoomPage from './pages/ChatRoomPage';
 
 import Header from './components/Header';
 import NotificationList from './components/NotificationList';
@@ -38,6 +40,7 @@ function App() {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignUpPage />} />
           <Route path="/users/notify" element={<NotificationList />} />
+
           <Route
             path="/users/profile"
             element={
@@ -62,6 +65,22 @@ function App() {
             element={
               <ProtectedRoute>
                 <AdminUserPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/chats"
+            element={
+              <ProtectedRoute>
+                <ChatListPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/chats/:chatId"
+            element={
+              <ProtectedRoute>
+                <ChatRoomPage />
               </ProtectedRoute>
             }
           />

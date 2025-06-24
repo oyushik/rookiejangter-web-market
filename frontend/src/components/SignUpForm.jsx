@@ -8,10 +8,11 @@ import {
   MenuItem,
   FormControl,
   InputLabel,
+  Snackbar, // Snackbar import
+  Alert, // Alert for better Snackbar content
 } from '@mui/material';
 import { signup } from '../api/auth';
-import { getAreas } from '../api/area'; // getAreas API 호출 함수 추가
-import SignupSuccessModal from './SignupSuccessModal';
+import { getAreas } from '../api/area';
 import { useNavigate } from 'react-router-dom';
 
 const SignUpForm = ({ defaultName, defaultPhone }) => {
@@ -23,7 +24,7 @@ const SignUpForm = ({ defaultName, defaultPhone }) => {
     areaId: '',
   });
 
-  const [areas, setAreas] = useState([]); // 지역 목록을 저장할 상태 추가
+  const [areas, setAreas] = useState([]);
 
   const [errors, setErrors] = useState({
     loginId: '',
@@ -31,15 +32,16 @@ const SignUpForm = ({ defaultName, defaultPhone }) => {
     userName: '',
     phone: '',
     areaId: '',
-    submit: '', // submit 에러 상태 추가
+    submit: '',
   });
 
   const [loading, setLoading] = useState(false);
-  const [success, setSuccess] = useState(false);
-  const [modalOpen, setModalOpen] = useState(false);
+  const [snackbarOpen, setSnackbarOpen] = useState(false); // Snackbar open/close 상태 관리
+  const [snackbarMessage, setSnackbarMessage] = useState(''); // Snackbar 메시지 상태 관리
+  const [snackbarSeverity, setSnackbarSeverity] = useState('success'); // Snackbar 심각도 (success, error 등)
+
   const navigate = useNavigate();
 
-  // 검증 로직
   const validateField = (name, value) => {
     let message = '';
     switch (name) {
@@ -73,15 +75,15 @@ const SignUpForm = ({ defaultName, defaultPhone }) => {
       case 'phone':
         if (!value) {
           message = '전화번호는 필수입니다.';
-        } else if (value.length < 9 || value.length > 20) {
+        } else if (value.length < 9 || value.length > 12) {
           message = '유효한 전화번호를 입력해야 합니다.';
-        } else if (!/^010-\d{4}-\d{4}$/.test(value)) {
-          message = '전화번호 형식은 010-XXXX-XXXX 입니다.';
+        } else if (!/^010\d{8}$/.test(value)) {
+          message = '전화번호 형식은 010XXXXOOOO 입니다.';
         }
         break;
       case 'areaId':
         if (!value) {
-          message = '지역은 필수 선택 항목입니다.'; // 메시지 변경
+          message = '지역은 필수 선택 항목입니다.';
         }
         break;
       default:
@@ -99,7 +101,7 @@ const SignUpForm = ({ defaultName, defaultPhone }) => {
     setErrors((prevErrors) => ({
       ...prevErrors,
       [name]: validateField(name, value),
-      submit: '', // 입력 값 변경 시 submit 에러 초기화
+      submit: '',
     }));
   };
 
@@ -124,8 +126,10 @@ const SignUpForm = ({ defaultName, defaultPhone }) => {
     setLoading(true);
     try {
       await signup(formData);
-      setSuccess(true);
-      setModalOpen(true);
+      setSnackbarMessage('회원가입이 완료되었습니다!');
+      setSnackbarSeverity('success');
+      setSnackbarOpen(true);
+      // 성공 시 즉시 리다이렉트하지 않고, Snackbar가 닫힌 후 리다이렉트하도록 변경
     } catch (err) {
       let submitErrorMessage = '회원가입에 실패했습니다.';
       if (err.response?.data?.message) {
@@ -147,14 +151,24 @@ const SignUpForm = ({ defaultName, defaultPhone }) => {
           submit: submitErrorMessage,
         }));
       }
+      setSnackbarMessage(submitErrorMessage); // 실패 메시지도 Snackbar로 표시
+      setSnackbarSeverity('error');
+      setSnackbarOpen(true);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleModalClose = () => {
-    setModalOpen(false);
-    navigate('/login');
+  // Snackbar가 닫힐 때 호출될 핸들러
+  const handleSnackbarClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    setSnackbarOpen(false);
+    // 성공 메시지일 경우에만 리다이렉트
+    if (snackbarSeverity === 'success') {
+      navigate('/login');
+    }
   };
 
   const isFormValid = useMemo(() => {
@@ -163,28 +177,25 @@ const SignUpForm = ({ defaultName, defaultPhone }) => {
         return false;
       }
     }
+    // 모든 필드가 채워져 있고, 에러가 없는지 확인
     return Object.values(formData).every((value) => value !== '');
   }, [errors, formData]);
 
   useEffect(() => {
-    // 컴포넌트가 마운트될 때 지역 목록을 가져오는 API 호출
     const fetchAreas = async () => {
       try {
         const response = await getAreas();
-        setAreas(response?.data || []); // API 응답에서 지역 목록을 가져와 상태에 저장
+        setAreas(response?.data || []);
       } catch (error) {
         console.error('지역 목록을 가져오는 데 실패했습니다.', error);
-        // 에러 처리 (예: 사용자에게 메시지 표시)
       }
     };
-
     fetchAreas();
   }, []);
 
   return (
     <Box component="form" onSubmit={handleSubmit} sx={{ mt: 4 }}>
       <TextField
-        fullWidth
         label="아이디"
         name="loginId"
         value={formData.loginId}
@@ -196,9 +207,14 @@ const SignUpForm = ({ defaultName, defaultPhone }) => {
         FormHelperTextProps={{
           style: { color: errors.loginId ? 'red' : 'grey' },
         }}
+        sx={{
+          maxWidth: '400px',
+          width: '100%',
+        }}
       />
+      <br />
+
       <TextField
-        fullWidth
         type="password"
         label="비밀번호"
         name="password"
@@ -211,9 +227,14 @@ const SignUpForm = ({ defaultName, defaultPhone }) => {
         FormHelperTextProps={{
           style: { color: errors.password ? 'red' : 'grey' },
         }}
+        sx={{
+          maxWidth: '400px',
+          width: '100%',
+        }}
       />
+      <br />
+
       <TextField
-        fullWidth
         label="이름"
         name="userName"
         value={formData.userName}
@@ -225,9 +246,14 @@ const SignUpForm = ({ defaultName, defaultPhone }) => {
         FormHelperTextProps={{
           style: { color: errors.userName ? 'red' : 'grey' },
         }}
+        sx={{
+          maxWidth: '400px',
+          width: '100%',
+        }}
       />
+      <br />
+
       <TextField
-        fullWidth
         label="전화번호"
         name="phone"
         value={formData.phone}
@@ -235,13 +261,26 @@ const SignUpForm = ({ defaultName, defaultPhone }) => {
         margin="normal"
         required
         error={!!errors.phone}
-        helperText={errors.phone || '010-XXXX-XXXX 형식'}
+        helperText={errors.phone || '010XXXXOOOO 형식'}
         FormHelperTextProps={{
           style: { color: errors.phone ? 'red' : 'grey' },
         }}
+        sx={{
+          maxWidth: '400px',
+          width: '100%',
+        }}
       />
+      <br />
 
-      <FormControl fullWidth margin="normal" error={!!errors.areaId} required>
+      <FormControl
+        margin="normal"
+        error={!!errors.areaId}
+        required
+        sx={{
+          maxWidth: '400px',
+          width: '100%',
+        }}
+      >
         <InputLabel id="areaId-label">지역</InputLabel>
         <Select
           labelId="areaId-label"
@@ -263,16 +302,29 @@ const SignUpForm = ({ defaultName, defaultPhone }) => {
           </Typography>
         )}
       </FormControl>
+      <br />
+      <br />
 
-      <Button type="submit" variant="contained" sx={{ mt: 2 }} disabled={loading || !isFormValid}>
+      <Button type="submit" variant="contained" disabled={loading || !isFormValid}>
         {loading ? '회원가입 중...' : '회원가입'}
       </Button>
 
       {errors.submit && <Box sx={{ mt: 2, color: 'red' }}>{errors.submit}</Box>}
 
-      <SignupSuccessModal open={modalOpen} onClose={() => {}} onConfirm={handleModalClose}>
-        회원가입이 완료되었습니다!
-      </SignupSuccessModal>
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={1000} // 스낵바 표시 시간 3초로 설정
+        onClose={handleSnackbarClose} // 스낵바 닫힐 때 호출될 함수
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Alert
+          onClose={handleSnackbarClose}
+          severity={snackbarSeverity} // 'success' 또는 'error'
+          sx={{ width: '100%' }}
+        >
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 };

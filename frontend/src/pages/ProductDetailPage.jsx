@@ -1,5 +1,5 @@
 import { useParams, useNavigate } from 'react-router-dom';
-import axios from "axios";
+import axios from 'axios';
 import { Box, Typography, Divider, Grid, Button } from '@mui/material';
 import { FormatTime } from '../utils/FormatTime';
 import React, { useState, useEffect } from 'react';
@@ -11,11 +11,10 @@ import ReportModal from '../components/ReportModal';
 import { useTheme } from '@mui/material/styles';
 import FormSnackbar from '../components/FormSnackbar';
 
-
 const ProductDetailPage = () => {
   const { product_id } = useParams();
   const navigate = useNavigate();
-  const currentUser = useSelector((state) => state.auth.identityInfo); // 로그인한 유저 정보
+  const currentUser = useSelector((state) => state.auth.identityInfo);
   const [error, setError] = useState(null);
   const [images, setImages] = useState([]);
   const [reportOpen, setReportOpen] = useState(false);
@@ -25,9 +24,9 @@ const ProductDetailPage = () => {
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [imgIdx, setImgIdx] = useState(0);
-  const [isLiked, setIsLiked] = useState(false); // 추가
+  const [isDibbed, setIsDibbed] = useState(false);
 
-  // snackbar 상태
+  // ProductDetailPage의 스낵바는 ProductActions와 별개로 유지
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMsg, setSnackbarMsg] = useState('');
   const [snackbarSeverity, setSnackbarSeverity] = useState('error');
@@ -38,13 +37,14 @@ const ProductDetailPage = () => {
 
   // 상품 상세 정보 불러오기
   useEffect(() => {
-    axios.get(`http://localhost:8080/api/products/${product_id}`)
-      .then(res => {
-        console.log("상품 상세 정보 응답:", res.data); // 콘솔 출력 추가
+    axios
+      .get(`http://localhost:8080/api/products/${product_id}`)
+      .then((res) => {
+        console.log('상품 상세 정보 응답:', res.data);
         setProduct(res.data.data);
         setLoading(false);
       })
-      .catch(err => {
+      .catch((err) => {
         setLoading(false);
         if (err.response && err.response.status === 404) {
           setError('notfound');
@@ -58,7 +58,7 @@ const ProductDetailPage = () => {
           setSnackbarOpen(true);
         }
       });
-  }, [product_id, navigate]);
+  }, [product_id]); // navigate를 의존성 배열에서 제거, 대신 직접 navigate 사용
 
   // 상품 이미지 별도 호출
   useEffect(() => {
@@ -67,7 +67,7 @@ const ProductDetailPage = () => {
       .get(`http://localhost:8080/images/product/${product.id}`)
       .then((res) => {
         const imgArr = Array.isArray(res.data)
-          ? res.data.map(img =>
+          ? res.data.map((img) =>
               img.imageUrl.startsWith('http')
                 ? img.imageUrl.replace('http://localhost:3000', 'http://localhost:8080')
                 : `http://localhost:8080${img.imageUrl}`
@@ -81,7 +81,7 @@ const ProductDetailPage = () => {
   // 찜 상태 조회
   useEffect(() => {
     if (!product?.id) return;
-    const token = localStorage.getItem("accessToken");
+    const token = localStorage.getItem('accessToken');
     if (!token) return;
     axios
       .get(`http://localhost:8080/api/dibs/${product.id}`, {
@@ -89,14 +89,14 @@ const ProductDetailPage = () => {
           Authorization: `Bearer ${token}`,
         },
       })
-      .then(res => {
-        console.log("찜 상태 응답:", res.data);
-        if (res.data?.success && typeof res.data.data?.liked === "boolean") {
-          setIsLiked(res.data.data.liked);
+      .then((res) => {
+        console.log('찜 상태 응답:', res.data);
+        if (res.data?.success && typeof res.data.data?.dibbed === 'boolean') {
+          setIsDibbed(res.data.data.dibbed);
         }
       })
-      .catch(err => {
-        console.log("찜 상태 조회 실패:", err);
+      .catch((err) => {
+        console.log('찜 상태 조회 실패:', err);
       });
   }, [product?.id]);
 
@@ -104,11 +104,15 @@ const ProductDetailPage = () => {
   useEffect(() => {
     if (!product?.categoryName || !product?.id) return;
     axios
-      .get(`http://localhost:8080/api/products?categoryName=${encodeURIComponent(product.categoryName)}`)
-      .then(res => {
+      .get(
+        `http://localhost:8080/api/products?categoryName=${encodeURIComponent(
+          product.categoryName
+        )}`
+      )
+      .then((res) => {
         const arr = Array.isArray(res.data.data?.content) ? res.data.data.content : [];
         const filtered = arr.filter(
-          p => p.id !== product.id && p.categoryName === product.categoryName
+          (p) => p.id !== product.id && p.categoryName === product.categoryName
         );
         setSimilarProducts(filtered);
       })
@@ -170,13 +174,13 @@ const ProductDetailPage = () => {
 
   const isOwner = currentUser?.id === product.seller?.id;
 
-    // 상품 삭제 핸들러
+  // 상품 삭제 핸들러
   const handleDelete = () => {
     if (window.confirm('정말로 이 상품을 삭제하시겠습니까?')) {
       axios
         .delete(`http://localhost:8080/api/users/products/${product.id}`, {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+            Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
           },
         })
         .then(() => {
@@ -245,18 +249,25 @@ const ProductDetailPage = () => {
                 카테고리: {product.categoryName}
                 <Divider orientation="vertical" flexItem sx={{ mx: 2 }} />
                 상태: &nbsp;
-                  {product.isCompleted ? 'SOLD' : product.isReserved ? 'RESERVED' : 'SALE'}
+                {product.isCompleted ? 'SOLD' : product.isReserved ? 'RESERVED' : 'SALE'}
                 <Divider orientation="vertical" flexItem sx={{ mx: 2 }} />
                 등록일: {FormatTime(product.createdAt)}
                 <Divider orientation="vertical" flexItem sx={{ mx: 2 }} />
                 조회수: {product.viewCount}
               </Typography>
               <Divider sx={{ mb: 2, width: 725 }} />
+              <Typography
+                variant="subtitle1"
+                sx={{ mb: 1, color: '#777', display: 'flex', alignItems: 'center', gap: 2 }}
+              >
+                지역:{' '}
+                {product.seller?.area?.areaName || product.seller?.areaName || '지역정보 없음'}
+                <Divider orientation="vertical" flexItem sx={{ mx: 2 }} />
+                판매자명: {product.seller?.userName || '판매자명'}
+              </Typography>
+              <Divider sx={{ mb: 2, width: 725 }} />
               <Typography variant="h3" sx={{ mb: 2, fontWeight: 700 }}>
                 {product.price?.toLocaleString()}원
-              </Typography>
-              <Typography variant="subtitle2" sx={{ mb: 1 }}>
-                지역: {product.seller?.area?.areaName || product.seller?.areaName || '지역정보 없음'}
               </Typography>
             </Box>
             <ProductActions
@@ -264,7 +275,8 @@ const ProductDetailPage = () => {
               isOwner={isOwner}
               onEdit={handleEdit}
               onDelete={handleDelete}
-              isInitiallyLiked={isLiked}
+              isInitiallyDibbed={isDibbed}
+              product={product} // ProductActions로 product 객체 전달
             />
           </Box>
         </Grid>
@@ -313,14 +325,23 @@ const ProductDetailPage = () => {
                   <Box
                     sx={{
                       width: 64,
-                      height: 64,     
+                      height: 64,
                       borderRadius: '50%',
                       mb: 1,
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
                       background: (() => {
-                        const colors = ['#FFB6C1', '#FFD700', '#87CEFA', '#90EE90', '#FFA07A', '#B39DDB', '#FFCC80', '#80CBC4'];
+                        const colors = [
+                          '#FFB6C1',
+                          '#FFD700',
+                          '#87CEFA',
+                          '#90EE90',
+                          '#FFA07A',
+                          '#B39DDB',
+                          '#FFCC80',
+                          '#80CBC4',
+                        ];
                         if (!product.seller?.userName) return '#ccc';
                         const idx = product.seller.userName.charCodeAt(0) % colors.length;
                         return colors[idx];
@@ -346,11 +367,15 @@ const ProductDetailPage = () => {
                       borderRadius: 2,
                       fontSize: 16,
                       fontWeight: 700,
-                      border: `2px solid ${isOwner ? theme.palette.info.main : theme.palette.error.main}`,
+                      border: `2px solid ${
+                        isOwner ? theme.palette.info.main : theme.palette.error.main
+                      }`,
                       color: isOwner ? theme.palette.info.main : theme.palette.error.main,
                       background: 'default',
                       '&:hover': {
-                        background: isOwner ? theme.palette.info.extraLight : theme.palette.error.extraLight,
+                        background: isOwner
+                          ? theme.palette.info.extraLight
+                          : theme.palette.error.extraLight,
                         borderColor: isOwner ? theme.palette.info.dark : theme.palette.error.dark,
                       },
                     }}

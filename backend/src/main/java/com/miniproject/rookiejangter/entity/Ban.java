@@ -1,7 +1,6 @@
 package com.miniproject.rookiejangter.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Size;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
@@ -12,7 +11,6 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 @SuperBuilder
 @ToString
-@EqualsAndHashCode
 public class Ban extends BaseEntity {
 
     @Id

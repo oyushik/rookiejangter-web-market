@@ -13,7 +13,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -52,7 +51,6 @@ public class CompleteService {
                 .product(product)
                 .buyer(buyer)
                 .seller(seller)
-                .completedAt(LocalDateTime.now())
                 .build();
 
         Complete savedComplete = completeRepository.save(complete);
@@ -73,9 +71,9 @@ public class CompleteService {
     }
 
     /**
-     * 특정 거래 완료 ID에 대한 거래 완료 정보를 조회합니다.
+     * 특정 구매자의 거래 완료 정보를 조회합니다.
      *
-     * @param completeId 거래 완료 ID
+     * @param buyerId 거래 완료 ID
      * @return 거래 완료 정보
      */
     @Transactional(readOnly = true)

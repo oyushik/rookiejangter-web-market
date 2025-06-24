@@ -1,19 +1,16 @@
 package com.miniproject.rookiejangter.service;
 
 import com.miniproject.rookiejangter.dto.CancelationDTO;
-import com.miniproject.rookiejangter.entity.Cancelation;
-import com.miniproject.rookiejangter.entity.CancelationReason;
-import com.miniproject.rookiejangter.entity.Reservation;
+import com.miniproject.rookiejangter.entity.*;
 import com.miniproject.rookiejangter.exception.BusinessException;
 import com.miniproject.rookiejangter.exception.ErrorCode;
-import com.miniproject.rookiejangter.repository.CancelationReasonRepository;
-import com.miniproject.rookiejangter.repository.CancelationRepository;
-import com.miniproject.rookiejangter.repository.ReservationRepository;
+import com.miniproject.rookiejangter.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -24,44 +21,41 @@ public class CancelationService {
 
     private final CancelationRepository cancelationRepository;
     private final CancelationReasonRepository cancelationReasonRepository;
-    private final ReservationRepository reservationRepository;
+    private final ProductRepository productRepository;
+    private final UserRepository userRepository;
 
     /**
      * 예약 취소를 생성합니다.
      *
-     * @param reservationId 예약 ID
-     * @param request       취소 요청 정보
+     * @param request 취소 요청 정보
      * @return 생성된 취소 정보
      */
-    public CancelationDTO.Response createCancelation(Long reservationId, CancelationDTO.Request request) {
-        Reservation reservation = reservationRepository.findById(reservationId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.TRADE_NOT_FOUND, reservationId));
+    public CancelationDTO.Response createCancelation(CancelationDTO.Request request) {
 
         CancelationReason cancelationReason = cancelationReasonRepository.findById(request.getCancelationReasonId())
                 .orElseThrow(() -> new BusinessException(ErrorCode.RESOURCE_NOT_FOUND, "CancelationReason", "ID", request.getCancelationReasonId()));
 
+        // Retrieve product, buyer, and seller from their respective IDs
+        Product product = productRepository.findById(request.getProductId())
+                .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_NOT_FOUND, request.getProductId()));
+        User buyer = userRepository.findById(request.getBuyerId())
+                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND, request.getBuyerId()));
+        User seller = userRepository.findById(request.getSellerId())
+                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND, request.getSellerId()));
+
+        // Create the cancelation entity
         Cancelation cancelation = Cancelation.builder()
-                .reservation(reservation)
                 .cancelationReason(cancelationReason)
+                .product(product)
+                .buyer(buyer)
+                .seller(seller)
+                .isCanceledByBuyer(request.getIsCanceledByBuyer())
                 .cancelationDetail(request.getCancelationDetail())
-                .canceledAt(LocalDateTime.now())
+                .createdAt(LocalDateTime.now())
                 .build();
 
         Cancelation savedCancelation = cancelationRepository.save(cancelation);
         return CancelationDTO.Response.fromEntity(savedCancelation);
-    }
-
-    /**
-     * 특정 예약 ID에 대한 취소 정보를 조회합니다.
-     *
-     * @param reservationId 예약 ID
-     * @return 취소 정보
-     */
-    public CancelationDTO.Response getCancelationByReservationId(Long reservationId) {
-        Cancelation cancelation = cancelationRepository.findByReservation_ReservationId(reservationId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.TRADE_NOT_FOUND, reservationId));
-
-        return CancelationDTO.Response.fromEntity(cancelation);
     }
 
     /**
@@ -76,30 +70,5 @@ public class CancelationService {
         return cancelations.stream()
                 .map(CancelationDTO.Response::fromEntity)
                 .collect(Collectors.toList());
-    }
-
-    /**
-     * 특정 예약 ID에 대한 취소 정보를 업데이트합니다.
-     *
-     * @param reservationId 예약 ID
-     * @param request       취소 요청 정보
-     * @return 업데이트된 취소 정보
-     */
-    public CancelationDTO.Response updateCancelation(Long reservationId, CancelationDTO.Request request) {
-        Cancelation cancelation = cancelationRepository.findByReservation_ReservationId(reservationId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.TRADE_NOT_FOUND, reservationId));
-
-        CancelationReason cancelationReason = cancelationReasonRepository.findById(request.getCancelationReasonId())
-                .orElseThrow(() -> new BusinessException(ErrorCode.RESOURCE_NOT_FOUND, "CancelationReason", "ID", request.getCancelationReasonId()));
-
-        cancelation.updateCancelationInfo(cancelationReason, request.getCancelationDetail());
-        return CancelationDTO.Response.fromEntity(cancelation);
-    }
-
-    public void deleteCancelation(Long reservationId) {
-        Cancelation cancelation = cancelationRepository.findByReservation_ReservationId(reservationId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.TRADE_NOT_FOUND, reservationId));
-
-        cancelationRepository.delete(cancelation);
     }
 }

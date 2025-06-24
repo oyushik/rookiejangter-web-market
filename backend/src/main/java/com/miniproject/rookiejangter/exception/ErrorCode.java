@@ -43,6 +43,7 @@ public enum ErrorCode {
     CHAT_MESSAGE_NOT_FOUND(HttpStatus.NOT_FOUND, "CH002", "존재하지 않는 채팅 메시지입니다."),
     CANNOT_CHAT_WITH_SELF(HttpStatus.BAD_REQUEST, "CH003", "자기 자신과는 채팅할 수 없습니다."),
     CHAT_ROOM_ALREADY_EXISTS(HttpStatus.CONFLICT, "CH004", "이미 해당 사용자와의 채팅방이 존재합니다."),
+    CHAT_FORBIDDEN_ACCESS(HttpStatus.FORBIDDEN, "CH005", "해당 채팅방에 접근할 권한이 없습니다."),
 
     // Complete
     COMPLETE_NOT_FOUND(HttpStatus.NOT_FOUND, "CP001", "존재하지 않는 거래 완료 기록입니다."),
@@ -70,6 +71,10 @@ public enum ErrorCode {
     FILE_EMPTY(HttpStatus.BAD_REQUEST, "I006","File cannot be empty."),
     FILE_UPLOAD_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "I007","Failed to upload file."),
     FILE_DELETE_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "I008","Failed to delete file."),
+
+    // Message
+    MESSAGE_NOT_FOUND(HttpStatus.NOT_FOUND, "M001", "존재하지 않는 메시지입니다."),
+    INVALID_MESSAGE_TYPE(HttpStatus.BAD_REQUEST, "M002", "이 메시지는 예약 요청 메시지가 아닙니다."),
 
     // Notification
     NOTIFICATION_NOT_FOUND(HttpStatus.NOT_FOUND, "N001", "존재하지 않는 알림입니다."),
@@ -101,15 +106,15 @@ public enum ErrorCode {
     REPORT_TARGET_TYPE_TOO_LONG(HttpStatus.BAD_REQUEST, "RP009", "신고 대상 타입은 최대 20자까지 가능합니다."),
 
     // Reservation
-    RESERVATION_NOT_FOUND(HttpStatus.NOT_FOUND, "R001", "존재하지 않는 예약입니다. (ID: %s)"), // Modified
-    RESERVATION_ALREADY_EXISTS(HttpStatus.CONFLICT, "R002", "이미 해당 상품(%s)에 대한 예약이 존재합니다."), // Modified
-    RESERVATION_CANNOT_CANCEL(HttpStatus.BAD_REQUEST, "R003", "예약을 취소할 수 없는 상태입니다: %s"), // Modified to take reason
+    RESERVATION_NOT_FOUND(HttpStatus.NOT_FOUND, "R001", "존재하지 않는 예약입니다. (ID: %s)"),
+    RESERVATION_ALREADY_EXISTS(HttpStatus.CONFLICT, "R002", "이미 해당 상품(%s)에 대한 예약이 존재합니다."),
+    RESERVATION_CANNOT_CANCEL(HttpStatus.BAD_REQUEST, "R003", "예약을 취소할 수 없는 상태입니다: %s"),
     CANNOT_RESERVE_OWN_PRODUCT(HttpStatus.BAD_REQUEST, "R004", "자신의 상품은 예약할 수 없습니다."),
-    PRODUCT_NOT_RESERVABLE(HttpStatus.BAD_REQUEST, "R005", "예약할 수 없는 상품입니다: %s"), // Modified to take reason
-    RESERVATION_ACTION_FORBIDDEN(HttpStatus.FORBIDDEN, "R006", "예약에 대한 '%s' 작업 권한이 없습니다."), // New
-    RESERVATION_INVALID_STATE_FOR_ACTION(HttpStatus.BAD_REQUEST, "R007", "현재 예약 상태(%s)에서는 '%s' 작업을 수행할 수 없습니다."), // New
-    RESERVATION_INVALID_STATUS_TRANSITION(HttpStatus.BAD_REQUEST, "R008", "유효하지 않은 예약 상태(%s)로 변경할 수 없습니다."), // New
-    RESERVATION_DELETE_CONDITIONS_NOT_MET(HttpStatus.FORBIDDEN, "R009", "예약 삭제 조건을 만족하지 않습니다 (권한 또는 상태)."), // New
+    PRODUCT_NOT_RESERVABLE(HttpStatus.BAD_REQUEST, "R005", "예약할 수 없는 상품입니다: %s"),
+    RESERVATION_ACTION_FORBIDDEN(HttpStatus.FORBIDDEN, "R006", "예약에 대한 '%s' 작업 권한이 없습니다."),
+    RESERVATION_DELETE_CONDITIONS_NOT_MET(HttpStatus.FORBIDDEN, "R007", "예약 삭제 조건을 만족하지 않습니다 (권한 또는 상태)."),
+    RESERVATION_ALREADY_RESPONDED(HttpStatus.CONFLICT, "R008",  "이미 응답된 예약 요청입니다."),
+    RESERVATION_REMAIN_CANNOT_DELETE(HttpStatus.FORBIDDEN, "R009", "해당 상품의 거래 예약 또는 완료 내역이 존재하여, 삭제할 수 없습니다."),
 
     // Review
     DUPLICATE_REVIEW(HttpStatus.CONFLICT, "RV001","이미 후기를 작성하였습니다"),

@@ -146,7 +146,6 @@ const LoginForm = () => {
         name="loginId"
         value={formData.loginId}
         onChange={handleChange}
-        fullWidth
         margin="normal"
         required
         error={!!errors.loginId}
@@ -155,13 +154,14 @@ const LoginForm = () => {
           style: { color: errors.loginId ? 'red' : 'grey' },
         }}
       />
+      <br />
+
       <TextField
         label="비밀번호"
         type="password"
         name="password"
         value={formData.password}
         onChange={handleChange}
-        fullWidth
         margin="normal"
         required
         error={!!errors.password}
@@ -170,6 +170,8 @@ const LoginForm = () => {
           style: { color: errors.password ? 'red' : 'grey' },
         }}
       />
+      <br />
+
       <Button type="submit" variant="contained" sx={{ mt: 2 }} disabled={loading || !isFormValid}>
         {loading ? '로그인 중...' : '로그인'}
       </Button>

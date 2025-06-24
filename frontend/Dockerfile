@@ -11,6 +11,9 @@ COPY package*.json ./
 RUN npm install
 RUN npm install zustand
 RUN npm install date-fns
+RUN npm install jwt-decode
+RUN npm install @stomp/stompjs sockjs-client
+
 
 # 소스 코드 복사
 COPY . .

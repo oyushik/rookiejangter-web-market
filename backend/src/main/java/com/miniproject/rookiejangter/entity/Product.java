@@ -1,16 +1,10 @@
 package com.miniproject.rookiejangter.entity;
 
-import com.miniproject.rookiejangter.dto.ProductDTO;
 import com.miniproject.rookiejangter.exception.BusinessException;
 import com.miniproject.rookiejangter.exception.ErrorCode;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
-
-import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "products")
@@ -19,7 +13,6 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @SuperBuilder
 @ToString
-@EqualsAndHashCode
 public class Product extends BaseEntity {
 
     @Id
@@ -96,11 +89,6 @@ public class Product extends BaseEntity {
             this.viewCount = 0;
         }
         this.viewCount++;
-    }
-
-    // 끌어올리기 상태 변경
-    public void markAsBumped(boolean isBumped) {
-        this.isBumped = isBumped;
     }
 
     // 예약 상태 변경

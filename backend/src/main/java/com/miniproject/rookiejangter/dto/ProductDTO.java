@@ -7,6 +7,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
+import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.List;
@@ -83,10 +84,9 @@ public class ProductDTO {
         private Integer price;
         private String categoryName;
         private SellerInfo seller;
-        private OffsetDateTime createdAt;
-        private OffsetDateTime updatedAt;
+        private LocalDateTime createdAt;
+        private LocalDateTime updatedAt;
         private Integer viewCount;
-        private Boolean isBumped;
         private Boolean isReserved;
         private Boolean isCompleted;
 
@@ -99,10 +99,9 @@ public class ProductDTO {
                     .price(product.getPrice())
                     .categoryName(product.getCategory() != null ? product.getCategory().getCategoryName() : null)
                     .seller(SellerInfo.fromEntity(product.getUser()))
-                    .createdAt(product.getCreatedAt().atOffset(ZoneOffset.UTC))
-                    .updatedAt(product.getUpdatedAt() != null ? product.getUpdatedAt().atOffset(ZoneOffset.UTC) : null)
+                    .createdAt(product.getCreatedAt())
+                    .updatedAt(product.getUpdatedAt())
                     .viewCount(product.getViewCount())
-                    .isBumped(product.getIsBumped() != null ? product.getIsBumped() : false)
                     .isReserved(product.getIsReserved() != null ? product.getIsReserved() : false)
                     .isCompleted(product.getIsCompleted() != null ? product.getIsCompleted() : false)
                     .build();
@@ -137,6 +136,15 @@ public class ProductDTO {
     @NoArgsConstructor
     @AllArgsConstructor
     @Builder
+    public static class StatusUpdateRequest {
+        private Boolean isReserved;  // 예약중 상태
+        private Boolean isCompleted; // 판매완료 상태
+    }
+
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
     public static class ApiResponseWrapper<T> {
         private boolean success;
         private T data;
@@ -144,15 +152,6 @@ public class ProductDTO {
         private String message;
         private OffsetDateTime timestamp = OffsetDateTime.now(ZoneOffset.UTC);
         private String requestId;
-    }
-
-    @Data
-    @NoArgsConstructor
-    @AllArgsConstructor
-    @Builder
-    public static class StatusUpdateRequest {
-        private Boolean isReserved;  // 예약중 상태
-        private Boolean isCompleted; // 판매완료 상태
     }
 
 }

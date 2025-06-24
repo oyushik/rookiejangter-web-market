@@ -13,24 +13,13 @@ import java.util.Optional;
 
 @Repository
 public interface ProductRepository extends JpaRepository<Product, Long> {
-    Optional<Product> findByProductId(Long productId);
     List<Product> findByTitleContainsIgnoreCase(String title);
-    List<Product> findByContentContainsIgnoreCase(String content);
     List<Product> findByTitleContainsIgnoreCaseOrContentContainsIgnoreCase(String titleKeyword, String contentKeyword);
-    List<Product> findByViewCountGreaterThanEqual(Integer viewCount);
-    List<Product> findByUser(User user);
-    List<Product> findByUser_UserId(Long userId);
-    List<Product> findByCategory(Category category);
-    List<Product> findByCategoryCategoryId(Integer categoryId);
     List<Product> findByIsReservedTrue();
     List<Product> findByIsReservedFalse();
     List<Product> findByIsCompletedTrue();
     List<Product> findByIsCompletedFalse();
-    List<Product> findByIsBumpedTrue();
     Page<Product> findByUser(User user, Pageable pageable);
     Page<Product> findByCategory(Category category, Pageable pageable);
     Page<Product> findAllByOrderByCreatedAtDesc(Pageable pageable);
-
-    long countByUser(User user);
-    long countByUser_UserId(Long userId);
 }

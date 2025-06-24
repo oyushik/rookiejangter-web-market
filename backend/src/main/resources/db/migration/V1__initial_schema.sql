@@ -7,14 +7,17 @@ CREATE TABLE IF NOT EXISTS `notifications` (
   `entity_id` BIGINT NULL,
   `entity_type` VARCHAR(20) NULL,
   `message` VARCHAR(255) NULL,
-  `sent_at` TIMESTAMP NULL,
-  `is_read` BOOLEAN NULL
+  `is_read` BOOLEAN NULL,
+  `created_at` TIMESTAMP NULL,
+  `updated_at` TIMESTAMP NULL
 );
 
 -- categories table
 CREATE TABLE IF NOT EXISTS `categories` (
   `category_id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  `category_name` VARCHAR(20) NULL
+  `category_name` VARCHAR(20) NULL,
+  `created_at` TIMESTAMP NULL,
+  `updated_at` TIMESTAMP NULL
 );
 
 -- reports table
@@ -27,18 +30,7 @@ CREATE TABLE IF NOT EXISTS `reports` (
   `report_detail` VARCHAR(255) NULL,
   `is_processed` BOOLEAN NULL,
   `created_at` TIMESTAMP NULL,
-  `created_by` VARCHAR(255) NULL, 
-  `updated_at` TIMESTAMP NULL, -- updatedAt 추가
-  `last_modified_by` VARCHAR(255) NULL, -- lastModifiedBy 추가 (AuditorAware 구현 시 사용)
-  `version` INT NULL -- @Version 필드에 맞춰 추가
-);
-
--- bumps table
-CREATE TABLE IF NOT EXISTS `bumps` (
-  `bump_id` BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  `product_id` BIGINT NULL,
-  `bumped_at` TIMESTAMP NULL,
-  `bump_count` INT NULL
+  `updated_at` TIMESTAMP NULL
 );
 
 -- dibs table
@@ -46,7 +38,8 @@ CREATE TABLE IF NOT EXISTS `dibs` (
   `dibs_id` BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
   `user_id` BIGINT NULL,
   `product_id` BIGINT NULL,
-  `added_at` TIMESTAMP NULL
+  `created_at` TIMESTAMP NULL,
+  `updated_at` TIMESTAMP NULL
 );
 
 -- reservations table
@@ -55,13 +48,10 @@ CREATE TABLE IF NOT EXISTS `reservations` (
   `buyer_id` BIGINT NULL,
   `seller_id` BIGINT NULL,
   `product_id` BIGINT NULL,
+  `chat_id` BIGINT NULL,
   `is_canceled` BOOLEAN NULL,
-  `status` ENUM('REQUESTED', 'ACCEPTED', 'DECLINED', 'CANCELLED', 'COMPLETED') NULL,
   `created_at` TIMESTAMP NULL,
-  `created_by` VARCHAR(255) NULL, -- createdBy 추가 (AuditorAware 구현 시 사용)
-  `updated_at` TIMESTAMP NULL, -- updatedAt 추가
-  `last_modified_by` VARCHAR(255) NULL, -- lastModifiedBy 추가 (AuditorAware 구현 시 사용)
-  `version` INT NULL -- @Version 필드에 맞춰 추가
+  `updated_at` TIMESTAMP NULL
 );
 
 -- messages table
@@ -70,15 +60,18 @@ CREATE TABLE IF NOT EXISTS `messages` (
   `chat_id` BIGINT NULL,
   `sender_id` BIGINT NULL,
   `content` VARCHAR(255) NOT NULL,
-  `sent_at` TIMESTAMP NULL,
-  `is_read` BOOLEAN NULL
+  `is_read` BOOLEAN NULL,
+  `created_at` TIMESTAMP NULL,
+  `updated_at` TIMESTAMP NULL
 );
 
 -- images table
 CREATE TABLE IF NOT EXISTS `images` (
   `image_id` BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
   `product_id` BIGINT NULL,
-  `image_url` VARCHAR(255) NOT NULL
+  `image_url` VARCHAR(255) NOT NULL,
+  `created_at` TIMESTAMP NULL,
+  `updated_at` TIMESTAMP NULL
 );
 
 -- users table
@@ -86,16 +79,13 @@ CREATE TABLE IF NOT EXISTS `users` (
   `user_id` BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
   `area_id` INT NULL,
   `login_id` VARCHAR(20) NOT NULL,
-  `password` VARCHAR(100) NOT NULL,
+  `password` VARCHAR(255) NOT NULL,
   `user_name` VARCHAR(12) NOT NULL,
-  `phone` VARCHAR(20) NOT NULL,
+  `phone` VARCHAR(12) NOT NULL,
   `is_banned` BOOLEAN NULL,
   `is_admin` BOOLEAN NULL,
-  `created_at` DATETIME NULL, -- createdAt 추가
-  `created_by` VARCHAR(255) NULL, -- createdBy 추가 (AuditorAware 구현 시 사용)
-  `updated_at` DATETIME NULL, -- updatedAt 추가
-  `last_modified_by` VARCHAR(255) NULL, -- lastModifiedBy 추가 (AuditorAware 구현 시 사용)
-  `version` INT NULL -- @Version 필드에 맞춰 추가
+  `created_at` TIMESTAMP NULL,
+  `updated_at` TIMESTAMP NULL
 );
 
 -- bans table
@@ -105,22 +95,23 @@ CREATE TABLE IF NOT EXISTS `bans` (
   `report_id` BIGINT NULL,
   `ban_reason` VARCHAR(50) NULL,
   `created_at` TIMESTAMP NULL,
-  `created_by` VARCHAR(255) NULL, -- createdBy 추가 (AuditorAware 구현 시 사용)
-  `updated_at` TIMESTAMP NULL, -- updatedAt 추가
-  `last_modified_by` VARCHAR(255) NULL, -- lastModifiedBy 추가 (AuditorAware 구현 시 사용)
-  `version` INT NULL -- @Version 필드에 맞춰 추가
+  `updated_at` TIMESTAMP NULL
 );
 
 -- report reasons table
 CREATE TABLE IF NOT EXISTS `report_reasons` (
   `report_reason_id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  `report_reason_type` VARCHAR(50) NULL
+  `report_reason_type` VARCHAR(50) NULL,
+  `created_at` TIMESTAMP NULL,
+  `updated_at` TIMESTAMP NULL
 );
 
 -- areas table
 CREATE TABLE IF NOT EXISTS `areas` (
   `area_id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  `area_name` VARCHAR(50) NULL
+  `area_name` VARCHAR(50) NULL,
+  `created_at` TIMESTAMP NULL,
+  `updated_at` TIMESTAMP NULL
 );
 
 -- products table
@@ -136,10 +127,7 @@ CREATE TABLE IF NOT EXISTS `products` (
   `is_reserved` BOOLEAN NULL,
   `is_completed` BOOLEAN NULL,
   `created_at` TIMESTAMP NULL,
-  `created_by` VARCHAR(255) NULL, -- createdBy 추가 (AuditorAware 구현 시 사용)
-  `updated_at` TIMESTAMP NULL, -- updatedAt 추가
-  `last_modified_by` VARCHAR(255) NULL, -- lastModifiedBy 추가 (AuditorAware 구현 시 사용)
-  `version` INT NULL -- @Version 필드에 맞춰 추가
+  `updated_at` TIMESTAMP NULL
 );
 
 -- reviews table
@@ -151,10 +139,7 @@ CREATE TABLE IF NOT EXISTS `reviews` (
   `rating` INT NOT NULL,
   `content` VARCHAR(255) NULL,
   `created_at` TIMESTAMP NULL,
-  `created_by` VARCHAR(255) NULL, -- createdBy 추가 (AuditorAware 구현 시 사용)
-  `updated_at` TIMESTAMP NULL, -- updatedAt 추가
-  `last_modified_by` VARCHAR(255) NULL, -- lastModifiedBy 추가 (AuditorAware 구현 시 사용)
-  `version` INT NULL -- @Version 필드에 맞춰 추가
+  `updated_at` TIMESTAMP NULL
 );
 
 -- completes table
@@ -163,17 +148,21 @@ CREATE TABLE IF NOT EXISTS `completes` (
   `product_id` BIGINT NULL,
   `buyer_id` BIGINT NULL,
   `seller_id` BIGINT NULL,
-  `completed_at` TIMESTAMP NULL
+  `created_at` TIMESTAMP NULL,
+  `updated_at` TIMESTAMP NULL
 );
 
 -- cancelations table
 CREATE TABLE IF NOT EXISTS `cancelations` (
   `cancelation_id` BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  `reservation_id` BIGINT NULL,
   `cancelation_reason_id` INT NULL,
-  `canceler_id` BIGINT NULL,
+  `product_id` BIGINT NULL,
+  `buyer_id` BIGINT NULL,
+  `seller_id` BIGINT NULL,
+  `is_canceled_by_buyer` BOOLEAN NULL,
   `cancelation_detail` VARCHAR(255) NULL,
-  `canceled_at` TIMESTAMP NULL
+  `created_at` TIMESTAMP NULL,
+  `updated_at` TIMESTAMP NULL
 );
 
 -- chats table
@@ -182,15 +171,16 @@ CREATE TABLE IF NOT EXISTS `chats` (
   `buyer_id` BIGINT NULL,
   `seller_id` BIGINT NULL,
   `product_id` BIGINT NULL,
+  `reservation_id` BIGINT NULL,
   `created_at` TIMESTAMP NULL,
-  `created_by` VARCHAR(255) NULL, 
-  `updated_at` TIMESTAMP NULL, -- updatedAt 추가
-  `last_modified_by` VARCHAR(255) NULL, -- lastModifiedBy 추가 (AuditorAware 구현 시 사용)
-  `version` INT NULL -- @Version 필드에 맞춰 추가
+  `updated_at` TIMESTAMP NULL
 );
 
 -- cancelation reasons table
 CREATE TABLE IF NOT EXISTS `cancelation_reasons` (
   `cancelation_reason_id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  `cancelation_reason_type` VARCHAR(50) NULL
+  `cancelation_reason_type` VARCHAR(50) NULL,
+  `is_cancelation_reason_of_buyer` BOOLEAN NULL,
+  `created_at` TIMESTAMP NULL,
+  `updated_at` TIMESTAMP NULL
 );

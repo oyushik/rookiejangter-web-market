@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
+import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 
@@ -18,6 +19,7 @@ public class BanDTO {
 
         @NotNull(message = "제재할 사용자 ID는 필수입니다.")
         private Long userId;
+
         @NotNull(message = "근거가 되는 신고 ID는 필수입니다.")
         private Long reportId;
 
@@ -34,7 +36,8 @@ public class BanDTO {
         private Long userId;
         private Long reportId;
         private String banReason;
-        private OffsetDateTime bannedAt;
+        private LocalDateTime bannedAt;
+        private LocalDateTime updatedAt;
 
         public static Response fromEntity(Ban ban) {
             return Response.builder()
@@ -42,7 +45,8 @@ public class BanDTO {
                     .userId(ban.getUser().getUserId())
                     .reportId(ban.getReport() != null ? ban.getReport().getReportId() : null)
                     .banReason(ban.getBanReason())
-                    .bannedAt(ban.getCreatedAt() != null ? ban.getCreatedAt().atOffset(ZoneOffset.UTC) : null)
+                    .bannedAt(ban.getCreatedAt())
+                    .updatedAt(ban.getUpdatedAt())
                     .build();
         }
     }
@@ -56,7 +60,7 @@ public class BanDTO {
         private T data;
         private Object error;
         private String message;
-        private java.time.OffsetDateTime timestamp = java.time.OffsetDateTime.now(java.time.ZoneOffset.UTC);
+        private OffsetDateTime timestamp = OffsetDateTime.now(ZoneOffset.UTC);
         private String requestId;
     }
 }

@@ -71,15 +71,4 @@ public class UserProductController {
         productService.deleteProduct(productId, userId);
         return ResponseEntity.noContent().build();
     }
-
-    // 현재 유저가 등록한 상품 상태 변경 (예약중/판매완료)
-    @PutMapping("/products/{product_id}/status")
-    public ResponseEntity<Void> updateProductStatus(
-            @PathVariable("product_id") Long productId,
-            @RequestBody ProductDTO.StatusUpdateRequest request,
-            Authentication authentication) {
-        Long userId = Long.parseLong(authentication.getName());
-        productService.updateProductStatus(productId, request.getIsReserved(), request.getIsCompleted(), userId);
-        return ResponseEntity.ok().build();
-    }
 }

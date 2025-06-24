@@ -1,7 +1,13 @@
-import Snackbar from "@mui/material/Snackbar";
-import Alert from "@mui/material/Alert";
+import Snackbar from '@mui/material/Snackbar';
+import Alert from '@mui/material/Alert';
 
-export default function FormSnackbar({ open, message, onClose, severity = "info", duration = 3000 }) {
+export default function FormSnackbar({
+  open,
+  message,
+  onClose,
+  severity = 'info',
+  duration = 3000,
+}) {
   return (
     <Snackbar
       open={open}

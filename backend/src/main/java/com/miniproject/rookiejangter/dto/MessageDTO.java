@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
+import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 
@@ -26,20 +27,20 @@ public class MessageDTO {
     @Builder
     public static class Response {
         private Long messageId;
-        private Long chatRoomId;
+        private Long chatId;
         private Long senderId;
         private String content;
-        private OffsetDateTime sentAt;
         private Boolean isRead;
+        private LocalDateTime createdAt;
 
-        public static Response fromEntity(Message message, Long chatRoomId) {
+        public static Response fromEntity(Message message, Long chatId) {
             return Response.builder()
                     .messageId(message.getMessageId())
-                    .chatRoomId(chatRoomId)
-                    .senderId(message.getUser().getUserId())
+                    .chatId(chatId)
+                    .senderId(message.getSender() != null ? message.getSender().getUserId() : null) // sender가 null인 경우 처리
                     .content(message.getContent())
-                    .sentAt(message.getSentAt() != null ? message.getSentAt().atOffset(ZoneOffset.UTC) : null)
-                    .isRead(false)
+                    .isRead(message.getIsRead() != null ? message.getIsRead() : false) // Message 엔티티의 isRead 값 사용
+                    .createdAt(message.getCreatedAt() != null ? message.getCreatedAt() : null)
                     .build();
         }
     }
@@ -65,16 +66,16 @@ public class MessageDTO {
             private Long messageId;
             private Long senderId;
             private String content;
-            private OffsetDateTime sentAt;
             private Boolean isRead;
+            private LocalDateTime createdAt;
 
             public static MessageResponse fromEntity(Message message) {
                 return MessageResponse.builder()
                         .messageId(message.getMessageId())
-                        .senderId(message.getUser().getUserId())
+                        .senderId(message.getSender() != null ? message.getSender().getUserId() : null)
                         .content(message.getContent())
-                        .sentAt(message.getSentAt() != null ? message.getSentAt().atOffset(ZoneOffset.UTC) : null)
-                        .isRead(false)
+                        .isRead(message.getIsRead() != null ? message.getIsRead() : false)
+                        .createdAt(message.getCreatedAt() != null ? message.getCreatedAt() : null)
                         .build();
             }
         }

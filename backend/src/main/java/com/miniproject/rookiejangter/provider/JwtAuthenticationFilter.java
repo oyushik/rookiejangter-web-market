@@ -1,15 +1,16 @@
 package com.miniproject.rookiejangter.provider;
 
 import com.miniproject.rookiejangter.provider.JwtProvider;
-import com.miniproject.rookiejangter.service.AuthService;
+import com.miniproject.rookiejangter.service.AuthService; // 사용되지 않으면 제거 가능
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken; // 이제 직접 사용 안 함
+import org.springframework.security.core.Authentication; // 추가
+import org.springframework.security.core.authority.SimpleGrantedAuthority; // 이제 직접 사용 안 함
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
@@ -18,7 +19,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.Collections;
+import java.util.Collections; // 이제 직접 사용 안 함
 import java.util.List;
 
 @Slf4j
@@ -34,66 +35,48 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             "/api/auth/login",
             "/api/auth/signup",
             "/api/auth/refresh",
-            "/h2-console"
+            "/h2-console", // H2 콘솔 접근을 허용하려면 추가
+            "/ws/chat" // WebSocket 핸드셰이크는 별도 인터셉터에서 처리하므로 여기서 스킵 가능
     );
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request,
-                                    HttpServletResponse response,
-                                    FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+            throws ServletException, IOException {
+
+        // 필터를 건너뛸 경로인지 확인
+        if (shouldSkipFilter(request)) {
+            filterChain.doFilter(request, response);
+            return;
+        }
 
         try {
-            // 1. 제외 경로 확인
-            if (shouldSkipFilter(request)) {
-                filterChain.doFilter(request, response);
-                return;
-            }
-
-            // 2. 요청에서 JWT 토큰 추출
             String jwt = getTokenFromRequest(request);
 
-            // 3. 토큰이 있고 유효한 경우 인증 처리
-            if (StringUtils.hasText(jwt) && jwtProvider.validateToken(jwt)) {
+            if (StringUtils.hasText(jwt) && jwtProvider.validateToken(jwt) && !authService.isTokenBlacklisted(jwt)) {
+                // JwtProvider의 createAuthentication 메서드를 사용하여 Authentication 객체 생성
+                Authentication authentication = jwtProvider.createAuthentication(jwt);
 
-                // 4. 토큰이 블랙리스트에 있는지 확인
-                if (authService.isTokenBlacklisted(jwt)) {
-                    log.warn("블랙리스트에 등록된 토큰으로 접근 시도: {}", jwt.substring(0, 20) + "...");
-                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                    response.getWriter().write("로그아웃된 토큰입니다.");
-                    return;
-                }
+                // 요청 세부정보 설정 (선택 사항이지만 권장)
+                ((UsernamePasswordAuthenticationToken) authentication).setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
-                // 5. 토큰에서 사용자 정보 추출
-                String userId = jwtProvider.getUserIdFromToken(jwt);
-                String role = jwtProvider.getRoleFromToken(jwt);
-
-                // 6. 권한 객체 생성 (ROLE_ 접두사 확인 후 추가)
-                String authority = role.startsWith("ROLE_") ? role : "ROLE_" + role;
-                SimpleGrantedAuthority grantedAuthority = new SimpleGrantedAuthority(authority);
-
-                // 7. 인증 객체 생성
-                UsernamePasswordAuthenticationToken authentication =
-                        new UsernamePasswordAuthenticationToken(
-                                userId, // principal에 userId 저장
-                                null, // credentials는 null (이미 검증됨)
-                                Collections.singletonList(grantedAuthority) // JWT에서 추출한 권한 정보
-                        );
-
-                // 8. 요청 세부정보 설정
-                authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-
-                // 9. SecurityContext에 인증 정보 설정
+                // SecurityContext에 인증 정보 설정
                 SecurityContextHolder.getContext().setAuthentication(authentication);
 
-                log.debug("사용자 인증 완료: userId={}, role={}", userId, authority);
+                log.debug("사용자 인증 완료: userId={}", authentication.getName()); // authentication.getName()은 userId (String) 반환
+            } else {
+                log.debug("유효하지 않거나 블랙리스트에 있는 JWT 토큰입니다. 또는 토큰이 없습니다.");
+                // 인증 실패 시 SecurityContext 초기화 (혹시 모를 잔여 인증 정보 제거)
+                SecurityContextHolder.clearContext();
             }
 
         } catch (Exception e) {
-            log.error("JWT 인증 처리 중 오류 발생: {}", e.getMessage());
+            log.error("JWT 인증 처리 중 오류 발생: {}", e.getMessage(), e);
             SecurityContextHolder.clearContext();
+            // 특정 예외에 대한 HTTP 응답 코드를 여기서 직접 설정할 수도 있습니다.
+            // 예: response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         }
 
-        // 10. 다음 필터로 요청 전달
+        // 다음 필터로 요청 전달
         filterChain.doFilter(request, response);
     }
 

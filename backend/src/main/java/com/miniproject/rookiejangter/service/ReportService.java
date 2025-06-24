@@ -33,7 +33,7 @@ public class ReportService {
      * @return 생성된 신고 정보
      */
     public ReportDTO.Response createReport(ReportDTO.Request request, Long userId) {
-        ReportReason reportReason = reportReasonRepository.findByReportReasonId(request.getReportReasonId())
+        ReportReason reportReason = reportReasonRepository.findById(request.getReportReasonId())
                 .orElseThrow(() -> new BusinessException(ErrorCode.RESOURCE_NOT_FOUND, "ReportReason", request.getReportReasonId(), ""));
 
         User user = userRepository.findById(userId)
@@ -59,7 +59,7 @@ public class ReportService {
      * @return 조회된 신고 정보
      */
     public ReportDTO.Response getReportById(Long reportId) {
-        Report report = reportRepository.findByReportId(reportId)
+        Report report = reportRepository.findById(reportId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.RESOURCE_NOT_FOUND, "Report", reportId, ""));
 
         return ReportDTO.Response.fromEntity(report);
@@ -100,10 +100,10 @@ public class ReportService {
      * @return 수정된 신고 정보
      */
     public ReportDTO.Response updateReport(Long reportId, ReportDTO.Request request) {
-        Report report = reportRepository.findByReportId(reportId)
+        Report report = reportRepository.findById(reportId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.RESOURCE_NOT_FOUND, "Report", reportId, ""));
 
-        ReportReason reportReason = reportReasonRepository.findByReportReasonId(request.getReportReasonId())
+        ReportReason reportReason = reportReasonRepository.findById(request.getReportReasonId())
                 .orElseThrow(() -> new BusinessException(ErrorCode.RESOURCE_NOT_FOUND, "ReportReason", request.getReportReasonId(), ""));
 
         report.updateReportInfo(reportReason, request.getTargetId(), request.getTargetType(), request.getReportDetail());
@@ -117,7 +117,7 @@ public class ReportService {
      * @param reportId 신고 ID
      */
     public void markReportAsProcessed(Long reportId) {
-        Report report = reportRepository.findByReportId(reportId)
+        Report report = reportRepository.findById(reportId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.RESOURCE_NOT_FOUND, "Report", reportId, ""));
 
         report.markAsProcessed();

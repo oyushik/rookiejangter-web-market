@@ -25,7 +25,6 @@ public class ProductService {
     private final CategoryRepository categoryRepository;
     private final ImageRepository imageRepository;
     private final DibsRepository dibsRepository;
-    private final BumpRepository bumpRepository;
 
     /**
      * 상품을 생성합니다.
@@ -36,9 +35,9 @@ public class ProductService {
      */
     @Transactional
     public ProductDTO.Response createProduct(ProductDTO.Request requestDto, Long userId) {
-        User user = userRepository.findByUserId(userId)
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND, userId));
-        Category category = categoryRepository.findByCategoryId(requestDto.getCategoryId())
+        Category category = categoryRepository.findById(requestDto.getCategoryId())
                 .orElseThrow(() -> new BusinessException(ErrorCode.CATEGORY_NOT_FOUND, requestDto.getCategoryId()));
 
         Product product = Product.builder()
@@ -91,7 +90,7 @@ public class ProductService {
 
         Category newCategory = null;
         if (requestDto.getCategoryId() != null) {
-            newCategory = categoryRepository.findByCategoryId(requestDto.getCategoryId())
+            newCategory = categoryRepository.findById(requestDto.getCategoryId())
                     .orElseThrow(() -> new BusinessException(ErrorCode.CATEGORY_NOT_FOUND, requestDto.getCategoryId()));
         } else {
             newCategory = product.getCategory(); // 카테고리가 업데이트되지 않으면 기존 카테고리 유지
@@ -124,9 +123,12 @@ public class ProductService {
             throw new BusinessException(ErrorCode.PRODUCT_OPERATION_FORBIDDEN, "삭제");
         }
 
+        if (product.getIsReserved().equals(true) || product.getIsCompleted().equals(true)) {
+            throw new BusinessException(ErrorCode.RESERVATION_REMAIN_CANNOT_DELETE);
+        }
+
         imageRepository.deleteAll(imageRepository.findByProduct_ProductId(productId));
         dibsRepository.deleteAll(dibsRepository.findByProduct_ProductId(productId));
-        bumpRepository.deleteAll(bumpRepository.findByProduct_ProductId(productId));
 
         productRepository.delete(product);
     }
@@ -215,7 +217,7 @@ public class ProductService {
     /**
      * 상품 내용으로 상품을 검색합니다.
      *
-     * @param content       상품 내용
+     * @param keyword       상품 내용
      * @param pageable      페이지네이션 정보
      * @param currentUserId 현재 사용자 ID (조회 시 사용)
      * @return 상품 목록 데이터 DTO
@@ -249,10 +251,10 @@ public class ProductService {
     }
 
     /**
-     * 상품을 부각시킵니다.
+     * 상품을 page로 표시합니다.
      *
-     * @param productId 상품 ID
-     * @param userId    사용자 ID (부각 권한 확인용)
+     * @param list 상품 리스트
+     * @param pageable
      */
     private Page<Product> paginateList(List<Product> list, Pageable pageable) {
         int start = (int) pageable.getOffset();
@@ -309,10 +311,9 @@ public class ProductService {
                 .price(product.getPrice())
                 .categoryName(product.getCategory() != null ? product.getCategory().getCategoryName() : null)
                 .seller(ProductDTO.SellerInfo.fromEntity(product.getUser()))
-                .createdAt(product.getCreatedAt().atOffset(java.time.ZoneOffset.UTC))
-                .updatedAt(product.getUpdatedAt() != null ? product.getUpdatedAt().atOffset(java.time.ZoneOffset.UTC) : null)
+                .createdAt(product.getCreatedAt())
+                .updatedAt(product.getUpdatedAt())
                 .viewCount(product.getViewCount())
-                .isBumped(product.getIsBumped() != null ? product.getIsBumped() : false)
                 .isReserved(product.getIsReserved() != null ? product.getIsReserved() : false)
                 .isCompleted(product.getIsCompleted() != null ? product.getIsCompleted() : false)
                 .build();

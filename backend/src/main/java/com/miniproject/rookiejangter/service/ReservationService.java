@@ -1,11 +1,14 @@
 package com.miniproject.rookiejangter.service;
 
+import com.miniproject.rookiejangter.dto.CancelationDTO;
 import com.miniproject.rookiejangter.dto.ReservationDTO;
 import com.miniproject.rookiejangter.entity.Product;
 import com.miniproject.rookiejangter.entity.Reservation;
 import com.miniproject.rookiejangter.entity.User;
+import com.miniproject.rookiejangter.entity.Chat;
 import com.miniproject.rookiejangter.exception.BusinessException;
 import com.miniproject.rookiejangter.exception.ErrorCode;
+import com.miniproject.rookiejangter.repository.ChatRepository;
 import com.miniproject.rookiejangter.repository.ProductRepository;
 import com.miniproject.rookiejangter.repository.ReservationRepository;
 import com.miniproject.rookiejangter.repository.UserRepository;
@@ -13,7 +16,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -25,128 +27,60 @@ public class ReservationService {
     private final UserRepository userRepository;
     private final ProductRepository productRepository;
     private final ProductService productService;
-    private final NotificationService notificationService;
+    private final ChatService chatService;
+    private final ChatRepository chatRepository;
+    private final CancelationService cancelationService;
 
     /**
      * 예약을 생성합니다.
      *
      * @param buyerId   구매자 ID
+     * @param sellerId   판매자 ID
      * @param productId 상품 ID
+     * @param chatId    채팅방 ID
      * @return 생성된 예약 정보
      */
     @Transactional
-    public ReservationDTO.Response createReservation(Long buyerId, Long productId) {
+    public ReservationDTO.Response createReservation(Long buyerId, Long sellerId, Long productId, Long chatId) {
         User buyer = userRepository.findById(buyerId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND, buyerId));
+                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND, "구매자를 찾을 수 없습니다. ID: " + buyerId));
+        User seller = userRepository.findById(sellerId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND, "판매자를 찾을 수 없습니다. ID: " + sellerId));
         Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_NOT_FOUND, productId));
-        List<Reservation.TradeStatus> blockingStatuses = Arrays.asList(
-                Reservation.TradeStatus.ACCEPTED,
-                Reservation.TradeStatus.COMPLETED
-        );
+                .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_NOT_FOUND, "상품을 찾을 수 없습니다. ID: " + productId));
 
-        if ((product.getIsReserved() && !product.getUser().getUserId().equals(buyerId))) {
-            throw new BusinessException(ErrorCode.PRODUCT_NOT_RESERVABLE, "이미 거래 예정이거나, 판매가 완료된 상품입니다.");
+        // 이미 예약 중이거나 판매 완료된 상품인지 확인
+        if (product.getIsReserved() || product.getIsCompleted()) {
+            throw new BusinessException(ErrorCode.RESERVATION_ALREADY_EXISTS, "이미 예약 중이거나 판매 완료된 상품입니다.");
         }
 
-        if (product.getUser().getUserId().equals(buyerId)) {
-            throw new BusinessException(ErrorCode.CANNOT_RESERVE_OWN_PRODUCT);
+        // 해당 채팅방에 이미 예약이 있는지 확인 (중복 예약 방지)
+        Chat chat = chatRepository.findById(chatId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.CHATROOM_NOT_FOUND, "채팅방을 찾을 수 없습니다. ID: " + chatId));
+        if (chat.getReservation() != null) {
+            throw new BusinessException(ErrorCode.RESERVATION_ALREADY_EXISTS, "해당 채팅방에 이미 예약이 존재합니다.");
         }
-
-        if (reservationRepository.existsByBuyer_UserIdAndProduct_ProductIdAndStatusIn(buyerId, productId, blockingStatuses)) {
-            throw new BusinessException(ErrorCode.RESERVATION_ALREADY_EXISTS, String.valueOf(productId));
-        }
-
-        User seller = product.getUser();
 
         Reservation reservation = Reservation.builder()
                 .buyer(buyer)
                 .seller(seller)
                 .product(product)
-                .status(Reservation.TradeStatus.REQUESTED)
-                .isCanceled(false)
+                .chat(chat)
                 .build();
+
         Reservation savedReservation = reservationRepository.save(reservation);
 
-        productService.updateProductStatus(productId, true, false, seller.getUserId());
-        // 알림 생성 로직 추가
-        String notificationMessage = buyer.getUserName() + "님께서 '" + product.getTitle() + "' 상품에 거래 요청을 보냈습니다.";
-        notificationService.createNotification(
-                seller.getUserId(),
-                savedReservation.getReservationId(),
-                "Reservation",
-                notificationMessage
-        );
+        // 상품 상태를 '예약 중'으로 변경
+        productService.updateProductStatus(productId, true, false, sellerId);
+
+        // 채팅방에 예약 정보 할당
+        chatService.assignChatReservation(chatId, savedReservation.getReservationId(), sellerId);
+
         return ReservationDTO.Response.fromEntity(savedReservation);
     }
 
     /**
-     * 현재 사용자가 예약을 요청한 상품에 대해 예약을 조회합니다.
-     *
-     * @param currentUserId 현재 사용자 ID
-     * @return 예약 정보 리스트
-     */
-    @Transactional(readOnly = true)
-    public List<ReservationDTO.Response> getAllReservations(Long currentUserId) {
-        User currentUser = userRepository.findById(currentUserId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND, currentUserId));
-
-         if (!currentUser.getIsAdmin().equals(true)) {
-             throw new BusinessException(ErrorCode.ACCESS_DENIED, "관리자만 모든 예약을 조회할 수 있습니다.");
-         }
-
-        return reservationRepository.findAll().stream()
-                .map(ReservationDTO.Response::fromEntity)
-                .collect(Collectors.toList());
-    }
-
-    /**
-     * 특정 구매자가 요청한 예약을 조회합니다.
-     *
-     * @param buyerId 구매자 ID
-     * @return 예약 정보 리스트
-     */
-    @Transactional(readOnly = true)
-    public List<ReservationDTO.Response> getReservationsByBuyer(Long buyerId) {
-        userRepository.findById(buyerId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND, buyerId));
-        return reservationRepository.findByBuyer_UserId(buyerId).stream()
-                .map(ReservationDTO.Response::fromEntity)
-                .collect(Collectors.toList());
-    }
-
-    /**
-     * 특정 판매자가 등록한 상품에 대한 예약을 조회합니다.
-     *
-     * @param sellerId 판매자 ID
-     * @return 예약 정보 리스트
-     */
-    @Transactional(readOnly = true)
-    public List<ReservationDTO.Response> getReservationsBySeller(Long sellerId) {
-        userRepository.findById(sellerId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND, sellerId));
-        return reservationRepository.findBySeller_UserId(sellerId).stream()
-                .map(ReservationDTO.Response::fromEntity)
-                .collect(Collectors.toList());
-    }
-
-    /**
-     * 특정 상품에 대한 모든 예약을 조회합니다.
-     *
-     * @param productId 상품 ID
-     * @return 예약 정보 리스트
-     */
-    @Transactional(readOnly = true)
-    public List<ReservationDTO.Response> getReservationsByProduct(Long productId) {
-        productRepository.findById(productId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_NOT_FOUND, productId));
-        return reservationRepository.findByProduct_ProductId(productId).stream()
-                .map(ReservationDTO.Response::fromEntity)
-                .collect(Collectors.toList());
-    }
-
-    /**
-     * 특정 예약 ID에 대한 예약 정보를 조회합니다.
+     * 예약 ID에 대한 예약 정보를 조회합니다.
      *
      * @param reservationId 예약 ID
      * @return 예약 정보
@@ -159,148 +93,76 @@ public class ReservationService {
     }
 
     /**
-     * 예약 상태를 업데이트합니다.
-     *
-     * @param reservationId 예약 ID
-     * @param newStatus     새로운 예약 상태
-     * @param currentUserId 현재 사용자 ID
-     * @return 업데이트된 예약 정보
+     * 현재 로그인 중인 사용자가 buyerId로 설정된 모든 reservations를 목록으로 표시
      */
-    @Transactional
-    public ReservationDTO.Response updateReservationStatus(Long reservationId, Reservation.TradeStatus newStatus, Long currentUserId) {
-        Reservation reservation = reservationRepository.findById(reservationId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.RESERVATION_NOT_FOUND, reservationId));
-
-        User currentUser = userRepository.findById(currentUserId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND, currentUserId));
-
-        Boolean isSeller = reservation.getSeller().getUserId().equals(currentUserId);
-        Boolean isBuyer = reservation.getBuyer().getUserId().equals(currentUserId);
-
-        Product product = reservation.getProduct();
-
-        switch (newStatus) {
-            case ACCEPTED:
-                if (!isSeller) {
-                    throw new BusinessException(ErrorCode.RESERVATION_ACTION_FORBIDDEN, "수락");
-                }
-                reservation.setStatus(Reservation.TradeStatus.ACCEPTED);
-                product.markAsReserved(true);
-                productRepository.save(product);
-                break;
-            case DECLINED:
-                if (!isSeller) {
-                    throw new BusinessException(ErrorCode.RESERVATION_ACTION_FORBIDDEN, "거절");
-                }
-                reservation.setStatus(Reservation.TradeStatus.DECLINED);
-                product.markAsReserved(false);
-                productRepository.save(product);
-                break;
-            case CANCELLED:
-                if (!isBuyer && !isSeller) {
-                    throw new BusinessException(ErrorCode.RESERVATION_ACTION_FORBIDDEN, "취소");
-                }
-                // 구매자는 REQUESTED 또는 ACCEPTED 상태에서 취소 가능
-                // 판매자는 ACCEPTED 상태에서 취소 가능 (구매자와 합의 하에)
-                if (isBuyer && (reservation.getStatus() == Reservation.TradeStatus.REQUESTED || reservation.getStatus() == Reservation.TradeStatus.ACCEPTED)) {
-                    reservation.setStatus(Reservation.TradeStatus.CANCELLED);
-                    reservation.setIsCanceled(true);
-                } else if (isSeller && reservation.getStatus() == Reservation.TradeStatus.ACCEPTED) {
-                    reservation.setStatus(Reservation.TradeStatus.CANCELLED);
-                    reservation.setIsCanceled(true);
-                } else {
-                    throw new BusinessException(ErrorCode.RESERVATION_INVALID_STATE_FOR_ACTION, currentUser.getUserId(), "취소");
-                }
-                product.markAsReserved(false); // 예약 상태 해제
-                productRepository.save(product);
-                break;
-            case COMPLETED:
-                if (!isSeller) {
-                    throw new BusinessException(ErrorCode.RESERVATION_ACTION_FORBIDDEN, "완료");
-                }
-                if (reservation.getStatus() != Reservation.TradeStatus.ACCEPTED) {
-                    throw new BusinessException(ErrorCode.RESERVATION_INVALID_STATE_FOR_ACTION, currentUser.getUserId(), "완료");
-                }
-                reservation.setStatus(Reservation.TradeStatus.COMPLETED);
-                product.markAsCompleted(true);
-                product.markAsReserved(false); // 예약 상태 해제
-                productRepository.save(product);
-                // 여기에 CompleteService를 호출하여 거래 완료 기록 생성 로직 추가 가능
-                break;
-            default:
-                throw new BusinessException(ErrorCode.RESERVATION_INVALID_STATUS_TRANSITION, newStatus.name());
-        }
-
-        Reservation updatedReservation = reservationRepository.save(reservation);
-
-        // 알림 생성 (상태 변경 시)
-        String notificationMessage;
-        Long targetUserId;
-        if (newStatus == Reservation.TradeStatus.ACCEPTED) {
-            notificationMessage = reservation.getSeller().getUserName() + "님께서 '" + reservation.getProduct().getTitle() + "' 상품의 예약 요청을 수락했습니다.";
-            targetUserId = reservation.getBuyer().getUserId();
-        } else if (newStatus == Reservation.TradeStatus.DECLINED) {
-            notificationMessage = reservation.getSeller().getUserName() + "님께서 '" + reservation.getProduct().getTitle() + "' 상품의 예약 요청을 거절했습니다.";
-            targetUserId = reservation.getBuyer().getUserId();
-        } else if (newStatus == Reservation.TradeStatus.CANCELLED) {
-            if (isBuyer) {
-                notificationMessage = reservation.getBuyer().getUserName() + "님께서 '" + reservation.getProduct().getTitle() + "' 상품의 예약 요청을 취소했습니다.";
-                targetUserId = reservation.getSeller().getUserId();
-            } else { // isSeller
-                notificationMessage = reservation.getSeller().getUserName() + "님께서 '" + reservation.getProduct().getTitle() + "' 상품의 예약을 거절했습니다.";
-                targetUserId = reservation.getBuyer().getUserId();
-            }
-        } else if (newStatus == Reservation.TradeStatus.COMPLETED) {
-            notificationMessage = reservation.getSeller().getUserName() + "님께서 '" + reservation.getProduct().getTitle() + "' 상품 거래를 완료 처리했습니다.";
-            targetUserId = reservation.getBuyer().getUserId();
-        } else {
-            notificationMessage = "예약 상태가 변경되었습니다: " + newStatus.name();
-            targetUserId = isBuyer ? reservation.getSeller().getUserId() : reservation.getBuyer().getUserId(); // 반대편 유저에게 알림
-        }
-
-        notificationService.createNotification(
-                targetUserId,
-                reservation.getReservationId(),
-                "Answer",
-                notificationMessage
-        );
-
-        return ReservationDTO.Response.fromEntity(updatedReservation);
+    @Transactional(readOnly = true)
+    public List<ReservationDTO.Response> getReservationsByBuyer(Long currentUserId) {
+        List<Reservation> reservations = reservationRepository.findByBuyer_UserId(currentUserId);
+        return reservations.stream()
+                .map(ReservationDTO.Response::fromEntity)
+                .collect(Collectors.toList());
     }
 
     /**
-     * 예약을 삭제합니다.
+     * 현재 로그인 중인 사용자가 sellerId로 설정된 모든 reservations를 목록으로 표시
+     */
+    @Transactional(readOnly = true)
+    public List<ReservationDTO.Response> getReservationsBySeller(Long currentUserId) {
+        List<Reservation> reservations = reservationRepository.findBySeller_UserId(currentUserId);
+        return reservations.stream()
+                .map(ReservationDTO.Response::fromEntity)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * 예약을 취소(삭제)합니다.
+     * (이전 deleteReservation 메서드의 시그니처와 로직을 수정)
      *
-     * @param reservationId 예약 ID
-     * @param currentUserId 현재 사용자 ID
+     * @param currentUserId 현재 사용자 ID (취소를 요청한 사람)
+     * @param chatId        예약이 연결된 채팅방 ID
+     * @param cancelationRequest 취소 요청 정보 (취소 사유 등)
      */
     @Transactional
-    public void deleteReservation(Long reservationId, Long currentUserId) {
-        Reservation reservation = reservationRepository.findById(reservationId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.RESERVATION_NOT_FOUND, reservationId));
+    public void deleteReservation(Long currentUserId, Long chatId, CancelationDTO.Request cancelationRequest) {
+        // 1. chatId를 사용하여 Chat 엔티티 조회
+        Chat chat = chatRepository.findById(chatId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.CHATROOM_NOT_FOUND, "해당 채팅방을 찾을 수 없습니다."));
 
-        User currentUser = userRepository.findById(currentUserId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND, currentUserId));
-
-        Boolean isBuyer = reservation.getBuyer().getUserId().equals(currentUserId);
-
-        if (!isBuyer) {
-            throw new BusinessException(ErrorCode.RESERVATION_DELETE_CONDITIONS_NOT_MET, "본인이 요청한 예약이 아닙니다.");
+        // 2. Chat 엔티티에 연결된 Reservation 엔티티 조회
+        Reservation reservation = chat.getReservation();
+        if (reservation == null) {
+            throw new BusinessException(ErrorCode.RESERVATION_NOT_FOUND, "해당 채팅방에 연결된 예약이 없습니다.");
         }
 
-        // 일반적으로 예약 기록은 soft delete 하거나 상태 변경으로 관리하지만, 물리적 삭제가 필요하다면 아래 로직 사용
-        // 예약 요청 상태(REQUESTED)이거나 거절(DECLINED), 취소(CANCELLED)된 경우에만 구매자가 삭제 가능하도록 제한할 수 있음
-        if (reservation.getStatus() == Reservation.TradeStatus.REQUESTED ||
-                reservation.getStatus() == Reservation.TradeStatus.DECLINED ||
-                reservation.getStatus() == Reservation.TradeStatus.CANCELLED) {
-
-            // 게시글의 예약 상태를 풀어줄 필요가 있는지 확인 (보통 REQUESTED 상태에서는 isReserved가 false일 것임)
-            if (reservation.getProduct().getIsReserved() && reservation.getStatus() == Reservation.TradeStatus.REQUESTED) {
-                // 이 경우는 드물지만, 방어적으로 코딩
-            }
-            reservationRepository.delete(reservation);
-        } else {
-            throw new BusinessException(ErrorCode.RESERVATION_DELETE_CONDITIONS_NOT_MET, "현재 상태(" + reservation.getStatus() + ")의 예약은 삭제할 수 없습니다.");
+        // 3. 인가 확인: 현재 사용자가 예약의 구매자 또는 판매자인지 확인
+        if (!reservation.getBuyer().getUserId().equals(currentUserId) &&
+                !reservation.getSeller().getUserId().equals(currentUserId)) {
+            throw new BusinessException(ErrorCode.RESERVATION_ACTION_FORBIDDEN);
         }
+
+        // 4. 취소 기록 생성
+        // CancelationDTO.Request에 필요한 정보를 Reservation에서 추출하여 설정
+        cancelationRequest.setProductId(reservation.getProduct().getProductId());
+        cancelationRequest.setBuyerId(reservation.getBuyer().getUserId());
+        cancelationRequest.setSellerId(reservation.getSeller().getUserId());
+        // 누가 취소했는지 isCanceledByBuyer 필드에 반영
+        cancelationRequest.setIsCanceledByBuyer(reservation.getBuyer().getUserId().equals(currentUserId));
+
+        cancelationService.createCancelation(cancelationRequest); // 취소 기록 생성
+
+        // 5. 상품 상태 업데이트: '예약 중' 상태를 false로 변경
+        productService.updateProductStatus(
+                reservation.getProduct().getProductId(),
+                false, // isSold = false (취소되었으므로 판매되지 않음)
+                false, // isReserved = false (예약 취소)
+                reservation.getSeller().getUserId() // 판매자 ID
+        );
+
+        // 6. 채팅방에서 예약 정보 할당 해제
+        // chatService.assignChatReservation 메서드가 Long reservationId를 받아 null이면 연결 해제하도록 구현되어 있어야 합니다.
+        chatService.assignChatReservation(chatId, null, reservation.getSeller().getUserId());
+
+        // 7. 예약 엔티티 삭제
+        reservationRepository.delete(reservation);
     }
 }

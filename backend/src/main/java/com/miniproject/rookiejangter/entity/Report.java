@@ -7,8 +7,6 @@ import jakarta.validation.constraints.Size;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
-import java.time.LocalDateTime;
-
 @Entity
 @Table(name = "reports")
 @Getter
@@ -16,7 +14,6 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @SuperBuilder
 @ToString
-@EqualsAndHashCode
 public class Report extends BaseEntity {
 
     @Id

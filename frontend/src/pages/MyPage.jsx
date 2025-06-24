@@ -8,7 +8,12 @@ import {
   MenuItem,
   Typography,
   Box,
+  Tab,
+  Tabs,
+  Modal,
+  IconButton,
 } from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
 import axios from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
 import { setIdentityInfo, clearAuthState } from '../features/auth/authSlice';
@@ -16,8 +21,24 @@ import { useNavigate } from 'react-router-dom';
 import useAuthStore from '../store/authStore';
 import { getAreas } from '../api/area';
 import FormSnackbar from '../components/FormSnackbar';
-import notificationService from '../api/notificationService';
-import { FormatTime } from '../utils/FormatTime';
+
+import {
+  getReservationsByBuyer,
+  getReservationsBySeller,
+  getReservationById,
+} from '../api/reservationService';
+
+const style = {
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: 400,
+  bgcolor: 'background.paper',
+  border: '2px solid #000',
+  boxShadow: 24,
+  p: 4,
+};
 
 const MyPage = () => {
   const dispatch = useDispatch();
@@ -36,8 +57,12 @@ const MyPage = () => {
   const [password, setPassword] = useState('');
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
-  const [trades, setTrades] = useState([]);
-  const [notifications, setNotifications] = useState([]);
+  // New states for reservations and modal
+  const [currentReservationTab, setCurrentReservationTab] = useState(0); // 0 for buyer, 1 for seller
+  const [buyerReservations, setBuyerReservations] = useState([]);
+  const [sellerReservations, setSellerReservations] = useState([]);
+  const [selectedReservation, setSelectedReservation] = useState(null);
+  const [openModal, setOpenModal] = useState(false);
 
   // Snackbar 상태
   const [snackbar, setSnackbar] = useState({
@@ -78,11 +103,34 @@ const MyPage = () => {
       }
     };
 
+    const fetchReservations = async () => {
+      try {
+        const buyerRes = await getReservationsByBuyer();
+        if (buyerRes.success) {
+          setBuyerReservations(buyerRes.data || []);
+        } else {
+          throw new Error(buyerRes.error || '구매자 예약 목록 조회 실패');
+        }
+
+        const sellerRes = await getReservationsBySeller();
+        if (sellerRes.success) {
+          setSellerReservations(sellerRes.data || []);
+        } else {
+          throw new Error(sellerRes.error || '판매자 예약 목록 조회 실패');
+        }
+      } catch (error) {
+        console.error('예약 목록 불러오기 실패:', error);
+        setSnackbar({
+          open: true,
+          message: `예약 목록을 불러오는 데 실패했습니다: ${error.message}`,
+          severity: 'error',
+        });
+      }
+    };
+
     fetchProfile();
     fetchAreas();
-
-    setTrades([]);
-    setNotifications([]);
+    fetchReservations();
   }, [dispatch]);
 
   const validateField = (name, value) => {
@@ -200,21 +248,67 @@ const MyPage = () => {
     }
   };
 
-  // 알림 리스트 불러오기
-  useEffect(() => {
-    const fetchNotifications = async () => {
-      const token = localStorage.getItem('accessToken');
-      if (!token) return;
-      const res = await notificationService.getNotifications(0, 10, 'sentAt,desc');
-      console.log("알림 리스트 응답:", res);
-      if (res.success && res.data?.content) {
-        setNotifications(res.data.content);
+  // Handle tab change for reservations
+  const handleReservationTabChange = (event, newValue) => {
+    setCurrentReservationTab(newValue);
+  };
+
+  // Handle click on a reservation to show details
+  const handleReservationClick = async (reservationId) => {
+    try {
+      const res = await getReservationById(reservationId);
+      if (res.success) {
+        setSelectedReservation(res.data);
+        setOpenModal(true);
       } else {
-        setNotifications([]);
+        throw new Error(res.error || '예약 상세 정보 조회 실패');
       }
-    };
-    fetchNotifications();
-  }, []);
+    } catch (error) {
+      console.error(`Error fetching reservation details for ID ${reservationId}:`, error);
+      setSnackbar({
+        open: true,
+        message: `예약 상세 정보를 불러오는 데 실패했습니다: ${error.message}`,
+        severity: 'error',
+      });
+    }
+  };
+
+  const handleCloseModal = () => {
+    setOpenModal(false);
+    setSelectedReservation(null);
+  };
+
+  // '채팅으로 이동' 버튼 클릭 핸들러
+  const handleGoToChat = (chatId) => {
+    if (chatId) {
+      navigate(`/chats/${chatId}`);
+      handleCloseModal(); // 채팅 페이지로 이동 후 모달 닫기
+    } else {
+      setSnackbar({
+        open: true,
+        message: '채팅방 ID를 찾을 수 없습니다.',
+        severity: 'warning',
+      });
+    }
+  };
+
+  // '상품 상세 보기' 버튼 클릭 핸들러
+  const handleGoToProductDetail = (productId) => {
+    if (productId) {
+      navigate(`/products/${productId}`); // 상품 상세 페이지 경로로 이동
+      handleCloseModal(); // 상품 페이지로 이동 후 모달 닫기
+    } else {
+      setSnackbar({
+        open: true,
+        message: '상품 ID를 찾을 수 없습니다.',
+        severity: 'warning',
+      });
+    }
+  };
+
+  // Determine which list to display based on the current tab
+  const displayedReservations =
+    currentReservationTab === 0 ? buyerReservations : sellerReservations;
 
   return (
     <Box sx={{ p: 3 }}>
@@ -222,10 +316,12 @@ const MyPage = () => {
         마이페이지
       </Typography>
       <Box my={4}>
-        <Button variant="contained"
-        color="success"
-        sx={{ ml: 2 }} 
-        onClick={() => navigate('/products/register')}>
+        <Button
+          variant="contained"
+          color="success"
+          sx={{ ml: 2 }}
+          onClick={() => navigate('/products/register')}
+        >
           상품 등록
         </Button>
         <Button
@@ -243,6 +339,9 @@ const MyPage = () => {
           onClick={() => navigate('/my-products', { state: { dibs: true } })}
         >
           찜한 상품
+        </Button>
+        <Button variant="contained" color="error" sx={{ ml: 2 }} onClick={() => navigate('/chats')}>
+          내 채팅
         </Button>
       </Box>
 
@@ -270,12 +369,7 @@ const MyPage = () => {
           />
           <FormControl fullWidth error={!!errors.areaId} sx={{ mb: 2 }}>
             <InputLabel>지역</InputLabel>
-            <Select
-              name="areaId"
-              value={formData.areaId}
-              onChange={handleChange}
-              label="지역"
-            >
+            <Select name="areaId" value={formData.areaId} onChange={handleChange} label="지역">
               {areas.map((area) => (
                 <MenuItem key={area.areaId} value={area.areaId}>
                   {area.areaName}
@@ -305,8 +399,8 @@ const MyPage = () => {
           </Button>
         </>
       )}
-
-      <hr style={{ margin: '30px 0' }} />
+      <br />
+      <br />
 
       {!showDeleteConfirm ? (
         <Button onClick={() => setShowDeleteConfirm(true)} color="error">
@@ -320,28 +414,45 @@ const MyPage = () => {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             placeholder="비밀번호"
-            fullWidth
-            sx={{ my: 2 }}
+            sx={{ my: 2, maxWidth: '400px', width: '100%' }}
           />
+          <br />
           <Button onClick={handleDeleteAccount} color="error" variant="contained">
             삭제 확인
           </Button>{' '}
+          <br />
           <Button onClick={() => setShowDeleteConfirm(false)}>취소</Button>
         </Box>
       )}
 
       <hr style={{ margin: '30px 0' }} />
 
-      {/* 현재 진행 중인 거래 */}
       <Typography variant="h5" gutterBottom>
-        현재 진행 중인 거래
+        예약된 거래
       </Typography>
-      {trades.length > 0 ? (
-        trades.map((trade) => (
-          <Box key={trade.id} sx={{ mb: 1, p: 1, border: '1px solid #ccc', borderRadius: 2 }}>
-            <Typography>{trade.title}</Typography>
+      <Tabs
+        value={currentReservationTab}
+        onChange={handleReservationTabChange}
+        aria-label="reservation tabs"
+        sx={{ mb: 2 }}
+      >
+        <Tab label="구매 요청한 예약" />
+        <Tab label="판매하는 예약" />
+      </Tabs>
+
+      {displayedReservations.length > 0 ? (
+        displayedReservations.map((reservation) => (
+          <Box
+            key={reservation.reservationId}
+            sx={{ mb: 1, p: 1, border: '1px solid #ccc', borderRadius: 2, cursor: 'pointer' }}
+            onClick={() => handleReservationClick(reservation.reservationId)}
+          >
+            <Typography>상품명: {reservation.product?.title}</Typography>
             <Typography variant="caption" color="text.secondary">
-              상태: {trade.status}
+              예약 상태: {reservation.product?.isReserved ? '예약 중' : '거래 가능'}
+            </Typography>
+            <Typography variant="caption" color="text.secondary" sx={{ ml: 2 }}>
+              생성일: {new Date(reservation.createdAt).toLocaleDateString()}
             </Typography>
           </Box>
         ))
@@ -349,24 +460,64 @@ const MyPage = () => {
         <Typography color="text.secondary">진행 중인 거래가 없습니다.</Typography>
       )}
 
-      <hr style={{ margin: '30px 0' }} />
+      {/* Reservation Detail Modal */}
+      <Modal
+        open={openModal}
+        onClose={handleCloseModal}
+        aria-labelledby="reservation-detail-modal-title"
+        aria-describedby="reservation-detail-modal-description"
+      >
+        <Box sx={style}>
+          <IconButton
+            aria-label="close"
+            onClick={handleCloseModal}
+            sx={{
+              position: 'absolute',
+              right: 8,
+              top: 8,
+              color: (theme) => theme.palette.grey[500],
+            }}
+          >
+            <CloseIcon />
+          </IconButton>
+          <Typography id="reservation-detail-modal-title" variant="h6" component="h2">
+            예약 상세 정보
+          </Typography>
+          {selectedReservation && (
+            <Box id="reservation-detail-modal-description" sx={{ mt: 2 }}>
+              <Typography>상품명: {selectedReservation.product?.title}</Typography>
+              <Typography>구매자: {selectedReservation.buyer?.userName}</Typography>
+              <Typography>판매자: {selectedReservation.seller?.userName}</Typography>
+              <Typography>
+                생성일: {new Date(selectedReservation.createdAt).toLocaleString()}
+              </Typography>
+              <Box sx={{ mt: 3, display: 'flex', gap: 2 }}>
+                {/* '채팅으로 이동' 버튼 추가 */}
+                <Button
+                  variant="outlined"
+                  color="primary"
+                  onClick={() => handleGoToChat(selectedReservation.chatId)}
+                  // chatId가 없는 경우 버튼 비활성화
+                  disabled={!selectedReservation.chatId}
+                >
+                  채팅으로 이동
+                </Button>
 
-      {/* 알림 리스트 */}
-      <Typography variant="h5" gutterBottom>
-        알림 리스트
-      </Typography>
-      {notifications.length > 0 ? (
-        notifications.map((noti) => (
-          <Box key={noti.notificationId || noti.id} sx={{ mb: 1, p: 1, border: '1px solid #ccc', borderRadius: 2 }}>
-            <Typography>{noti.message}</Typography>
-            <Typography variant="caption" color="text.secondary">
-              {noti.sentAt ? FormatTime(noti.sentAt) : (noti.date || noti.sentAt)}
-            </Typography>
-          </Box>
-        ))
-      ) : (
-        <Typography color="text.secondary">알림이 없습니다.</Typography>
-      )}
+                {/* '상품 상세 보기' 버튼 추가 */}
+                <Button
+                  variant="outlined"
+                  color="info"
+                  onClick={() => handleGoToProductDetail(selectedReservation.product?.productId)}
+                  // productId가 없는 경우 버튼 비활성화
+                  disabled={!selectedReservation.product?.productId}
+                >
+                  상품 상세 보기
+                </Button>
+              </Box>
+            </Box>
+          )}
+        </Box>
+      </Modal>
 
       {/* Snackbar 팝업 */}
       <FormSnackbar
