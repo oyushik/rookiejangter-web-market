@@ -8,30 +8,30 @@ services:
       - ./frontend/public:/app/public
     environment:
       - CHOKIDAR_USEPOLLING=true
-    depends_on:
-      - backend 
+  #   depends_on:
+  #     - backend 
 
-  backend:
-    build: ./backend
-    ports:
-      - "8080:8080"
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:mariadb://mariadb:3306/rookiejangter_db?allowPublicKeyRetrieval=true&useSSL=false
-      SPRING_DATASOURCE_USERNAME: rookiejangter
-      SPRING_DATASOURCE_PASSWORD: rookiejangter
-      SPRING_DATA_REDIS_HOST: redis
-      SPRING_DATA_REDIS_PORT: 6379
-      SPRING_DATA_REDIS_CLIENT_SSL_ENABLED: "false"
-      SPRING_PROFILES_ACTIVE: prod
-    depends_on:
-      mariadb:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
-    volumes:
-      - ./backend/src:/app/src
-      - ./backend/resources:/app/resources
-      - ./backend/logs:/app/logs
+  # backend:
+  #   build: ./backend
+  #   ports:
+  #     - "8080:8080"
+  #   environment:
+  #     SPRING_DATASOURCE_URL: jdbc:mariadb://mariadb:3306/rookiejangter_db?allowPublicKeyRetrieval=true&useSSL=false
+  #     SPRING_DATASOURCE_USERNAME: rookiejangter
+  #     SPRING_DATASOURCE_PASSWORD: rookiejangter
+  #     SPRING_DATA_REDIS_HOST: redis
+  #     SPRING_DATA_REDIS_PORT: 6379
+  #     SPRING_DATA_REDIS_CLIENT_SSL_ENABLED: "false"
+  #     SPRING_PROFILES_ACTIVE: prod
+  #   depends_on:
+  #     mariadb:
+  #       condition: service_healthy
+  #     redis:
+  #       condition: service_healthy
+  #   volumes:
+  #     - ./backend/src:/app/src
+  #     - ./backend/resources:/app/resources
+  #     - ./backend/logs:/app/logs
 
   redis:
     image: redis:7
@@ -39,12 +39,12 @@ services:
     ports:
       - "6379:6379"
     restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 30s
+    # healthcheck:
+    #   test: ["CMD", "redis-cli", "ping"]
+    #   interval: 30s
+    #   timeout: 10s
+    #   retries: 3
+    #   start_period: 30s
 
   mariadb:
     image: mariadb:11.4
@@ -59,12 +59,12 @@ services:
     volumes:
       - mariadb_data:/var/lib/mysql
     restart: always
-    healthcheck:
-      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 60s
+    # healthcheck:
+    #   test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+    #   interval: 30s
+    #   timeout: 10s
+    #   retries: 3
+    #   start_period: 60s
 
 volumes:
   mariadb_data:

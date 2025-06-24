@@ -35,7 +35,7 @@ public class ChatController {
             Principal principal // 현재 로그인한 사용자 정보 주입
     ) {
         try {
-            Long currentUserId = Long.parseLong(principal.getName()); // principal.name은 JWT의 sub(userId)
+//            Long currentUserId = Long.parseLong(principal.getName()); // principal.name은 JWT의 sub(userId)
             // 서비스 계층에서 추가적인 권한 검증이 필요하다면 currentUserId를 전달할 수 있습니다.
             ChatDTO.Response response = chatService.createChat(request);
             return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponseWrapper.<ChatDTO.Response>builder()
@@ -102,8 +102,7 @@ public class ChatController {
      */
     @GetMapping
     public ResponseEntity<ApiResponseWrapper<ChatDTO.ChatListResponse>> getChatsByUserId(
-            @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable,
-            Principal principal // 이 메서드에서 Principal을 직접 사용하지 않아도, `chatService.getChatsByUserId` 내부에서 `SecurityContextHolder`를 통해 `authentication.getName()`을 사용하는 방식은 유지됩니다.
+            @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable
     ) {
         try {
             // chatService.getChatsByUserId 내부에서 SecurityContextHolder를 통해 사용자 ID를 가져온다고 가정
@@ -138,7 +137,7 @@ public class ChatController {
     @DeleteMapping("/{chatId}")
     public ResponseEntity<ApiResponseWrapper<Void>> deleteChat(
             @PathVariable Long chatId,
-            Principal principal // Principal은 계속 받아야 합니다.
+            Principal principal
     ) {
         try {
             // 현재 로그인한 사용자 ID를 서비스로 전달하여 서비스 내부에서 인가 처리

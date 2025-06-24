@@ -11,7 +11,6 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 @SuperBuilder
 @ToString
-@EqualsAndHashCode
 public class Chat extends BaseEntity {
 
     @Id
@@ -31,4 +30,16 @@ public class Chat extends BaseEntity {
     @JoinColumn(name = "product_id")
     private Product product;
 
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "reservation_id")
+    private Reservation reservation;
+
+    /**
+     * 이 채팅에 특정 예약 정보를 할당합니다.
+     *
+     * @param reservation 이 채팅에 연결할 예약 객체
+     */
+    public void assignReservation(Reservation reservation) {
+        this.reservation = reservation;
+    }
 }

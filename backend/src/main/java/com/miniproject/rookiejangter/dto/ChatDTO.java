@@ -27,22 +27,29 @@ public class ChatDTO {
     public static class Response {
         private Long chatId;
         private Long productId;
-        private ProductInfo product; // ProductInfo DTO 추가
+        private ProductInfo product;
         private Long buyerId;
-        private UserInfo buyer; // UserInfo DTO 추가
+        private UserInfo buyer;
         private Long sellerId;
-        private UserInfo seller; // UserInfo DTO 추가
+        private UserInfo seller;
+        private Long reservationId;
         private LocalDateTime createdAt;
 
         public static Response fromEntity(Chat chat) {
+            Long reservationId = null;
+            if (chat.getReservation() != null) { // reservation이 null이 아닐 때만 ID를 가져옴
+                reservationId = chat.getReservation().getReservationId();
+            }
+
             return Response.builder()
                     .chatId(chat.getChatId())
                     .productId(chat.getProduct().getProductId())
-                    .product(ProductInfo.fromEntity(chat.getProduct())) // Product 엔티티 정보를 ProductInfo로 변환
+                    .product(ProductInfo.fromEntity(chat.getProduct()))
                     .buyerId(chat.getBuyer().getUserId())
-                    .buyer(UserInfo.fromEntity(chat.getBuyer())) // Buyer User 엔티티 정보를 UserInfo로 변환
+                    .buyer(UserInfo.fromEntity(chat.getBuyer()))
                     .sellerId(chat.getSeller().getUserId())
-                    .seller(UserInfo.fromEntity(chat.getSeller())) // Seller User 엔티티 정보를 UserInfo로 변환
+                    .seller(UserInfo.fromEntity(chat.getSeller()))
+                    .reservationId(reservationId)
                     .createdAt(chat.getCreatedAt())
                     .build();
         }
@@ -56,12 +63,14 @@ public class ChatDTO {
     public static class ProductInfo {
         private Long productId;
         private String title; // 상품명
+        private Boolean isReserved;
         // 필요하다면 다른 상품 정보도 추가 (예: imageUrl)
 
         public static ProductInfo fromEntity(Product product) {
             return ProductInfo.builder()
                     .productId(product.getProductId())
                     .title(product.getTitle())
+                    .isReserved(product.getIsReserved())
                     .build();
         }
     }

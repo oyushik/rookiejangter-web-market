@@ -18,7 +18,6 @@ import java.util.List;
 @AllArgsConstructor
 @SuperBuilder
 @ToString
-@EqualsAndHashCode
 public class Category extends BaseEntity {
 
     @Id

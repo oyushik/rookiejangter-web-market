@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -40,5 +41,16 @@ public class ProductController {
                 .data(response)
                 .message("상품 상세 정보가 성공적으로 조회되었습니다.")
                 .build());
+    }
+
+    // 상품 상태 변경 (예약중/판매완료)
+    @PutMapping("/{product_id}/status")
+    public ResponseEntity<Void> updateProductStatus(
+            @PathVariable("product_id") Long productId,
+            @RequestBody ProductDTO.StatusUpdateRequest request,
+            Authentication authentication) {
+        Long userId = Long.parseLong(authentication.getName());
+        productService.updateProductStatus(productId, request.getIsReserved(), request.getIsCompleted(), userId);
+        return ResponseEntity.ok().build();
     }
 }

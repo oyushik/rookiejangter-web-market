@@ -11,7 +11,6 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 @SuperBuilder
 @ToString
-@EqualsAndHashCode
 public class Reservation extends BaseEntity {
 
     @Id
@@ -31,10 +30,7 @@ public class Reservation extends BaseEntity {
     @JoinColumn(name = "product_id")
     private Product product;
 
-    @Column(name = "is_canceled")
-    private Boolean isCanceled;
-
-    public void markAsCanceled(boolean isCanceled) {
-        this.isCanceled = isCanceled;
-    }
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "chat_id")
+    private Chat chat;
 }

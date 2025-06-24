@@ -14,7 +14,6 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 @SuperBuilder
 @ToString
-@EqualsAndHashCode
 public class CancelationReason extends BaseEntity {
 
     @Id
@@ -24,6 +23,9 @@ public class CancelationReason extends BaseEntity {
 
     @Column(name = "cancelation_reason_type", length = 50)
     private String cancelationReasonType;
+
+    @Column(name = "is_cancelation_reason_of_buyer")
+    private Boolean isCancelationReasonOfBuyer;
 
     /**
      * 취소 사유 내용을 변경합니다.

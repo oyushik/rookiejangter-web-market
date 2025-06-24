@@ -17,7 +17,6 @@ import java.util.List;
 @AllArgsConstructor
 @SuperBuilder
 @ToString
-@EqualsAndHashCode
 public class ReportReason extends BaseEntity {
 
     @Id

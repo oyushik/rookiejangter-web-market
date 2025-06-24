@@ -2,16 +2,10 @@ package com.miniproject.rookiejangter.service;
 
 import com.miniproject.rookiejangter.dto.ChatDTO;
 import com.miniproject.rookiejangter.dto.MessageDTO;
-import com.miniproject.rookiejangter.entity.Chat;
-import com.miniproject.rookiejangter.entity.Message;
-import com.miniproject.rookiejangter.entity.Product;
-import com.miniproject.rookiejangter.entity.User;
+import com.miniproject.rookiejangter.entity.*;
 import com.miniproject.rookiejangter.exception.BusinessException;
 import com.miniproject.rookiejangter.exception.ErrorCode;
-import com.miniproject.rookiejangter.repository.ChatRepository;
-import com.miniproject.rookiejangter.repository.MessageRepository;
-import com.miniproject.rookiejangter.repository.ProductRepository;
-import com.miniproject.rookiejangter.repository.UserRepository;
+import com.miniproject.rookiejangter.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -34,6 +28,7 @@ public class ChatService {
     private final UserRepository userRepository;
     private final MessageRepository messageRepository;
     private final MessageService messageService;
+    private final ReservationRepository reservationRepository;
 
     public ChatDTO.Response createChat(ChatDTO.Request request) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -47,7 +42,10 @@ public class ChatService {
         Product product = productRepository.findById(request.getProductId())
                 .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_NOT_FOUND, request.getProductId()));
 
-        Optional<Chat> existingChat = chatRepository.findByBuyerAndSellerAndProduct(buyer, seller, product);
+        Optional<Chat> existingChat = chatRepository.
+                findByBuyer_UserIdAndSeller_UserIdAndProduct_ProductId
+                        (buyerId, request.getSellerId(), request.getProductId());
+
         if (existingChat.isPresent()) {
             return ChatDTO.Response.fromEntity(existingChat.get());
         }
@@ -87,7 +85,7 @@ public class ChatService {
             throw new BusinessException(ErrorCode.CHAT_FORBIDDEN_ACCESS);
         }
 
-        return ChatDTO.Response.fromEntity(chat); // 수정된 ChatDTO.Response.fromEntity 호출
+        return ChatDTO.Response.fromEntity(chat);
     }
 
     /**
@@ -133,6 +131,7 @@ public class ChatService {
      * @param chatId 삭제할 채팅방 ID
      * @param currentUserId 현재 로그인한 사용자 ID (컨트롤러에서 주입받음)
      */
+    @Transactional
     public void deleteChat(Long chatId, Long currentUserId) {
         Chat chat = chatRepository.findById(chatId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.CHATROOM_NOT_FOUND, chatId));
@@ -141,6 +140,36 @@ public class ChatService {
             throw new BusinessException(ErrorCode.CHAT_FORBIDDEN_ACCESS);
         }
 
+        if (chat.getReservation() != null) {
+            throw new BusinessException(ErrorCode.RESERVATION_REMAIN_CANNOT_DELETE);
+        }
+
         chatRepository.delete(chat);
+    }
+
+
+    /**
+     * 특정 채팅방에 예약을 설정합니다.
+     *
+     * @param chatId        예약을 연결할 채팅방 ID
+     * @param reservationId 연결할 예약 ID
+     * @param currentUserId 현재 로그인한 사용자 ID
+     */
+    @Transactional
+    public void assignChatReservation(Long chatId, Long reservationId, Long currentUserId) {
+        Chat chat = chatRepository.findById(chatId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.CHATROOM_NOT_FOUND, chatId));
+
+        if (!chat.getSeller().getUserId().equals(currentUserId)) {
+            throw new BusinessException(ErrorCode.CHAT_FORBIDDEN_ACCESS);
+        }
+
+        Reservation reservation = null;
+        if (reservationId != null) {
+            reservation = reservationRepository.findById(reservationId)
+                    .orElseThrow(() -> new BusinessException(ErrorCode.RESERVATION_NOT_FOUND, reservationId));
+        }
+        chat.assignReservation(reservation); // reservationId가 null이면 reservation도 null이 되어 채팅방 예약 초기화
+        chatRepository.save(chat);
     }
 }

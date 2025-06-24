@@ -14,6 +14,9 @@ import SockJS from 'sockjs-client';
 import { Stomp } from '@stomp/stompjs';
 import { jwtDecode } from 'jwt-decode';
 
+import { createReservation } from '../api/reservationService';
+import CancelReservationModal from '../components/CancelReservationModal';
+
 const CHAT_API_BASE_URL = 'http://localhost:8080/api/chats';
 const PRODUCT_DETAIL_BASE_URL = '/products'; // 상품 상세 페이지 URL 접두사
 
@@ -34,12 +37,15 @@ const ChatRoomPage = () => {
   const [newMessage, setNewMessage] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [chatInfo, setChatInfo] = useState(null);
+  const [chatInfo, setChatInfo] = useState(null); // chatInfo 상태 추가
   const [otherParticipantName, setOtherParticipantName] = useState('상대방');
   const [productTitle, setProductTitle] = useState('상품 정보 없음');
-  const [productId, setProductId] = useState(null); // productId 상태 추가
+  const [productId, setProductId] = useState(null);
   const stompClient = useRef(null);
   const messagesEndRef = useRef(null);
+
+  // 예약 취소 모달 관련 state: open/close만 여기서 관리
+  const [openCancelModal, setOpenCancelModal] = useState(false);
 
   // 컴포넌트 마운트 시 현재 사용자 ID를 토큰에서 파싱
   useEffect(() => {
@@ -76,7 +82,7 @@ const ChatRoomPage = () => {
         const chatResponse = await axios.get(`${CHAT_API_BASE_URL}/${chatId}`, { headers });
         if (chatResponse.data.success) {
           const chatData = chatResponse.data.data;
-          setChatInfo(chatData);
+          setChatInfo(chatData); // chatInfo 스테이트 설정
 
           // 응답 구조에 따라 상품명 설정
           if (chatData.product && chatData.product.title) {
@@ -85,11 +91,11 @@ const ChatRoomPage = () => {
             setProductTitle('상품 정보 없음');
           }
 
-          // productId 설정 (추가된 부분)
+          // productId 설정
           if (chatData.productId) {
             setProductId(chatData.productId);
           } else {
-            setProductId(null); // productId가 없을 경우 null로 설정
+            setProductId(null);
           }
 
           // 응답 구조와 현재 사용자 ID에 따라 상대방 이름 설정
@@ -202,12 +208,10 @@ const ChatRoomPage = () => {
     setNewMessage('');
   };
 
-  // '채팅 목록으로' 버튼 클릭 핸들러
   const handleGoToChatList = () => {
     navigate('/chats');
   };
 
-  // '상품 상세 보기' 버튼 클릭 핸들러 (추가된 부분)
   const handleViewProductDetails = () => {
     if (productId) {
       navigate(`${PRODUCT_DETAIL_BASE_URL}/${productId}`);
@@ -216,7 +220,6 @@ const ChatRoomPage = () => {
     }
   };
 
-  // '채팅 나가기' 버튼 클릭 핸들러
   const handleLeaveChat = async () => {
     if (!chatId) {
       setError('채팅방 ID를 찾을 수 없습니다.');
@@ -257,6 +260,85 @@ const ChatRoomPage = () => {
     }
   };
 
+  // reservationService를 사용하여 예약 생성 로직을 간소화
+  const handleCreateReservation = async () => {
+    if (!chatInfo || !chatId || !productId) {
+      alert('예약을 생성하는 데 필요한 정보가 부족합니다. 잠시 후 다시 시도해주세요.');
+      return;
+    }
+
+    if (currentUserId !== chatInfo.sellerId) {
+      alert('예약은 판매자만 생성할 수 있습니다.');
+      return;
+    }
+
+    const confirmReservation = window.confirm(
+      '이 채팅방에 대한 거래 예약을 생성하시겠습니까? 상품 상태가 "예약 중"으로 변경됩니다.'
+    );
+    if (!confirmReservation) {
+      return;
+    }
+
+    setLoading(true);
+    const token = localStorage.getItem('accessToken');
+
+    try {
+      const result = await createReservation(parseInt(chatId), token); // chatId를 숫자로 변환하여 전달
+
+      if (result.success) {
+        alert('거래 예약이 성공적으로 생성되었습니다. 상품 상태가 예약 중으로 변경됩니다.');
+        // chatInfo 상태를 업데이트하여 UI 즉시 반영
+        setChatInfo((prevChatInfo) => ({
+          ...prevChatInfo,
+          product: {
+            ...prevChatInfo.product,
+            isReserved: true, // isReserved 상태를 true로 변경
+          },
+        }));
+      } else {
+        alert(`예약 생성 실패: ${result.error || '알 수 없는 오류'}`);
+        setError(`예약 생성 실패: ${result.error || '알 수 없는 오류'}`);
+      }
+    } catch (err) {
+      console.error('Error creating reservation outside service:', err);
+      alert('예약 생성 중 알 수 없는 오류가 발생했습니다.');
+      setError('예약 생성 중 알 수 없는 오류가 발생했습니다.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // 예약 취소 모달 열기 함수 (이제 모달 상태만 변경)
+  const handleOpenCancelModal = () => {
+    if (!chatInfo || !chatId || !productId) {
+      alert('예약을 취소하는 데 필요한 정보가 부족합니다. 잠시 후 다시 시도해주세요.');
+      return;
+    }
+    if (currentUserId !== chatInfo.sellerId) {
+      alert('예약은 판매자만 취소할 수 있습니다.');
+      return;
+    }
+    setOpenCancelModal(true);
+  };
+
+  // 예약 취소 모달 닫기 함수 (이제 모달 상태만 변경)
+  const handleCloseCancelModal = () => {
+    setOpenCancelModal(false);
+  };
+
+  // 예약 취소 성공 시 호출될 콜백 함수
+  const handleCancelSuccess = () => {
+    alert('예약이 성공적으로 취소되었습니다. 상품 상태가 판매 중으로 변경됩니다.');
+    setChatInfo((prevChatInfo) => ({
+      ...prevChatInfo,
+      product: {
+        ...prevChatInfo.product,
+        isReserved: false, // isReserved 상태를 false로 변경
+      },
+    }));
+    handleCloseCancelModal(); // 모달 닫기
+  };
+
   if (loading) {
     return <CircularProgress sx={{ display: 'block', margin: '20px auto' }} />;
   }
@@ -264,6 +346,11 @@ const ChatRoomPage = () => {
   if (error) {
     return <Typography color="error">{error}</Typography>;
   }
+
+  // 현재 로그인한 사용자가 이 채팅방의 판매자인지 확인
+  const isCurrentUserSeller = chatInfo && currentUserId === chatInfo.sellerId;
+  // 상품이 예약 중인지 확인 (chatInfo와 product, isReserved 필드가 모두 있을 때만)
+  const isProductReserved = chatInfo?.product?.isReserved === true;
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', height: '85vh', p: 2 }}>
@@ -276,15 +363,40 @@ const ChatRoomPage = () => {
           </Typography>
         </Box>
         <Box sx={{ display: 'flex', gap: 1 }}>
-          {/* 상품 상세 보기 버튼 (추가된 부분) */}
+          {/* 상품 상세 보기 버튼 */}
           <Button
             variant="outlined"
-            color="info" // 정보성 버튼에 적합한 색상
+            color="info"
             onClick={handleViewProductDetails}
-            disabled={!productId} // productId가 없으면 버튼 비활성화
+            disabled={!productId}
           >
             상품 상세 보기
           </Button>
+
+          {/* 예약 관련 버튼 (판매자에게만 표시) */}
+          {isCurrentUserSeller &&
+            (isProductReserved ? (
+              // 상품이 예약 중일 경우 '예약 취소' 버튼 표시
+              <Button
+                variant="contained"
+                color="warning"
+                onClick={handleOpenCancelModal} // 모달 열기 함수 호출
+                disabled={loading}
+              >
+                예약 취소
+              </Button>
+            ) : (
+              // 상품이 예약 중이 아닐 경우 '예약 생성' 버튼 표시
+              <Button
+                variant="contained"
+                color="success"
+                onClick={handleCreateReservation}
+                disabled={loading}
+              >
+                예약 생성
+              </Button>
+            ))}
+
           <Button variant="outlined" color="primary" onClick={handleGoToChatList}>
             채팅 목록으로
           </Button>
@@ -357,6 +469,18 @@ const ChatRoomPage = () => {
           전송
         </Button>
       </Box>
+
+      {/* 분리된 예약 취소 모달 컴포넌트 렌더링 */}
+      {openCancelModal && ( // 모달이 열려있을 때만 렌더링
+        <CancelReservationModal
+          open={openCancelModal}
+          onClose={handleCloseCancelModal}
+          chatId={chatId}
+          currentUserId={currentUserId}
+          chatInfo={chatInfo} // chatInfo 전체를 props로 전달
+          onSuccess={handleCancelSuccess} // 성공 콜백 함수 전달
+        />
+      )}
     </Box>
   );
 };

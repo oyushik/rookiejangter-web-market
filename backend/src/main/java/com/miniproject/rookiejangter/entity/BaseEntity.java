@@ -28,18 +28,7 @@ public abstract class BaseEntity {
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
-    @CreatedBy
-    @Column(name = "created_by", updatable = false)
-    private String createdBy;
-
     @LastModifiedDate
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
-
-    @LastModifiedBy
-    @Column(name = "last_modified_by")
-    private String lastModifiedBy;
-
-    @Column(name = "version")
-    private Integer version;
 }

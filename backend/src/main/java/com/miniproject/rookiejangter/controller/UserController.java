@@ -19,7 +19,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
-    private final ReservationService reservationService;
 
     // 현재 사용자 프로필 조회
     @GetMapping("/profile")
@@ -45,13 +44,5 @@ public class UserController {
         Long userId = Long.parseLong(authentication.getName());
         userService.deleteUser(userId);
         return ResponseEntity.noContent().build();
-    }
-
-    @GetMapping("/reservations")
-    @Transactional(readOnly = true)
-    public ResponseEntity<List<ReservationDTO.Response>> getAllReservations(Authentication authentication) {
-        Long userId = Long.parseLong(authentication.getName());
-        List<ReservationDTO.Response> allReservations = reservationService.getAllReservations(userId);
-        return ResponseEntity.ok(allReservations);
     }
 }

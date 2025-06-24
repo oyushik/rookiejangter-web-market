@@ -15,6 +15,4 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
     List<Reservation> findByBuyer_UserId(Long buyerId);
     List<Reservation> findBySeller_UserId(Long sellerId);
     List<Reservation> findByProduct_ProductId(Long productId);
-
-    boolean existsByBuyer_UserIdAndProduct_ProductIdAndIsCanceled(Long buyerUserId, Long productProductId, Boolean isCanceled);
 }

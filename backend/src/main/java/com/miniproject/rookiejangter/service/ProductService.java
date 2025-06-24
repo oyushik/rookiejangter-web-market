@@ -123,6 +123,10 @@ public class ProductService {
             throw new BusinessException(ErrorCode.PRODUCT_OPERATION_FORBIDDEN, "삭제");
         }
 
+        if (product.getIsReserved().equals(true) || product.getIsCompleted().equals(true)) {
+            throw new BusinessException(ErrorCode.RESERVATION_REMAIN_CANNOT_DELETE);
+        }
+
         imageRepository.deleteAll(imageRepository.findByProduct_ProductId(productId));
         dibsRepository.deleteAll(dibsRepository.findByProduct_ProductId(productId));
 

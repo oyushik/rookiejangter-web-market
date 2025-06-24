@@ -13,7 +13,6 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 @SuperBuilder
 @ToString
-@EqualsAndHashCode
 public class Cancelation extends BaseEntity {
 
     @Id
@@ -21,13 +20,24 @@ public class Cancelation extends BaseEntity {
     @Column(name = "cancelation_id")
     private Long cancelationId;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "reservation_id")
-    private Reservation reservation;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "cancelation_reason_id")
     private CancelationReason cancelationReason;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "product_id")
+    private Product product;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "buyer_id")
+    private User buyer;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "seller_id")
+    private User seller;
+
+    @Column(name = "is_canceled_by_buyer")
+    private Boolean isCanceledByBuyer;
 
     @Column(name = "cancelation_detail", length = 255)
     private String cancelationDetail;

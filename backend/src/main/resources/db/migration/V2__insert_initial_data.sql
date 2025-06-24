@@ -41,14 +41,19 @@ INSERT INTO categories (category_name) VALUES
 ('생활/주방용품'),
 ('삽니다');
 
-INSERT INTO cancelation_reasons (cancelation_reason_type) VALUES
-('단순 변심'),
-('상품 정보 오류'),
-('판매자와 연락 불가'),
-('질병'),
-('사고 및 재난'),
-('도난/사기 물품 의심'),
-('기타 사유');
+INSERT INTO cancelation_reasons (cancelation_reason_type, is_cancelation_reason_of_buyer) VALUES
+('단순 변심', true),
+('상품 정보 오류', true),
+('판매자와 연락 불가', true),
+('질병', true),
+('사고 및 재난', true),
+('도난/사기 물품 의심', true),
+('기타 사유', true),
+('단순 변심', false),
+('상품 파손', false),
+('질병', false),
+('사고 및 재난', false),
+('구매자와 연락 불가', false);
 
 INSERT INTO report_reasons (report_reason_type) VALUES
 ('불쾌한 언어 사용'),

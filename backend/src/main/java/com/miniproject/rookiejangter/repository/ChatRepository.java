@@ -14,5 +14,5 @@ import java.util.Optional;
 @Repository
 public interface ChatRepository extends JpaRepository<Chat, Long> {
     Page<Chat> findByBuyer_UserIdOrSeller_UserId(Long buyerUserId, Long sellerUserId, Pageable pageable);
-    Optional<Chat> findByBuyerAndSellerAndProduct(User buyer, User seller, Product product);
+    Optional<Chat> findByBuyer_UserIdAndSeller_UserIdAndProduct_ProductId(Long buyerUserId, Long sellerUserId, Long productProductId);
 }
