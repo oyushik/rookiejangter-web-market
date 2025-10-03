@@ -5,8 +5,8 @@ spring:
     active: prod
   data:
     redis:
-#      host: redis  # 백엔드를 Docker에 포함하여 실행할 때 활성화
-      host: localhost  # 백엔드를 로컬로 실행할 때 활성화
+      host: redis  # 백엔드를 Docker에 포함하여 실행할 때 활성화
+#      host: localhost  # 백엔드를 로컬로 실행할 때 활성화
       port: 6379
 
 # log file
