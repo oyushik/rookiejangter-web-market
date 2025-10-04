@@ -16,7 +16,7 @@
 
 | Role         | Name         | Responsibilities                                        | GitHub                                                |
 | ------------ | ------------ | ------------------------------------------------------- | ----------------------------------------------------- |
-| **PM**       | Jahyeon Ji   | Project management, scheduling, requirements definition | [J-millar99](https://github.com/J-millar99)           |
+| **PM**       | Jaehyeon Ji   | Project management, scheduling, requirements definition | [J-millar99](https://github.com/J-millar99)           |
 | **Backend**  | Yushik Oh    | API development, database design, server setup          | [oyushik](https://github.com/oyushik)                 |
 | **Backend**  | Minjeong Kim | Authentication/Security, business logic, testing        | [ReadyToStarting](https://github.com/ReadyToStarting) |
 | **Frontend** | Woojun Kim   | React components, UI/UX implementation                  | [Ra1nJun](https://github.com/Ra1nJun)                 |
